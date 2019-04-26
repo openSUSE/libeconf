@@ -7,7 +7,7 @@ pkg_check_modules(GLIB REQUIRED glib-2.0)
 include_directories(${GLIB_INCLUDE_DIRS})
 
 # Create the library
-add_library(econf SHARED src/libeconf.c)
+add_library(econf SHARED src/libeconf2.c)
 set_target_properties(econf PROPERTIES
   VERSION ${PROJECT_VERSION}
   PUBLIC_HEADER include/libeconf.h
@@ -24,7 +24,7 @@ install(TARGETS econf
 )
 
 # Create the binary/executable
-add_executable(example EXCLUDE_FROM_ALL src/example.c)
+add_executable(example EXCLUDE_FROM_ALL src/example2.c)
 target_include_directories(example PRIVATE include)
 target_link_libraries(example PRIVATE ${GLIB_LIBRARIES} econf)
 # Enable for debugging

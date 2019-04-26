@@ -20,8 +20,35 @@
 #define KEY_MERGER_H
 
 #include <glib.h>
+#include <errno.h>
 
-//merge the contents of two key files
-void g_key_file_merge_files(GKeyFile *key_file, const char *etc_file_name, const char *usr_file_name, GError **error); 
+// Merge the contents of two key files
+void g_key_file_merge_files(GKeyFile *key_file, const char *file_name, const char *etc_file_name, const char *usr_file_name, GError **error);
+
+extern int errno;
+
+typedef struct {
+  char *key, *value, *group;
+} Key_File;
+
+// Process the file of the given file_name and save its contents into key_file
+void get_key_file(Key_File **key_file, size_t *length, const char *file_name, const char delim, const char comment);
+
+// Merge the contents of two key files
+void merge_key_files(Key_File **merge_file, size_t *merge_length, Key_File *usr_file, size_t usr_length, Key_File *etc_file, size_t etc_length);
+
+// Write content of a Key_File struct to specified location
+void write_key_file(Key_File *key_file, size_t merge_length, const char *save_to_dir, const char *file_name, const char delimiter);
+
+// Wrapper function to perform the merge in one step
+void merge_files(const char *save_to_dir, const char *file_name, const char *etc_path, const char *usr_path, const char delimiter, const char comment);
+
+/* --- HELPERS --- */
+
+// Combine file path and file name
+char* combine_path_name(const char *file_path, const char *file_name);
+
+// Free memory allocated by key_file
+void destroy(Key_File *key_file, size_t length);
 
 #endif
