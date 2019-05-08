@@ -1,7 +1,6 @@
 lib_LTLIBRARIES = libeconf.la
 libeconf_la_SOURCES = ../src/libeconf.c
-libeconf_la_LIBADD = @GLIB_LIBS@
-libeconf_la_CFLAGS = @GLIB_CFLAGS@ -Wall
+libeconf_la_CFLAGS = -Wall
 
 CLEANFILES = *.pc
 

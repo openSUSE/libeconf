@@ -16,19 +16,8 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <glib/gprintf.h>
 #include <libeconf.h>
 
 int main() {
-  g_autoptr(GKeyFile) key_file = g_key_file_new();
-  g_autoptr(GError) error = NULL;
-
-  g_key_file_merge_files(key_file, "example.ini", "example/etc/example", "example/usr/share/defaults", &error);
-
-  g_key_file_save_to_file(key_file, "example/etc/example.conf.d/example.ini", NULL);
-  //print the merged key file to stdout
-  gchar * merged_key_file;
-  merged_key_file = g_key_file_to_data(key_file, NULL, NULL);
-
-  printf("%s\n", merged_key_file);
+  merge_files("example/etc/example.conf.d", "example.ini", "example/etc/example", "example/usr/share/defaults", '=', '#');
 }

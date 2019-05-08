@@ -2,12 +2,8 @@ cmake_minimum_required(VERSION 3.13.0)
 project(libeconf VERSION 0.1.0 DESCRIPTION "TODO")
 include(GNUInstallDirs)
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(GLIB REQUIRED glib-2.0)
-include_directories(${GLIB_INCLUDE_DIRS})
-
 # Create the library
-add_library(econf SHARED src/libeconf2.c)
+add_library(econf SHARED src/libeconf.c)
 set_target_properties(econf PROPERTIES
   VERSION ${PROJECT_VERSION}
   PUBLIC_HEADER include/libeconf.h
@@ -24,8 +20,8 @@ install(TARGETS econf
 )
 
 # Create the binary/executable
-add_executable(example EXCLUDE_FROM_ALL src/example2.c)
+add_executable(example EXCLUDE_FROM_ALL src/example.c)
 target_include_directories(example PRIVATE include)
-target_link_libraries(example PRIVATE ${GLIB_LIBRARIES} econf)
+target_link_libraries(example PRIVATE econf)
 # Enable for debugging
 # target_link_libraries(example PRIVATE -g3 -fsanitize=address -fno-omit-frame-pointer)

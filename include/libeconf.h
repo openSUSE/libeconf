@@ -19,11 +19,8 @@
 #ifndef KEY_MERGER_H
 #define KEY_MERGER_H
 
-#include <glib.h>
 #include <errno.h>
-
-// Merge the contents of two key files
-void g_key_file_merge_files(GKeyFile *key_file, const char *file_name, const char *etc_file_name, const char *usr_file_name, GError **error);
+#include <stddef.h>
 
 extern int errno;
 
