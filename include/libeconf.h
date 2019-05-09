@@ -23,9 +23,7 @@
 
 extern int errno;
 
-typedef struct {
-  char *key, *value, *group;
-} Key_File;
+typedef struct Key_File Key_File;
 
 // Process the file of the given file_name and save its contents into key_file
 void get_key_file(Key_File **key_file, size_t *key_file_len, const char *file_name, const char delim, const char comment);

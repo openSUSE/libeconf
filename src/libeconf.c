@@ -23,6 +23,10 @@
 
 #include "../include/libeconf.h"
 
+struct Key_File {
+  char *group, *key, *value;
+};
+
 // Process the file of the given file_name and save its contents into key_file
 void get_key_file(Key_File **key_file, size_t *key_file_len, const char *file_name, const char delim, const char comment) {
   // LNUM: Base number of key-value pairs in key_file
