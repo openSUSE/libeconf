@@ -29,10 +29,10 @@ typedef struct {
 } Key_File;
 
 // Process the file of the given file_name and save its contents into key_file
-void get_key_file(Key_File **key_file, size_t *length, const char *file_name, const char delim, const char comment);
+void get_key_file(Key_File **key_file, size_t *key_file_len, const char *file_name, const char delim, const char comment);
 
 // Merge the contents of two key files
-void merge_key_files(Key_File **merge_file, size_t *merge_length, Key_File *usr_file, size_t usr_length, Key_File *etc_file, size_t etc_length);
+void merge_key_files(Key_File **merged_key_file, size_t *merge_length, Key_File *usr_file, size_t usr_length, Key_File *etc_file, size_t etc_length);
 
 // Write content of a Key_File struct to specified location
 void write_key_file(Key_File *key_file, size_t merge_length, const char *save_to_dir, const char *file_name, const char delimiter);

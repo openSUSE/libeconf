@@ -24,28 +24,24 @@
 #include "../include/libeconf.h"
 
 // Process the file of the given file_name and save its contents into key_file
-void get_key_file(Key_File **key_file, size_t *length, const char *file_name, const char delim, const char comment) {
+void get_key_file(Key_File **key_file, size_t *key_file_len, const char *file_name, const char delim, const char comment) {
   // LNUM: Base number of key-value pairs in key_file
   // LLEN: Base number of chars in a key, value or group name
   // Once the value of these is exceeded memory space of double the value
   // is allocated
   const size_t LNUM = 16, LLEN = 8;
-  size_t lnum = LNUM, llen = LLEN, vlen;
+  size_t lnum = LNUM, llen = LLEN, vlen = 0, file_length = 0;
   char has_delim, ch;
 
   // Actual number of key-value pairs in file
-  *length = 0;
 
-  // Allocate memory for the given Key_File based on LNUM
-  if(!(*key_file = malloc(LNUM * sizeof(Key_File)))) {
-    errno = 12;
-    return;
-  }
+  // Allocate memory for the Key_File based on LNUM
+  Key_File *read_file = malloc(LNUM * sizeof(Key_File));
 
   // File handle for the given file_name
   FILE *kf = fopen(file_name, "rb");
   if (kf == NULL) {
-    errno = 2;
+    errno = ENOENT;
     return;
   }
 
@@ -56,14 +52,14 @@ void get_key_file(Key_File **key_file, size_t *length, const char *file_name, co
   char next_action = 'L', repeat = 1;
   while(repeat) {
     switch(next_action) {
-      // Process next line in the key_file if length exceeds lnum
+      // Process next line in the key_file if key_file_len exceeds lnum
       // double the allocated memory
       case 'L':
-        if (*length >= lnum) {
-          *key_file = realloc(*key_file, lnum * 2 * sizeof(Key_File));
+        if (file_length >= lnum) {
+          read_file = realloc(read_file, lnum * 2 * sizeof(Key_File));
           lnum*=2;
         }
-        (*key_file)[*length].group = NULL, has_delim = 0;
+        read_file[file_length].group = NULL, has_delim = 0;
       // Create a new value
       case 'V':
         vlen = 0, llen = LLEN;
@@ -79,28 +75,28 @@ void get_key_file(Key_File **key_file, size_t *length, const char *file_name, co
           }
           switch(ch) {
             case '\n':
-              *(value+vlen++) = 0;
+              value[vlen++] = 0;
               // If a newline char is encountered and the line had no delimiter
               // the line is expected to be a group
               if(!has_delim) {
-                (*key_file)[*length].group = malloc(vlen);
-                snprintf((*key_file)[*length].group, vlen, value);
+                read_file[file_length].group = malloc(vlen);
+                snprintf(read_file[file_length].group, vlen, value);
                 free(value);
                 next_action = 'V';
                 break;
               } else {
                 // If the line is no new group copy the group from the previous line
-                if (!((*key_file)[*length].group)) {
-                  llen = strlen((*key_file)[*length - 1].group) + 1;
-                  (*key_file)[*length].group = malloc(llen);
-                  snprintf((*key_file)[*length].group,
-                           llen, (*key_file)[*length - 1].group);
+                if (!(read_file[file_length].group)) {
+                  llen = strlen(read_file[file_length - 1].group) + 1;
+                  read_file[file_length].group = malloc(llen);
+                  snprintf(read_file[file_length].group,
+                           llen, read_file[file_length - 1].group);
                 }
                 // If the line had a delimiter everything after the delimiter is
                 // considered to be a value
-                (*key_file)[*length].value = malloc(vlen);
-                snprintf((*key_file)[*length].value, vlen, value);
-                (*length)++;
+                read_file[file_length].value = malloc(vlen);
+                snprintf(read_file[file_length].value, vlen, value);
+                file_length++;
                 free(value);
                 next_action = 'L';
                 break;
@@ -110,7 +106,7 @@ void get_key_file(Key_File **key_file, size_t *length, const char *file_name, co
               repeat = 0;
               // Check if the file is really at its end after EOF is encountered.
               if(!feof(kf)) {
-                errno = 9;
+                errno = EBADF;
                 return;
               }
               break;
@@ -119,16 +115,16 @@ void get_key_file(Key_File **key_file, size_t *length, const char *file_name, co
               // be a key.
               if (ch == delim) {
                 has_delim = 1;
-                *(value+vlen++) = 0;
-                (*key_file)[*length].key = malloc(vlen);
-                snprintf((*key_file)[*length].key, vlen, value);
+                value[vlen++] = 0;
+                read_file[file_length].key = malloc(vlen);
+                snprintf(read_file[file_length].key, vlen, value);
               // If the line starts with the given comment char ignore the line
               // and proceed with the next
               } else if(ch == comment && vlen == 0) {
                 getline(&value, &llen, kf);
               // Default case: append the char to the current value
               } else {
-                *(value+vlen++) = ch;
+                value[vlen++] = ch;
                 next_action = 'C';
                 break;
               }
@@ -142,17 +138,19 @@ void get_key_file(Key_File **key_file, size_t *length, const char *file_name, co
     }
   }
   fclose(kf);
-  // Reallocate to actual size of the key_file
-  *key_file = realloc(*key_file, sizeof(Key_File) * *length);
+  *key_file_len = file_length;
+  if(!(*key_file = realloc(read_file, sizeof(Key_File) * file_length)))
+    errno = ENOMEM;
 }
 
 // Merge the contents of two key files
-void merge_key_files(Key_File **merge_file, size_t *merge_length, Key_File *usr_file, size_t usr_length, Key_File *etc_file, size_t etc_length) {
+void merge_key_files(Key_File **merged_key_file, size_t *merge_length, Key_File *usr_file, size_t usr_length, Key_File *etc_file, size_t etc_length) {
   // Maximum length the merged file can have
   size_t max_merge_length = usr_length + etc_length;
-  // Actual length of the merged file
-  *merge_length = 0;
-  *merge_file = malloc(max_merge_length * sizeof(Key_File));
+  // For each new key in etc_file that matches a group from usr_file
+  // usr_offset is increased by one
+  size_t usr_offset = 0;
+  Key_File *merge_file = malloc(max_merge_length * sizeof(Key_File));
   char new_grp = 1, new_key = 0, check_etc_keys = 0;
   for(int i = 0; i < max_merge_length; i++) {
     for(int j = 0; j < etc_length; j++) {
@@ -160,15 +158,16 @@ void merge_key_files(Key_File **merge_file, size_t *merge_length, Key_File *usr_
       if(check_etc_keys) {
         new_key = 0;
         for(int k = 0; k < i - new_grp; k++) {
-          if(!strcmp((*merge_file)[k].group, etc_file[j].group)) {
+          if(!strcmp(merge_file[k].group, etc_file[j].group)) {
             new_key = 1;
-            if(!strcmp((*merge_file)[k].key, etc_file[j].key)) {
+            if(!strcmp(merge_file[k].key, etc_file[j].key)) {
               new_key = 0;
               // If there is no new key found in the last 'j' iteration
               // the merge is complete. Get the merge length and return
               if(j == etc_length - 1) {
                 *merge_length = i;
-                *merge_file = realloc(*merge_file, *merge_length * sizeof(Key_File));
+                if(!(*merged_key_file = realloc(merge_file, i * sizeof(Key_File))))
+                  errno = ENOMEM;
                 return;
               }
               break;
@@ -177,14 +176,14 @@ void merge_key_files(Key_File **merge_file, size_t *merge_length, Key_File *usr_
         }
         // New key in etc_file
         if(new_key) {
-          if(strcmp((*merge_file)[i-1].group, etc_file[j].group)) {
-            (*merge_file)[i] = (*merge_file)[i-1];
-            (*merge_file)[i-1] = etc_file[j];
+          if(strcmp(merge_file[i-1].group, etc_file[j].group)) {
+            merge_file[i] = merge_file[i-1];
+            merge_file[i-1] = etc_file[j];
           } else {
-            (*merge_file)[i] = etc_file[j];
+            merge_file[i] = etc_file[j];
           }
           new_key = 0, check_etc_keys = 0;
-          (*merge_length)++;
+          usr_offset++;
           break;
         }
         // No new keys for current group found
@@ -194,12 +193,12 @@ void merge_key_files(Key_File **merge_file, size_t *merge_length, Key_File *usr_
         }
       // If a group, key combination exists in both files take the
       // entry from etc_file
-      } else if(i < usr_length + *merge_length) {
+      } else if(i < usr_length + usr_offset) {
         new_key = 1;
-        if(!strcmp(usr_file[i - *merge_length].group, etc_file[j].group)) {
+        if(!strcmp(usr_file[i - usr_offset].group, etc_file[j].group)) {
           // New value for existing key
-          if(!strcmp(usr_file[i - *merge_length].key, etc_file[j].key)) {
-            (*merge_file)[i] = etc_file[j];
+          if(!strcmp(usr_file[i - usr_offset].key, etc_file[j].key)) {
+            merge_file[i] = etc_file[j];
             new_key = 0, check_etc_keys = 0;
             break;
           }
@@ -208,7 +207,7 @@ void merge_key_files(Key_File **merge_file, size_t *merge_length, Key_File *usr_
       } else if(new_grp) {
         new_key = 0;
         for(int k = 0; k < i; k++) {
-          if(!strcmp((*merge_file)[k].group, etc_file[j].group)) {
+          if(!strcmp(merge_file[k].group, etc_file[j].group)) {
             new_grp = 0;
             // No new group found
             if(j == etc_length - 1) {
@@ -219,7 +218,7 @@ void merge_key_files(Key_File **merge_file, size_t *merge_length, Key_File *usr_
         }
         // New group found
         if(new_grp) {
-          (*merge_file)[i] = etc_file[j];
+          merge_file[i] = etc_file[j];
           break;
         }
         new_grp = 1;
@@ -228,8 +227,8 @@ void merge_key_files(Key_File **merge_file, size_t *merge_length, Key_File *usr_
     // If a key exclusively exists in usr_file or etc_file
     if(new_key) {
       // New usr_file key
-      if(i < usr_length + *merge_length) {
-        (*merge_file)[i] = usr_file[i - *merge_length];
+      if(i < usr_length + usr_offset) {
+        merge_file[i] = usr_file[i - usr_offset];
       // If there are no new groups to be found check for new etc keys until
       // there are none left
       } else {
@@ -240,7 +239,7 @@ void merge_key_files(Key_File **merge_file, size_t *merge_length, Key_File *usr_
       }
     }
     // If a new group was added trigger check for missing keys
-    if((i > 0 && strcmp((*merge_file)[i].group, (*merge_file)[i-1].group)) || !new_grp) {
+    if((i > 0 && strcmp(merge_file[i].group, merge_file[i-1].group)) || !new_grp) {
       check_etc_keys = 1;
     }
   }
@@ -253,14 +252,14 @@ void write_key_file(Key_File *key_file, size_t key_file_length, const char *save
   if(dir) {
     closedir(dir);
   } else {
-    errno = 2;
+    errno = ENOENT;
     return;
   }
   // Create a file handle for the specified file
   char *save_to = combine_path_name(save_to_dir, file_name);
   FILE *kf = fopen(save_to, "w");
   if(kf == NULL) {
-    errno = 1;
+    errno = EPERM;
     return;
   }
 
