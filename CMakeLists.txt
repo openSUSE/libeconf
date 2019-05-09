@@ -20,7 +20,7 @@ install(TARGETS econf
 )
 
 # Create the binary/executable
-add_executable(example EXCLUDE_FROM_ALL src/example.c)
+add_executable(example EXCLUDE_FROM_ALL example/example.c)
 target_include_directories(example PRIVATE include)
 target_link_libraries(example PRIVATE econf)
 # Enable for debugging
