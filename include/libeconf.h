@@ -16,8 +16,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KEY_MERGER_H
-#define KEY_MERGER_H
+#pragma once
 
 #include <errno.h>
 #include <stddef.h>
@@ -47,5 +46,3 @@ char* combine_path_name(const char *file_path, const char *file_name);
 
 // Free memory allocated by key_file
 void destroy(Key_File *key_file, size_t length);
-
-#endif
