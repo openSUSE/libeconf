@@ -23,7 +23,6 @@
 
 #include "../include/libeconf.h"
 
-
 struct Key_File {
   struct file_entry {
     char *group, *key, *value;
@@ -35,6 +34,9 @@ struct Key_File {
 void new_kf_value(char **value, size_t *vlen, size_t *llen, const size_t LLEN);
 void new_kf_line(struct file_entry **fe, size_t *file_length, size_t *lnum);
 Key_File fill_key_file(Key_File read_file, FILE *kf);
+size_t merge_existing_groups(struct file_entry **fe, Key_File *uf, Key_File *ef);
+size_t add_new_groups(struct file_entry **fe, Key_File *uf, Key_File *ef, const size_t merge_length);
+char* combine_path_name(const char *file_path, const char *file_name);
 
 // Process the file of the given file_name and save its contents into key_file
 Key_File get_key_file(const char *file_name, const char delim, const char comment) {
@@ -55,108 +57,19 @@ Key_File get_key_file(const char *file_name, const char delim, const char commen
 
 // Merge the contents of two key files
 Key_File merge_key_files(Key_File *usr_file, Key_File *etc_file) {
-  // Maximum length the merged file can have
-  size_t max_merge_length = usr_file->length + etc_file->length;
-  // For each new key in etc_file that matches a group from usr_file
-  // usr_offset is increased by one
-  size_t usr_offset = 0;
-  Key_File merge_file = {.delimiter = etc_file->delimiter, .comment = etc_file->comment};
-  merge_file.file_entry = malloc(max_merge_length * sizeof(struct file_entry));
-  char new_grp = 1, new_key = 0, check_etc_keys = 0;
-  for(int i = 0; i < max_merge_length; i++) {
-    for(int j = 0; j < etc_file->length; j++) {
-      // Check for new keys in etc_file
-      if(check_etc_keys) {
-        new_key = 0;
-        for(int k = 0; k < i - new_grp; k++) {
-          if(!strcmp(merge_file.file_entry[k].group, etc_file->file_entry[j].group)) {
-            new_key = 1;
-            if(!strcmp(merge_file.file_entry[k].key, etc_file->file_entry[j].key)) {
-              new_key = 0;
-              // If there is no new key found in the last 'j' iteration
-              // the merge is complete. Get the merge length and return
-              if(j == etc_file->length - 1) {
-                merge_file.length = i;
-                merge_file.file_entry = realloc(merge_file.file_entry, i * sizeof(struct file_entry));
-                return merge_file;
-              }
-              break;
-            }
-          }
-        }
-        // New key in etc_file
-        if(new_key) {
-          if(strcmp(merge_file.file_entry[i-1].group, etc_file->file_entry[j].group)) {
-            merge_file.file_entry[i] = merge_file.file_entry[i-1];
-            merge_file.file_entry[i-1] = etc_file->file_entry[j];
-          } else {
-            merge_file.file_entry[i] = etc_file->file_entry[j];
-          }
-          new_key = 0, check_etc_keys = 0;
-          usr_offset++;
-          break;
-        }
-        // No new keys for current group found
-        if(j == etc_file->length - 1) {
-          check_etc_keys = 0;
-          j = -1;
-        }
-      // If a group, key combination exists in both files take the
-      // entry from etc_file
-      } else if(i < usr_file->length + usr_offset) {
-        new_key = 1;
-        if(!strcmp(usr_file->file_entry[i - usr_offset].group, etc_file->file_entry[j].group)) {
-          // New value for existing key
-          if(!strcmp(usr_file->file_entry[i - usr_offset].key, etc_file->file_entry[j].key)) {
-            merge_file.file_entry[i] = etc_file->file_entry[j];
-            new_key = 0, check_etc_keys = 0;
-            break;
-          }
-        }
-      // Look for new group entries in etc_file and append them at the end
-      } else if(new_grp) {
-        new_key = 0;
-        for(int k = 0; k < i; k++) {
-          if(!strcmp(merge_file.file_entry[k].group, etc_file->file_entry[j].group)) {
-            new_grp = 0;
-            // No new group found
-            if(j == etc_file->length - 1) {
-              new_key = 1;
-            }
-            break;
-          }
-        }
-        // New group found
-        if(new_grp) {
-          merge_file.file_entry[i] = etc_file->file_entry[j];
-          break;
-        }
-        new_grp = 1;
-      }
-    }
-    // If a key exclusively exists in usr_file or etc_file
-    if(new_key) {
-      // New usr_file key
-      if(i < usr_file->length + usr_offset) {
-        merge_file.file_entry[i] = usr_file->file_entry[i - usr_offset];
-      // If there are no new groups to be found check for new etc keys until
-      // there are none left
-      } else {
-        new_grp = 0;
-        // Since in this case there's no new merge_file entry
-        // in the current iteration reduce 'i' by one
-        i--;
-      }
-    }
-    // If a new group was added trigger check for missing keys
-    if((i > 0 && strcmp(merge_file.file_entry[i].group, merge_file.file_entry[i-1].group)) || !new_grp) {
-      check_etc_keys = 1;
-    }
-  }
+  Key_File merge_file = {.delimiter = usr_file->delimiter, .comment = usr_file->comment};
+  struct file_entry *fe = malloc((etc_file->length + etc_file->length)
+                                 * sizeof(struct file_entry));
+
+  size_t merge_length = merge_existing_groups(&fe, usr_file, etc_file);
+  merge_file.length = add_new_groups(&fe, usr_file, etc_file, merge_length);
+
+  merge_file.file_entry = fe;
+  return merge_file;
 }
 
 // Write content of a Key_File struct to specified location
-void write_key_file(Key_File key_file, const char *save_to_dir, const char *file_name, const char delimiter) {
+void write_key_file(Key_File key_file, const char *save_to_dir, const char *file_name) {
   // Check if the directory exists
   DIR *dir = opendir(save_to_dir);
   if(dir) {
@@ -175,11 +88,13 @@ void write_key_file(Key_File key_file, const char *save_to_dir, const char *file
 
   // Write to file
   for(int i = 0; i < key_file.length; i++) {
-    if(i == 0 || strcmp(key_file.file_entry[i-1].group, key_file.file_entry[i].group)) {
-      if(i != 0) fprintf(kf, "\n");
-      fprintf(kf, "%s\n", key_file.file_entry[i].group);
+    if(!i || strcmp(key_file.file_entry[i-1].group, key_file.file_entry[i].group)) {
+      if(i) fprintf(kf, "\n");
+      if(key_file.file_entry[i].group != "")
+        fprintf(kf, "%s\n", key_file.file_entry[i].group);
     }
-    fprintf(kf, "%s%c%s\n", key_file.file_entry[i].key, delimiter, key_file.file_entry[i].value);
+    fprintf(kf, "%s%c%s\n", key_file.file_entry[i].key,
+            key_file.delimiter, key_file.file_entry[i].value);
   }
 
   // Clean up
@@ -198,40 +113,23 @@ void merge_files(const char *save_to_dir, const char *file_name, const char *etc
   Key_File usr_file = get_key_file(usr_file_name, delimiter, comment);
   Key_File etc_file = get_key_file(etc_file_name, delimiter, comment);
 
-
   /* --- MERGE KEY FILES --- */
 
   Key_File merged_file = merge_key_files(&usr_file, &etc_file);
 
   /* --- WRITE MERGED FILE --- */
 
-  write_key_file(merged_file, save_to_dir, file_name, delimiter);
+  write_key_file(merged_file, save_to_dir, file_name);
 
   /* --- CLEAN UP --- */
-  free(etc_file_name), etc_file_name = NULL;
-  free(usr_file_name), usr_file_name = NULL;
+  free(etc_file_name);
+  free(usr_file_name);
   destroy(usr_file);
   destroy(etc_file);
   free(merged_file.file_entry);
 }
 
-// Combine file path and file name
-char* combine_path_name(const char *file_path, const char *file_name) {
-  size_t combined_len = strlen(file_path) + strlen(file_name) + 2;
-  char *combined = malloc(combined_len);
-  snprintf(combined, combined_len, "%s/%s", file_path, file_name);
-  return combined;
-}
-
-// Free memory allocated by key_file
-void destroy(Key_File key_file) {
-  for(int i = 0; i < key_file.length; i++) {
-    free(key_file.file_entry[i].group);
-    free(key_file.file_entry[i].key);
-    free(key_file.file_entry[i].value);
-  }
-  free(key_file.file_entry);
-}
+/* --- GET KEY FILE HELPERS --- */
 
 // Fill the Key File struct with values from the given file handle
 Key_File fill_key_file(Key_File read_file, FILE *kf) {
@@ -244,24 +142,25 @@ Key_File fill_key_file(Key_File read_file, FILE *kf) {
   char ch, has_delim = 0;
   // Allocate memory for the Key_File based on LNUM
   struct file_entry *fe = malloc(LNUM * sizeof(struct file_entry));
-  char *value = malloc(LLEN);
+  char *buffer = malloc(LLEN);
+  fe[0].group = "";
 
   while((ch = getc(kf)) != EOF) {
     if (vlen >= llen) {
-      value = realloc(value, llen * 2);
+      buffer = realloc(buffer, llen * 2);
       llen*=2;
     }
     if (ch == '\n') {
       if(vlen == 0) continue;
-      value[vlen++] = 0;
+      buffer[vlen++] = 0;
       // If a newline char is encountered and the line had no delimiter
       // the line is expected to be a group
       if(!has_delim) {
         fe[file_length].group = malloc(vlen);
-        snprintf(fe[file_length].group, vlen, value);
+        snprintf(fe[file_length].group, vlen, buffer);
       } else {
         // If the line is no new group copy the group from the previous line
-        if (!(fe[file_length].group)) {
+        if (file_length && fe[file_length].group == "" && fe[file_length - 1].group != "") {
           llen = strlen(fe[file_length - 1].group) + 1;
           fe[file_length].group = malloc(llen);
           snprintf(fe[file_length].group, llen, fe[file_length - 1].group);
@@ -269,7 +168,7 @@ Key_File fill_key_file(Key_File read_file, FILE *kf) {
         // If the line had a delimiter everything after the delimiter is
         // considered to be a value
         fe[file_length].value = malloc(vlen);
-        snprintf(fe[file_length].value, vlen, value);
+        snprintf(fe[file_length].value, vlen, buffer);
         new_kf_line(&fe, &file_length, &lnum);
         has_delim = 0;
       }
@@ -277,21 +176,21 @@ Key_File fill_key_file(Key_File read_file, FILE *kf) {
     // be a key.
     } else if (ch == read_file.delimiter) {
       has_delim = 1;
-      value[vlen++] = 0;
+      buffer[vlen++] = 0;
       fe[file_length].key = malloc(vlen);
-      snprintf(fe[file_length].key, vlen, value);
+      snprintf(fe[file_length].key, vlen, buffer);
       // If the line starts with the given comment char ignore the line
       // and proceed with the next
     } else if(ch == read_file.comment && vlen == 0) {
-      getline(&value, &llen, kf);
+      getline(&buffer, &llen, kf);
       // Default case: append the char to the current value
     } else {
-      value[vlen++] = ch;
+      buffer[vlen++] = ch;
       continue;
     }
     vlen = 0;
   }
-  free(value);
+  free(buffer);
   // Check if the file is really at its end after EOF is encountered.
   if(!feof(kf)) {
     read_file.length = -EBADF;
@@ -309,5 +208,77 @@ void new_kf_line(struct file_entry **fe, size_t *file_length, size_t *lnum) {
     *fe = realloc(*fe, *lnum * 2 * sizeof(struct file_entry));
     (*lnum)*=2;
   }
-  (*fe)[*file_length].group = NULL;
+  (*fe)[*file_length].group = "";
+}
+
+/* --- MERGE HELPERS --- */
+
+// Merge contents from existing usr_file groups
+// uf: usr_file, ef: etc_file
+size_t merge_existing_groups(struct file_entry **fe, Key_File *uf, Key_File *ef) {
+  char new_key;
+  size_t merge_length = 0, tmp = 0, added_keys = 0;
+  for(int i = 0; i <= uf->length; i++) {
+    if(i == uf->length || (i &&strcmp(uf->file_entry[i].group, uf->file_entry[i-1].group))) {
+      for (int j = 0; j < ef->length; j++) {
+        if(!strcmp(uf->file_entry[i-1].group, ef->file_entry[j].group)) {
+          new_key = 1;
+          for(int k = merge_length; k < i + tmp; k++) {
+            // If an existing key is found in ef take the value from ef
+            if(!strcmp((*fe)[k].key, ef->file_entry[j].key)) {
+              (*fe)[k] = ef->file_entry[j];
+              new_key = 0;
+              break;
+            }
+          }
+          // If a new key is found for an existing group append it to the group
+          if(new_key) (*fe)[i + added_keys++] = ef->file_entry[j];
+        }
+      }
+      merge_length = i + added_keys;
+      // Temporary value to reduce amount of iterations in inner for loop
+      tmp = added_keys;
+    }
+    if(i != uf->length) (*fe)[i + added_keys] = uf->file_entry[i];
+  }
+  return merge_length;
+}
+
+// Add entries from etc_file exclusive groups
+size_t add_new_groups(struct file_entry **fe, Key_File *uf, Key_File *ef, const size_t merge_length) {
+  size_t added_keys = merge_length;
+  char new_key;
+  for(int i = 0; i < ef->length; i++) {
+    new_key = 1;
+    for(int j = 0; j < uf->length; j++) {
+      if(!strcmp(uf->file_entry[j].group, ef->file_entry[i].group)) {
+        new_key = 0;
+        break;
+      }
+    }
+    if(new_key) (*fe)[added_keys++] = ef->file_entry[i];
+  }
+  *fe = realloc(*fe, added_keys * sizeof(struct file_entry));
+  return added_keys;
+}
+
+/* --- GENERAL HELPERS --- */
+
+// Combine file path and file name
+char* combine_path_name(const char *file_path, const char *file_name) {
+  size_t combined_len = strlen(file_path) + strlen(file_name) + 2;
+  char *combined = malloc(combined_len);
+  snprintf(combined, combined_len, "%s/%s", file_path, file_name);
+  return combined;
+}
+
+// Free memory allocated by key_file
+void destroy(Key_File key_file) {
+  for(int i = 0; i < key_file.length; i++) {
+    if(key_file.file_entry[i].group != "")
+      free(key_file.file_entry[i].group);
+    free(key_file.file_entry[i].key);
+    free(key_file.file_entry[i].value);
+  }
+  free(key_file.file_entry);
 }
