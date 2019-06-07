@@ -3,7 +3,7 @@ project(libeconf VERSION 0.1.0 DESCRIPTION "TODO")
 include(GNUInstallDirs)
 
 # Create the library
-add_library(econf SHARED src/libeconf.c)
+add_library(econf SHARED src/libeconf.c src/getfiles.c src/mergefiles.c src/helpers.c)
 set_target_properties(econf PROPERTIES
   VERSION ${PROJECT_VERSION}
   PUBLIC_HEADER include/libeconf.h
