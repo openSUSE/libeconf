@@ -32,8 +32,9 @@ struct Key_File {
 };
 
 void new_kf_value(char **value, size_t *vlen, size_t *llen, const size_t LLEN);
-void new_kf_line(struct file_entry **fe, size_t *file_length, size_t *lnum);
 Key_File fill_key_file(Key_File read_file, FILE *kf);
+void end_of_line(struct file_entry **fe, size_t *len, size_t *lnum,size_t vlen, char *buffer);
+void new_kf_line(struct file_entry **fe, size_t *file_length, size_t *lnum);
 size_t merge_existing_groups(struct file_entry **fe, Key_File *uf, Key_File *ef);
 size_t add_new_groups(struct file_entry **fe, Key_File *uf, Key_File *ef, const size_t merge_length);
 char* combine_path_name(const char *file_path, const char *file_name);
@@ -139,11 +140,11 @@ Key_File fill_key_file(Key_File read_file, FILE *kf) {
   // is allocated
   const size_t LLEN = 8, LNUM = 16;
   size_t file_length = 0, lnum = LNUM, llen = LLEN, vlen = 0;
-  char ch, has_delim = 0;
+  char ch;
   // Allocate memory for the Key_File based on LNUM
   struct file_entry *fe = malloc(LNUM * sizeof(struct file_entry));
+  fe->group = "", fe->key = "";
   char *buffer = malloc(LLEN);
-  fe[0].group = "";
 
   while((ch = getc(kf)) != EOF) {
     if (vlen >= llen) {
@@ -152,30 +153,10 @@ Key_File fill_key_file(Key_File read_file, FILE *kf) {
     }
     if (ch == '\n') {
       if(vlen == 0) continue;
-      buffer[vlen++] = 0;
-      // If a newline char is encountered and the line had no delimiter
-      // the line is expected to be a group
-      if(!has_delim) {
-        fe[file_length].group = malloc(vlen);
-        snprintf(fe[file_length].group, vlen, buffer);
-      } else {
-        // If the line is no new group copy the group from the previous line
-        if (file_length && fe[file_length].group == "" && fe[file_length - 1].group != "") {
-          llen = strlen(fe[file_length - 1].group) + 1;
-          fe[file_length].group = malloc(llen);
-          snprintf(fe[file_length].group, llen, fe[file_length - 1].group);
-        }
-        // If the line had a delimiter everything after the delimiter is
-        // considered to be a value
-        fe[file_length].value = malloc(vlen);
-        snprintf(fe[file_length].value, vlen, buffer);
-        new_kf_line(&fe, &file_length, &lnum);
-        has_delim = 0;
-      }
+      end_of_line(&fe, &file_length, &lnum, vlen, buffer);
     // If the current char is the delimiter consider the part before to
     // be a key.
     } else if (ch == read_file.delimiter) {
-      has_delim = 1;
       buffer[vlen++] = 0;
       fe[file_length].key = malloc(vlen);
       snprintf(fe[file_length].key, vlen, buffer);
@@ -183,7 +164,7 @@ Key_File fill_key_file(Key_File read_file, FILE *kf) {
       // and proceed with the next
     } else if(ch == read_file.comment && vlen == 0) {
       getline(&buffer, &llen, kf);
-      // Default case: append the char to the current value
+    // Default case: append the char to the buffer
     } else {
       buffer[vlen++] = ch;
       continue;
@@ -202,6 +183,33 @@ Key_File fill_key_file(Key_File read_file, FILE *kf) {
   return read_file;
 }
 
+// Write the group/value entry to the given file_entry
+void end_of_line(struct file_entry **fe, size_t *len, size_t *lnum, size_t vlen, char *buffer) {
+  // Remove potential whitespaces from the end
+  while(buffer[vlen-1] == ' ' || buffer[vlen-1] == '\n') vlen--;
+  buffer[vlen++] = 0;
+  // If a newline char is encountered and the line had no delimiter
+  // the line is expected to be a group
+  // In this case key is not set
+  if((*fe)[*len].key == "") {
+    (*fe)[*len].group = malloc(vlen);
+    snprintf((*fe)[*len].group, vlen, buffer);
+  } else {
+    // If the line is no new group copy the group from the previous line
+    if (*len && (*fe)[*len].group == "" && (*fe)[*len - 1].group != "") {
+      size_t tmp = strlen((*fe)[*len - 1].group) + 1;
+      (*fe)[*len].group = malloc(tmp);
+      snprintf((*fe)[*len].group, tmp, (*fe)[*len - 1].group);
+    }
+    // If the line had a delimiter everything after the delimiter is
+    // considered to be a value
+    (*fe)[*len].value = malloc(vlen);
+    snprintf((*fe)[*len].value, vlen, buffer);
+    // Perform memory check and increase len by one
+    new_kf_line(fe, len, lnum);
+  }
+}
+
 // Check whether the key file has enough memory allocated, if not realloc
 void new_kf_line(struct file_entry **fe, size_t *file_length, size_t *lnum) {
   if (++(*file_length) >= *lnum) {
@@ -209,6 +217,7 @@ void new_kf_line(struct file_entry **fe, size_t *file_length, size_t *lnum) {
     (*lnum)*=2;
   }
   (*fe)[*file_length].group = "";
+  (*fe)[*file_length].key = "";
 }
 
 /* --- MERGE HELPERS --- */
@@ -219,8 +228,10 @@ size_t merge_existing_groups(struct file_entry **fe, Key_File *uf, Key_File *ef)
   char new_key;
   size_t merge_length = 0, tmp = 0, added_keys = 0;
   for(int i = 0; i <= uf->length; i++) {
+    // Check if the group has changed in the last iteration
     if(i == uf->length || (i &&strcmp(uf->file_entry[i].group, uf->file_entry[i-1].group))) {
       for (int j = 0; j < ef->length; j++) {
+        // Check for matching groups
         if(!strcmp(uf->file_entry[i-1].group, ef->file_entry[j].group)) {
           new_key = 1;
           for(int k = merge_length; k < i + tmp; k++) {
