@@ -160,9 +160,10 @@ Key_File fill_key_file(Key_File read_file, FILE *kf) {
       buffer[vlen++] = 0;
       fe[file_length].key = malloc(vlen);
       snprintf(fe[file_length].key, vlen, buffer);
-      // If the line starts with the given comment char ignore the line
-      // and proceed with the next
-    } else if(ch == read_file.comment && vlen == 0) {
+    // If the line contains the given comment char ignore the rest
+    // of the line and proceed with the next
+    } else if(ch == read_file.comment) {
+      if(vlen != 0) end_of_line(&fe, &file_length, &lnum, vlen, buffer);
       getline(&buffer, &llen, kf);
     // Default case: append the char to the buffer
     } else {
