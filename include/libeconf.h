@@ -41,3 +41,6 @@ void merge_files(const char *save_to_dir, const char *file_name, const char *etc
 
 // Free memory allocated by key_file
 void destroy(Key_File key_file);
+
+// Free memory of merged file
+void destroy_merged_file(Key_File merged_file);

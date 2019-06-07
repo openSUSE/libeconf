@@ -127,7 +127,7 @@ void merge_files(const char *save_to_dir, const char *file_name, const char *etc
   free(usr_file_name);
   destroy(usr_file);
   destroy(etc_file);
-  free(merged_file.file_entry);
+  destroy_merged_file(merged_file);
 }
 
 /* --- GET KEY FILE HELPERS --- */
@@ -293,4 +293,9 @@ void destroy(Key_File key_file) {
     free(key_file.file_entry[i].value);
   }
   free(key_file.file_entry);
+}
+
+// Wrapper function to free memory of merged file
+void destroy_merged_file(Key_File merged_file) {
+  free(merged_file.file_entry);
 }
