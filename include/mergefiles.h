@@ -20,9 +20,13 @@
 
 #include "libeconf.h"
 
+// Insert the content of "etc_file.file_entry" into "fe" if the group equals "[]"
+// ef: etc_file
+size_t insert_nogroup(struct file_entry **fe, Key_File *ef);
+
 // Merge contents from existing usr_file groups
 // uf: usr_file, ef: etc_file
-size_t merge_existing_groups(struct file_entry **fe, Key_File *uf, Key_File *ef);
+size_t merge_existing_groups(struct file_entry **fe, Key_File *uf, Key_File *ef, const size_t etc_start);
 
 // Add entries from etc_file exclusive groups
 size_t add_new_groups(struct file_entry **fe, Key_File *uf, Key_File *ef, const size_t merge_length);

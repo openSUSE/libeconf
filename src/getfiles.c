@@ -34,7 +34,8 @@ Key_File fill_key_file(Key_File read_file, FILE *kf) {
   char ch;
   // Allocate memory for the Key_File based on LNUM
   struct file_entry *fe = malloc(LNUM * sizeof(struct file_entry));
-  fe->group = " ", fe->key = " ";
+  fe->group = malloc(3), fe->key = NULL;
+  snprintf(fe->group, 3, "[]");
   char *buffer = malloc(LLEN);
 
   while((ch = getc(kf)) != EOF) {
@@ -83,12 +84,13 @@ void end_of_line(struct file_entry **fe, size_t *len, size_t *lnum, size_t vlen,
   // If a newline char is encountered and the line had no delimiter
   // the line is expected to be a group
   // In this case key is not set
-  if((*fe)[*len].key == " ") {
+  if(!(*fe)[*len].key) {
+    if(!*len) free((*fe)->group);
     (*fe)[*len].group = malloc(vlen);
     snprintf((*fe)[*len].group, vlen, buffer);
   } else {
     // If the line is no new group copy the group from the previous line
-    if (*len && (*fe)[*len].group == " " && (*fe)[*len - 1].group != " ") {
+    if (*len && !strcmp((*fe)[*len].group, "[]")) {
       size_t tmp = strlen((*fe)[*len - 1].group) + 1;
       (*fe)[*len].group = malloc(tmp);
       snprintf((*fe)[*len].group, tmp, (*fe)[*len - 1].group);
@@ -108,6 +110,6 @@ void new_kf_line(struct file_entry **fe, size_t *file_length, size_t *lnum) {
     *fe = realloc(*fe, *lnum * 2 * sizeof(struct file_entry));
     (*lnum)*=2;
   }
-  (*fe)[*file_length].group = " ";
-  (*fe)[*file_length].key = " ";
+  (*fe)[*file_length].group = "[]";
+  (*fe)[*file_length].key = NULL;
 }

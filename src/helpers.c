@@ -34,8 +34,7 @@ char* combine_path_name(const char *file_path, const char *file_name) {
 // Free memory allocated by key_file
 void destroy(Key_File key_file) {
   for(int i = 0; i < key_file.length; i++) {
-    //if(key_file.file_entry[i].group != "")
-      free(key_file.file_entry[i].group);
+    free(key_file.file_entry[i].group);
     free(key_file.file_entry[i].key);
     free(key_file.file_entry[i].value);
   }

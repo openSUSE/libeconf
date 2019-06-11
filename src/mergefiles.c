@@ -23,15 +23,26 @@
 #include "../include/keyfile.h"
 #include "../include/mergefiles.h"
 
+// Insert the content of "etc_file.file_entry" into "fe" if the group equals "[]"
+// ef: etc_file
+size_t insert_nogroup(struct file_entry **fe, Key_File *ef) {
+  size_t etc_start = 0;
+  while(etc_start < ef->length && !strcmp(ef->file_entry[etc_start].group, "[]")) {
+    (*fe)[etc_start] = ef->file_entry[etc_start];
+    etc_start++;
+  }
+  return etc_start;
+}
+
 // Merge contents from existing usr_file groups
 // uf: usr_file, ef: etc_file
-size_t merge_existing_groups(struct file_entry **fe, Key_File *uf, Key_File *ef) {
+size_t merge_existing_groups(struct file_entry **fe, Key_File *uf, Key_File *ef, const size_t etc_start) {
   char new_key;
-  size_t merge_length = 0, tmp = 0, added_keys = 0;
+  size_t merge_length = etc_start, tmp = etc_start, added_keys = etc_start;
   for(int i = 0; i <= uf->length; i++) {
     // Check if the group has changed in the last iteration
-    if(i == uf->length || (i &&strcmp(uf->file_entry[i].group, uf->file_entry[i-1].group))) {
-      for (int j = 0; j < ef->length; j++) {
+    if(i == uf->length || (i && strcmp(uf->file_entry[i].group, uf->file_entry[i-1].group))) {
+      for (int j = etc_start; j < ef->length; j++) {
         // Check for matching groups
         if(!strcmp(uf->file_entry[i-1].group, ef->file_entry[j].group)) {
           new_key = 1;
@@ -61,6 +72,7 @@ size_t add_new_groups(struct file_entry **fe, Key_File *uf, Key_File *ef, const 
   size_t added_keys = merge_length;
   char new_key;
   for(int i = 0; i < ef->length; i++) {
+    if(!strcmp(ef->file_entry[i].group, "[]")) continue;
     new_key = 1;
     for(int j = 0; j < uf->length; j++) {
       if(!strcmp(uf->file_entry[j].group, ef->file_entry[i].group)) {

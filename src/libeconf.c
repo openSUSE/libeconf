@@ -47,10 +47,14 @@ Key_File get_key_file(const char *file_name, const char delim, const char commen
 // Merge the contents of two key files
 Key_File merge_key_files(Key_File *usr_file, Key_File *etc_file) {
   Key_File merge_file = {.delimiter = usr_file->delimiter, .comment = usr_file->comment};
-  struct file_entry *fe = malloc((etc_file->length + etc_file->length)
-                                 * sizeof(struct file_entry));
+  struct file_entry *fe = malloc((etc_file->length + etc_file->length) *
+                                 sizeof(struct file_entry));
 
-  size_t merge_length = merge_existing_groups(&fe, usr_file, etc_file);
+  size_t merge_length = 0;
+
+  if(!strcmp(etc_file->file_entry->group, "[]") && strcmp(usr_file->file_entry->group, "[]"))
+    merge_length = insert_nogroup(&fe, etc_file);
+  merge_length = merge_existing_groups(&fe, usr_file, etc_file, merge_length);
   merge_file.length = add_new_groups(&fe, usr_file, etc_file, merge_length);
 
   merge_file.file_entry = fe;
@@ -79,7 +83,7 @@ void write_key_file(Key_File key_file, const char *save_to_dir, const char *file
   for(int i = 0; i < key_file.length; i++) {
     if(!i || strcmp(key_file.file_entry[i-1].group, key_file.file_entry[i].group)) {
       if(i) fprintf(kf, "\n");
-      if(key_file.file_entry[i].group != " ")
+      if(strcmp(key_file.file_entry[i].group, "[]"))
         fprintf(kf, "%s\n", key_file.file_entry[i].group);
     }
     fprintf(kf, "%s%c%s\n", key_file.file_entry[i].key,
