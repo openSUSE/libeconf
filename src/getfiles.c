@@ -16,12 +16,12 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "../include/getfiles.h"
+
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "../include/keyfile.h"
-#include "../include/getfiles.h"
 
 // Fill the Key File struct with values from the given file handle
 Key_File fill_key_file(Key_File read_file, FILE *kf) {
@@ -38,27 +38,32 @@ Key_File fill_key_file(Key_File read_file, FILE *kf) {
   snprintf(fe->group, 3, "[]");
   char *buffer = malloc(LLEN);
 
-  while((ch = getc(kf)) != EOF) {
+  while ((ch = getc(kf)) != EOF) {
     if (vlen >= llen) {
       buffer = realloc(buffer, llen * 2);
-      llen*=2;
+      llen *= 2;
     }
     if (ch == '\n') {
-      if(vlen == 0) continue;
+      if (vlen == 0)
+        continue;
       end_of_line(&fe, &file_length, &lnum, vlen, buffer);
+    }
     // If the current char is the delimiter consider the part before to
     // be a key.
-    } else if (ch == read_file.delimiter) {
+    else if (ch == read_file.delimiter) {
       buffer[vlen++] = 0;
       fe[file_length].key = malloc(vlen);
       snprintf(fe[file_length].key, vlen, buffer);
+    }
     // If the line contains the given comment char ignore the rest
     // of the line and proceed with the next
-    } else if(ch == read_file.comment) {
-      if(vlen != 0) end_of_line(&fe, &file_length, &lnum, vlen, buffer);
+    else if (ch == read_file.comment) {
+      if (vlen != 0)
+        end_of_line(&fe, &file_length, &lnum, vlen, buffer);
       getline(&buffer, &llen, kf);
+    }
     // Default case: append the char to the buffer
-    } else {
+    else {
       buffer[vlen++] = ch;
       continue;
     }
@@ -66,7 +71,7 @@ Key_File fill_key_file(Key_File read_file, FILE *kf) {
   }
   free(buffer);
   // Check if the file is really at its end after EOF is encountered.
-  if(!feof(kf)) {
+  if (!feof(kf)) {
     read_file.length = -EBADF;
     return read_file;
   }
@@ -77,15 +82,18 @@ Key_File fill_key_file(Key_File read_file, FILE *kf) {
 }
 
 // Write the group/value entry to the given file_entry
-void end_of_line(struct file_entry **fe, size_t *len, size_t *lnum, size_t vlen, char *buffer) {
+void end_of_line(struct file_entry **fe, size_t *len, size_t *lnum, size_t vlen,
+                 char *buffer) {
   // Remove potential whitespaces from the end
-  while(buffer[vlen-1] == ' ' || buffer[vlen-1] == '\n') vlen--;
+  while (buffer[vlen - 1] == ' ' || buffer[vlen - 1] == '\n')
+    vlen--;
   buffer[vlen++] = 0;
   // If a newline char is encountered and the line had no delimiter
   // the line is expected to be a group
   // In this case key is not set
-  if(!(*fe)[*len].key) {
-    if(!*len) free((*fe)->group);
+  if (!(*fe)[*len].key) {
+    if (!*len)
+      free((*fe)->group);
     (*fe)[*len].group = malloc(vlen);
     snprintf((*fe)[*len].group, vlen, buffer);
   } else {
@@ -108,7 +116,7 @@ void end_of_line(struct file_entry **fe, size_t *len, size_t *lnum, size_t vlen,
 void new_kf_line(struct file_entry **fe, size_t *file_length, size_t *lnum) {
   if (++(*file_length) >= *lnum) {
     *fe = realloc(*fe, *lnum * 2 * sizeof(struct file_entry));
-    (*lnum)*=2;
+    (*lnum) *= 2;
   }
   (*fe)[*file_length].group = "[]";
   (*fe)[*file_length].key = NULL;

@@ -18,13 +18,16 @@
 
 #pragma once
 
-#include "libeconf.h"
+#include "keyfile.h"
+
+#include <stdio.h>
 
 // Fill the Key File struct with values from the given file handle
 Key_File fill_key_file(Key_File read_file, FILE *kf);
 
 // Write the group/value entry to the given file_entry
-void end_of_line(struct file_entry **fe, size_t *len, size_t *lnum,size_t vlen, char *buffer);
+void end_of_line(struct file_entry **fe, size_t *len, size_t *lnum, size_t vlen,
+                 char *buffer);
 
 // Check whether the key file has enough memory allocated, if not realloc
 void new_kf_line(struct file_entry **fe, size_t *file_length, size_t *lnum);

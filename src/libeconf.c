@@ -16,19 +16,20 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "../include/libeconf.h"
+
+#include "../include/getfiles.h"
+#include "../include/helpers.h"
+#include "../include/mergefiles.h"
+
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "../include/keyfile.h"
-#include "../include/libeconf.h"
-#include "../include/getfiles.h"
-#include "../include/mergefiles.h"
-#include "../include/helpers.h"
-
 // Process the file of the given file_name and save its contents into key_file
-Key_File get_key_file(const char *file_name, const char delim, const char comment) {
+Key_File get_key_file(const char *file_name, const char delim,
+                      const char comment) {
   Key_File read_file = {.delimiter = delim, .comment = comment};
 
   // File handle for the given file_name
@@ -46,13 +47,15 @@ Key_File get_key_file(const char *file_name, const char delim, const char commen
 
 // Merge the contents of two key files
 Key_File merge_key_files(Key_File *usr_file, Key_File *etc_file) {
-  Key_File merge_file = {.delimiter = usr_file->delimiter, .comment = usr_file->comment};
-  struct file_entry *fe = malloc((etc_file->length + etc_file->length) *
-                                 sizeof(struct file_entry));
+  Key_File merge_file = {.delimiter = usr_file->delimiter,
+                         .comment = usr_file->comment};
+  struct file_entry *fe =
+      malloc((etc_file->length + etc_file->length) * sizeof(struct file_entry));
 
   size_t merge_length = 0;
 
-  if(!strcmp(etc_file->file_entry->group, "[]") && strcmp(usr_file->file_entry->group, "[]"))
+  if (!strcmp(etc_file->file_entry->group, "[]") &&
+      strcmp(usr_file->file_entry->group, "[]"))
     merge_length = insert_nogroup(&fe, etc_file);
   merge_length = merge_existing_groups(&fe, usr_file, etc_file, merge_length);
   merge_file.length = add_new_groups(&fe, usr_file, etc_file, merge_length);
@@ -62,10 +65,11 @@ Key_File merge_key_files(Key_File *usr_file, Key_File *etc_file) {
 }
 
 // Write content of a Key_File struct to specified location
-void write_key_file(Key_File key_file, const char *save_to_dir, const char *file_name) {
+void write_key_file(Key_File key_file, const char *save_to_dir,
+                    const char *file_name) {
   // Check if the directory exists
   DIR *dir = opendir(save_to_dir);
-  if(dir) {
+  if (dir) {
     closedir(dir);
   } else {
     errno = ENOENT;
@@ -74,20 +78,22 @@ void write_key_file(Key_File key_file, const char *save_to_dir, const char *file
   // Create a file handle for the specified file
   char *save_to = combine_path_name(save_to_dir, file_name);
   FILE *kf = fopen(save_to, "w");
-  if(kf == NULL) {
+  if (kf == NULL) {
     errno = EPERM;
     return;
   }
 
   // Write to file
-  for(int i = 0; i < key_file.length; i++) {
-    if(!i || strcmp(key_file.file_entry[i-1].group, key_file.file_entry[i].group)) {
-      if(i) fprintf(kf, "\n");
-      if(strcmp(key_file.file_entry[i].group, "[]"))
+  for (int i = 0; i < key_file.length; i++) {
+    if (!i || strcmp(key_file.file_entry[i - 1].group,
+                     key_file.file_entry[i].group)) {
+      if (i)
+        fprintf(kf, "\n");
+      if (strcmp(key_file.file_entry[i].group, "[]"))
         fprintf(kf, "%s\n", key_file.file_entry[i].group);
     }
-    fprintf(kf, "%s%c%s\n", key_file.file_entry[i].key,
-            key_file.delimiter, key_file.file_entry[i].value);
+    fprintf(kf, "%s%c%s\n", key_file.file_entry[i].key, key_file.delimiter,
+            key_file.file_entry[i].value);
   }
 
   // Clean up
@@ -96,7 +102,9 @@ void write_key_file(Key_File key_file, const char *save_to_dir, const char *file
 }
 
 // Wrapper function to perform the merge in one step
-void merge_files(const char *save_to_dir, const char *file_name, const char *etc_path, const char *usr_path, const char delimiter, const char comment) {
+void merge_files(const char *save_to_dir, const char *file_name,
+                 const char *etc_path, const char *usr_path,
+                 const char delimiter, const char comment) {
 
   /* --- GET KEY FILES --- */
 

@@ -23,7 +23,7 @@
 typedef struct Key_File {
   struct file_entry {
     char *group, *key, *value;
-  } *file_entry;
+  } * file_entry;
   size_t length;
   char delimiter, comment;
 } Key_File;

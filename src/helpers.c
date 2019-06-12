@@ -16,15 +16,14 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "../include/helpers.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "../include/keyfile.h"
-#include "../include/helpers.h"
-
 // Combine file path and file name
-char* combine_path_name(const char *file_path, const char *file_name) {
+char *combine_path_name(const char *file_path, const char *file_name) {
   size_t combined_len = strlen(file_path) + strlen(file_name) + 2;
   char *combined = malloc(combined_len);
   snprintf(combined, combined_len, "%s/%s", file_path, file_name);
@@ -33,7 +32,7 @@ char* combine_path_name(const char *file_path, const char *file_name) {
 
 // Free memory allocated by key_file
 void destroy(Key_File key_file) {
-  for(int i = 0; i < key_file.length; i++) {
+  for (int i = 0; i < key_file.length; i++) {
     free(key_file.file_entry[i].group);
     free(key_file.file_entry[i].key);
     free(key_file.file_entry[i].value);
@@ -42,6 +41,4 @@ void destroy(Key_File key_file) {
 }
 
 // Wrapper function to free memory of merged file
-void destroy_merged_file(Key_File merged_file) {
-  free(merged_file.file_entry);
-}
+void destroy_merged_file(Key_File merged_file) { free(merged_file.file_entry); }

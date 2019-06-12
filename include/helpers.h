@@ -18,10 +18,10 @@
 
 #pragma once
 
-#include "libeconf.h"
+#include "keyfile.h"
 
 // Combine file path and file name
-char* combine_path_name(const char *file_path, const char *file_name);
+char *combine_path_name(const char *file_path, const char *file_name);
 
 // Free memory allocated by key_file
 void destroy(Key_File key_file);
