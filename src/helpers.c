@@ -30,6 +30,26 @@ char *combine_path_name(const char *file_path, const char *file_name) {
   return combined;
 }
 
+// Remove whitespace from beginning and end, append string terminator
+char *clearblank(size_t *vlen, char *string) {
+  char *buffer = string, *ptr = string;
+  string[*vlen] = 0;
+
+  while (*string != 0) {
+    if (ptr == buffer && (*string == ' ' || *string == '\t')) {
+      (*vlen)--;
+    } else {
+      *ptr++ = *string;
+    }
+    string++;
+  }
+  while (buffer[*vlen - 1] == ' ' || buffer[*vlen - 1] == '\t')
+    (*vlen)--;
+
+  buffer[(*vlen)++] = 0;
+  return buffer;
+}
+
 // Free memory allocated by key_file
 void destroy(Key_File key_file) {
   for (int i = 0; i < key_file.length; i++) {

@@ -23,6 +23,9 @@
 // Combine file path and file name
 char *combine_path_name(const char *file_path, const char *file_name);
 
+// Remove whitespace from beginning and end, append string terminator
+char *clearblank(size_t *vlen, char *string);
+
 // Free memory allocated by key_file
 void destroy(Key_File key_file);
 

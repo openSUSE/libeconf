@@ -17,6 +17,7 @@
 */
 
 #include "../include/getfilecontents.h"
+#include "../include/helpers.h"
 
 #include <errno.h>
 #include <stdio.h>
@@ -51,7 +52,7 @@ Key_File fill_key_file(Key_File read_file, FILE *kf) {
     // If the current char is the delimiter consider the part before to
     // be a key.
     else if (ch == read_file.delimiter) {
-      buffer[vlen++] = 0;
+      buffer = clearblank(&vlen, buffer);
       fe[file_length].key = malloc(vlen);
       snprintf(fe[file_length].key, vlen, buffer);
     }
@@ -84,10 +85,8 @@ Key_File fill_key_file(Key_File read_file, FILE *kf) {
 // Write the group/value entry to the given file_entry
 void end_of_line(struct file_entry **fe, size_t *len, size_t *lnum, size_t vlen,
                  char *buffer) {
-  // Remove potential whitespaces from the end
-  while (buffer[vlen - 1] == ' ' || buffer[vlen - 1] == '\t')
-    vlen--;
-  buffer[vlen++] = 0;
+  // Remove potential whitespaces from beginning and end
+  buffer = clearblank(&vlen, buffer);
   // If a newline char is encountered and the line had no delimiter
   // the line is expected to be a group
   // In this case key is not set
