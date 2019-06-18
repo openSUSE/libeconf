@@ -44,7 +44,7 @@ Key_File fill_key_file(Key_File read_file, FILE *kf) {
       llen *= 2;
     }
     if (ch == '\n') {
-      if (vlen == 0)
+      if (vlen == 0 && !fe[file_length].key)
         continue;
       end_of_line(&fe, &file_length, &lnum, vlen, buffer);
     }
@@ -85,7 +85,7 @@ Key_File fill_key_file(Key_File read_file, FILE *kf) {
 void end_of_line(struct file_entry **fe, size_t *len, size_t *lnum, size_t vlen,
                  char *buffer) {
   // Remove potential whitespaces from the end
-  while (buffer[vlen - 1] == ' ' || buffer[vlen - 1] == '\n')
+  while (buffer[vlen - 1] == ' ' || buffer[vlen - 1] == '\t')
     vlen--;
   buffer[vlen++] = 0;
   // If a newline char is encountered and the line had no delimiter
