@@ -1,5 +1,5 @@
 lib_LTLIBRARIES = libeconf.la
-libeconf_la_SOURCES = ../src/libeconf.c ../src/getfiles.c ../src/mergefiles.c ../src/helpers.c
+libeconf_la_SOURCES = ../src/libeconf.c ../src/getfilecontents.c ../src/mergefiles.c ../src/helpers.c
 libeconf_la_CFLAGS = -Wall
 
 CLEANFILES = *.pc

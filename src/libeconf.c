@@ -18,7 +18,7 @@
 
 #include "../include/libeconf.h"
 
-#include "../include/getfiles.h"
+#include "../include/getfilecontents.h"
 #include "../include/helpers.h"
 #include "../include/mergefiles.h"
 
