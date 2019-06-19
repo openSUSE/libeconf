@@ -28,9 +28,9 @@
 #include <string.h>
 
 // Process the file of the given file_name and save its contents into key_file
-Key_File get_key_file(const char *file_name, const char delim,
+Key_File get_key_file(const char *file_name, char *delim,
                       const char comment) {
-  Key_File read_file = {.delimiter = delim, .comment = comment};
+  Key_File read_file = {.comment = comment};
 
   // File handle for the given file_name
   FILE *kf = fopen(file_name, "rb");
@@ -39,7 +39,7 @@ Key_File get_key_file(const char *file_name, const char delim,
     return read_file;
   }
 
-  read_file = fill_key_file(read_file, kf);
+  read_file = fill_key_file(read_file, kf, delim);
 
   fclose(kf);
   return read_file;
@@ -105,7 +105,7 @@ void write_key_file(Key_File key_file, const char *save_to_dir,
 // Wrapper function to perform the merge in one step
 void merge_files(const char *save_to_dir, const char *file_name,
                  const char *etc_path, const char *usr_path,
-                 const char delimiter, const char comment) {
+                 char *delimiter, const char comment) {
 
   /* --- GET KEY FILES --- */
 

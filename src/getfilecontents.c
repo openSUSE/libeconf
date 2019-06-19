@@ -20,12 +20,13 @@
 #include "../include/helpers.h"
 
 #include <errno.h>
+#include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 // Fill the Key File struct with values from the given file handle
-Key_File fill_key_file(Key_File read_file, FILE *kf) {
+Key_File fill_key_file(Key_File read_file, FILE *kf, const char *delim) {
   // LNUM: Base number of key-value pairs in key_file
   // LLEN: Base number of chars in a key, value or group name
   // Once the value of these is exceeded memory space of double the value
@@ -33,6 +34,10 @@ Key_File fill_key_file(Key_File read_file, FILE *kf) {
   const size_t LLEN = 8, LNUM = 16;
   size_t file_length = 0, lnum = LNUM, llen = LLEN, vlen = 0;
   char ch;
+
+  regex_t regex;
+  regcomp(&regex, delim, 0);
+
   // Allocate memory for the Key_File based on LNUM
   struct file_entry *fe = malloc(LNUM * sizeof(struct file_entry));
   fe->group = malloc(3), fe->key = NULL;
@@ -51,7 +56,9 @@ Key_File fill_key_file(Key_File read_file, FILE *kf) {
     }
     // If the current char is the delimiter consider the part before to
     // be a key.
-    else if (ch == read_file.delimiter) {
+    else if (!regexec(&regex, &ch, 0, NULL, 0) && !fe[file_length].key) {
+      if(!file_length)
+        read_file.delimiter = ch;
       buffer = clearblank(&vlen, buffer);
       fe[file_length].key = malloc(vlen);
       snprintf(fe[file_length].key, vlen, buffer);
@@ -71,6 +78,7 @@ Key_File fill_key_file(Key_File read_file, FILE *kf) {
     vlen = 0;
   }
   free(buffer);
+  regfree(&regex);
   // Check if the file is really at its end after EOF is encountered.
   if (!feof(kf)) {
     read_file.length = -EBADF;

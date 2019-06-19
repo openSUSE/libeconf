@@ -25,7 +25,7 @@ extern int errno;
 typedef struct Key_File Key_File;
 
 // Process the file of the given file_name and save its contents into key_file
-Key_File get_key_file(const char *file_name, const char delim,
+Key_File get_key_file(const char *file_name, char *delim,
                       const char comment);
 
 // Merge the contents of two key files
@@ -38,7 +38,7 @@ void write_key_file(Key_File key_file, const char *save_to_dir,
 // Wrapper function to perform the merge in one step
 void merge_files(const char *save_to_dir, const char *file_name,
                  const char *etc_path, const char *usr_path,
-                 const char delimiter, const char comment);
+                 char *delimiter, const char comment);
 
 /* --- HELPERS --- */
 
