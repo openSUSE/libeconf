@@ -1,6 +1,17 @@
-cmake_minimum_required(VERSION 3.13.0)
-project(libeconf VERSION 0.1.0 DESCRIPTION "TODO")
+cmake_minimum_required(VERSION 2.8.5)
+cmake_policy(VERSION ${CMAKE_VERSION})
+
+set(VERSION 0.1.0)
+if(${CMAKE_VERSION} VERSION_LESS "3.0.0")
+  project(libeconf C)
+  set(PROJECT_VERSION ${VERSION})
+else()
+  project(libeconf LANGUAGES C VERSION ${VERSION})
+endif()
+
 include(GNUInstallDirs)
+
+add_compile_options(-std=gnu11)
 
 # Create the library
 add_library(econf SHARED src/libeconf.c src/getfilecontents.c src/mergefiles.c src/helpers.c)
