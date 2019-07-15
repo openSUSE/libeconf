@@ -22,6 +22,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <stdlib.h>
 
 typedef struct Key_File {
@@ -39,6 +40,7 @@ Key_File newIniFile();
 int32_t getIntValueNum(Key_File key_file, size_t num);
 uint32_t getUIntValueNum(Key_File key_file, size_t num);
 char *getStringValueNum(Key_File key_file, size_t num);
+bool getBoolValueNum(Key_File key_file, size_t num);
 
 /* SETTERS */
 void setGroup(Key_File *key_file, size_t num, char *value);
@@ -46,3 +48,5 @@ void setKey(Key_File *key_file, size_t num, char *value);
 void setIntValueNum(Key_File *key_file, size_t num, void *value);
 void setUIntValueNum(Key_File *key_file, size_t num, void *value);
 void setStringValueNum(Key_File *key_file, size_t num, void *value);
+void setBoolValueNum(Key_File *key_file, size_t num, void *value);
+

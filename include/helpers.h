@@ -32,6 +32,12 @@ char *clearblank(size_t *vlen, char *string);
 // Set default value defined in include/defines.h
 void initialize(Key_File *key_file, size_t num);
 
+// Return the lower case version of a string
+char *toLowerCase(char *str);
+
+// Turn given string into a hash value
+size_t hashstring(char *str);
+
 // Free memory allocated by key_file
 void destroy(Key_File key_file);
 

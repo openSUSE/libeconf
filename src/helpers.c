@@ -22,6 +22,7 @@
 #include "../include/defines.h"
 #include "../include/helpers.h"
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -59,6 +60,23 @@ char *clearblank(size_t *vlen, char *string) {
 
   buffer[(*vlen)++] = 0;
   return buffer;
+}
+
+// Turn the given string into lower case
+char *toLowerCase(char *string) {
+  char *ptr = string;
+  while (*string)
+    *string++ = tolower(*string);
+  return ptr;
+}
+
+// Turn the given string into a hash value
+// Hash function djb2 from Dan J. Bernstein
+size_t hashstring(char *string) {
+  size_t hash = 5381;
+  char c;
+  while ((c = *string++)) { hash = ((hash << 5) + hash) + c; }
+  return hash;
 }
 
 // Free memory allocated by key_file
