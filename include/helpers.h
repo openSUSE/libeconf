@@ -29,6 +29,9 @@ char *combine_path_name(const char *file_path, const char *file_name);
 // Remove whitespace from beginning and end, append string terminator
 char *clearblank(size_t *vlen, char *string);
 
+// Set default value defined in include/defines.h
+void initialize(Key_File *key_file, size_t num);
+
 // Free memory allocated by key_file
 void destroy(Key_File key_file);
 
