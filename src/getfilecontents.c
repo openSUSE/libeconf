@@ -19,6 +19,7 @@
   <http://www.gnu.org/licenses/>.
 */
 
+#include "../include/defines.h"
 #include "../include/getfilecontents.h"
 #include "../include/helpers.h"
 
@@ -30,19 +31,20 @@
 
 // Fill the Key File struct with values from the given file handle
 Key_File fill_key_file(Key_File read_file, FILE *kf, const char *delim) {
-  // LNUM: Base number of key-value pairs in key_file
+  // KEY_FILE_DEFAULT_LENGTH: Default number of key-value pairs to be
+  // allocated in key_file
   // LLEN: Base number of chars in a key, value or group name
   // Once the value of these is exceeded memory space of double the value
   // is allocated
-  const size_t LLEN = 8, LNUM = 16;
-  size_t file_length = 0, lnum = LNUM, llen = LLEN, vlen = 0;
+  const size_t LLEN = 8;
+  size_t file_length = 0, lnum = KEY_FILE_DEFAULT_LENGTH, llen = LLEN, vlen = 0;
   char ch;
 
   regex_t regex;
   regcomp(&regex, delim, 0);
 
-  // Allocate memory for the Key_File based on LNUM
-  struct file_entry *fe = malloc(LNUM * sizeof(struct file_entry));
+  // Allocate memory for the Key_File based on KEY_FILE_DEFAULT_LENGTH
+  struct file_entry *fe = malloc(KEY_FILE_DEFAULT_LENGTH * sizeof(struct file_entry));
   fe->group = malloc(3), fe->key = NULL;
   snprintf(fe->group, 3, "[]");
   char *buffer = malloc(LLEN);
@@ -88,6 +90,7 @@ Key_File fill_key_file(Key_File read_file, FILE *kf, const char *delim) {
     return read_file;
   }
   read_file.length = file_length;
+  read_file.alloc_length = file_length;
   fe = realloc(fe, file_length * sizeof(struct file_entry));
   read_file.file_entry = fe;
   return read_file;

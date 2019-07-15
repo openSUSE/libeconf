@@ -55,7 +55,7 @@ char *clearblank(size_t *vlen, char *string) {
 
 // Free memory allocated by key_file
 void destroy(Key_File key_file) {
-  for (int i = 0; i < key_file.length; i++) {
+  for (int i = 0; i < key_file.alloc_length; i++) {
     free(key_file.file_entry[i].group);
     free(key_file.file_entry[i].key);
     free(key_file.file_entry[i].value);
