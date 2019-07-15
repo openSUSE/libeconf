@@ -19,6 +19,7 @@
   <http://www.gnu.org/licenses/>.
 */
 
+#include "../include/defines.h"
 #include "../include/helpers.h"
 
 #include <stdio.h>
@@ -31,6 +32,13 @@ char *combine_path_name(const char *file_path, const char *file_name) {
   char *combined = malloc(combined_len);
   snprintf(combined, combined_len, "%s/%s", file_path, file_name);
   return combined;
+}
+
+// Set null value defined in include/defines.h
+void initialize(Key_File *key_file, size_t num) {
+  key_file->file_entry[num].group = strdup(KEY_FILE_NULL_VALUE);
+  key_file->file_entry[num].key = strdup(KEY_FILE_NULL_VALUE);
+  key_file->file_entry[num].value = strdup(KEY_FILE_NULL_VALUE);
 }
 
 // Remove whitespace from beginning and end, append string terminator
