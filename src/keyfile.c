@@ -22,6 +22,8 @@
 #include "../include/defines.h"
 #include "../include/keyfile.h"
 
+#include <inttypes.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -47,4 +49,51 @@ Key_File newKeyFile(char delimiter, char comment) {
 
 Key_File newIniFile() {
   return newKeyFile('=', '#');
+}
+
+/* --- GETTERS --- */
+
+
+int32_t getIntValueNum(Key_File key_file, size_t num) {
+  return strtol(key_file.file_entry[num].value, NULL, 10);
+}
+
+uint32_t getUIntValueNum(Key_File key_file, size_t num) {
+  return strtoul(key_file.file_entry[num].value, NULL, 10);
+}
+
+char *getStringValueNum(Key_File key_file, size_t num) {
+  return key_file.file_entry[num].value;
+}
+
+/* --- SETTERS --- */
+
+void setGroup(Key_File *key_file, size_t num, char *value) {
+  free(key_file->file_entry[num].group);
+  key_file->file_entry[num].group = value;
+}
+
+void setKey(Key_File *key_file, size_t num, char *value) {
+  free(key_file->file_entry[num].key);
+  key_file->file_entry[num].key = strdup(value);
+}
+
+void setIntValueNum(Key_File *kf, size_t num, void *v) {
+  int64_t *value = (int64_t*) v;
+  free(kf->file_entry[num].value);
+  size_t length = (*value == 0) ? 2 : log10(fabs(*value)) + (*value < 0) + 2;
+  snprintf(kf->file_entry[num].value = malloc(length), length, "%" PRId64, *value);
+}
+
+void setUIntValueNum(Key_File *key_file, size_t num, void *v) {
+  u_int64_t *value = (u_int64_t*) v;
+  free(key_file->file_entry[num].value);
+  size_t length = (*value == 0) ? 2 : log10(*value) + 2;
+  snprintf(key_file->file_entry[num].value = malloc(length), length, "%" PRIu64, *value);
+}
+
+void setStringValueNum(Key_File *key_file, size_t num, void *v) {
+  char *value = (char*) v;
+  free(key_file->file_entry[num].value);
+  key_file->file_entry[num].value = strdup(value);
 }
