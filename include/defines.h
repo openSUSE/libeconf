@@ -21,12 +21,5 @@
 
 #pragma once
 
-#include <stdlib.h>
-
-typedef struct Key_File {
-  struct file_entry {
-    char *group, *key, *value;
-  } * file_entry;
-  size_t length, alloc_length;
-  char delimiter, comment;
-} Key_File;
+// Default Key_File length on creation
+#define KEY_FILE_DEFAULT_LENGTH 8
