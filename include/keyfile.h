@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include <stdint.h>
 #include <stdlib.h>
 
 typedef struct Key_File {
@@ -33,3 +34,15 @@ typedef struct Key_File {
 
 Key_File newKeyFile(char delimiter, char comment);
 Key_File newIniFile();
+
+/* GETTERS */
+int32_t getIntValueNum(Key_File key_file, size_t num);
+uint32_t getUIntValueNum(Key_File key_file, size_t num);
+char *getStringValueNum(Key_File key_file, size_t num);
+
+/* SETTERS */
+void setGroup(Key_File *key_file, size_t num, char *value);
+void setKey(Key_File *key_file, size_t num, char *value);
+void setIntValueNum(Key_File *key_file, size_t num, void *value);
+void setUIntValueNum(Key_File *key_file, size_t num, void *value);
+void setStringValueNum(Key_File *key_file, size_t num, void *value);
