@@ -20,8 +20,10 @@
 */
 
 #include "../include/defines.h"
+#include "../include/helpers.h"
 #include "../include/keyfile.h"
 
+#include <errno.h>
 #include <inttypes.h>
 #include <math.h>
 #include <stdio.h>
@@ -66,6 +68,17 @@ char *getStringValueNum(Key_File key_file, size_t num) {
   return key_file.file_entry[num].value;
 }
 
+bool getBoolValueNum(Key_File key_file, size_t num) {
+  size_t hash = hashstring(key_file.file_entry[num].value);
+  if (hash == TRUE) {
+    return 1;
+  } else if (hash == FALSE) {
+    return 0;
+  }
+  errno = EFAULT;
+  return 0;
+}
+
 /* --- SETTERS --- */
 
 void setGroup(Key_File *key_file, size_t num, char *value) {
@@ -97,3 +110,25 @@ void setStringValueNum(Key_File *key_file, size_t num, void *v) {
   free(key_file->file_entry[num].value);
   key_file->file_entry[num].value = strdup(value);
 }
+
+void setBoolValueNum(Key_File *kf, size_t num, void *v) {
+  char *value = (char*) v;
+  if (!*value) { errno = EINVAL; return; }
+
+  char *tmp = strdup(value);
+  size_t hash = hashstring(toLowerCase(tmp));
+
+  if ((*value == '1' && strlen(tmp) == 1) || hash == YES || hash == TRUE) {
+    free(kf->file_entry[num].value);
+    kf->file_entry[num].value = strdup("true");
+  } else if ((*value == '0' && strlen(tmp) == 1) || hash == NO || hash == FALSE) {
+    free(kf->file_entry[num].value);
+    kf->file_entry[num].value = strdup("false");
+  } else if (hash == KEY_FILE_NULL_VALUE_HASH) {
+    free(kf->file_entry[num].value);
+    kf->file_entry[num].value = strdup(KEY_FILE_NULL_VALUE);
+  } else { errno = EINVAL; }
+
+  free(tmp);
+}
+

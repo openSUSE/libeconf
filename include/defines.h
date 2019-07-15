@@ -21,9 +21,17 @@
 
 #pragma once
 
+#include "../include/helpers.h"
+
 // Default Key_File length on creation
 #define KEY_FILE_DEFAULT_LENGTH 8
 
 // NULL value
 #define KEY_FILE_NULL_VALUE "_none_"
 #define KEY_FILE_NULL_VALUE_HASH hashstring(KEY_FILE_NULL_VALUE)
+
+// Bool values
+#define YES hashstring("yes")
+#define NO hashstring("no")
+#define TRUE hashstring("true")
+#define FALSE hashstring("false")
