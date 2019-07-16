@@ -60,7 +60,15 @@ int32_t getIntValueNum(Key_File key_file, size_t num) {
   return strtol(key_file.file_entry[num].value, NULL, 10);
 }
 
+int64_t getInt64ValueNum(Key_File key_file, size_t num) {
+  return strtol(key_file.file_entry[num].value, NULL, 10);
+}
+
 uint32_t getUIntValueNum(Key_File key_file, size_t num) {
+  return strtoul(key_file.file_entry[num].value, NULL, 10);
+}
+
+uint64_t getUInt64ValueNum(Key_File key_file, size_t num) {
   return strtoul(key_file.file_entry[num].value, NULL, 10);
 }
 
@@ -99,7 +107,7 @@ void setIntValueNum(Key_File *kf, size_t num, void *v) {
 }
 
 void setUIntValueNum(Key_File *key_file, size_t num, void *v) {
-  u_int64_t *value = (u_int64_t*) v;
+  uint64_t *value = (uint64_t*) v;
   free(key_file->file_entry[num].value);
   size_t length = (*value == 0) ? 2 : log10(*value) + 2;
   snprintf(key_file->file_entry[num].value = malloc(length), length, "%" PRIu64, *value);
