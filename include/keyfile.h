@@ -38,7 +38,9 @@ Key_File newIniFile();
 
 /* GETTERS */
 int32_t getIntValueNum(Key_File key_file, size_t num);
+int64_t getInt64ValueNum(Key_File key_file, size_t num);
 uint32_t getUIntValueNum(Key_File key_file, size_t num);
+uint64_t getUInt64ValueNum(Key_File key_file, size_t num);
 char *getStringValueNum(Key_File key_file, size_t num);
 bool getBoolValueNum(Key_File key_file, size_t num);
 
