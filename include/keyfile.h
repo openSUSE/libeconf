@@ -41,6 +41,8 @@ int32_t getIntValueNum(Key_File key_file, size_t num);
 int64_t getInt64ValueNum(Key_File key_file, size_t num);
 uint32_t getUIntValueNum(Key_File key_file, size_t num);
 uint64_t getUInt64ValueNum(Key_File key_file, size_t num);
+float getFloatValueNum(Key_File key_file, size_t num);
+double getDoubleValueNum(Key_File key_file, size_t num);
 char *getStringValueNum(Key_File key_file, size_t num);
 bool getBoolValueNum(Key_File key_file, size_t num);
 
@@ -49,6 +51,8 @@ void setGroup(Key_File *key_file, size_t num, char *value);
 void setKey(Key_File *key_file, size_t num, char *value);
 void setIntValueNum(Key_File *key_file, size_t num, void *value);
 void setUIntValueNum(Key_File *key_file, size_t num, void *value);
+void setFloatValueNum(Key_File *key_file, size_t num, void *value);
+void setDoubleValueNum(Key_File *key_file, size_t num, void *value);
 void setStringValueNum(Key_File *key_file, size_t num, void *value);
 void setBoolValueNum(Key_File *key_file, size_t num, void *value);
 
