@@ -24,6 +24,7 @@
 #include "../include/keyfile.h"
 
 #include <errno.h>
+#include <float.h>
 #include <inttypes.h>
 #include <math.h>
 #include <stdio.h>
@@ -72,6 +73,14 @@ uint64_t getUInt64ValueNum(Key_File key_file, size_t num) {
   return strtoul(key_file.file_entry[num].value, NULL, 10);
 }
 
+float getFloatValueNum(Key_File key_file, size_t num) {
+  return strtof(key_file.file_entry[num].value, NULL);
+}
+
+double getDoubleValueNum(Key_File key_file, size_t num) {
+  return strtod(key_file.file_entry[num].value, NULL);
+}
+
 char *getStringValueNum(Key_File key_file, size_t num) {
   return key_file.file_entry[num].value;
 }
@@ -111,6 +120,22 @@ void setUIntValueNum(Key_File *key_file, size_t num, void *v) {
   free(key_file->file_entry[num].value);
   size_t length = (*value == 0) ? 2 : log10(*value) + 2;
   snprintf(key_file->file_entry[num].value = malloc(length), length, "%" PRIu64, *value);
+}
+
+void setFloatValueNum(Key_File *key_file, size_t num, void *v) {
+  float *value = (float*) v;
+  free(key_file->file_entry[num].value);
+  size_t length = snprintf(NULL, 0, "%.*g", FLT_DECIMAL_DIG - 1, *value);
+  snprintf(key_file->file_entry[num].value = malloc(length + 1), length + 1, "%.*g",
+           FLT_DECIMAL_DIG - 1, *value);
+}
+
+void setDoubleValueNum(Key_File *key_file, size_t num, void *v) {
+  double *value = (double*) v;
+  free(key_file->file_entry[num].value);
+  size_t length = snprintf(NULL, 0, "%.*g", DBL_DECIMAL_DIG - 1, *value);
+  snprintf(key_file->file_entry[num].value = malloc(length + 1), length + 1, "%.*g",
+           DBL_DECIMAL_DIG - 1, *value);
 }
 
 void setStringValueNum(Key_File *key_file, size_t num, void *v) {
