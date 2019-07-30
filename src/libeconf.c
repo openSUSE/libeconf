@@ -187,6 +187,54 @@ char **econf_getKeys(Key_File kf, const char *grp, size_t *length) {
   return keys;
 }
 
+int32_t getIntValue(Key_File kf, char *group, char *key) {
+  size_t num = find_key(kf, group, key);
+  if (num != -1) return getIntValueNum(kf, num);
+  return -1;
+}
+
+int64_t getInt64Value(Key_File kf, char *group, char *key) {
+  size_t num = find_key(kf, group, key);
+  if (num != -1) return getInt64ValueNum(kf, num);
+  return -1;
+}
+
+uint32_t getUIntValue(Key_File kf, char *group, char *key) {
+  size_t num = find_key(kf, group, key);
+  if (num != -1) return getUIntValueNum(kf, num);
+  return -1;
+}
+
+uint64_t getUInt64Value(Key_File kf, char *group, char *key) {
+  size_t num = find_key(kf, group, key);
+  if (num != -1) return getUInt64ValueNum(kf, num);
+  return -1;
+}
+
+float getFloatValue(Key_File kf, char *group, char *key) {
+  size_t num = find_key(kf, group, key);
+  if (num != -1) return getFloatValueNum(kf, num);
+  return -1;
+}
+
+double getDoubleValue(Key_File kf, char *group, char *key) {
+  size_t num = find_key(kf, group, key);
+  if (num != -1) return getDoubleValueNum(kf, num);
+  return -1;
+}
+
+char *getStringValue(Key_File kf, char *group, char *key) {
+  size_t num = find_key(kf, group, key);
+  if (num != -1) return getStringValueNum(kf, num);
+  return "";
+}
+
+bool getBoolValue(Key_File kf, char *group, char *key) {
+  size_t num = find_key(kf, group, key);
+  if (num != -1) return getBoolValueNum(kf, num);
+  return -1;
+}
+
 /* SETTER FUNCTIONS */
 
 void setIntValue(Key_File *kf, char *group, char *key, int64_t value) {
