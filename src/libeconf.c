@@ -80,7 +80,7 @@ void write_key_file(Key_File key_file, const char *save_to_dir,
     return;
   }
   // Create a file handle for the specified file
-  char *save_to = combine_path_name(save_to_dir, file_name);
+  char *save_to = combine_strings(save_to_dir, file_name, '/');
   FILE *kf = fopen(save_to, "w");
   if (kf == NULL) {
     errno = EPERM;
@@ -112,8 +112,8 @@ void merge_files(const char *save_to_dir, const char *file_name,
 
   /* --- GET KEY FILES --- */
 
-  char *usr_file_name = combine_path_name(usr_path, file_name);
-  char *etc_file_name = combine_path_name(etc_path, file_name);
+  char *usr_file_name = combine_strings(usr_path, file_name, '/');
+  char *etc_file_name = combine_strings(etc_path, file_name, '/');
 
   Key_File usr_file = get_key_file(usr_file_name, delimiter, comment);
   Key_File etc_file = get_key_file(etc_file_name, delimiter, comment);
