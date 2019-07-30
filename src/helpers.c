@@ -28,10 +28,11 @@
 #include <string.h>
 
 // Combine file path and file name
-char *combine_path_name(const char *file_path, const char *file_name) {
-  size_t combined_len = strlen(file_path) + strlen(file_name) + 2;
+char *combine_strings(const char *string_one, const char *string_two,
+                      const char delimiter) {
+  size_t combined_len = strlen(string_one) + strlen(string_two) + 2;
   char *combined = malloc(combined_len);
-  snprintf(combined, combined_len, "%s/%s", file_path, file_name);
+  snprintf(combined, combined_len, "%s%c%s", string_one, delimiter, string_two);
   return combined;
 }
 

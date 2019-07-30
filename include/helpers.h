@@ -24,7 +24,8 @@
 #include "keyfile.h"
 
 // Combine file path and file name
-char *combine_path_name(const char *file_path, const char *file_name);
+char *combine_strings(const char *string_one, const char *string_two,
+                      const char delimiter);
 
 // Remove whitespace from beginning and end, append string terminator
 char *clearblank(size_t *vlen, char *string);
