@@ -22,6 +22,8 @@
 #pragma once
 
 #include <errno.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 extern int errno;
@@ -48,6 +50,14 @@ void merge_files(const char *save_to_dir, const char *file_name,
 
 char **getGroups(Key_File kf, size_t *length);
 char **getKeys(Key_File kf, const char *group, size_t *length);
+int32_t getIntValue(Key_File kf, char *group, char *key);
+int64_t getInt64Value(Key_File kf, char *group, char *key);
+uint32_t getUIntValue(Key_File kf, char *group, char *key);
+uint64_t getUInt64Value(Key_File kf, char *group, char *key);
+float getFloatValue(Key_File kf, char *group, char *key);
+double getDoubleValue(Key_File kf, char *group, char *key);
+char *getStringValue(Key_File kf, char *group, char *key);
+bool getBoolValue(Key_File kf, char *group, char *key);
 
 /* --- SETTERS --- */
 
