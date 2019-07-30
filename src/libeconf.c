@@ -187,6 +187,32 @@ char **econf_getKeys(Key_File kf, const char *grp, size_t *length) {
   return keys;
 }
 
+/* SETTER FUNCTIONS */
+
+void setIntValue(Key_File *kf, char *group, char *key, int64_t value) {
+  setKeyValue(setIntValueNum, kf, group, key, &value);
+}
+
+void setUIntValue(Key_File kf, char *group, char *key, uint64_t value) {
+  setKeyValue(setUIntValueNum, kf, group, key, &value);
+}
+
+void setFloatValue(Key_File *kf, char *group, char *key, float value) {
+  setKeyValue(setFloatValueNum, kf, group, key, &value);
+}
+
+void setDoubleValue(Key_File *kf, char *group, char *key, double value) {
+  setKeyValue(setDoubleValueNum, kf, group, key, &value);
+}
+
+void setStringValue(Key_File *kf, char *group, char *key, char *value) {
+  setKeyValue(setStringValueNum, kf, group, key, value);
+}
+
+void setBoolValue(Key_File *kf, char *group, char *key, char *value) {
+  setKeyValue(setBoolValueNum, kf, group, key, value);
+}
+
 /* --- DESTROY FUNCTIONS --- */
 
 void afree(char** array) {

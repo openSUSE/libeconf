@@ -49,6 +49,15 @@ void merge_files(const char *save_to_dir, const char *file_name,
 char **getGroups(Key_File kf, size_t *length);
 char **getKeys(Key_File kf, const char *group, size_t *length);
 
+/* --- SETTERS --- */
+
+void setIntValue(Key_File *kf, char *group, char *key, int64_t value);
+void setUIntValue(Key_File kf, char *group, char *key, uint64_t value);
+void setFloatValue(Key_File *kf, char *group, char *key, float value);
+void setDoubleValue(Key_File *kf, char *group, char *key, double value);
+void setStringValue(Key_File *kf, char *group, char *key, char *value);
+void setBoolValue(Key_File *kf, char *group, char *key, char *value);
+
 /* --- HELPERS --- */
 
 // Free an array of type char** created by getGroups() or getKeys()
