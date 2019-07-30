@@ -63,6 +63,29 @@ char *clearblank(size_t *vlen, char *string) {
   return buffer;
 }
 
+// Remove '[' and ']' from beginning and end
+char *stripbrackets(char *string) {
+  char *ptr = string, *buffer = string;
+  size_t length = strlen(string) - 1;
+  if (*string == '[' && string[length] == ']') {
+    while (*(++string) != ']') { *buffer++ = *string; }
+    *buffer = 0;
+  }
+  return ptr;
+}
+
+// Add '[' and ']' to the given string
+char *addbrackets(char *string) {
+  size_t length = strlen(string);
+  if (!(*string == '[' && string[length - 1] == ']')) {
+    char *buffer = malloc(length + 3);
+    sprintf(buffer, "[%s]", string);
+    free(string);
+    return buffer;
+  }
+  return string;
+}
+
 // Turn the given string into lower case
 char *toLowerCase(char *string) {
   char *ptr = string;
@@ -78,6 +101,19 @@ size_t hashstring(char *string) {
   char c;
   while ((c = *string++)) { hash = ((hash << 5) + hash) + c; }
   return hash;
+}
+
+// Look for matching key
+size_t find_key(Key_File key_file, char *group, char *key) {
+  size_t g = hashstring(group), k = hashstring(key);
+  for (int i = 0; i < key_file.length; i++) {
+    if (g == hashstring(key_file.file_entry[i].group) &&
+        k == hashstring(key_file.file_entry[i].key)) {
+      return i;
+    }
+  }
+  // Key not found
+  return -1;
 }
 
 // Free memory allocated by key_file

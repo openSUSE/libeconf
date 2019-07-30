@@ -30,6 +30,12 @@ char *combine_strings(const char *string_one, const char *string_two,
 // Remove whitespace from beginning and end, append string terminator
 char *clearblank(size_t *vlen, char *string);
 
+// Remove '[' and ']' from beginning and end
+char *stripbrackets(char *string);
+
+// Add '[' and ']' to the given string
+char *addbrackets(char *string);
+
 // Set default value defined in include/defines.h
 void initialize(Key_File *key_file, size_t num);
 
@@ -38,6 +44,9 @@ char *toLowerCase(char *str);
 
 // Turn given string into a hash value
 size_t hashstring(char *str);
+
+// Look for matching key
+size_t find_key(Key_File key_file, char *group, char *key);
 
 // Free memory allocated by key_file
 void destroy(Key_File key_file);
