@@ -26,6 +26,22 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+// Generic macro calls setter function depending on value type
+// Use: setValue(Key_File *key_file, char *group, char *key, _generic_ value);
+// Replace _generic_ with one of the supported value types.
+// Supported Types: int, long, unsigned int, unsigned long, float, double,
+// string (as *char).
+// Note: Does not detect "yes", "no", 1 and 0 as boolean type. If you want to
+// set a bool value use "true" or "false" or use setBoolValue() directly.
+#define setValue(kf, group, key, value) (( \
+  _Generic((value), \
+    int: setIntValue, long: setIntValue, \
+    unsigned int: setUIntValue, unsigned long: setUIntValue, \
+    float: setFloatValue, \
+    double: setDoubleValue, \
+    char*: setStringValue)) \
+(kf, group, key, value))
+
 extern int errno;
 
 typedef struct Key_File Key_File;
