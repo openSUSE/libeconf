@@ -133,3 +133,56 @@ void merge_files(const char *save_to_dir, const char *file_name,
   destroy(etc_file);
   destroy_merged_file(merged_file);
 }
+
+/* GETTER FUNCTIONS */
+// TODO: Return values in error case
+
+// TODO: Currently only works with a sorted Key_File. If a new
+// key with an existing group is appended at the end the group
+// will show twice. So the key file either needs to be sorted
+// upon entering a new key or the function must ensure only
+// unique values are returned.
+char **econf_getGroups(Key_File kf, size_t *length) {
+  size_t tmp = 0;
+  bool *uniques = calloc(kf.length,sizeof(bool));
+  for (int i = 0; i < kf.length; i++) {
+    if (!i || strcmp(kf.file_entry[i].group, kf.file_entry[i - 1].group)) {
+      uniques[i] = 1;
+      tmp++;
+    }
+  }
+  char **groups = calloc(tmp + 1, sizeof(char*));
+  tmp = 0;
+  for(int i = 0; i < kf.length; i++) {
+    if (uniques[i]) { groups[tmp++] = strdup(kf.file_entry[i].group); }
+  }
+
+  if (length != NULL) { *length = tmp; }
+
+  free(uniques);
+  return groups;
+}
+
+// TODO: Same issue as with getGroups()
+char **econf_getKeys(Key_File kf, const char *grp, size_t *length) {
+  size_t tmp = 0;
+  char *group = strdup(grp);
+  group = addbrackets(group);
+  bool *uniques = calloc(kf.length, sizeof(bool));
+  for (int i = 0; i < kf.length; i++) {
+    if (!strcmp(kf.file_entry[i].group, group) &&
+        (!i || strcmp(kf.file_entry[i].key, kf.file_entry[i - 1].key))) {
+      uniques[i] = 1;
+      tmp++;
+    }
+  }
+  char **keys = calloc(tmp + 1, sizeof(char*));
+  for(int i = 0, tmp = 0; i < kf.length; i++) {
+    if (uniques[i]) { keys[tmp++] = strdup(kf.file_entry[i].key); }
+  }
+
+  if (length != NULL) { *length = tmp; }
+
+  free(uniques), free(group);
+  return keys;
+}

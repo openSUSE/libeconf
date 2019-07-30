@@ -22,6 +22,7 @@
 #pragma once
 
 #include <errno.h>
+#include <stdlib.h>
 
 extern int errno;
 
@@ -42,6 +43,11 @@ void write_key_file(Key_File key_file, const char *save_to_dir,
 void merge_files(const char *save_to_dir, const char *file_name,
                  const char *etc_path, const char *usr_path,
                  char *delimiter, const char comment);
+
+/* --- GETTERS --- */
+
+char **getGroups(Key_File kf, size_t *length);
+char **getKeys(Key_File kf, const char *group, size_t *length);
 
 /* --- HELPERS --- */
 
