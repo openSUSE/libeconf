@@ -116,6 +116,30 @@ size_t find_key(Key_File key_file, char *group, char *key) {
   return -1;
 }
 
+// Append a new key to an existing Key_File
+void new_key(Key_File *key_file, char *group, char *key) {
+  key_file_append(key_file);
+  setGroup(key_file, key_file->length - 1, group);
+  setKey(key_file, key_file->length - 1, key);
+}
+
+// Set value for the given group, key combination. If the combination
+// does not exist it is created.
+// TODO: function/void pointer might not be necessary if the value is converted
+// into a string beforehand.
+void setKeyValue(void (*function) (Key_File*, size_t, void*), Key_File *kf, char *group, char *key, void *value) {
+  char *tmp = strdup(group);
+  tmp = addbrackets(tmp);
+  int num = find_key(*kf, tmp, key);
+  if (num != -1) {
+    free(tmp);
+    function(kf, num, value);
+  } else {
+    new_key(kf, tmp, key);
+    function(kf, kf->length - 1, value);
+  }
+}
+
 // Free memory allocated by key_file
 void destroy(Key_File key_file) {
   for (int i = 0; i < key_file.alloc_length; i++) {
@@ -128,3 +152,4 @@ void destroy(Key_File key_file) {
 
 // Wrapper function to free memory of merged file
 void destroy_merged_file(Key_File merged_file) { free(merged_file.file_entry); }
+
