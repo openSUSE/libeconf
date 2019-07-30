@@ -54,8 +54,16 @@ Key_File newIniFile() {
   return newKeyFile('=', '#');
 }
 
-/* --- GETTERS --- */
+void key_file_append(Key_File *kf) {
+  if(kf->length++ >= kf->alloc_length) {
+    kf->alloc_length++;
+    kf->file_entry =
+      realloc(kf->file_entry, (kf->alloc_length) * sizeof(struct file_entry));
+    initialize(kf, kf->alloc_length - 1);
+  }
+}
 
+/* --- GETTERS --- */
 
 int32_t getIntValueNum(Key_File key_file, size_t num) {
   return strtol(key_file.file_entry[num].value, NULL, 10);
