@@ -7,5 +7,5 @@ Name: @PACKAGE@
 Description: TODO
 Version: @VERSION@
 
-Libs: -L${libdir} -leconf
+Libs: -L${libdir} -leconf -lm
 Cflags: -I${includedir}

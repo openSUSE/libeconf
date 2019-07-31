@@ -6,5 +6,5 @@ Name: @PROJECT_NAME@
 Description: @PROJECT_DESCRIPTION@
 Version: @PROJECT_VERSION@
 
-Libs: -L${libdir} -leconf
+Libs: -L${libdir} -leconf -lm
 Cflags: -I${includedir}
