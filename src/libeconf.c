@@ -21,14 +21,39 @@
 
 #include "../include/libeconf.h"
 
+#include "../include/defines.h"
 #include "../include/getfilecontents.h"
 #include "../include/helpers.h"
+#include "../include/keyfile.h"
 #include "../include/mergefiles.h"
 
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+// Create a new Key_File. Allocation is based on KEY_FILE_KEY_FILE_DEFAULT_LENGTH
+// defined in include/defines.h
+Key_File newKeyFile(char delimiter, char comment) {
+  Key_File key_file;
+
+  key_file.alloc_length = KEY_FILE_DEFAULT_LENGTH;
+  key_file.length = 0;
+  key_file.delimiter = delimiter;
+  key_file.comment = comment;
+
+  key_file.file_entry = malloc(KEY_FILE_DEFAULT_LENGTH * sizeof(struct file_entry));
+
+  for (size_t i = 0; i < KEY_FILE_DEFAULT_LENGTH; i++) {
+    initialize(&key_file, i);
+  }
+
+  return key_file;
+}
+
+Key_File newIniFile() {
+  return newKeyFile('=', '#');
+}
 
 // Process the file of the given file_name and save its contents into key_file
 Key_File get_key_file(const char *file_name, char *delim,

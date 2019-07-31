@@ -46,6 +46,9 @@ extern int errno;
 
 typedef struct Key_File Key_File;
 
+Key_File newKeyFile(char delimiter, char comment);
+Key_File newIniFile(void);
+
 // Process the file of the given file_name and save its contents into key_file
 Key_File get_key_file(const char *file_name, char *delim,
                       const char comment);
