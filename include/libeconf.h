@@ -93,4 +93,4 @@ void afree(char **array);
 void destroy(Key_File key_file);
 
 // Free memory of merged file
-void destroy_merged_file(Key_File merged_file);
+void destroy_merged_file(Key_File key_file);

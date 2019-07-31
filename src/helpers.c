@@ -140,16 +140,3 @@ void setKeyValue(void (*function) (Key_File*, size_t, void*), Key_File *kf, char
   }
 }
 
-// Free memory allocated by key_file
-void destroy(Key_File key_file) {
-  for (int i = 0; i < key_file.alloc_length; i++) {
-    free(key_file.file_entry[i].group);
-    free(key_file.file_entry[i].key);
-    free(key_file.file_entry[i].value);
-  }
-  free(key_file.file_entry);
-}
-
-// Wrapper function to free memory of merged file
-void destroy_merged_file(Key_File merged_file) { free(merged_file.file_entry); }
-
