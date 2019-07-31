@@ -14,7 +14,7 @@ include(GNUInstallDirs)
 add_compile_options(-std=gnu11)
 
 # Create the library
-add_library(econf SHARED src/libeconf.c src/getfilecontents.c src/mergefiles.c src/helpers.c)
+add_library(econf SHARED src/libeconf.c src/getfilecontents.c src/mergefiles.c src/helpers.c src/keyfile.c)
 set_target_properties(econf PROPERTIES
   VERSION ${PROJECT_VERSION}
   PUBLIC_HEADER include/libeconf.h
@@ -33,6 +33,5 @@ install(TARGETS econf
 # Create the binary/executable
 add_executable(example EXCLUDE_FROM_ALL example/example.c)
 target_include_directories(example PRIVATE include)
-target_link_libraries(example PRIVATE econf)
-# Enable for debugging
-# target_link_libraries(example PRIVATE -g3 -fsanitize=address -fno-omit-frame-pointer)
+target_link_libraries(example PRIVATE econf -lm)
+target_link_libraries(example PRIVATE -Werror -Wall -O2)
