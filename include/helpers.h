@@ -55,9 +55,3 @@ void new_key(Key_File *key_file, char *group, char *key);
 // does not exist it is created.
 void setKeyValue(void (*function) (Key_File*, size_t, void*),
                  Key_File *kf, char *group, char *key, void *value);
-
-// Free memory allocated by key_file
-void destroy(Key_File key_file);
-
-// Wrapper function to free memory of merged file
-void destroy_merged_file(Key_File merged_file);
