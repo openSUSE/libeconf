@@ -35,3 +35,29 @@ add_executable(example EXCLUDE_FROM_ALL example/example.c)
 target_include_directories(example PRIVATE include)
 target_link_libraries(example PRIVATE econf -lm)
 target_link_libraries(example PRIVATE -Werror -Wall -O2)
+
+
+# Use these targets for debugging
+
+# Debugging with valgrind / gdb
+add_executable(valgrind EXCLUDE_FROM_ALL example/example.c)
+target_include_directories(valgrind PRIVATE include)
+target_link_libraries(valgrind PRIVATE econf -lm)
+target_link_libraries(valgrind PRIVATE -Werror -Wall -g -O0 -fno-omit-frame-pointer)
+
+# Debugging with Address-Sanitizer
+add_custom_target(Asanitizer)
+add_dependencies(Asanitizer econf-static Asan)
+
+add_library(econf-static STATIC EXCLUDE_FROM_ALL src/libeconf.c src/getfilecontents.c src/mergefiles.c src/helpers.c src/keyfile.c)
+target_link_libraries(econf-static PRIVATE -Werror -Wall -g -O0 -fsanitize=undefined -fsanitize=address -fno-omit-frame-pointer)
+set_target_properties(econf-static PROPERTIES
+  VERSION ${PROJECT_VERSION}
+  PUBLIC_HEADER include/libeconf.h
+)
+
+add_executable(Asan EXCLUDE_FROM_ALL example/example.c)
+target_include_directories(Asan PRIVATE include)
+target_link_libraries(Asan PRIVATE econf -lm)
+target_link_libraries(Asan PRIVATE -Werror -Wall -g -O0 -fsanitize=undefined -fsanitize=address -fno-omit-frame-pointer)
+target_compile_options(Asan PRIVATE -fsanitize=address -fsanitize=undefined)
