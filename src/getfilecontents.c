@@ -30,7 +30,7 @@
 #include <string.h>
 
 // Fill the Key File struct with values from the given file handle
-Key_File fill_key_file(Key_File read_file, FILE *kf, const char *delim) {
+void fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
   // KEY_FILE_DEFAULT_LENGTH: Default number of key-value pairs to be
   // allocated in key_file
   // LLEN: Base number of chars in a key, value or group name
@@ -63,14 +63,14 @@ Key_File fill_key_file(Key_File read_file, FILE *kf, const char *delim) {
     // be a key.
     else if (!regexec(&regex, &ch, 0, NULL, 0) && !fe[file_length].key) {
       if(!file_length)
-        read_file.delimiter = ch;
+        read_file->delimiter = ch;
       buffer = clearblank(&vlen, buffer);
       fe[file_length].key = malloc(vlen);
       snprintf(fe[file_length].key, vlen, buffer);
     }
     // If the line contains the given comment char ignore the rest
     // of the line and proceed with the next
-    else if (ch == read_file.comment) {
+    else if (ch == read_file->comment) {
       if (vlen != 0)
         end_of_line(&fe, &file_length, &lnum, vlen, buffer);
       getline(&buffer, &llen, kf);
@@ -86,14 +86,13 @@ Key_File fill_key_file(Key_File read_file, FILE *kf, const char *delim) {
   regfree(&regex);
   // Check if the file is really at its end after EOF is encountered.
   if (!feof(kf)) {
-    read_file.length = -EBADF;
-    return read_file;
+    read_file->length = -EBADF;
+    return;
   }
-  read_file.length = file_length;
-  read_file.alloc_length = file_length;
+  read_file->length = file_length;
+  read_file->alloc_length = file_length;
   fe = realloc(fe, file_length * sizeof(struct file_entry));
-  read_file.file_entry = fe;
-  return read_file;
+  read_file->file_entry = fe;
 }
 
 // Write the group/value entry to the given file_entry

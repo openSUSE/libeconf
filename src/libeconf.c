@@ -29,54 +29,55 @@
 
 #include <dirent.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
-// Create a new Key_File. Allocation is based on KEY_FILE_KEY_FILE_DEFAULT_LENGTH
+// Create a new Key_File. Allocation is based on KEY_FILE_KEY_FILE_KEY_FILE_DEFAULT_LENGTH
 // defined in include/defines.h
-Key_File newKeyFile(char delimiter, char comment) {
-  Key_File key_file;
+Key_File *newKeyFile(char delimiter, char comment) {
+  Key_File *key_file = malloc(sizeof(Key_File));
 
-  key_file.alloc_length = KEY_FILE_DEFAULT_LENGTH;
-  key_file.length = 0;
-  key_file.delimiter = delimiter;
-  key_file.comment = comment;
+  key_file->alloc_length = KEY_FILE_DEFAULT_LENGTH;
+  key_file->length = 0;
+  key_file->delimiter = delimiter;
+  key_file->comment = comment;
 
-  key_file.file_entry = malloc(KEY_FILE_DEFAULT_LENGTH * sizeof(struct file_entry));
+  key_file->file_entry = malloc(KEY_FILE_DEFAULT_LENGTH * sizeof(struct file_entry));
 
   for (size_t i = 0; i < KEY_FILE_DEFAULT_LENGTH; i++) {
-    initialize(&key_file, i);
+    initialize(key_file, i);
   }
 
   return key_file;
 }
 
-Key_File newIniFile() {
+Key_File *newIniFile() {
   return newKeyFile('=', '#');
 }
 
 // Process the file of the given file_name and save its contents into key_file
-Key_File get_key_file(const char *file_name, char *delim,
+Key_File *get_key_file(const char *file_name, char *delim,
                       const char comment) {
-  Key_File read_file = {.comment = comment};
+  Key_File *read_file = malloc(sizeof(Key_File));
+  read_file->comment = comment;
 
   // File handle for the given file_name
   FILE *kf = fopen(file_name, "rb");
   if (kf == NULL) {
-    read_file.length = -ENOENT;
+    read_file->length = -ENOENT;
     return read_file;
   }
 
-  read_file = fill_key_file(read_file, kf, delim);
+  fill_key_file(read_file, kf, delim);
 
   fclose(kf);
   return read_file;
 }
 
 // Merge the contents of two key files
-Key_File merge_key_files(Key_File *usr_file, Key_File *etc_file) {
-  Key_File merge_file = {.delimiter = usr_file->delimiter,
-                         .comment = usr_file->comment};
+Key_File *merge_key_files(Key_File *usr_file, Key_File *etc_file) {
+  Key_File *merge_file = malloc(sizeof(Key_File));
+  merge_file->delimiter = usr_file->delimiter;
+  merge_file->comment = usr_file->comment;
   struct file_entry *fe =
       malloc((etc_file->length + etc_file->length) * sizeof(struct file_entry));
 
@@ -87,14 +88,14 @@ Key_File merge_key_files(Key_File *usr_file, Key_File *etc_file) {
     merge_length = insert_nogroup(&fe, etc_file);
   }
   merge_length = merge_existing_groups(&fe, usr_file, etc_file, merge_length);
-  merge_file.length = add_new_groups(&fe, usr_file, etc_file, merge_length);
+  merge_file->length = add_new_groups(&fe, usr_file, etc_file, merge_length);
 
-  merge_file.file_entry = fe;
+  merge_file->file_entry = fe;
   return merge_file;
 }
 
 // Write content of a Key_File struct to specified location
-void write_key_file(Key_File key_file, const char *save_to_dir,
+void write_key_file(Key_File *key_file, const char *save_to_dir,
                     const char *file_name) {
   // Check if the directory exists
   DIR *dir = opendir(save_to_dir);
@@ -113,16 +114,16 @@ void write_key_file(Key_File key_file, const char *save_to_dir,
   }
 
   // Write to file
-  for (int i = 0; i < key_file.length; i++) {
-    if (!i || strcmp(key_file.file_entry[i - 1].group,
-                     key_file.file_entry[i].group)) {
+  for (int i = 0; i < key_file->length; i++) {
+    if (!i || strcmp(key_file->file_entry[i - 1].group,
+                     key_file->file_entry[i].group)) {
       if (i)
         fprintf(kf, "\n");
-      if (strcmp(key_file.file_entry[i].group, "[]"))
-        fprintf(kf, "%s\n", key_file.file_entry[i].group);
+      if (strcmp(key_file->file_entry[i].group, "[]"))
+        fprintf(kf, "%s\n", key_file->file_entry[i].group);
     }
-    fprintf(kf, "%s%c%s\n", key_file.file_entry[i].key, key_file.delimiter,
-            key_file.file_entry[i].value);
+    fprintf(kf, "%s%c%s\n", key_file->file_entry[i].key, key_file->delimiter,
+            key_file->file_entry[i].value);
   }
 
   // Clean up
@@ -140,12 +141,12 @@ void merge_files(const char *save_to_dir, const char *file_name,
   char *usr_file_name = combine_strings(usr_path, file_name, '/');
   char *etc_file_name = combine_strings(etc_path, file_name, '/');
 
-  Key_File usr_file = get_key_file(usr_file_name, delimiter, comment);
-  Key_File etc_file = get_key_file(etc_file_name, delimiter, comment);
+  Key_File *usr_file = get_key_file(usr_file_name, delimiter, comment);
+  Key_File *etc_file = get_key_file(etc_file_name, delimiter, comment);
 
   /* --- MERGE KEY FILES --- */
 
-  Key_File merged_file = merge_key_files(&usr_file, &etc_file);
+  Key_File *merged_file = merge_key_files(usr_file, etc_file);
 
   /* --- WRITE MERGED FILE --- */
 
@@ -167,19 +168,19 @@ void merge_files(const char *save_to_dir, const char *file_name,
 // will show twice. So the key file either needs to be sorted
 // upon entering a new key or the function must ensure only
 // unique values are returned.
-char **econf_getGroups(Key_File kf, size_t *length) {
+char **econf_getGroups(Key_File *kf, size_t *length) {
   size_t tmp = 0;
-  bool *uniques = calloc(kf.length,sizeof(bool));
-  for (int i = 0; i < kf.length; i++) {
-    if (!i || strcmp(kf.file_entry[i].group, kf.file_entry[i - 1].group)) {
+  bool *uniques = calloc(kf->length,sizeof(bool));
+  for (int i = 0; i < kf->length; i++) {
+    if (!i || strcmp(kf->file_entry[i].group, kf->file_entry[i - 1].group)) {
       uniques[i] = 1;
       tmp++;
     }
   }
   char **groups = calloc(tmp + 1, sizeof(char*));
   tmp = 0;
-  for(int i = 0; i < kf.length; i++) {
-    if (uniques[i]) { groups[tmp++] = strdup(kf.file_entry[i].group); }
+  for(int i = 0; i < kf->length; i++) {
+    if (uniques[i]) { groups[tmp++] = strdup(kf->file_entry[i].group); }
   }
 
   if (length != NULL) { *length = tmp; }
@@ -189,21 +190,21 @@ char **econf_getGroups(Key_File kf, size_t *length) {
 }
 
 // TODO: Same issue as with getGroups()
-char **econf_getKeys(Key_File kf, const char *grp, size_t *length) {
+char **econf_getKeys(Key_File *kf, const char *grp, size_t *length) {
   size_t tmp = 0;
   char *group = strdup(grp);
   group = addbrackets(group);
-  bool *uniques = calloc(kf.length, sizeof(bool));
-  for (int i = 0; i < kf.length; i++) {
-    if (!strcmp(kf.file_entry[i].group, group) &&
-        (!i || strcmp(kf.file_entry[i].key, kf.file_entry[i - 1].key))) {
+  bool *uniques = calloc(kf->length, sizeof(bool));
+  for (int i = 0; i < kf->length; i++) {
+    if (!strcmp(kf->file_entry[i].group, group) &&
+        (!i || strcmp(kf->file_entry[i].key, kf->file_entry[i - 1].key))) {
       uniques[i] = 1;
       tmp++;
     }
   }
   char **keys = calloc(tmp + 1, sizeof(char*));
-  for(int i = 0, tmp = 0; i < kf.length; i++) {
-    if (uniques[i]) { keys[tmp++] = strdup(kf.file_entry[i].key); }
+  for(int i = 0, tmp = 0; i < kf->length; i++) {
+    if (uniques[i]) { keys[tmp++] = strdup(kf->file_entry[i].key); }
   }
 
   if (length != NULL) { *length = tmp; }
@@ -212,51 +213,51 @@ char **econf_getKeys(Key_File kf, const char *grp, size_t *length) {
   return keys;
 }
 
-int32_t getIntValue(Key_File kf, char *group, char *key) {
-  size_t num = find_key(kf, group, key);
-  if (num != -1) return getIntValueNum(kf, num);
+int32_t getIntValue(Key_File *kf, char *group, char *key) {
+  size_t num = find_key(*kf, group, key);
+  if (num != -1) return getIntValueNum(*kf, num);
   return -1;
 }
 
-int64_t getInt64Value(Key_File kf, char *group, char *key) {
-  size_t num = find_key(kf, group, key);
-  if (num != -1) return getInt64ValueNum(kf, num);
+int64_t getInt64Value(Key_File *kf, char *group, char *key) {
+  size_t num = find_key(*kf, group, key);
+  if (num != -1) return getInt64ValueNum(*kf, num);
   return -1;
 }
 
-uint32_t getUIntValue(Key_File kf, char *group, char *key) {
-  size_t num = find_key(kf, group, key);
-  if (num != -1) return getUIntValueNum(kf, num);
+uint32_t getUIntValue(Key_File *kf, char *group, char *key) {
+  size_t num = find_key(*kf, group, key);
+  if (num != -1) return getUIntValueNum(*kf, num);
   return -1;
 }
 
-uint64_t getUInt64Value(Key_File kf, char *group, char *key) {
-  size_t num = find_key(kf, group, key);
-  if (num != -1) return getUInt64ValueNum(kf, num);
+uint64_t getUInt64Value(Key_File *kf, char *group, char *key) {
+  size_t num = find_key(*kf, group, key);
+  if (num != -1) return getUInt64ValueNum(*kf, num);
   return -1;
 }
 
-float getFloatValue(Key_File kf, char *group, char *key) {
-  size_t num = find_key(kf, group, key);
-  if (num != -1) return getFloatValueNum(kf, num);
+float getFloatValue(Key_File *kf, char *group, char *key) {
+  size_t num = find_key(*kf, group, key);
+  if (num != -1) return getFloatValueNum(*kf, num);
   return -1;
 }
 
-double getDoubleValue(Key_File kf, char *group, char *key) {
-  size_t num = find_key(kf, group, key);
-  if (num != -1) return getDoubleValueNum(kf, num);
+double getDoubleValue(Key_File *kf, char *group, char *key) {
+  size_t num = find_key(*kf, group, key);
+  if (num != -1) return getDoubleValueNum(*kf, num);
   return -1;
 }
 
-char *getStringValue(Key_File kf, char *group, char *key) {
-  size_t num = find_key(kf, group, key);
-  if (num != -1) return getStringValueNum(kf, num);
+char *getStringValue(Key_File *kf, char *group, char *key) {
+  size_t num = find_key(*kf, group, key);
+  if (num != -1) return getStringValueNum(*kf, num);
   return "";
 }
 
-bool getBoolValue(Key_File kf, char *group, char *key) {
-  size_t num = find_key(kf, group, key);
-  if (num != -1) return getBoolValueNum(kf, num);
+bool getBoolValue(Key_File *kf, char *group, char *key) {
+  size_t num = find_key(*kf, group, key);
+  if (num != -1) return getBoolValueNum(*kf, num);
   return -1;
 }
 
@@ -266,7 +267,7 @@ void setIntValue(Key_File *kf, char *group, char *key, int64_t value) {
   setKeyValue(setIntValueNum, kf, group, key, &value);
 }
 
-void setUIntValue(Key_File kf, char *group, char *key, uint64_t value) {
+void setUIntValue(Key_File *kf, char *group, char *key, uint64_t value) {
   setKeyValue(setUIntValueNum, kf, group, key, &value);
 }
 
@@ -296,15 +297,18 @@ void afree(char** array) {
 }
 
 // Free memory allocated by key_file
-void destroy(Key_File key_file) {
-  for (int i = 0; i < key_file.alloc_length; i++) {
-    free(key_file.file_entry[i].group);
-    free(key_file.file_entry[i].key);
-    free(key_file.file_entry[i].value);
+void destroy(Key_File *key_file) {
+  for (int i = 0; i < key_file->alloc_length; i++) {
+    free(key_file->file_entry[i].group);
+    free(key_file->file_entry[i].key);
+    free(key_file->file_entry[i].value);
   }
-  free(key_file.file_entry);
+  free(key_file->file_entry);
+  free(key_file);
 }
 
 // Wrapper function to free memory of merged file
-void destroy_merged_file(Key_File key_file) { free(key_file.file_entry); }
-
+void destroy_merged_file(Key_File *key_file) {
+  free(key_file->file_entry);
+  free(key_file);
+}

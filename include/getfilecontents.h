@@ -26,7 +26,7 @@
 #include <stdio.h>
 
 // Fill the Key File struct with values from the given file handle
-Key_File fill_key_file(Key_File read_file, FILE *kf, const char *delim);
+void fill_key_file(Key_File *read_file, FILE *kf, const char *delim);
 
 // Write the group/value entry to the given file_entry
 void end_of_line(struct file_entry **fe, size_t *len, size_t *lnum, size_t vlen,
