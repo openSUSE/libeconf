@@ -28,7 +28,6 @@
 #include <inttypes.h>
 #include <math.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 void key_file_append(Key_File *kf) {
