@@ -186,3 +186,13 @@ char **econf_getKeys(Key_File kf, const char *grp, size_t *length) {
   free(uniques), free(group);
   return keys;
 }
+
+/* --- DESTROY FUNCTIONS --- */
+
+void afree(char** array) {
+  char *tmp = (char*) array;
+  while (*array)
+    free(*array++);
+  free(tmp);
+}
+

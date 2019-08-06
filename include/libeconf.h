@@ -51,6 +51,9 @@ char **getKeys(Key_File kf, const char *group, size_t *length);
 
 /* --- HELPERS --- */
 
+// Free an array of type char** created by getGroups() or getKeys()
+void afree(char **array);
+
 // Free memory allocated by key_file
 void destroy(Key_File key_file);
 
