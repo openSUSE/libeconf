@@ -33,67 +33,68 @@
 // string (as *char).
 // Note: Does not detect "yes", "no", 1 and 0 as boolean type. If you want to
 // set a bool value use "true" or "false" or use setBoolValue() directly.
-#define setValue(kf, group, key, value) (( \
+#define econf_setValue(kf, group, key, value) (( \
   _Generic((value), \
-    int: setIntValue, long: setIntValue, \
-    unsigned int: setUIntValue, unsigned long: setUIntValue, \
-    float: setFloatValue, \
-    double: setDoubleValue, \
-    char*: setStringValue)) \
+    int: econf_setIntValue, long: econf_setIntValue, \
+    unsigned int: econf_setUIntValue, unsigned long: econf_setUIntValue, \
+    float: econf_setFloatValue, \
+    double: econf_setDoubleValue, \
+    char*: econf_setStringValue)) \
 (kf, group, key, value))
 
 extern int errno;
 
 typedef struct Key_File Key_File;
 
-Key_File *newKeyFile(char delimiter, char comment);
-Key_File *newIniFile(void);
+Key_File *econf_newKeyFile(char delimiter, char comment);
+Key_File *econf_newIniFile(void);
 
 // Process the file of the given file_name and save its contents into key_file
-Key_File *get_key_file(const char *file_name, char *delim,
+Key_File *econf_get_key_file(const char *file_name, char *delim,
                       const char comment);
 
 // Merge the contents of two key files
-Key_File *merge_key_files(Key_File *usr_file, Key_File *etc_file);
+Key_File *econf_merge_key_files(Key_File *usr_file, Key_File *etc_file);
 
 // Write content of a Key_File struct to specified location
-void write_key_file(Key_File *key_file, const char *save_to_dir,
+void econf_write_key_file(Key_File *key_file, const char *save_to_dir,
                     const char *file_name);
 
 // Wrapper function to perform the merge in one step
-void merge_files(const char *save_to_dir, const char *file_name,
+void econf_merge_files(const char *save_to_dir, const char *file_name,
                  const char *etc_path, const char *usr_path,
                  char *delimiter, const char comment);
 
 /* --- GETTERS --- */
 
-char **getGroups(Key_File *kf, size_t *length);
-char **getKeys(Key_File *kf, const char *group, size_t *length);
-int32_t getIntValue(Key_File *kf, char *group, char *key);
-int64_t getInt64Value(Key_File *kf, char *group, char *key);
-uint32_t getUIntValue(Key_File *kf, char *group, char *key);
-uint64_t getUInt64Value(Key_File *kf, char *group, char *key);
-float getFloatValue(Key_File *kf, char *group, char *key);
-double getDoubleValue(Key_File *kf, char *group, char *key);
-char *getStringValue(Key_File *kf, char *group, char *key);
-bool getBoolValue(Key_File *kf, char *group, char *key);
+char **econf_getGroups(Key_File *kf, size_t *length);
+char **econf_getKeys(Key_File *kf, const char *group, size_t *length);
+int32_t econf_getIntValue(Key_File *kf, char *group, char *key);
+int64_t econf_getInt64Value(Key_File *kf, char *group, char *key);
+uint32_t econf_getUIntValue(Key_File *kf, char *group, char *key);
+uint64_t econf_getUInt64Value(Key_File *kf, char *group, char *key);
+float econf_getFloatValue(Key_File *kf, char *group, char *key);
+double econf_getDoubleValue(Key_File *kf, char *group, char *key);
+char *econf_getStringValue(Key_File *kf, char *group, char *key);
+bool econf_getBoolValue(Key_File *kf, char *group, char *key);
 
 /* --- SETTERS --- */
 
-void setIntValue(Key_File *kf, char *group, char *key, int64_t value);
-void setUIntValue(Key_File *kf, char *group, char *key, uint64_t value);
-void setFloatValue(Key_File *kf, char *group, char *key, float value);
-void setDoubleValue(Key_File *kf, char *group, char *key, double value);
-void setStringValue(Key_File *kf, char *group, char *key, char *value);
-void setBoolValue(Key_File *kf, char *group, char *key, char *value);
+void econf_setIntValue(Key_File *kf, char *group, char *key, int64_t value);
+void econf_setUIntValue(Key_File *kf, char *group, char *key, uint64_t value);
+void econf_setFloatValue(Key_File *kf, char *group, char *key, float value);
+void econf_setDoubleValue(Key_File *kf, char *group, char *key, double value);
+void econf_setStringValue(Key_File *kf, char *group, char *key, char *value);
+void econf_setBoolValue(Key_File *kf, char *group, char *key, char *value);
 
 /* --- HELPERS --- */
 
-// Free an array of type char** created by getGroups() or getKeys()
-void afree(char **array);
+// Free an array of type char** created by econf_getGroups() or econf_getKeys()
+void econf_afree(char **array);
 
 // Free memory allocated by key_file
-void destroy(Key_File *key_file);
+void econf_destroy(Key_File *key_file);
 
 // Free memory of merged file
-void destroy_merged_file(Key_File *key_file);
+void econf_destroy_merged_file(Key_File *key_file);
+
