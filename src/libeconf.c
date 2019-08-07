@@ -97,8 +97,8 @@ Key_File *econf_merge_key_files(Key_File *usr_file, Key_File *etc_file) {
 
   size_t merge_length = 0;
 
-  if (!strcmp(etc_file->file_entry->group, "[]") &&
-      strcmp(usr_file->file_entry->group, "[]")) {
+  if (!strcmp(etc_file->file_entry->group, KEY_FILE_NULL_VALUE) &&
+      strcmp(usr_file->file_entry->group, KEY_FILE_NULL_VALUE)) {
     merge_length = insert_nogroup(&fe, etc_file);
   }
   merge_length = merge_existing_groups(&fe, usr_file, etc_file, merge_length);
