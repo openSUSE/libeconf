@@ -34,10 +34,11 @@ int main() {
 
   clock_t begin = clock();
 
-  econf_merge_files("example/etc/example/conf.d", "example.ini", "example/etc/example", "example/usr/etc", "=", '#');
-
   //Key_File *key_file = econf_newIniFile();
-  Key_File *key_file = econf_get_key_file("example/etc/example/example.ini", "=", '#');
+  //Key_File *key_file = econf_get_key_file("example/etc/example/example.ini", "=", '#');
+
+  Key_File *key_file = econf_get_conf_from_dirs("example/usr/etc", "example/etc",
+                                                "example", ".ini", "=", '#');
 
   econf_setIntValue(key_file, "[Basic Types]", "Int", INT64_MAX);
   printf("Int: %ld\n", econf_getInt64Value(key_file, "[Basic Types]", "Int"));
@@ -60,7 +61,17 @@ int main() {
 
   econf_setValue(key_file, "Basic Types", "Generic", "Any value can go here!");
 
+  size_t key_number = 0;
+  char **keys = econf_getKeys(key_file, "Basic Types", &key_number);
+  printf("Keys: ");
+  for (int i = 0; i < key_number; i++) {
+    printf("%s, ", keys[i]);
+  }
+  puts("\n");
+  econf_afree(keys);
+
   econf_write_key_file(key_file, "example/", "test.ini");
+
   econf_destroy(key_file);
 
   clock_t end = clock();
