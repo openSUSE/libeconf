@@ -60,3 +60,7 @@ void new_key(Key_File *key_file, char *group, char *key);
 // does not exist it is created.
 void setKeyValue(void (*function) (Key_File*, size_t, void*),
                  Key_File *kf, char *group, char *key, void *value);
+
+// Copy the contents of a file_entry struct
+struct file_entry cpy_file_entry(struct file_entry fe);
+
