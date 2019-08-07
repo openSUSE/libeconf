@@ -52,19 +52,19 @@ Key_File *econf_newIniFile(void);
 
 // Process the file of the given file_name and save its contents into key_file
 Key_File *econf_get_key_file(const char *file_name, char *delim,
-                      const char comment);
+                             const char comment);
 
 // Merge the contents of two key files
 Key_File *econf_merge_key_files(Key_File *usr_file, Key_File *etc_file);
 
 // Write content of a Key_File struct to specified location
 void econf_write_key_file(Key_File *key_file, const char *save_to_dir,
-                    const char *file_name);
+                          const char *file_name);
 
-// Wrapper function to perform the merge in one step
-void econf_merge_files(const char *save_to_dir, const char *file_name,
-                 const char *etc_path, const char *usr_path,
-                 char *delimiter, const char comment);
+Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
+                                   const char *etch_conf_dir,
+                                   char *project_name, char *config_suffix,
+                                   char *delimt, char comment);
 
 /* --- GETTERS --- */
 

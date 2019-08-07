@@ -110,9 +110,68 @@ Key_File *econf_merge_key_files(Key_File *usr_file, Key_File *etc_file) {
   return merge_file;
 }
 
+Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
+                                   const char *etc_conf_dir,
+                                   char *project_name, char *config_suffix,
+                                   char *delim, char comment) {
+  size_t size = 1;
+  Key_File **key_files = malloc(size * sizeof(Key_File*));
+
+  // Prepend a . to the config suffix if not provided
+  config_suffix = strchr(config_suffix, '.') ? strdup(config_suffix) :
+      combine_strings("", config_suffix, '.');
+  char *file_name = combine_strings(project_name, &*(config_suffix + 1), '.');
+
+  // Get the list of directories to search for config files
+  char **default_dirs = get_default_dirs(usr_conf_dir, etc_conf_dir);
+  char **default_ptr = default_dirs, *project_path;
+
+  Key_File *key_file;
+  while (*default_dirs) {
+    project_path = combine_strings(*default_dirs, project_name, '/');
+
+    // Check if the config file exists directly in the given config directory
+    char *file_path = combine_strings(*default_dirs, file_name, '/');
+    key_file = econf_get_key_file(file_path, delim, comment);
+    free(file_path);
+    if(key_file) {
+      key_file->on_merge_delete = 1;
+      key_files[size - 1] = key_file;
+      key_files = realloc(key_files, ++size * sizeof(Key_File *));
+    }
+
+    // Indicate which directories to look for
+    // Gets expanded to:
+    // "default_dirs/project_name/"
+    // "default_dirs/project_name/conf.d/"
+    // "default_dirs/project_name.conf.d/"
+    // "default_dirs/project_name.d/"
+    // in this order
+    char *conf_dirs = " d . conf.d . conf.d / 0 ";
+    // Check for '$config_suffix' files in config directories with the
+    // given project name
+    key_files = traverse_conf_dirs(key_files, conf_dirs, &size, project_path,
+                                   config_suffix, delim, comment);
+
+    free(project_path);
+    *default_dirs++;
+  }
+  key_files[size - 1] = NULL;
+
+  // Free allocated memory and return
+  free(file_name); free(config_suffix);
+  econf_afree(default_ptr);
+
+  // Merge the list of acquired key_files into merged_file
+  Key_File *merged_file = merge_Key_Files(key_files);
+  free(key_files);
+
+  return merged_file;
+}
+
 // Write content of a Key_File struct to specified location
 void econf_write_key_file(Key_File *key_file, const char *save_to_dir,
-                    const char *file_name) {
+                          const char *file_name) {
   // Check if the directory exists
   DIR *dir = opendir(save_to_dir);
   if (dir) {
@@ -145,35 +204,6 @@ void econf_write_key_file(Key_File *key_file, const char *save_to_dir,
   // Clean up
   free(save_to);
   fclose(kf);
-}
-
-// Wrapper function to perform the merge in one step
-void econf_merge_files(const char *save_to_dir, const char *file_name,
-                 const char *etc_path, const char *usr_path,
-                 char *delimiter, const char comment) {
-
-  /* --- GET KEY FILES --- */
-
-  char *usr_file_name = combine_strings(usr_path, file_name, '/');
-  char *etc_file_name = combine_strings(etc_path, file_name, '/');
-
-  Key_File *usr_file = econf_get_key_file(usr_file_name, delimiter, comment);
-  Key_File *etc_file = econf_get_key_file(etc_file_name, delimiter, comment);
-
-  /* --- MERGE KEY FILES --- */
-
-  Key_File *merged_file = econf_merge_key_files(usr_file, etc_file);
-
-  /* --- WRITE MERGED FILE --- */
-
-  econf_write_key_file(merged_file, save_to_dir, file_name);
-
-  /* --- CLEAN UP --- */
-  free(etc_file_name);
-  free(usr_file_name);
-  econf_destroy(usr_file);
-  econf_destroy(etc_file);
-  econf_destroy(merged_file);
 }
 
 /* GETTER FUNCTIONS */

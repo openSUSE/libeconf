@@ -25,6 +25,7 @@
 #include "../include/helpers.h"
 
 #include <ctype.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -47,6 +48,8 @@ void initialize(Key_File *key_file, size_t num) {
 
 // Remove whitespace from beginning and end, append string terminator
 char *clearblank(size_t *vlen, char *string) {
+  if (!*vlen) return string;
+
   char *buffer = string, *ptr = string;
   string[*vlen] = 0;
 
@@ -122,7 +125,8 @@ size_t hashstring(char *string) {
 
 // Look for matching key
 size_t find_key(Key_File key_file, char *group, char *key) {
-  size_t g = hashstring(group), k = hashstring(key);
+  size_t g = KEY_FILE_NULL_VALUE_HASH, k = hashstring(key);
+  if (group != NULL) { g = hashstring(group); }
   for (int i = 0; i < key_file.length; i++) {
     if (g == hashstring(key_file.file_entry[i].group) &&
         k == hashstring(key_file.file_entry[i].key)) {
