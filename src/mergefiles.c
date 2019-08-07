@@ -21,6 +21,8 @@
   SOFTWARE.
 */
 
+#include "../include/defines.h"
+#include "../include/helpers.h"
 #include "../include/mergefiles.h"
 
 #include <stdio.h>
@@ -33,7 +35,7 @@ size_t insert_nogroup(struct file_entry **fe, Key_File *ef) {
   size_t etc_start = 0;
   while (etc_start < ef->length &&
          !strcmp(ef->file_entry[etc_start].group, KEY_FILE_NULL_VALUE)) {
-    (*fe)[etc_start] = ef->file_entry[etc_start];
+    (*fe)[etc_start] = cpy_file_entry(ef->file_entry[etc_start]);
     etc_start++;
   }
   return etc_start;
@@ -56,14 +58,15 @@ size_t merge_existing_groups(struct file_entry **fe, Key_File *uf, Key_File *ef,
           for (int k = merge_length; k < i + tmp; k++) {
             // If an existing key is found in ef take the value from ef
             if (!strcmp((*fe)[k].key, ef->file_entry[j].key)) {
-              (*fe)[k] = ef->file_entry[j];
+              free((*fe)[k].value);
+              (*fe)[k].value = strdup(ef->file_entry[j].value);
               new_key = 0;
               break;
             }
           }
           // If a new key is found for an existing group append it to the group
           if (new_key)
-            (*fe)[i + added_keys++] = ef->file_entry[j];
+            (*fe)[i + added_keys++] = cpy_file_entry(ef->file_entry[j]);
         }
       }
       merge_length = i + added_keys;
@@ -71,7 +74,7 @@ size_t merge_existing_groups(struct file_entry **fe, Key_File *uf, Key_File *ef,
       tmp = added_keys;
     }
     if (i != uf->length)
-      (*fe)[i + added_keys] = uf->file_entry[i];
+      (*fe)[i + added_keys] = cpy_file_entry(uf->file_entry[i]);
   }
   return merge_length;
 }
@@ -92,7 +95,7 @@ size_t add_new_groups(struct file_entry **fe, Key_File *uf, Key_File *ef,
       }
     }
     if (new_key)
-      (*fe)[added_keys++] = ef->file_entry[i];
+      (*fe)[added_keys++] = cpy_file_entry(ef->file_entry[i]);
   }
   *fe = realloc(*fe, added_keys * sizeof(struct file_entry));
   return added_keys;

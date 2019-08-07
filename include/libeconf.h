@@ -96,5 +96,3 @@ void econf_afree(char **array);
 // Free memory allocated by key_file
 void econf_destroy(Key_File *key_file);
 
-// Free memory of merged file
-void econf_destroy_merged_file(Key_File *key_file);

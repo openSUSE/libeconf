@@ -156,3 +156,12 @@ void setKeyValue(void (*function) (Key_File*, size_t, void*), Key_File *kf, char
     function(kf, kf->length - 1, value);
   }
 }
+
+struct file_entry cpy_file_entry(struct file_entry fe) {
+  struct file_entry copied_fe;
+  copied_fe.group = strdup(fe.group);
+  copied_fe.key = strdup(fe.key);
+  copied_fe.value = strdup(fe.value);
+  return copied_fe;
+}
+
