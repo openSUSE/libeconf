@@ -59,7 +59,7 @@ char *clearblank(size_t *vlen, char *string) {
   while (buffer[*vlen - 1] == ' ' || buffer[*vlen - 1] == '\t')
     (*vlen)--;
 
-  buffer[(*vlen)++] = 0;
+  buffer[*vlen] = 0;
   return buffer;
 }
 

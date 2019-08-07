@@ -45,8 +45,8 @@ void fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
 
   // Allocate memory for the Key_File based on KEY_FILE_DEFAULT_LENGTH
   struct file_entry *fe = malloc(KEY_FILE_DEFAULT_LENGTH * sizeof(struct file_entry));
-  fe->group = malloc(3), fe->key = NULL;
-  snprintf(fe->group, 3, "[]");
+  fe->group = strdup(KEY_FILE_NULL_VALUE);
+  fe->key = KEY_FILE_NULL_VALUE;
   char *buffer = malloc(LLEN);
 
   while ((ch = getc(kf)) != EOF) {
@@ -55,24 +55,21 @@ void fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
       llen *= 2;
     }
     if (ch == '\n') {
-      if (vlen == 0 && !fe[file_length].key)
-        continue;
+      if (vlen == 0 && !strcmp(fe[file_length].key, KEY_FILE_NULL_VALUE)) { continue; }
       end_of_line(&fe, &file_length, &lnum, vlen, buffer);
     }
     // If the current char is the delimiter consider the part before to
     // be a key.
-    else if (!regexec(&regex, &ch, 0, NULL, 0) && !fe[file_length].key) {
-      if(!file_length)
-        read_file->delimiter = ch;
+    else if (!regexec(&regex, &ch, 0, NULL, 0) &&
+             !strcmp(fe[file_length].key, KEY_FILE_NULL_VALUE)) {
+      if(!file_length) { read_file->delimiter = ch; }
       buffer = clearblank(&vlen, buffer);
-      fe[file_length].key = malloc(vlen);
-      snprintf(fe[file_length].key, vlen, buffer);
+      fe[file_length].key = strndup(buffer, vlen);
     }
     // If the line contains the given comment char ignore the rest
     // of the line and proceed with the next
     else if (ch == read_file->comment) {
-      if (vlen != 0)
-        end_of_line(&fe, &file_length, &lnum, vlen, buffer);
+      if (vlen != 0) { end_of_line(&fe, &file_length, &lnum, vlen, buffer); }
       getline(&buffer, &llen, kf);
     }
     // Default case: append the char to the buffer
@@ -85,10 +82,7 @@ void fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
   free(buffer);
   regfree(&regex);
   // Check if the file is really at its end after EOF is encountered.
-  if (!feof(kf)) {
-    read_file->length = -EBADF;
-    return;
-  }
+  if (!feof(kf)) { read_file->length = -EBADF; return; }
   read_file->length = file_length;
   read_file->alloc_length = file_length;
   fe = realloc(fe, file_length * sizeof(struct file_entry));
@@ -103,22 +97,17 @@ void end_of_line(struct file_entry **fe, size_t *len, size_t *lnum, size_t vlen,
   // If a newline char is encountered and the line had no delimiter
   // the line is expected to be a group
   // In this case key is not set
-  if (!(*fe)[*len].key) {
-    if (!*len)
-      free((*fe)->group);
-    (*fe)[*len].group = malloc(vlen);
-    snprintf((*fe)[*len].group, vlen, buffer);
+  if (!strcmp((*fe)[*len].key, KEY_FILE_NULL_VALUE)) {
+    if(!*len) { free((*fe)->group); }
+    (*fe)[*len].group = strndup(buffer, vlen);
   } else {
     // If the line is no new group copy the group from the previous line
-    if (*len && !strcmp((*fe)[*len].group, "[]")) {
-      size_t tmp = strlen((*fe)[*len - 1].group) + 1;
-      (*fe)[*len].group = malloc(tmp);
-      snprintf((*fe)[*len].group, tmp, (*fe)[*len - 1].group);
+    if (*len && !strcmp((*fe)[*len].group, KEY_FILE_NULL_VALUE)) {
+      (*fe)[*len].group = strdup((*fe)[*len - 1].group);
     }
     // If the line had a delimiter everything after the delimiter is
     // considered to be a value
-    (*fe)[*len].value = malloc(vlen);
-    snprintf((*fe)[*len].value, vlen, buffer);
+    (*fe)[*len].value = strndup(buffer, vlen);
     // Perform memory check and increase len by one
     new_kf_line(fe, len, lnum);
   }
@@ -130,6 +119,7 @@ void new_kf_line(struct file_entry **fe, size_t *file_length, size_t *lnum) {
     *fe = realloc(*fe, *lnum * 2 * sizeof(struct file_entry));
     (*lnum) *= 2;
   }
-  (*fe)[*file_length].group = "[]";
-  (*fe)[*file_length].key = NULL;
+  (*fe)[*file_length].group = KEY_FILE_NULL_VALUE;
+  (*fe)[*file_length].key = KEY_FILE_NULL_VALUE;
 }
+
