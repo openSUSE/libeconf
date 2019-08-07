@@ -58,20 +58,32 @@ Key_File *econf_newIniFile() {
 
 // Process the file of the given file_name and save its contents into key_file
 Key_File *econf_get_key_file(const char *file_name, char *delim,
-                      const char comment) {
+                             const char comment) {
+  // Get absolute path if not provided
+  errno = 0;
+  char *absolute_path = get_absolute_path(file_name);
+  if(errno != 0) return NULL;
+
+  // File handle for the given file_name
+  FILE *kf = fopen(absolute_path, "rb");
+  free(absolute_path);
+  if (kf == NULL) {
+    return NULL;
+  }
+
   Key_File *read_file = malloc(sizeof(Key_File));
   read_file->comment = comment;
 
-  // File handle for the given file_name
-  FILE *kf = fopen(file_name, "rb");
-  if (kf == NULL) {
-    read_file->length = -ENOENT;
-    return read_file;
+  fill_key_file(read_file, kf, delim);
+  read_file->on_merge_delete = 0;
+  fclose(kf);
+
+  if(!read_file->length) {
+    errno = ENODATA;
+    econf_destroy(read_file);
+    return NULL;
   }
 
-  fill_key_file(read_file, kf, delim);
-
-  fclose(kf);
   return read_file;
 }
 

@@ -80,6 +80,10 @@ void fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
   free(buffer);
   // Check if the file is really at its end after EOF is encountered.
   if (!feof(kf)) { read_file->length = -EBADF; return; }
+  if (!strcmp(fe->key, KEY_FILE_NULL_VALUE)) {
+    fe->key = NULL;
+    free(fe->group);
+  }
   read_file->length = file_length;
   read_file->alloc_length = file_length;
   fe = realloc(fe, file_length * sizeof(struct file_entry));
