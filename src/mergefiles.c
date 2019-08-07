@@ -23,8 +23,10 @@
 
 #include "../include/defines.h"
 #include "../include/helpers.h"
+#include "../include/libeconf.h"
 #include "../include/mergefiles.h"
 
+#include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -100,3 +102,88 @@ size_t add_new_groups(struct file_entry **fe, Key_File *uf, Key_File *ef,
   *fe = realloc(*fe, added_keys * sizeof(struct file_entry));
   return added_keys;
 }
+
+char **get_default_dirs(const char *usr_conf_dir, const char *etc_conf_dir) {
+  size_t default_dir_number = 3, dir_num = 0;
+  char **default_dirs = malloc(++default_dir_number * sizeof(char *));
+
+  // Set config directory in /usr
+  default_dirs[dir_num++] = strdup(usr_conf_dir);
+  // Set config directory in /etc
+  default_dirs[dir_num++] = strdup(etc_conf_dir);
+  // If XDG_CONFIG_DIRS is set check it as well
+  if(getenv("XDG_CONFIG_DIRS")) {
+    default_dirs = realloc(default_dirs, ++default_dir_number * sizeof(char *));
+    default_dirs[dir_num++] = strdup(getenv("XDG_CONFIG_DIRS"));
+  }
+  // XDG config home
+  if (getenv("XDG_CONFIG_HOME")) {
+    default_dirs[dir_num++] = strdup(getenv("XDG_CONFIG_HOME"));
+  } else {
+    sprintf(default_dirs[dir_num++] = malloc(strlen("/home//.config") +
+            strlen(getenv("USERNAME")) + 1), "/home/%s/.config",
+            getenv("USERNAME"));
+  }
+  default_dirs[dir_num] = NULL;
+
+  return default_dirs;
+}
+
+Key_File **traverse_conf_dirs(Key_File **key_files, char *conf_dirs,
+                              size_t *size, char *path, char *config_suffix,
+                              char *delim, char comment) {
+  char *dir, c;
+  conf_dirs = strdup(conf_dirs);
+  while ((dir = strrchr(conf_dirs, ' '))) {
+    c = *(dir + 1); *dir = 0;
+    dir = strrchr(conf_dirs, ' ');
+    key_files = check_conf_dir(key_files, size,
+        combine_strings(path, &*(dir + 1), c), config_suffix, delim, comment);
+    *dir = 0;
+  }
+  free(conf_dirs);
+  return key_files;
+}
+
+Key_File **check_conf_dir(Key_File **key_files, size_t *size, char *path,
+                          char *config_suffix, char *delim, char comment) {
+  struct dirent **de;
+  int num_dirs = scandir(path, &de, NULL, alphasort);
+  if(num_dirs > 0) {
+    for (int i = 0; i < num_dirs; i++) {
+      if(!strcmp(strchr(de[i]->d_name, '.'), config_suffix)) {
+        char *file_path = combine_strings(path, de[i]->d_name, '/');
+        Key_File *key_file = econf_get_key_file(file_path, delim, comment);
+        free(file_path);
+        if(key_file) {
+          key_file->on_merge_delete = 1;
+          key_files[(*size) - 1] = key_file;
+          key_files = realloc(key_files, ++(*size) * sizeof(Key_File *));
+        }
+      }
+      free(de[i]);
+    }
+    free(de);
+  }
+  free(path);
+  return key_files;
+}
+
+Key_File *merge_Key_Files(Key_File **key_files) {
+  Key_File *merged_file = *key_files++;
+  if(!merged_file) { errno = ENOENT; return NULL; }
+
+  while(*key_files) {
+    Key_File *tmp = merged_file;
+
+    merged_file = econf_merge_key_files(merged_file, *key_files);
+    merged_file->on_merge_delete = 1;
+
+    if(tmp->on_merge_delete) { econf_destroy(tmp); }
+    if((*key_files)->on_merge_delete) { econf_destroy(*key_files); }
+
+    key_files++;
+  }
+  return merged_file;
+}
+

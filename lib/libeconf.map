@@ -13,8 +13,8 @@ LIBECONF_0.1 {
     econf_getStringValue;
     econf_getUInt64Value;
     econf_getUIntValue;
-    econf_merge_files;
     econf_merge_key_files;
+    econf_get_conf_from_dirs;
     econf_newIniFile;
     econf_newKeyFile;
     econf_setBoolValue;

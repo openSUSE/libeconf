@@ -33,6 +33,7 @@ typedef struct Key_File {
   } * file_entry;
   size_t length, alloc_length;
   char delimiter, comment;
+  bool on_merge_delete;
 } Key_File;
 
 void key_file_append(Key_File *key_file);

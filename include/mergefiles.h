@@ -40,3 +40,19 @@ size_t merge_existing_groups(struct file_entry **fe, Key_File *uf, Key_File *ef,
 // Add entries from etc_file exclusive groups
 size_t add_new_groups(struct file_entry **fe, Key_File *uf, Key_File *ef,
                       const size_t merge_length);
+
+// Returns the default dirs to iterate through when merging
+char **get_default_dirs(const char *usr_conf_dir, const char *etc_conf_dir);
+
+// Receives a list of config directories to look for and calls 'check_conf_dir'
+Key_File **traverse_conf_dirs(Key_File **key_files, char *conf_dirs,
+                              size_t *size, char *path, char *config_suffix,
+                              char *delim, char comment);
+
+// Check if the given directory exists. If so look for config files
+// with the given suffix
+Key_File **check_conf_dir(Key_File **key_files, size_t *size, char *path,
+                          char *config_suffix, char *delim, char comment);
+
+// Merge an array of given Key_Files into one
+Key_File *merge_Key_Files(Key_File **key_files);
