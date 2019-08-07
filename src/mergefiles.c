@@ -27,12 +27,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Insert the content of "etc_file.file_entry" into "fe" if the group equals
-// "[]", ef: etc_file
+// Insert the content of "etc_file.file_entry" into "fe" if there is no
+// group specified
 size_t insert_nogroup(struct file_entry **fe, Key_File *ef) {
   size_t etc_start = 0;
   while (etc_start < ef->length &&
-         !strcmp(ef->file_entry[etc_start].group, "[]")) {
+         !strcmp(ef->file_entry[etc_start].group, KEY_FILE_NULL_VALUE)) {
     (*fe)[etc_start] = ef->file_entry[etc_start];
     etc_start++;
   }
@@ -82,7 +82,7 @@ size_t add_new_groups(struct file_entry **fe, Key_File *uf, Key_File *ef,
   size_t added_keys = merge_length;
   char new_key;
   for (int i = 0; i < ef->length; i++) {
-    if (!strcmp(ef->file_entry[i].group, "[]"))
+    if (!strcmp(ef->file_entry[i].group, KEY_FILE_NULL_VALUE))
       continue;
     new_key = 1;
     for (int j = 0; j < uf->length; j++) {

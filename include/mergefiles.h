@@ -27,7 +27,8 @@
 
 #include <stddef.h>
 
-// Insert the content of "etc_file.file_entry" into "fe" if the group equals
+// Insert the content of "etc_file.file_entry" into "fe" if there is no
+// group specified
 // "[]", ef: etc_file
 size_t insert_nogroup(struct file_entry **fe, Key_File *ef);
 
