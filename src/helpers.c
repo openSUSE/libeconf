@@ -65,6 +65,21 @@ char *clearblank(size_t *vlen, char *string) {
   return buffer;
 }
 
+char *get_absolute_path(const char *path) {
+  char *absolute_path;
+  if(*path != '/') {
+    char buffer[256];
+    if(!realpath(path, buffer)) {
+      errno = ENOENT;
+      return NULL;
+    }
+    absolute_path = strdup(buffer);
+  } else {
+    absolute_path = strdup(path);
+  }
+  return absolute_path;
+}
+
 // Remove '[' and ']' from beginning and end
 char *stripbrackets(char *string) {
   char *ptr = string, *buffer = string;
