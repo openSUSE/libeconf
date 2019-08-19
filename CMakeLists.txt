@@ -18,6 +18,7 @@ add_library(econf SHARED src/libeconf.c src/getfilecontents.c src/mergefiles.c s
 set_target_properties(econf PROPERTIES
   VERSION ${PROJECT_VERSION}
   PUBLIC_HEADER include/libeconf.h
+  LINK_FLAGS "-Wl,--version-script,\"${CMAKE_CURRENT_SOURCE_DIR}/lib/libeconf.map\""
 )
 
 # Install the library
