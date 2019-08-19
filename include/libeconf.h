@@ -42,8 +42,6 @@
     char*: econf_setStringValue)) \
 (kf, group, key, value))
 
-extern int errno;
-
 typedef struct Key_File Key_File;
 
 Key_File *econf_newKeyFile(char delimiter, char comment);
