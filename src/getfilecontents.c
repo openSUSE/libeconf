@@ -24,7 +24,6 @@
 #include "../include/helpers.h"
 
 #include <errno.h>
-#include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,9 +38,6 @@ void fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
   const size_t LLEN = 8;
   size_t file_length = 0, lnum = KEY_FILE_DEFAULT_LENGTH, llen = LLEN, vlen = 0;
   char ch;
-
-  regex_t regex;
-  regcomp(&regex, delim, 0);
 
   // Allocate memory for the Key_File based on KEY_FILE_DEFAULT_LENGTH
   struct file_entry *fe = malloc(KEY_FILE_DEFAULT_LENGTH * sizeof(struct file_entry));
@@ -60,7 +56,7 @@ void fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
     }
     // If the current char is the delimiter consider the part before to
     // be a key.
-    else if (!regexec(&regex, &ch, 0, NULL, 0) &&
+    else if (strchr(delim, ch) != NULL &&
              !strcmp(fe[file_length].key, KEY_FILE_NULL_VALUE)) {
       if(!file_length) { read_file->delimiter = ch; }
       buffer = clearblank(&vlen, buffer);
@@ -80,7 +76,6 @@ void fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
     vlen = 0;
   }
   free(buffer);
-  regfree(&regex);
   // Check if the file is really at its end after EOF is encountered.
   if (!feof(kf)) { read_file->length = -EBADF; return; }
   read_file->length = file_length;
