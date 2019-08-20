@@ -14,5 +14,5 @@ LT_INIT([disable-static])
 PKG_PROG_PKG_CONFIG
 PKG_INSTALLDIR
 
-AC_CONFIG_FILES([Makefile lib/Makefile include/Makefile bin/Makefile lib/libeconf.pc])
+AC_CONFIG_FILES([Makefile lib/Makefile include/Makefile bin/Makefile tests/Makefile lib/libeconf.pc])
 AC_OUTPUT

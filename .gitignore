@@ -30,3 +30,13 @@ config.log
 config.status
 config.sub
 config.guess
+bin/example
+test-driver
+tests/test-suite.log
+tests/tst-filedoesnotexit1
+tests/tst-filedoesnotexit1.log
+tests/tst-filedoesnotexit1.trs
+tests/tst-merge1
+tests/tst-merge1.log
+tests/tst-merge1.trs
+
