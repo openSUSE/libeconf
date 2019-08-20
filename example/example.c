@@ -32,7 +32,7 @@ int main() {
 
   clock_t begin = clock();
 
-  econf_merge_files("example/etc/example.conf.d", "example.ini", "example/etc/example", "example/usr/share/defaults", "=", '#');
+  econf_merge_files("example/etc/example/conf.d", "example.ini", "example/etc/example", "example/usr/etc", "=", '#');
 
   //Key_File *key_file = econf_newIniFile();
   Key_File *key_file = econf_get_key_file("example/etc/example/example.ini", "=", '#');
