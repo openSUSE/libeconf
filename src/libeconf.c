@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2019 SUSE Linux GmbH
+  Copyright (C) 2019 SUSE LLC
   Author: Pascal Arlt <parlt@suse.com>
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
