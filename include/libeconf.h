@@ -42,7 +42,7 @@
     unsigned int: econf_setUIntValue, unsigned long: econf_setUIntValue, \
     float: econf_setFloatValue, \
     double: econf_setDoubleValue, \
-    char*: econf_setStringValue)) \
+    char*: econf_setStringValue, void*: econf_setStringValue)) \
 (kf, group, key, value))
 
 typedef struct Key_File Key_File;

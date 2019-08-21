@@ -125,8 +125,9 @@ size_t hashstring(char *string) {
 
 // Look for matching key
 size_t find_key(Key_File key_file, char *group, char *key) {
+  if (!key || !*key) { errno = ENODATA; return -1; }
   size_t g = KEY_FILE_NULL_VALUE_HASH, k = hashstring(key);
-  if (group != NULL) { g = hashstring(group); }
+  if (group && *group) { g = hashstring(group); }
   for (int i = 0; i < key_file.length; i++) {
     if (g == hashstring(key_file.file_entry[i].group) &&
         k == hashstring(key_file.file_entry[i].key)) {
@@ -138,6 +139,8 @@ size_t find_key(Key_File key_file, char *group, char *key) {
 }
 
 // Append a new key to an existing Key_File
+// TODO: If the group is already known the new key should be appended
+// at the end of that group not at the end of the file.
 void new_key(Key_File *key_file, char *group, char *key) {
   key_file_append(key_file);
   setGroup(key_file, key_file->length - 1, group);
@@ -149,9 +152,11 @@ void new_key(Key_File *key_file, char *group, char *key) {
 // TODO: function/void pointer might not be necessary if the value is converted
 // into a string beforehand.
 void setKeyValue(void (*function) (Key_File*, size_t, void*), Key_File *kf, char *group, char *key, void *value) {
-  char *tmp = strdup(group);
-  tmp = addbrackets(tmp);
+  errno = 0;
+  char *tmp = ((!group || !*group) ? strdup(KEY_FILE_NULL_VALUE) :
+               addbrackets(strdup(group)));
   int num = find_key(*kf, tmp, key);
+  if (errno) { free(tmp); return; }
   if (num != -1) {
     free(tmp);
     function(kf, num, value);

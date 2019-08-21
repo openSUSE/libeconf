@@ -125,14 +125,13 @@ void setDoubleValueNum(Key_File *key_file, size_t num, void *v) {
 }
 
 void setStringValueNum(Key_File *key_file, size_t num, void *v) {
-  char *value = (char*) v;
+  char *value = (char*) (v ? v : "");
   free(key_file->file_entry[num].value);
   key_file->file_entry[num].value = strdup(value);
 }
 
 void setBoolValueNum(Key_File *kf, size_t num, void *v) {
-  char *value = (char*) v;
-  if (!*value) { errno = EINVAL; return; }
+  char *value = (char*) (v ? v : "");
 
   char *tmp = strdup(value);
   size_t hash = hashstring(toLowerCase(tmp));
@@ -140,7 +139,8 @@ void setBoolValueNum(Key_File *kf, size_t num, void *v) {
   if ((*value == '1' && strlen(tmp) == 1) || hash == YES || hash == TRUE) {
     free(kf->file_entry[num].value);
     kf->file_entry[num].value = strdup("true");
-  } else if ((*value == '0' && strlen(tmp) == 1) || hash == NO || hash == FALSE) {
+  } else if ((*value == '0' && strlen(tmp) == 1) || !*value ||
+             hash == NO || hash == FALSE) {
     free(kf->file_entry[num].value);
     kf->file_entry[num].value = strdup("false");
   } else if (hash == KEY_FILE_NULL_VALUE_HASH) {
