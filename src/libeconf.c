@@ -89,6 +89,8 @@ Key_File *econf_get_key_file(const char *file_name, char *delim,
 
 // Merge the contents of two key files
 Key_File *econf_merge_key_files(Key_File *usr_file, Key_File *etc_file) {
+  if (usr_file == NULL || etc_file == NULL) { errno = ENODATA; return NULL; }
+
   Key_File *merge_file = malloc(sizeof(Key_File));
   merge_file->delimiter = usr_file->delimiter;
   merge_file->comment = usr_file->comment;
@@ -172,6 +174,7 @@ Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
 // Write content of a Key_File struct to specified location
 void econf_write_key_file(Key_File *key_file, const char *save_to_dir,
                           const char *file_name) {
+  if (!key_file) { errno = ENODATA; return; }
   // Check if the directory exists
   DIR *dir = opendir(save_to_dir);
   if (dir) {
@@ -215,14 +218,17 @@ void econf_write_key_file(Key_File *key_file, const char *save_to_dir,
 // upon entering a new key or the function must ensure only
 // unique values are returned.
 char **econf_getGroups(Key_File *kf, size_t *length) {
+  if (!kf) { errno = ENODATA; return NULL; }
   size_t tmp = 0;
   bool *uniques = calloc(kf->length,sizeof(bool));
   for (int i = 0; i < kf->length; i++) {
-    if (!i || strcmp(kf->file_entry[i].group, kf->file_entry[i - 1].group)) {
+    if ((!i || strcmp(kf->file_entry[i].group, kf->file_entry[i - 1].group)) &&
+        strcmp(kf->file_entry[i].group, KEY_FILE_NULL_VALUE)) {
       uniques[i] = 1;
       tmp++;
     }
   }
+  if (!tmp) { free(uniques); return NULL; }
   char **groups = calloc(tmp + 1, sizeof(char*));
   tmp = 0;
   for(int i = 0; i < kf->length; i++) {
@@ -237,9 +243,10 @@ char **econf_getGroups(Key_File *kf, size_t *length) {
 
 // TODO: Same issue as with getGroups()
 char **econf_getKeys(Key_File *kf, const char *grp, size_t *length) {
+  if (!kf) { errno = ENODATA; return NULL; }
   size_t tmp = 0;
-  char *group = strdup(grp);
-  group = addbrackets(group);
+  char *group = ((!grp || !*grp) ? strdup(KEY_FILE_NULL_VALUE) :
+                 addbrackets(strdup(grp)));
   bool *uniques = calloc(kf->length, sizeof(bool));
   for (int i = 0; i < kf->length; i++) {
     if (!strcmp(kf->file_entry[i].group, group) &&
@@ -248,6 +255,8 @@ char **econf_getKeys(Key_File *kf, const char *grp, size_t *length) {
       tmp++;
     }
   }
+  free(group);
+  if (!tmp) { free(uniques); return NULL; }
   char **keys = calloc(tmp + 1, sizeof(char*));
   for(int i = 0, tmp = 0; i < kf->length; i++) {
     if (uniques[i]) { keys[tmp++] = strdup(kf->file_entry[i].key); }
@@ -255,87 +264,102 @@ char **econf_getKeys(Key_File *kf, const char *grp, size_t *length) {
 
   if (length != NULL) { *length = tmp; }
 
-  free(uniques), free(group);
+  free(uniques);
   return keys;
 }
 
 int32_t econf_getIntValue(Key_File *kf, char *group, char *key) {
+  if (!kf) { errno = ENODATA; return -1; }
   size_t num = find_key(*kf, group, key);
-  if (num != -1) return getIntValueNum(*kf, num);
-  return -1;
+  if (num == -1) { errno = ENOKEY; return -1; }
+  return getIntValueNum(*kf, num);
 }
 
 int64_t econf_getInt64Value(Key_File *kf, char *group, char *key) {
+  if (!kf) { errno = ENODATA; return -1; }
   size_t num = find_key(*kf, group, key);
-  if (num != -1) return getInt64ValueNum(*kf, num);
-  return -1;
+  if (num == -1) { errno = ENOKEY; return -1; }
+  return getInt64ValueNum(*kf, num);
 }
 
 uint32_t econf_getUIntValue(Key_File *kf, char *group, char *key) {
+  if (!kf) { errno = ENODATA; return -1; }
   size_t num = find_key(*kf, group, key);
-  if (num != -1) return getUIntValueNum(*kf, num);
-  return -1;
+  if (num == -1) { errno = ENOKEY; return -1; }
+  return getUIntValueNum(*kf, num);
 }
 
 uint64_t econf_getUInt64Value(Key_File *kf, char *group, char *key) {
+  if (!kf) { errno = ENODATA; return -1; }
   size_t num = find_key(*kf, group, key);
-  if (num != -1) return getUInt64ValueNum(*kf, num);
-  return -1;
+  if (num == -1) { errno = ENOKEY; return -1; }
+  return getUInt64ValueNum(*kf, num);
 }
 
 float econf_getFloatValue(Key_File *kf, char *group, char *key) {
+  if (!kf) { errno = ENODATA; return -1; }
   size_t num = find_key(*kf, group, key);
-  if (num != -1) return getFloatValueNum(*kf, num);
-  return -1;
+  if (num == -1) { errno = ENOKEY; return -1; }
+  return getFloatValueNum(*kf, num);
 }
 
 double econf_getDoubleValue(Key_File *kf, char *group, char *key) {
+  if (!kf) { errno = ENODATA; return -1; }
   size_t num = find_key(*kf, group, key);
-  if (num != -1) return getDoubleValueNum(*kf, num);
-  return -1;
+  if (num == -1) { errno = ENOKEY; return -1; }
+  return getDoubleValueNum(*kf, num);
 }
 
 char *econf_getStringValue(Key_File *kf, char *group, char *key) {
+  if (!kf) { errno = ENODATA; return ""; }
   size_t num = find_key(*kf, group, key);
-  if (num != -1) return getStringValueNum(*kf, num);
-  return "";
+  if (num == -1) { errno = ENOKEY; return ""; }
+  return getStringValueNum(*kf, num);
 }
 
 bool econf_getBoolValue(Key_File *kf, char *group, char *key) {
+  if (!kf) { errno = ENODATA; return 0; }
   size_t num = find_key(*kf, group, key);
-  if (num != -1) return getBoolValueNum(*kf, num);
-  return -1;
+  if (num == -1) { errno = ENOKEY; return 0; }
+  return getBoolValueNum(*kf, num);
 }
 
 /* SETTER FUNCTIONS */
 
 void econf_setIntValue(Key_File *kf, char *group, char *key, int64_t value) {
+  if (!kf) { errno = ENODATA; return; }
   setKeyValue(setIntValueNum, kf, group, key, &value);
 }
 
 void econf_setUIntValue(Key_File *kf, char *group, char *key, uint64_t value) {
+  if (!kf) { errno = ENODATA; return; }
   setKeyValue(setUIntValueNum, kf, group, key, &value);
 }
 
 void econf_setFloatValue(Key_File *kf, char *group, char *key, float value) {
+  if (!kf) { errno = ENODATA; return; }
   setKeyValue(setFloatValueNum, kf, group, key, &value);
 }
 
 void econf_setDoubleValue(Key_File *kf, char *group, char *key, double value) {
+  if (!kf) { errno = ENODATA; return; }
   setKeyValue(setDoubleValueNum, kf, group, key, &value);
 }
 
 void econf_setStringValue(Key_File *kf, char *group, char *key, char *value) {
+  if (!kf) { errno = ENODATA; return; }
   setKeyValue(setStringValueNum, kf, group, key, value);
 }
 
 void econf_setBoolValue(Key_File *kf, char *group, char *key, char *value) {
+  if (!kf) { errno = ENODATA; return; }
   setKeyValue(setBoolValueNum, kf, group, key, value);
 }
 
 /* --- DESTROY FUNCTIONS --- */
 
 void econf_afree(char** array) {
+  if (!array) { return; }
   char *tmp = (char*) array;
   while (*array)
     free(*array++);
@@ -344,6 +368,7 @@ void econf_afree(char** array) {
 
 // Free memory allocated by key_file
 void econf_destroy(Key_File *key_file) {
+  if (!key_file) { return; }
   for (int i = 0; i < key_file->alloc_length; i++) {
     free(key_file->file_entry[i].group);
     free(key_file->file_entry[i].key);
