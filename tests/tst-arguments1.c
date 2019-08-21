@@ -18,7 +18,7 @@ main(int argc, char **argv)
   Key_File *key_file;
   char *val;
 
-  key_file = econf_get_key_file ("tst-arguments/etc/arguments.conf", "=", '#');
+  key_file = econf_get_key_file ("tst-arguments-data/etc/arguments.conf", "=", '#');
   if (key_file == NULL)
     return 1;
 

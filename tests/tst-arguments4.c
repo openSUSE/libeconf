@@ -17,12 +17,12 @@ main(int argc, char **argv)
   Key_File *key_file;
   char *val;
 
-  key_file = econf_get_key_file ("tst-arguments/etc/arguments.conf", "=", '#');
+  key_file = econf_get_key_file ("tst-arguments-data/etc/arguments.conf", "=", '#');
   if (key_file == NULL)
     return 1;
 
   val = econf_getStringValue (NULL, "", "KEY");
-  if (val != NULL || strlen(val) > 0)
+  if (val != NULL && strlen(val) > 0)
     {
       fprintf (stderr, "KEY returned something!\n");
       return 1;
