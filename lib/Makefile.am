@@ -3,7 +3,7 @@ libeconf_la_SOURCES = ../src/libeconf.c ../src/getfilecontents.c ../src/mergefil
 libeconf_la_CFLAGS = -Wall
 libeconf_la_LDFLAGS = -Wl,--version-script=$(top_srcdir)/lib/libeconf.map -lm
 
-CLEANFILES = *.pc
+DISTCLEANFILES = *.pc
 
 install-exec-hook:
 	$(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=execute "rm -f $(DESTDIR)$(libdir)/$(lib_LTLIBRARIES)";
