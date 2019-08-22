@@ -107,10 +107,10 @@ char **get_default_dirs(const char *usr_conf_dir, const char *etc_conf_dir) {
   size_t default_dir_number = 3, dir_num = 0;
   char **default_dirs = malloc(++default_dir_number * sizeof(char *));
 
-  // Set config directory in /usr
-  default_dirs[dir_num++] = strdup(usr_conf_dir);
   // Set config directory in /etc
   default_dirs[dir_num++] = strdup(etc_conf_dir);
+  // Set config directory in /usr
+  default_dirs[dir_num++] = strdup(usr_conf_dir);
   // If XDG_CONFIG_DIRS is set check it as well
   if(getenv("XDG_CONFIG_DIRS")) {
     default_dirs = realloc(default_dirs, ++default_dir_number * sizeof(char *));
