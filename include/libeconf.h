@@ -45,6 +45,16 @@
     char*: econf_setStringValue, void*: econf_setStringValue)) \
 (kf, group, key, value))
 
+// Generic macro to free memory allocated by econf_ functions
+// Use: econf_destroy(_generic_ value);
+// Replace _generic_ with one of the supported value types.
+// Supported Types: char** and Key_File*
+#define econf_destroy(value) (( \
+  _Generic((value), \
+    Key_File*: econf_Key_File_destroy , \
+    char**: econf_char_a_destroy)) \
+(value))
+
 typedef struct Key_File Key_File;
 
 Key_File *econf_newKeyFile(char delimiter, char comment);
@@ -91,8 +101,8 @@ void econf_setBoolValue(Key_File *kf, char *group, char *key, char *value);
 /* --- HELPERS --- */
 
 // Free an array of type char** created by econf_getGroups() or econf_getKeys()
-void econf_afree(char **array);
+void econf_char_a_destroy(char **array);
 
 // Free memory allocated by key_file
-void econf_destroy(Key_File *key_file);
+void econf_Key_File_destroy(Key_File *key_file);
 

@@ -165,7 +165,7 @@ Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
 
   // Free allocated memory and return
   free(file_name); free(config_suffix);
-  econf_afree(default_ptr);
+  econf_destroy(default_ptr);
 
   // Merge the list of acquired key_files into merged_file
   Key_File *merged_file = merge_Key_Files(key_files);
@@ -361,7 +361,7 @@ void econf_setBoolValue(Key_File *kf, char *group, char *key, char *value) {
 
 /* --- DESTROY FUNCTIONS --- */
 
-void econf_afree(char** array) {
+void econf_char_a_destroy(char** array) {
   if (!array) { return; }
   char *tmp = (char*) array;
   while (*array)
@@ -370,7 +370,7 @@ void econf_afree(char** array) {
 }
 
 // Free memory allocated by key_file
-void econf_destroy(Key_File *key_file) {
+void econf_Key_File_destroy(Key_File *key_file) {
   if (!key_file) { return; }
   for (int i = 0; i < key_file->alloc_length; i++) {
     free(key_file->file_entry[i].group);

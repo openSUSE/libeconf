@@ -1,7 +1,7 @@
 LIBECONF_0.1 {
   global:
-    econf_afree;
-    econf_destroy;
+    econf_char_a_destroy;
+    econf_Key_File_destroy;
     econf_getBoolValue;
     econf_getDoubleValue;
     econf_getFloatValue;
