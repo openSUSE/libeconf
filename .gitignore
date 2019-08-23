@@ -36,6 +36,7 @@ tests/*.log
 tests/*.trs
 tests/tst-filedoesnotexit1
 tests/tst-merge1
+tests/tst-merge2
 tests/tst-arguments1
 tests/tst-arguments2
 tests/tst-arguments3
