@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 // Combine file path and file name
 char *combine_strings(const char *string_one, const char *string_two,
@@ -72,7 +73,7 @@ char *clearblank(size_t *vlen, char *string) {
 char *get_absolute_path(const char *path, econf_err *error) {
   char *absolute_path;
   if(*path != '/') {
-    char buffer[256];
+    char buffer[PATH_MAX];
     if(!realpath(path, buffer)) {
       if (error)
 	*error = ECONF_NOFILE;
