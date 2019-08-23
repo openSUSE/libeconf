@@ -42,4 +42,6 @@ tests/tst-arguments2
 tests/tst-arguments3
 tests/tst-arguments4
 tests/tst-logindefs1
+tests/tst-getconfdirs1
+tests/tst-getconfdirs2
 
