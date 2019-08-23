@@ -47,7 +47,7 @@ main(int argc, char **argv)
       printf ("%i: %s\n", i, keys[i]);
     }
 
-  econf_afree (keys);
+  econf_destroy (keys);
   econf_destroy (key_file);
 
   return 0;
