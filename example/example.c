@@ -68,7 +68,7 @@ int main() {
     printf("%s, ", keys[i]);
   }
   puts("\n");
-  econf_afree(keys);
+  econf_destroy(keys);
 
   econf_write_key_file(key_file, "example/", "test.ini");
 
