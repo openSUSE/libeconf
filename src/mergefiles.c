@@ -160,9 +160,12 @@ Key_File **check_conf_dir(Key_File **key_files, size_t *size, char *path,
   int num_dirs = scandir(path, &de, NULL, alphasort);
   if(num_dirs > 0) {
     for (int i = 0; i < num_dirs; i++) {
-      if(!strcmp(strchr(de[i]->d_name, '.'), config_suffix)) {
+      size_t lenstr = strlen(de[i]->d_name);
+      size_t lensuffix = strlen(config_suffix);
+      if (lensuffix < lenstr && 
+          strncmp(de[i]->d_name + lenstr - lensuffix, config_suffix, lensuffix) == 0) {
         char *file_path = combine_strings(path, de[i]->d_name, '/');
-        Key_File *key_file = econf_get_key_file(file_path, delim, comment, NULL /*XXX*/);
+        Key_File *key_file = econf_get_key_file(file_path, delim, comment, NULL);
         free(file_path);
         if(key_file) {
           key_file->on_merge_delete = 1;
@@ -195,4 +198,3 @@ Key_File *merge_Key_Files(Key_File **key_files) {
   }
   return merged_file;
 }
-
