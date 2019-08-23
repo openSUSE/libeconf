@@ -19,7 +19,7 @@ main(int argc, char **argv)
   size_t key_number;
   char *val;
 
-  key_file = econf_get_key_file ("tst-logindefs1-data/etc/login.defs", " \t", '#');
+  key_file = econf_get_key_file (TESTSDIR"tst-logindefs1-data/etc/login.defs", " \t", '#');
   if (key_file == NULL)
     return 1;
 

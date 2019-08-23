@@ -4,6 +4,7 @@ libeconf_la_CFLAGS = -Wall
 libeconf_la_LDFLAGS = -Wl,--version-script=$(top_srcdir)/lib/libeconf.map -lm
 
 DISTCLEANFILES = *.pc
+EXTRA_DIST = libeconf.map
 
 install-exec-hook:
 	$(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=execute "rm -f $(DESTDIR)$(libdir)/$(lib_LTLIBRARIES)";

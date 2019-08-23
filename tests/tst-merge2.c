@@ -17,8 +17,8 @@ main(int argc, char **argv)
 {
   Key_File *key_file_1 = NULL, *key_file_2 = NULL, *key_file_m = NULL;
 
-  key_file_1 = econf_get_key_file (TESTSDIR"tst-merge1-data/etc/tst-merge1.conf", "=", '#');
-  key_file_2 = econf_get_key_file (TESTSDIR"tst-merge1-data/usr/etc/tst-merge1.conf", "=", '#');
+  key_file_1 = econf_get_key_file (TESTSDIR"tst-merge2-data/etc/tst-merge2.conf", "=", '#');
+  key_file_2 = econf_get_key_file (TESTSDIR"tst-merge2-data/usr/etc/tst-merge2.conf", "=", '#');
   if (key_file_1 == NULL && key_file_2 == NULL)
     {
       fprintf (stderr, "No config file found\n");
