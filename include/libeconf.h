@@ -30,7 +30,8 @@
 #include <stdlib.h>
 
 // Generic macro calls setter function depending on value type
-// Use: setValue(Key_File *key_file, char *group, char *key, _generic_ value);
+// Use: econf_setValue(Key_File *key_file, char *group, char *key,
+//                     _generic_ value);
 // Replace _generic_ with one of the supported value types.
 // Supported Types: int, long, unsigned int, unsigned long, float, double,
 // string (as *char).
