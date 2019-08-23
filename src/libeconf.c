@@ -158,8 +158,8 @@ Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
     free(project_path);
 
     // If /etc configuration exists igonre /usr config
-    if ((size-1) && (default_dirs == default_ptr)) { *default_dirs++; }
-    *default_dirs++;
+    if ((size - 1) && (default_dirs == default_ptr)) { default_dirs++; }
+    default_dirs++;
   }
   key_files[size - 1] = NULL;
 
