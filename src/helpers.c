@@ -21,6 +21,7 @@
   SOFTWARE.
 */
 
+#include "libeconf.h"
 #include "../include/defines.h"
 #include "../include/helpers.h"
 
@@ -68,18 +69,22 @@ char *clearblank(size_t *vlen, char *string) {
   return buffer;
 }
 
-char *get_absolute_path(const char *path) {
+char *get_absolute_path(const char *path, econf_err *error) {
   char *absolute_path;
   if(*path != '/') {
     char buffer[256];
     if(!realpath(path, buffer)) {
-      errno = ENOENT;
+      if (error)
+	*error = ECONF_NOFILE;
       return NULL;
     }
     absolute_path = strdup(buffer);
   } else {
     absolute_path = strdup(path);
   }
+  if (absolute_path == NULL && error)
+    *error = ECONF_NOMEM;
+
   return absolute_path;
 }
 
@@ -173,4 +178,3 @@ struct file_entry cpy_file_entry(struct file_entry fe) {
   copied_fe.value = strdup(fe.value);
   return copied_fe;
 }
-

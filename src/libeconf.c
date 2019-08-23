@@ -29,15 +29,22 @@
 #include "../include/keyfile.h"
 #include "../include/mergefiles.h"
 
+#include <errno.h>
 #include <dirent.h>
 #include <stdio.h>
 #include <string.h>
 
 // Create a new Key_File. Allocation is based on KEY_FILE_KEY_FILE_KEY_FILE_DEFAULT_LENGTH
 // defined in include/defines.h
-Key_File *econf_newKeyFile(char delimiter, char comment) {
+Key_File *econf_newKeyFile(char delimiter, char comment, econf_err *error) {
   Key_File *key_file = malloc(sizeof(Key_File));
 
+  if (key_file == NULL)
+    {
+      if (error)
+	*error = ECONF_NOMEM;
+      return NULL;
+    }
   key_file->alloc_length = KEY_FILE_DEFAULT_LENGTH;
   key_file->length = 0;
   key_file->delimiter = delimiter;
@@ -52,21 +59,21 @@ Key_File *econf_newKeyFile(char delimiter, char comment) {
   return key_file;
 }
 
-Key_File *econf_newIniFile() {
-  return econf_newKeyFile('=', '#');
+Key_File *econf_newIniFile(econf_err *error) {
+  return econf_newKeyFile('=', '#', error);
 }
 
 // Process the file of the given file_name and save its contents into key_file
 Key_File *econf_get_key_file(const char *file_name, char *delim,
-                             const char comment) {
+                             const char comment, econf_err *error) {
   // Get absolute path if not provided
-  errno = 0;
-  char *absolute_path = get_absolute_path(file_name);
-  if(errno != 0) return NULL;
+  char *absolute_path = get_absolute_path(file_name, error);
+  if (absolute_path == NULL)
+    return NULL;
 
   // File handle for the given file_name
   FILE *kf = fopen(absolute_path, "rb");
-  free(absolute_path);
+  free(absolute_path); /* XXX */
   if (kf == NULL) {
     return NULL;
   }
@@ -134,7 +141,7 @@ Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
 
     // Check if the config file exists directly in the given config directory
     char *file_path = combine_strings(*default_dirs, file_name, '/');
-    key_file = econf_get_key_file(file_path, delim, comment);
+    key_file = econf_get_key_file(file_path, delim, comment, NULL /* XXX */);
     free(file_path);
     if(key_file) {
       key_file->on_merge_delete = 1;
@@ -380,4 +387,3 @@ void econf_Key_File_destroy(Key_File *key_file) {
   free(key_file->file_entry);
   free(key_file);
 }
-

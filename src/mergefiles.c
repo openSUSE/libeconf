@@ -21,11 +21,12 @@
   SOFTWARE.
 */
 
+#include "libeconf.h"
 #include "../include/defines.h"
 #include "../include/helpers.h"
-#include "../include/libeconf.h"
 #include "../include/mergefiles.h"
 
+#include <errno.h>
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -161,7 +162,7 @@ Key_File **check_conf_dir(Key_File **key_files, size_t *size, char *path,
     for (int i = 0; i < num_dirs; i++) {
       if(!strcmp(strchr(de[i]->d_name, '.'), config_suffix)) {
         char *file_path = combine_strings(path, de[i]->d_name, '/');
-        Key_File *key_file = econf_get_key_file(file_path, delim, comment);
+        Key_File *key_file = econf_get_key_file(file_path, delim, comment, NULL /*XXX*/);
         free(file_path);
         if(key_file) {
           key_file->on_merge_delete = 1;
