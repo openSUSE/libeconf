@@ -32,7 +32,8 @@
 #include <string.h>
 
 // Fill the Key File struct with values from the given file handle
-void fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
+econf_err
+fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
   // KEY_FILE_DEFAULT_LENGTH: Default number of key-value pairs to be
   // allocated in key_file
   // LLEN: Base number of chars in a key, value or group name
@@ -44,17 +45,38 @@ void fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
 
   // Allocate memory for the Key_File based on KEY_FILE_DEFAULT_LENGTH
   struct file_entry *fe = malloc(KEY_FILE_DEFAULT_LENGTH * sizeof(struct file_entry));
-  fe->group = strdup(KEY_FILE_NULL_VALUE);
-  fe->key = KEY_FILE_NULL_VALUE;
+  if (fe == NULL)
+    return ECONF_NOMEM;
+
   char *buffer = malloc(LLEN);
+  if (buffer == NULL)
+    {
+      free (fe);
+      return ECONF_NOMEM;
+    }
+
+  fe->group = strdup(KEY_FILE_NULL_VALUE);
+  if (fe->group == NULL)
+    {
+      free (fe);
+      return ECONF_NOMEM;
+    }
+  fe->key = KEY_FILE_NULL_VALUE;
 
   while ((ch = getc(kf)) != EOF) {
     if (vlen >= llen) {
       buffer = realloc(buffer, llen * 2);
+      if (buffer == NULL)
+	{
+	  free (fe->group);
+	  free (fe);
+	  return ECONF_NOMEM;
+	}
       llen *= 2;
     }
     if (ch == '\n') {
-      if (vlen == 0 && !strcmp(fe[file_length].key, KEY_FILE_NULL_VALUE)) { continue; }
+      if (vlen == 0 && !strcmp(fe[file_length].key, KEY_FILE_NULL_VALUE))
+	continue;
       end_of_line(&fe, &file_length, &lnum, vlen, buffer);
     }
     // If the current char is the delimiter consider the part before to
@@ -64,6 +86,8 @@ void fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
       if(!file_length) { read_file->delimiter = ch; }
       buffer = clearblank(&vlen, buffer);
       fe[file_length].key = strndup(buffer, vlen);
+      if (fe[file_length].key == NULL)
+	return ECONF_NOMEM; /* TODO: try to cleanup memory */
     }
     // If the line contains the given comment char ignore the rest
     // of the line and proceed with the next
@@ -80,7 +104,10 @@ void fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
   }
   free(buffer);
   // Check if the file is really at its end after EOF is encountered.
-  if (!feof(kf)) { read_file->length = -EBADF; return; }
+  if (!feof(kf)) {
+    read_file->length = -EBADF;
+    return ECONF_ERROR;
+  }
   if (!strcmp(fe->key, KEY_FILE_NULL_VALUE)) {
     fe->key = NULL;
     free(fe->group);
@@ -89,6 +116,8 @@ void fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
   read_file->alloc_length = file_length;
   fe = realloc(fe, file_length * sizeof(struct file_entry));
   read_file->file_entry = fe;
+
+  return ECONF_SUCCESS;
 }
 
 // Write the group/value entry to the given file_entry
@@ -101,15 +130,15 @@ void end_of_line(struct file_entry **fe, size_t *len, size_t *lnum, size_t vlen,
   // In this case key is not set
   if (!strcmp((*fe)[*len].key, KEY_FILE_NULL_VALUE)) {
     if(!*len) { free((*fe)->group); }
-    (*fe)[*len].group = strndup(buffer, vlen);
+    (*fe)[*len].group = strndup(buffer, vlen); /* XXX ENOMEM check missing */
   } else {
     // If the line is no new group copy the group from the previous line
     if (*len && !strcmp((*fe)[*len].group, KEY_FILE_NULL_VALUE)) {
-      (*fe)[*len].group = strdup((*fe)[*len - 1].group);
+      (*fe)[*len].group = strdup((*fe)[*len - 1].group); /* XXX ENOMEM check missing */
     }
     // If the line had a delimiter everything after the delimiter is
     // considered to be a value
-    (*fe)[*len].value = strndup(buffer, vlen);
+    (*fe)[*len].value = strndup(buffer, vlen); /* XXX ENOMEM check missing */
     // Perform memory check and increase len by one
     new_kf_line(fe, len, lnum);
   }
@@ -118,7 +147,7 @@ void end_of_line(struct file_entry **fe, size_t *len, size_t *lnum, size_t vlen,
 // Check whether the key file has enough memory allocated, if not realloc
 void new_kf_line(struct file_entry **fe, size_t *file_length, size_t *lnum) {
   if (++(*file_length) >= *lnum) {
-    *fe = realloc(*fe, *lnum * 2 * sizeof(struct file_entry));
+    *fe = realloc(*fe, *lnum * 2 * sizeof(struct file_entry)); /* XXX ENOMEM check missing */
     (*lnum) *= 2;
   }
   (*fe)[*file_length].group = KEY_FILE_NULL_VALUE;

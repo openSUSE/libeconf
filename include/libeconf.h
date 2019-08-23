@@ -84,7 +84,8 @@ extern Key_File *econf_get_key_file(const char *file_name, char *delim,
 				    const char comment, econf_err *);
 
 // Merge the contents of two key files
-extern Key_File *econf_merge_key_files(Key_File *usr_file, Key_File *etc_file);
+extern Key_File *econf_merge_key_files(Key_File *usr_file, Key_File *etc_file, 
+                                       econf_err *);
 
 // Write content of a Key_File struct to specified location
 extern void econf_write_key_file(Key_File *key_file, const char *save_to_dir,
