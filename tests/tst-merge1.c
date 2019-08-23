@@ -31,13 +31,13 @@ main(int argc, char **argv)
       return 1;
     }
 
-  key_file_m = econf_merge_key_files (key_file_2, key_file_1);
-  if (key_file_m != NULL) /* XXX fix when we know correct error handling */
+  key_file_m = econf_merge_key_files (key_file_2, key_file_1, NULL);
+  if (key_file_m != NULL)
     {
       /* there was nothing to merge */
+      fprintf (stderr, "ERROR: econf_merge_key_files merged something when there was nothing to merge\n");
       return 1;
     }
-
 
   if (key_file_1)
     econf_destroy (key_file_1);

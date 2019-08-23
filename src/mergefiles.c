@@ -185,7 +185,7 @@ Key_File *merge_Key_Files(Key_File **key_files) {
   while(*key_files) {
     Key_File *tmp = merged_file;
 
-    merged_file = econf_merge_key_files(merged_file, *key_files);
+    merged_file = econf_merge_key_files(merged_file, *key_files, NULL /* XXX */);
     merged_file->on_merge_delete = 1;
 
     if(tmp->on_merge_delete) { econf_destroy(tmp); }

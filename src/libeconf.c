@@ -66,6 +66,8 @@ Key_File *econf_newIniFile(econf_err *error) {
 // Process the file of the given file_name and save its contents into key_file
 Key_File *econf_get_key_file(const char *file_name, char *delim,
                              const char comment, econf_err *error) {
+  econf_err t_err;
+
   // Get absolute path if not provided
   char *absolute_path = get_absolute_path(file_name, error);
   if (absolute_path == NULL)
@@ -73,20 +75,29 @@ Key_File *econf_get_key_file(const char *file_name, char *delim,
 
   // File handle for the given file_name
   FILE *kf = fopen(absolute_path, "rb");
-  free(absolute_path); /* XXX */
+  free(absolute_path);
   if (kf == NULL) {
+    if (error)
+      *error = ECONF_NOFILE;
     return NULL;
   }
 
   Key_File *read_file = malloc(sizeof(Key_File));
+  if (read_file == NULL) {
+    if (error)
+      *error = ECONF_NOMEM;
+    return NULL;
+  }
+
   read_file->comment = comment;
 
-  fill_key_file(read_file, kf, delim);
+  t_err = fill_key_file(read_file, kf, delim);
   read_file->on_merge_delete = 0;
   fclose(kf);
 
-  if(!read_file->length) {
-    errno = ENODATA;
+  if(t_err) {
+    if (error)
+      *error = t_err;
     econf_destroy(read_file);
     return NULL;
   }
@@ -95,14 +106,32 @@ Key_File *econf_get_key_file(const char *file_name, char *delim,
 }
 
 // Merge the contents of two key files
-Key_File *econf_merge_key_files(Key_File *usr_file, Key_File *etc_file) {
-  if (usr_file == NULL || etc_file == NULL) { errno = ENODATA; return NULL; }
+Key_File *econf_merge_key_files(Key_File *usr_file, Key_File *etc_file, econf_err *error) {
+  if (usr_file == NULL || etc_file == NULL) {
+    if (error)
+      *error = ECONF_ERROR;
+    return NULL;
+  }
 
   Key_File *merge_file = malloc(sizeof(Key_File));
+  if (merge_file == NULL)
+    {
+      if (error)
+	*error = ECONF_NOMEM;
+      return NULL;
+    }
+
   merge_file->delimiter = usr_file->delimiter;
   merge_file->comment = usr_file->comment;
   struct file_entry *fe =
       malloc((etc_file->length + usr_file->length) * sizeof(struct file_entry));
+  if (fe == NULL)
+    {
+      free (merge_file);
+      if (error)
+	*error = ECONF_NOMEM;
+      return NULL;
+    }
 
   size_t merge_length = 0;
 
