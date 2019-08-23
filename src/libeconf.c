@@ -314,9 +314,9 @@ double econf_getDoubleValue(Key_File *kf, char *group, char *key) {
 }
 
 char *econf_getStringValue(Key_File *kf, char *group, char *key) {
-  if (!kf) { errno = ENODATA; return ""; }
+  if (!kf) { errno = ENODATA; return NULL; }
   size_t num = find_key(*kf, group, key);
-  if (num == -1) { errno = ENOKEY; return ""; }
+  if (num == -1) { errno = ENOKEY; return NULL; }
   return getStringValueNum(*kf, num);
 }
 
