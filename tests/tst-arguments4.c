@@ -16,10 +16,14 @@ main(int argc, char **argv)
 {
   Key_File *key_file;
   char *val;
+  econf_err error;
 
-  key_file = econf_get_key_file (TESTSDIR"tst-arguments-data/etc/arguments.conf", "=", '#');
+  key_file = econf_get_key_file (TESTSDIR"tst-arguments-data/etc/arguments.conf", "=", '#', &error);
   if (key_file == NULL)
-    return 1;
+    {
+      fprintf (stderr, "ERROR: couldn't read configuration file: %s\n", econf_errString(error));
+      return 1;
+    }
 
   val = econf_getStringValue (NULL, "", "KEY");
   if (val != NULL && strlen(val) > 0)

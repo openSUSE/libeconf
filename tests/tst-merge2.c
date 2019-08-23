@@ -16,12 +16,18 @@ int
 main(int argc, char **argv)
 {
   Key_File *key_file_1 = NULL, *key_file_2 = NULL, *key_file_m = NULL;
+  econf_err error;
 
-  key_file_1 = econf_get_key_file (TESTSDIR"tst-merge2-data/etc/tst-merge2.conf", "=", '#');
-  key_file_2 = econf_get_key_file (TESTSDIR"tst-merge2-data/usr/etc/tst-merge2.conf", "=", '#');
-  if (key_file_1 == NULL && key_file_2 == NULL)
+  key_file_1 = econf_get_key_file (TESTSDIR"tst-merge2-data/etc/tst-merge2.conf", "=", '#', NULL);
+  if (key_file_1 == NULL)
     {
-      fprintf (stderr, "No config file found\n");
+      fprintf (stderr, "ERROR: couldn't read /etc configuration file: %s\n", econf_errString(error));
+      return 1;
+    }
+  key_file_2 = econf_get_key_file (TESTSDIR"tst-merge2-data/usr/etc/tst-merge2.conf", "=", '#', &error);
+  if (key_file_2 != NULL)
+    {
+      fprintf (stderr, "ERROR: /usr/etc should not contain a config file\n");
       return 1;
     }
 

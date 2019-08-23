@@ -1,6 +1,6 @@
 lib_LTLIBRARIES = libeconf.la
-libeconf_la_SOURCES = ../src/libeconf.c ../src/getfilecontents.c ../src/mergefiles.c ../src/helpers.c ../src/keyfile.c
-libeconf_la_CFLAGS = -Wall
+libeconf_la_SOURCES = ../src/libeconf.c ../src/getfilecontents.c ../src/mergefiles.c ../src/helpers.c ../src/keyfile.c ../src/econf_errString.c
+libeconf_la_CFLAGS = -Wall -I$(top_srcdir)/include
 libeconf_la_LDFLAGS = -Wl,--version-script=$(top_srcdir)/lib/libeconf.map -lm
 
 DISTCLEANFILES = *.pc

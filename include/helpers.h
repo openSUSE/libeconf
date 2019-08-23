@@ -33,7 +33,7 @@ char *combine_strings(const char *string_one, const char *string_two,
 char *clearblank(size_t *vlen, char *string);
 
 // Returns the absolute path of a given path
-char *get_absolute_path(const char *path);
+char *get_absolute_path(const char *path, econf_err *error);
 
 // Remove '[' and ']' from beginning and end
 char *stripbrackets(char *string);

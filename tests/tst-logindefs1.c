@@ -18,10 +18,14 @@ main(int argc, char **argv)
   char **keys;
   size_t key_number;
   char *val;
+  econf_err error;
 
-  key_file = econf_get_key_file (TESTSDIR"tst-logindefs1-data/etc/login.defs", " \t", '#');
+  key_file = econf_get_key_file (TESTSDIR"tst-logindefs1-data/etc/login.defs", " \t", '#', &error);
   if (key_file == NULL)
-    return 1;
+    {
+      fprintf (stderr, "ERROR: couldn't read configuration file: %s\n", econf_errString(error));
+      return 1;
+    }
 
   val = econf_getStringValue (key_file, "", "USERGROUPS_ENAB");
   if (val == NULL || strlen(val) == 0)

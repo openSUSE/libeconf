@@ -21,6 +21,7 @@
   SOFTWARE.
 */
 
+#include "libeconf.h"
 #include "../include/defines.h"
 #include "../include/getfilecontents.h"
 #include "../include/helpers.h"
