@@ -11,8 +11,3 @@ CLEANFILES = *~
 DISTCLEANFILES = *.pc
 EXTRA_DIST = libeconf.map
 
-install-exec-hook:
-	$(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=execute "rm -f $(DESTDIR)$(libdir)/$(lib_LTLIBRARIES)";
-
-uninstall-libLTLIBRARIES:
-	$(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=execute "rm -f $(DESTDIR)$(libdir)/libeconf.so*";
