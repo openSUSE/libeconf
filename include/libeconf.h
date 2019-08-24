@@ -42,8 +42,10 @@ enum econf_err {
 #define ECONF_NOGROUP ECONF_NOGROUP
   ECONF_NOKEY = 5, /* Key not found */
 #define ECONF_NOKEY ECONF_NOKEY
-  ECONF_EMPTYKEY = 6 /* Key has empty vaue */
+  ECONF_EMPTYKEY = 6, /* Key has empty vaue */
 #define ECONF_EMPTYKEY ECONF_EMPTYKEY
+  ECONF_WRITEERROR = 7 /* Error creating or writing to a file */
+#define ECONF_WRITEERROR ECONF_WRITEERROR
 };
 typedef enum econf_err econf_err;
 
@@ -89,18 +91,19 @@ extern Key_File *econf_merge_key_files(Key_File *usr_file, Key_File *etc_file,
 
 // Write content of a Key_File struct to specified location
 extern void econf_write_key_file(Key_File *key_file, const char *save_to_dir,
-				 const char *file_name);
+				 const char *file_name, econf_err *);
 
 extern Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
 					  const char *etch_conf_dir,
-					  char *project_name, char *config_suffix,
+					  char *project_name,
+					  char *config_suffix,
 					  char *delimt, char comment,
 					  econf_err *);
 
 /* --- GETTERS --- */
 
-extern char **econf_getGroups(Key_File *kf, size_t *length);
-extern char **econf_getKeys(Key_File *kf, const char *group, size_t *length);
+extern char **econf_getGroups(Key_File *kf, size_t *length, econf_err *);
+extern char **econf_getKeys(Key_File *kf, const char *group, size_t *length, econf_err *);
 extern int32_t econf_getIntValue(Key_File *kf, char *group, char *key);
 extern int64_t econf_getInt64Value(Key_File *kf, char *group, char *key);
 extern uint32_t econf_getUIntValue(Key_File *kf, char *group, char *key);

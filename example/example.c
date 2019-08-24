@@ -62,7 +62,7 @@ int main() {
   econf_setValue(key_file, "Basic Types", "Generic", "Any value can go here!");
 
   size_t key_number = 0;
-  char **keys = econf_getKeys(key_file, "Basic Types", &key_number);
+  char **keys = econf_getKeys(key_file, "Basic Types", &key_number, NULL);
   printf("Keys: ");
   for (int i = 0; i < key_number; i++) {
     printf("%s, ", keys[i]);
@@ -70,7 +70,7 @@ int main() {
   puts("\n");
   econf_destroy(keys);
 
-  econf_write_key_file(key_file, "example/", "test.ini");
+  econf_write_key_file(key_file, "example/", "test.ini", NULL);
 
   econf_destroy(key_file);
 

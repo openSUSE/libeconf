@@ -29,6 +29,7 @@ config.log
 config.status
 config.sub
 config.guess
+libeconf-*.tar.*
 bin/example
 src/.dirstamp
 test-driver

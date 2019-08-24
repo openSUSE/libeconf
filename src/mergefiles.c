@@ -194,14 +194,24 @@ Key_File **check_conf_dir(Key_File **key_files, size_t *size, char *path,
   return key_files;
 }
 
-Key_File *merge_Key_Files(Key_File **key_files) {
+Key_File *merge_Key_Files(Key_File **key_files, econf_err *error) {
+  if (key_files == NULL) {
+    if (error) *error = ECONF_ERROR;
+    return NULL;
+  }
+
   Key_File *merged_file = *key_files++;
-  if(!merged_file) { errno = ENOENT; return NULL; }
+  if(!merged_file) { 
+    if (error) *error = ECONF_ERROR;
+    return NULL;
+  }
 
   while(*key_files) {
     Key_File *tmp = merged_file;
 
-    merged_file = econf_merge_key_files(merged_file, *key_files, NULL /* XXX */);
+    merged_file = econf_merge_key_files(merged_file, *key_files, error);
+    if (merged_file == NULL)
+      return NULL;
     merged_file->on_merge_delete = 1;
 
     if(tmp->on_merge_delete) { econf_destroy(tmp); }

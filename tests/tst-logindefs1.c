@@ -51,7 +51,12 @@ main(int argc, char **argv)
       return 1;
     }
 
-  keys = econf_getKeys(key_file, NULL, &key_number);
+  keys = econf_getKeys(key_file, NULL, &key_number, &error);
+  if (keys == NULL && error)
+    {
+      fprintf (stderr, "Error getting all keys: %s\n", econf_errString(error));
+      return 1;
+    }
   if (key_number == 0)
     {
       fprintf (stderr, "No keys found?\n");

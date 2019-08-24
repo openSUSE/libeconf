@@ -55,4 +55,4 @@ Key_File **check_conf_dir(Key_File **key_files, size_t *size, char *path,
                           char *config_suffix, char *delim, char comment);
 
 // Merge an array of given Key_Files into one
-Key_File *merge_Key_Files(Key_File **key_files);
+Key_File *merge_Key_Files(Key_File **key_files, econf_err *);
