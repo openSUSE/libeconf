@@ -27,10 +27,15 @@ main(int argc, char **argv)
       return 1;
     }
 
-  val = econf_getStringValue (key_file, "", "USERGROUPS_ENAB");
+  val = econf_getStringValue (key_file, NULL, "USERGROUPS_ENAB");
   if (val == NULL || strlen(val) == 0)
     {
       fprintf (stderr, "USERGROUPS_ENAB returns nothing!\n");
+      return 1;
+    }
+  else if (strcmp (val, "yes") != 0)
+    {
+      fprintf (stderr, "USERGROUPS_ENAB returns wrong value: '%s'\n", val);
       return 1;
     }
 
@@ -38,15 +43,21 @@ main(int argc, char **argv)
   if (val == NULL || strlen(val) == 0)
     {
       fprintf (stderr, "UMASK returns nothing!\n");
+      return 1;
+    }
+  else if (strcmp (val, "022") != 0)
+    {
+      fprintf (stderr, "UMASK returns wrong value: '%s'\n", val);
+      return 1;
     }
 
-  keys = econf_getKeys(key_file, "", &key_number);
+  keys = econf_getKeys(key_file, NULL, &key_number);
   if (key_number == 0)
     {
       fprintf (stderr, "No keys found?\n");
       return 1;
     }
-  for (int i = 0; i++; i < key_number)
+  for (int i = 0; i < key_number; i++)
     {
       printf ("%i: %s\n", i, keys[i]);
     }
