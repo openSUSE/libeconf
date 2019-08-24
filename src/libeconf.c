@@ -151,17 +151,52 @@ Key_File *econf_merge_key_files(Key_File *usr_file, Key_File *etc_file, econf_er
 Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
                                    const char *etc_conf_dir,
                                    char *project_name, char *config_suffix,
-                                   char *delim, char comment) {
+                                   char *delim, char comment,
+                                   econf_err *error) {
   size_t size = 1;
   Key_File **key_files = malloc(size * sizeof(Key_File*));
+  if (key_files == NULL)
+    {
+      if (error)
+	*error = ECONF_NOMEM;
+      return NULL;
+    }
+
+  /* config_suffix must be provided and should not be "" */
+  if (config_suffix == NULL || strlen (config_suffix) == 0)
+    {
+      if (error)
+	*error = ECONF_ERROR;
+      return NULL;
+    }
 
   // Prepend a . to the config suffix if not provided
-  config_suffix = strchr(config_suffix, '.') ? strdup(config_suffix) :
-      combine_strings("", config_suffix, '.');
+  if (config_suffix[0] == '.')
+    config_suffix = strdup (config_suffix);
+  else
+    config_suffix = combine_strings("", config_suffix, '.');
+  if (config_suffix == NULL)
+    {
+      if (error) *error = ECONF_NOMEM;
+      return NULL;
+    }
+
   char *file_name = combine_strings(project_name, &*(config_suffix + 1), '.');
+  if (file_name == NULL)
+    {
+      if (error) *error = ECONF_NOMEM;
+      return NULL;
+    }
 
   // Get the list of directories to search for config files
   char **default_dirs = get_default_dirs(usr_conf_dir, etc_conf_dir);
+#if 0
+  if (default_dirs == NULL)
+    {
+      if (error) *error = ECONF_NOMEM;
+      return NULL;
+    }
+#endif
   char **default_ptr = default_dirs, *project_path;
 
   Key_File *key_file;
@@ -170,12 +205,13 @@ Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
 
     // Check if the config file exists directly in the given config directory
     char *file_path = combine_strings(*default_dirs, file_name, '/');
-    key_file = econf_get_key_file(file_path, delim, comment, NULL /* XXX */);
+    key_file = econf_get_key_file(file_path, delim, comment, NULL);
     free(file_path);
     if(key_file) {
       key_file->on_merge_delete = 1;
       key_files[size - 1] = key_file;
       key_files = realloc(key_files, ++size * sizeof(Key_File *));
+      /* XXX ENOMEM check */
     }
 
     // Indicate which directories to look for

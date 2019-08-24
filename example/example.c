@@ -38,7 +38,7 @@ int main() {
   //Key_File *key_file = econf_get_key_file("example/etc/example/example.ini", "=", '#');
 
   Key_File *key_file = econf_get_conf_from_dirs("example/usr/etc", "example/etc",
-                                                "example", ".ini", "=", '#');
+                                                "example", ".ini", "=", '#', NULL);
 
   econf_setIntValue(key_file, "[Basic Types]", "Int", INT64_MAX);
   printf("Int: %ld\n", econf_getInt64Value(key_file, "[Basic Types]", "Int"));

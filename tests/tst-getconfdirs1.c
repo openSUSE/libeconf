@@ -48,14 +48,16 @@ main(int argc, char **argv)
 {
   Key_File *key_file;
   int retval = 0;
+  econf_err error;
 
   key_file = econf_get_conf_from_dirs (
 				       TESTSDIR"tst-getconfdirs1-data/usr/etc",
 				       TESTSDIR"tst-getconfdirs1-data/etc",
-				       "getconfdir", SUFFIX, "=", '#');
+				       "getconfdir", SUFFIX, "=", '#', &error);
   if (key_file == NULL)
     {
-      fprintf (stderr, "ERROR: econf_get_conf_from_dirs returned NULL\n");
+      fprintf (stderr, "ERROR: econf_get_conf_from_dirs: %s\n",
+	       econf_errString(error));
       return 1;
     }
 

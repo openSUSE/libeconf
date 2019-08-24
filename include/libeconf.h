@@ -94,7 +94,8 @@ extern void econf_write_key_file(Key_File *key_file, const char *save_to_dir,
 extern Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
 					  const char *etch_conf_dir,
 					  char *project_name, char *config_suffix,
-					  char *delimt, char comment);
+					  char *delimt, char comment,
+					  econf_err *);
 
 /* --- GETTERS --- */
 
