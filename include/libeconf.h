@@ -104,14 +104,14 @@ extern Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
 
 extern char **econf_getGroups(Key_File *kf, size_t *length, econf_err *);
 extern char **econf_getKeys(Key_File *kf, const char *group, size_t *length, econf_err *);
-extern int32_t econf_getIntValue(Key_File *kf, char *group, char *key);
-extern int64_t econf_getInt64Value(Key_File *kf, char *group, char *key);
-extern uint32_t econf_getUIntValue(Key_File *kf, char *group, char *key);
-extern uint64_t econf_getUInt64Value(Key_File *kf, char *group, char *key);
-extern float econf_getFloatValue(Key_File *kf, char *group, char *key);
-extern double econf_getDoubleValue(Key_File *kf, char *group, char *key);
-extern char *econf_getStringValue(Key_File *kf, char *group, char *key);
-extern bool econf_getBoolValue(Key_File *kf, char *group, char *key);
+extern int32_t econf_getIntValue(Key_File *kf, char *group, char *key, econf_err *);
+extern int64_t econf_getInt64Value(Key_File *kf, char *group, char *key, econf_err *);
+extern uint32_t econf_getUIntValue(Key_File *kf, char *group, char *key, econf_err *);
+extern uint64_t econf_getUInt64Value(Key_File *kf, char *group, char *key, econf_err *);
+extern float econf_getFloatValue(Key_File *kf, char *group, char *key, econf_err *);
+extern double econf_getDoubleValue(Key_File *kf, char *group, char *key, econf_err *);
+extern char *econf_getStringValue(Key_File *kf, char *group, char *key, econf_err *);
+extern bool econf_getBoolValue(Key_File *kf, char *group, char *key, econf_err *);
 
 /* --- SETTERS --- */
 

@@ -352,7 +352,7 @@ char **econf_getKeys(Key_File *kf, const char *grp, size_t *length, econf_err *e
     free(group);
     if (error) *error = ECONF_NOMEM;
     return NULL;
-  } 
+  }
   for (int i = 0; i < kf->length; i++) {
     if (!strcmp(kf->file_entry[i].group, group) &&
         (!i || strcmp(kf->file_entry[i].key, kf->file_entry[i - 1].key))) {
@@ -378,61 +378,29 @@ char **econf_getKeys(Key_File *kf, const char *grp, size_t *length, econf_err *e
   return keys;
 }
 
-int32_t econf_getIntValue(Key_File *kf, char *group, char *key) {
-  if (!kf) { errno = ENODATA; return -1; }
-  size_t num = find_key(*kf, group, key);
-  if (num == -1) { errno = ENOKEY; return -1; }
-  return getIntValueNum(*kf, num);
+/* The econf_get*Value functions are identical except for return
+   type, so let's create them via a macro. */
+#define econf_getValue(TYPE, ERROR) \
+  econf_get ## TYPE ## Value(Key_File *kf, char *group, char *key, econf_err *error) { \
+  if (!kf) { \
+    if (error) *error = ECONF_ERROR; \
+    return ERROR; \
+  } \
+  size_t num = find_key(*kf, group, key, error); \
+  if (num == -1) \
+    return ERROR; \
+  else if (error) *error = ECONF_SUCCESS; \
+  return get ## TYPE ## ValueNum(*kf, num); \
 }
 
-int64_t econf_getInt64Value(Key_File *kf, char *group, char *key) {
-  if (!kf) { errno = ENODATA; return -1; }
-  size_t num = find_key(*kf, group, key);
-  if (num == -1) { errno = ENOKEY; return -1; }
-  return getInt64ValueNum(*kf, num);
-}
-
-uint32_t econf_getUIntValue(Key_File *kf, char *group, char *key) {
-  if (!kf) { errno = ENODATA; return -1; }
-  size_t num = find_key(*kf, group, key);
-  if (num == -1) { errno = ENOKEY; return -1; }
-  return getUIntValueNum(*kf, num);
-}
-
-uint64_t econf_getUInt64Value(Key_File *kf, char *group, char *key) {
-  if (!kf) { errno = ENODATA; return -1; }
-  size_t num = find_key(*kf, group, key);
-  if (num == -1) { errno = ENOKEY; return -1; }
-  return getUInt64ValueNum(*kf, num);
-}
-
-float econf_getFloatValue(Key_File *kf, char *group, char *key) {
-  if (!kf) { errno = ENODATA; return -1; }
-  size_t num = find_key(*kf, group, key);
-  if (num == -1) { errno = ENOKEY; return -1; }
-  return getFloatValueNum(*kf, num);
-}
-
-double econf_getDoubleValue(Key_File *kf, char *group, char *key) {
-  if (!kf) { errno = ENODATA; return -1; }
-  size_t num = find_key(*kf, group, key);
-  if (num == -1) { errno = ENOKEY; return -1; }
-  return getDoubleValueNum(*kf, num);
-}
-
-char *econf_getStringValue(Key_File *kf, char *group, char *key) {
-  if (!kf) { errno = ENODATA; return NULL; }
-  size_t num = find_key(*kf, group, key);
-  if (num == -1) { errno = ENOKEY; return NULL; }
-  return getStringValueNum(*kf, num);
-}
-
-bool econf_getBoolValue(Key_File *kf, char *group, char *key) {
-  if (!kf) { errno = ENODATA; return 0; }
-  size_t num = find_key(*kf, group, key);
-  if (num == -1) { errno = ENOKEY; return 0; }
-  return getBoolValueNum(*kf, num);
-}
+int32_t econf_getValue(Int, -1)
+int64_t econf_getValue(Int64, -1)
+uint32_t econf_getValue(UInt, -1)
+uint64_t econf_getValue(UInt64, -1)
+float econf_getValue(Float, -1)
+double econf_getValue(Double, -1)
+char *econf_getValue(String, NULL)
+bool econf_getValue(Bool, 0)
 
 /* SETTER FUNCTIONS */
 

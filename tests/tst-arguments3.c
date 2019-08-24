@@ -25,13 +25,13 @@ main(int argc, char **argv)
       return 1;
     }
 
-  val = econf_getStringValue (key_file, "", NULL);
-  if (val != NULL && strlen(val) > 0)
+  error = ECONF_SUCCESS;
+  val = econf_getStringValue (key_file, "", NULL, &error);
+  if (val != NULL && error != ECONF_ERROR)
     {
-      fprintf (stderr, "KEY returned something!\n");
+      fprintf (stderr, "ERROR: return values for NULL key_file are wrong!\n");
       return 1;
     }
-
   econf_destroy (key_file);
 
   return 0;

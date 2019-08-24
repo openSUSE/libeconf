@@ -10,10 +10,9 @@
 /* Test case:
    Test the systemd like behavior:
    /usr/etc/getconfdir.conf exists
-   /etc/getconfdir.conf exists
-   /etc/getconfidr.conf.d/<files>.conf exists
+   No configuration files in /etc exists
 
-   libeconf should ignore /usr/etc/getconfdir.conf, as this contains
+   libeconf should only use /usr/etc/getconfdir.conf
 */
 
 int
@@ -24,7 +23,7 @@ check_key(Key_File *key_file, char *key, char *expected_val)
   if (expected_val == NULL)
     {
       if (val == NULL)
-	return 0;
+        return 0;
 
       fprintf (stderr, "ERROR: %s has value \"%s\"\n", key, val);
       return 1;
@@ -32,7 +31,7 @@ check_key(Key_File *key_file, char *key, char *expected_val)
   if (val == NULL || strlen(val) == 0)
     {
       fprintf (stderr, "ERROR: %s returns nothing! (%s)\n", key,
-	       econf_errString(error));
+               econf_errString(error));
       return 1;
     }
   if (strcmp (val, expected_val) != 0)
@@ -53,24 +52,23 @@ main(int argc, char **argv)
   econf_err error;
 
   key_file = econf_get_conf_from_dirs (
-				       TESTSDIR"tst-getconfdirs1-data/usr/etc",
-				       TESTSDIR"tst-getconfdirs1-data/etc",
-				       "getconfdir", SUFFIX, "=", '#', &error);
+				       TESTSDIR"tst-getconfdirs3-data/usr/etc",
+				       TESTSDIR"tst-getconfdirs3-data/etc",
+				       "getconfdir", ".conf", "=", '#', &error);
   if (key_file == NULL)
     {
-      fprintf (stderr, "ERROR: econf_get_conf_from_dirs: %s\n",
+      fprintf (stderr, "ERROR: econf_get_conf_from_dirs returned NULL: %s\n",
 	       econf_errString(error));
       return 1;
     }
 
-  if (check_key(key_file, "KEY1", "etcconfd") != 0)
+  if (check_key(key_file, "KEY1", "usretc") != 0)
     retval = 1;
-  /* XXX fails as we have no way to differentiate between key does not exist and key is empty yet */
-  if (check_key(key_file, "USRETC", NULL) != 0)
+  if (check_key(key_file, "USRETC", "true") != 0)
     retval = 1;
-  if (check_key(key_file, "ETC", "true") != 0)
+  if (check_key(key_file, "ETC", NULL) != 0)
     retval = 1;
-  if (check_key(key_file, "OVERRIDE", "true") != 0)
+  if (check_key(key_file, "OVERRIDE", NULL) != 0)
     retval = 1;
 
   econf_destroy (key_file);

@@ -51,7 +51,7 @@ char *toLowerCase(char *str);
 size_t hashstring(char *str);
 
 // Look for matching key
-size_t find_key(Key_File key_file, char *group, char *key);
+size_t find_key(Key_File key_file, char *group, char *key, econf_err *);
 
 // Append a new key to an existing Key_File
 void new_key(Key_File *key_file, char *group, char *key);
