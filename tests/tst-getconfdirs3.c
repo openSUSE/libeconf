@@ -10,10 +10,9 @@
 /* Test case:
    Test the systemd like behavior:
    /usr/etc/getconfdir.conf exists
-   /etc/getconfdir.conf exists
-   /etc/getconfidr.conf.d/<files>.conf exists
+   No configuration files in /etc exists
 
-   libeconf should ignore /usr/etc/getconfdir.conf, as this contains
+   libeconf should only use /usr/etc/getconfdir.conf
 */
 
 int
@@ -50,23 +49,22 @@ main(int argc, char **argv)
   int retval = 0;
 
   key_file = econf_get_conf_from_dirs (
-				       TESTSDIR"tst-getconfdirs1-data/usr/etc",
-				       TESTSDIR"tst-getconfdirs1-data/etc",
-				       "getconfdir", SUFFIX, "=", '#');
+				       TESTSDIR"tst-getconfdirs3-data/usr/etc",
+				       TESTSDIR"tst-getconfdirs3-data/etc",
+				       "getconfdir", ".conf", "=", '#');
   if (key_file == NULL)
     {
       fprintf (stderr, "ERROR: econf_get_conf_from_dirs returned NULL\n");
       return 1;
     }
 
-  if (check_key(key_file, "KEY1", "etcconfd") != 0)
+  if (check_key(key_file, "KEY1", "usretc") != 0)
     retval = 1;
-  /* XXX fails as we have no way to differentiate between key does not exist and key is empty yet */
-  if (check_key(key_file, "USRETC", NULL) != 0)
+  if (check_key(key_file, "USRETC", "true") != 0)
     retval = 1;
-  if (check_key(key_file, "ETC", "true") != 0)
+  if (check_key(key_file, "ETC", NULL) != 0)
     retval = 1;
-  if (check_key(key_file, "OVERRIDE", "true") != 0)
+  if (check_key(key_file, "OVERRIDE", NULL) != 0)
     retval = 1;
 
   econf_destroy (key_file);

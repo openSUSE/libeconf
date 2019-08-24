@@ -25,6 +25,7 @@ config.h
 *~
 *.rej
 *.orig
+core
 config.log
 config.status
 config.sub
@@ -44,4 +45,5 @@ tests/tst-arguments4
 tests/tst-logindefs1
 tests/tst-getconfdirs1
 tests/tst-getconfdirs2
+tests/tst-getconfdirs3
 tests/tst-econf_errstring1
