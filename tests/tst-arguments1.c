@@ -16,7 +16,7 @@ int
 main(int argc, char **argv)
 {
   Key_File *key_file;
-  char *val;
+  const char *val;
   econf_err error;
 
   key_file = econf_get_key_file (TESTSDIR"tst-arguments-data/etc/arguments.conf", "=", '#', &error);

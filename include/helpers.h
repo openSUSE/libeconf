@@ -39,7 +39,7 @@ char *get_absolute_path(const char *path, econf_err *error);
 char *stripbrackets(char *string);
 
 // Add '[' and ']' to the given string
-char *addbrackets(char *string);
+char *addbrackets(const char *string);
 
 // Set default value defined in include/defines.h
 void initialize(Key_File *key_file, size_t num);

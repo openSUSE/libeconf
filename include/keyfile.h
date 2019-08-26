@@ -45,7 +45,7 @@ uint32_t getUIntValueNum(Key_File key_file, size_t num);
 uint64_t getUInt64ValueNum(Key_File key_file, size_t num);
 float getFloatValueNum(Key_File key_file, size_t num);
 double getDoubleValueNum(Key_File key_file, size_t num);
-char *getStringValueNum(Key_File key_file, size_t num);
+const char *getStringValueNum(Key_File key_file, size_t num);
 bool getBoolValueNum(Key_File key_file, size_t num);
 
 /* SETTERS */

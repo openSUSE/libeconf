@@ -101,7 +101,7 @@ char *stripbrackets(char *string) {
 }
 
 // Add '[' and ']' to the given string
-char *addbrackets(char *string) {
+char *addbrackets(const char *string) {
   size_t length = strlen(string);
   if (!(*string == '[' && string[length - 1] == ']')) {
     char *buffer = malloc(length + 3);

@@ -17,7 +17,7 @@ main(int argc, char **argv)
   Key_File *key_file;
   char **keys;
   size_t key_number;
-  char *val;
+  const char *val;
   econf_err error;
 
   key_file = econf_get_key_file (TESTSDIR"tst-logindefs1-data/etc/login.defs", " \t", '#', &error);
