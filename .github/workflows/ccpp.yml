@@ -12,7 +12,7 @@ jobs:
     - name: autogen.sh
       run: ./autogen.sh
     - name: configure
-      run: ./configure
+      run: ./configure --enable-compiler-checks
     - name: make
       run: make
     - name: make check
