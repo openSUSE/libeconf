@@ -105,11 +105,13 @@ char *addbrackets(char *string) {
   size_t length = strlen(string);
   if (!(*string == '[' && string[length - 1] == ']')) {
     char *buffer = malloc(length + 3);
-    sprintf(buffer, "[%s]", string);
-    free(string);
+    char *cp = buffer;
+    *cp++ = '[';
+    stpcpy (cp, string);
+    *cp++ = ']';
     return buffer;
   }
-  return string;
+  return strdup(string);
 }
 
 // Turn the given string into lower case
@@ -174,27 +176,33 @@ bool setKeyValue(bool (*function) (Key_File*, size_t, void*, econf_err *),
 		 econf_err *error) {
   econf_err local_err = ECONF_SUCCESS;
   char *tmp = ((!group || !*group) ? strdup(KEY_FILE_NULL_VALUE) :
-               addbrackets(strdup(group)));
+               addbrackets(group));
   if (tmp == NULL)
     {
       if (error) *error = ECONF_NOMEM;
       return false;
     }
   int num = find_key(*kf, tmp, key, &local_err);
-  free (tmp);
   if (num == -1)
     {
-      if (local_err)
+      if (local_err && local_err != ECONF_NOKEY)
 	{
 	  if (error) *error = local_err;
+	  free (tmp);
 	  return false;
 	}
+
       if (!new_key(kf, tmp, key, error))
-	return false;
-      return function(kf, kf->length - 1, value, error);
+	{
+	  free (tmp);
+	  return false;
+	}
+
+      num = kf->length - 1;
     }
-  else
-    return function(kf, num, value, error);
+
+  free (tmp);
+  return function(kf, num, value, error);
 }
 
 struct file_entry cpy_file_entry(struct file_entry fe) {

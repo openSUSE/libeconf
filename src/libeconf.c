@@ -342,7 +342,7 @@ char **econf_getKeys(Key_File *kf, const char *grp, size_t *length, econf_err *e
 
   size_t tmp = 0;
   char *group = ((!grp || !*grp) ? strdup(KEY_FILE_NULL_VALUE) :
-                 addbrackets(strdup(grp)));
+                 addbrackets(grp));
   if (group == NULL) {
     if (error) *error = ECONF_NOMEM;
     return NULL;
