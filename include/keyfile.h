@@ -36,7 +36,7 @@ typedef struct Key_File {
   bool on_merge_delete;
 } Key_File;
 
-void key_file_append(Key_File *key_file);
+bool key_file_append(Key_File *key_file, econf_err *);
 
 /* GETTERS */
 int32_t getIntValueNum(Key_File key_file, size_t num);
@@ -49,11 +49,13 @@ char *getStringValueNum(Key_File key_file, size_t num);
 bool getBoolValueNum(Key_File key_file, size_t num);
 
 /* SETTERS */
-void setGroup(Key_File *key_file, size_t num, char *value);
-void setKey(Key_File *key_file, size_t num, char *value);
-void setIntValueNum(Key_File *key_file, size_t num, void *value);
-void setUIntValueNum(Key_File *key_file, size_t num, void *value);
-void setFloatValueNum(Key_File *key_file, size_t num, void *value);
-void setDoubleValueNum(Key_File *key_file, size_t num, void *value);
-void setStringValueNum(Key_File *key_file, size_t num, void *value);
-void setBoolValueNum(Key_File *key_file, size_t num, void *value);
+bool setGroup(Key_File *key_file, size_t num, char *value, econf_err *error);
+bool setKey(Key_File *key_file, size_t num, char *value, econf_err *error);
+bool setIntValueNum(Key_File *key_file, size_t num, void *value, econf_err *error);
+bool setInt64ValueNum(Key_File *key_file, size_t num, void *value, econf_err *error);
+bool setUIntValueNum(Key_File *key_file, size_t num, void *value, econf_err *error);
+bool setUInt64ValueNum(Key_File *key_file, size_t num, void *value, econf_err *error);
+bool setFloatValueNum(Key_File *key_file, size_t num, void *value, econf_err *error);
+bool setDoubleValueNum(Key_File *key_file, size_t num, void *value, econf_err *error);
+bool setStringValueNum(Key_File *key_file, size_t num, void *value, econf_err *error);
+bool setBoolValueNum(Key_File *key_file, size_t num, void *value, econf_err *error);

@@ -152,29 +152,49 @@ size_t find_key(Key_File key_file, char *group, char *key, econf_err *error) {
 // Append a new key to an existing Key_File
 // TODO: If the group is already known the new key should be appended
 // at the end of that group not at the end of the file.
-void new_key(Key_File *key_file, char *group, char *key) {
-  key_file_append(key_file);
-  setGroup(key_file, key_file->length - 1, group);
-  setKey(key_file, key_file->length - 1, key);
+bool new_key(Key_File *key_file, char *group, char *key, econf_err *error) {
+  if (key_file == NULL || key == NULL)
+    {
+      if (error) *error = ECONF_ERROR;
+      return false;
+    }
+  if (!key_file_append(key_file, error))
+    return false;
+  if (!setGroup(key_file, key_file->length - 1, group, error))
+    return false;
+  return setKey(key_file, key_file->length - 1, key, error);
 }
 
 // Set value for the given group, key combination. If the combination
 // does not exist it is created.
 // TODO: function/void pointer might not be necessary if the value is converted
 // into a string beforehand.
-void setKeyValue(void (*function) (Key_File*, size_t, void*), Key_File *kf, char *group, char *key, void *value) {
-  errno = 0;
+bool setKeyValue(bool (*function) (Key_File*, size_t, void*, econf_err *),
+		 Key_File *kf, char *group, char *key, void *value,
+		 econf_err *error) {
+  econf_err local_err = ECONF_SUCCESS;
   char *tmp = ((!group || !*group) ? strdup(KEY_FILE_NULL_VALUE) :
                addbrackets(strdup(group)));
-  int num = find_key(*kf, tmp, key, NULL /* XXX */);
-  if (errno) { free(tmp); return; }
-  if (num != -1) {
-    free(tmp);
-    function(kf, num, value);
-  } else {
-    new_key(kf, tmp, key);
-    function(kf, kf->length - 1, value);
-  }
+  if (tmp == NULL)
+    {
+      if (error) *error = ECONF_NOMEM;
+      return false;
+    }
+  int num = find_key(*kf, tmp, key, &local_err);
+  free (tmp);
+  if (num == -1)
+    {
+      if (local_err)
+	{
+	  if (error) *error = local_err;
+	  return false;
+	}
+      if (!new_key(kf, tmp, key, error))
+	return false;
+      return function(kf, kf->length - 1, value, error);
+    }
+  else
+    return function(kf, num, value, error);
 }
 
 struct file_entry cpy_file_entry(struct file_entry fe) {

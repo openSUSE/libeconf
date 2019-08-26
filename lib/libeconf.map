@@ -22,8 +22,10 @@ LIBECONF_0.1 {
     econf_setDoubleValue;
     econf_setFloatValue;
     econf_setIntValue;
+    econf_setInt64Value;
     econf_setStringValue;
     econf_setUIntValue;
+    econf_setUInt64Value;
     econf_write_key_file;
   local:
     *;

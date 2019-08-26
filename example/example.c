@@ -40,26 +40,26 @@ int main() {
   Key_File *key_file = econf_get_conf_from_dirs("example/usr/etc", "example/etc",
                                                 "example", ".ini", "=", '#', NULL);
 
-  econf_setIntValue(key_file, "[Basic Types]", "Int", INT64_MAX);
+  econf_setInt64Value(key_file, "[Basic Types]", "Int", INT64_MAX, NULL);
   printf("Int: %ld\n", econf_getInt64Value(key_file, "[Basic Types]", "Int", NULL));
 
-  econf_setUIntValue(key_file, "[Basic Types]", "UInt", UINT64_MAX);
+  econf_setUInt64Value(key_file, "[Basic Types]", "UInt", UINT64_MAX, NULL);
   printf("Unsigned Int: %lu\n", econf_getUInt64Value(key_file, "[Basic Types]", "UInt", NULL));
 
-  econf_setFloatValue(key_file, "[Basic Types]", "Float", M_PI);
+  econf_setFloatValue(key_file, "[Basic Types]", "Float", M_PI, NULL);
   printf("Float: %.*g\n", 8, econf_getFloatValue(key_file, "[Basic Types]", "Float", NULL));
 
-  econf_setDoubleValue(key_file, "[Basic Types]", "Double", M_PI);
+  econf_setDoubleValue(key_file, "[Basic Types]", "Double", M_PI, NULL);
   printf("Double: %.*g\n", 16, econf_getDoubleValue(key_file, "[Basic Types]", "Double", NULL));
 
-  econf_setStringValue(key_file, "[Basic Types]", "String", "\" Hello World! \"");
+  econf_setStringValue(key_file, "[Basic Types]", "String", "\" Hello World! \"", NULL);
   printf("String: %s\n", econf_getStringValue(key_file, "[Basic Types]", "String", NULL));
 
   // Square brackets around the group/section are not needed
-  econf_setBoolValue(key_file, "Basic Types", "Bool", "YeS");
+  econf_setBoolValue(key_file, "Basic Types", "Bool", "YeS", NULL);
   printf("Bool: %d\n", econf_getBoolValue(key_file, "[Basic Types]", "Bool", NULL));
 
-  econf_setValue(key_file, "Basic Types", "Generic", "Any value can go here!");
+  econf_setValue(key_file, "Basic Types", "Generic", "Any value can go here!", NULL);
 
   size_t key_number = 0;
   char **keys = econf_getKeys(key_file, "Basic Types", &key_number, NULL);
