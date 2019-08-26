@@ -54,12 +54,13 @@ size_t hashstring(char *str);
 size_t find_key(Key_File key_file, char *group, char *key, econf_err *);
 
 // Append a new key to an existing Key_File
-void new_key(Key_File *key_file, char *group, char *key);
+bool new_key(Key_File *key_file, char *group, char *key, econf_err *);
 
 // Set value for the given group, key combination. If the combination
 // does not exist it is created.
-void setKeyValue(void (*function) (Key_File*, size_t, void*),
-                 Key_File *kf, char *group, char *key, void *value);
+bool setKeyValue(bool (*function) (Key_File*, size_t, void*, econf_err *),
+                 Key_File *kf, char *group, char *key,
+		 void *value, econf_err *error);
 
 // Copy the contents of a file_entry struct
 struct file_entry cpy_file_entry(struct file_entry fe);

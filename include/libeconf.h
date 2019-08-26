@@ -57,14 +57,16 @@ typedef enum econf_err econf_err;
 // string (as *char).
 // Note: Does not detect "yes", "no", 1 and 0 as boolean type. If you want to
 // set a bool value use "true" or "false" or use setBoolValue() directly.
-#define econf_setValue(kf, group, key, value) (( \
+#define econf_setValue(kf, group, key, value, error) ((	\
   _Generic((value), \
-    int: econf_setIntValue, long: econf_setIntValue, \
-    unsigned int: econf_setUIntValue, unsigned long: econf_setUIntValue, \
+    int: econf_setIntValue, \
+    long: econf_setInt64Value, \
+    unsigned int: econf_setUIntValue, \
+    unsigned long: econf_setUInt64Value, \
     float: econf_setFloatValue, \
     double: econf_setDoubleValue, \
     char*: econf_setStringValue, void*: econf_setStringValue)) \
-(kf, group, key, value))
+(kf, group, key, value, error))
 
 // Generic macro to free memory allocated by econf_ functions
 // Use: econf_destroy(_generic_ value);
@@ -86,7 +88,7 @@ extern Key_File *econf_get_key_file(const char *file_name, char *delim,
 				    const char comment, econf_err *);
 
 // Merge the contents of two key files
-extern Key_File *econf_merge_key_files(Key_File *usr_file, Key_File *etc_file, 
+extern Key_File *econf_merge_key_files(Key_File *usr_file, Key_File *etc_file,
                                        econf_err *);
 
 // Write content of a Key_File struct to specified location
@@ -115,12 +117,14 @@ extern bool econf_getBoolValue(Key_File *kf, char *group, char *key, econf_err *
 
 /* --- SETTERS --- */
 
-extern void econf_setIntValue(Key_File *kf, char *group, char *key, int64_t value);
-extern void econf_setUIntValue(Key_File *kf, char *group, char *key, uint64_t value);
-extern void econf_setFloatValue(Key_File *kf, char *group, char *key, float value);
-extern void econf_setDoubleValue(Key_File *kf, char *group, char *key, double value);
-extern void econf_setStringValue(Key_File *kf, char *group, char *key, char *value);
-extern void econf_setBoolValue(Key_File *kf, char *group, char *key, char *value);
+extern bool econf_setIntValue(Key_File *kf, char *group, char *key, int32_t value, econf_err *error);
+extern bool econf_setInt64Value(Key_File *kf, char *group, char *key, int64_t value, econf_err *error);
+extern bool econf_setUIntValue(Key_File *kf, char *group, char *key, uint32_t value, econf_err *error);
+extern bool econf_setUInt64Value(Key_File *kf, char *group, char *key, uint64_t value, econf_err *error);
+extern bool econf_setFloatValue(Key_File *kf, char *group, char *key, float value, econf_err *error);
+extern bool econf_setDoubleValue(Key_File *kf, char *group, char *key, double value, econf_err *error);
+extern bool econf_setStringValue(Key_File *kf, char *group, char *key, char *value, econf_err *error);
+extern bool econf_setBoolValue(Key_File *kf, char *group, char *key, char *value, econf_err *error);
 
 /* --- HELPERS --- */
 

@@ -33,13 +33,15 @@
 #include <stdio.h>
 #include <string.h>
 
-void key_file_append(Key_File *kf) {
+bool key_file_append(Key_File *kf, econf_err *error) {
+  /* XXX check return values and for NULL pointers */
   if(kf->length++ >= kf->alloc_length) {
     kf->alloc_length++;
     kf->file_entry =
       realloc(kf->file_entry, (kf->alloc_length) * sizeof(struct file_entry));
     initialize(kf, kf->alloc_length - 1);
   }
+  return true;
 }
 
 /* --- GETTERS --- */
@@ -85,53 +87,98 @@ bool getBoolValueNum(Key_File key_file, size_t num) {
 
 /* --- SETTERS --- */
 
-void setGroup(Key_File *key_file, size_t num, char *value) {
-  free(key_file->file_entry[num].group);
+bool setGroup(Key_File *key_file, size_t num, char *value, econf_err *error) {
+  if (key_file == NULL || value == NULL)
+    {
+      if (error) *error = ECONF_ERROR;
+      return false;
+    }
+  if (key_file->file_entry[num].group)
+    free(key_file->file_entry[num].group);
   key_file->file_entry[num].group = value;
+  if (key_file->file_entry[num].group == NULL)
+    {
+      if (error) *error = ECONF_NOMEM;
+      return false;
+    }
+  return true;
 }
 
-void setKey(Key_File *key_file, size_t num, char *value) {
-  free(key_file->file_entry[num].key);
+bool setKey(Key_File *key_file, size_t num, char *value, econf_err *error) {
+  if (key_file == NULL || value == NULL)
+    {
+      if (error) *error = ECONF_ERROR;
+      return false;
+    }
+  if (key_file->file_entry[num].key)
+    free(key_file->file_entry[num].key);
   key_file->file_entry[num].key = strdup(value);
+  if (key_file->file_entry[num].key == NULL)
+    {
+      if (error) *error = ECONF_NOMEM;
+      return false;
+    }
+  return true;
 }
 
-void setIntValueNum(Key_File *kf, size_t num, void *v) {
+bool setIntValueNum(Key_File *kf, size_t num, void *v, econf_err *error) {
+  int32_t *value = (int32_t*) v;
+  free(kf->file_entry[num].value);
+  size_t length = (*value == 0) ? 2 : log10(fabs(*value)) + (*value < 0) + 2;
+  snprintf(kf->file_entry[num].value = malloc(length), length, "%" PRId64, *value);
+  return true;
+}
+
+bool setInt64ValueNum(Key_File *kf, size_t num, void *v, econf_err *error) {
   int64_t *value = (int64_t*) v;
   free(kf->file_entry[num].value);
   size_t length = (*value == 0) ? 2 : log10(fabs(*value)) + (*value < 0) + 2;
   snprintf(kf->file_entry[num].value = malloc(length), length, "%" PRId64, *value);
+  return true;
 }
 
-void setUIntValueNum(Key_File *key_file, size_t num, void *v) {
+bool setUIntValueNum(Key_File *key_file, size_t num, void *v, econf_err *error) {
+  uint32_t *value = (uint32_t*) v;
+  free(key_file->file_entry[num].value);
+  size_t length = (*value == 0) ? 2 : log10(*value) + 2;
+  snprintf(key_file->file_entry[num].value = malloc(length), length, "%" PRIu64, *value);
+  return true;
+}
+
+bool setUInt64ValueNum(Key_File *key_file, size_t num, void *v, econf_err *error) {
   uint64_t *value = (uint64_t*) v;
   free(key_file->file_entry[num].value);
   size_t length = (*value == 0) ? 2 : log10(*value) + 2;
   snprintf(key_file->file_entry[num].value = malloc(length), length, "%" PRIu64, *value);
+  return true;
 }
 
-void setFloatValueNum(Key_File *key_file, size_t num, void *v) {
+bool setFloatValueNum(Key_File *key_file, size_t num, void *v, econf_err *error) {
   float *value = (float*) v;
   free(key_file->file_entry[num].value);
   size_t length = snprintf(NULL, 0, "%.*g", FLT_DECIMAL_DIG - 1, *value);
   snprintf(key_file->file_entry[num].value = malloc(length + 1), length + 1, "%.*g",
            FLT_DECIMAL_DIG - 1, *value);
+  return true;
 }
 
-void setDoubleValueNum(Key_File *key_file, size_t num, void *v) {
+bool setDoubleValueNum(Key_File *key_file, size_t num, void *v, econf_err *error) {
   double *value = (double*) v;
   free(key_file->file_entry[num].value);
   size_t length = snprintf(NULL, 0, "%.*g", DBL_DECIMAL_DIG - 1, *value);
   snprintf(key_file->file_entry[num].value = malloc(length + 1), length + 1, "%.*g",
            DBL_DECIMAL_DIG - 1, *value);
+  return true;
 }
 
-void setStringValueNum(Key_File *key_file, size_t num, void *v) {
+bool setStringValueNum(Key_File *key_file, size_t num, void *v, econf_err *error) {
   char *value = (char*) (v ? v : "");
   free(key_file->file_entry[num].value);
   key_file->file_entry[num].value = strdup(value);
+  return true;
 }
 
-void setBoolValueNum(Key_File *kf, size_t num, void *v) {
+bool setBoolValueNum(Key_File *kf, size_t num, void *v, econf_err *error) {
   char *value = (char*) (v ? v : "");
 
   char *tmp = strdup(value);
@@ -150,4 +197,5 @@ void setBoolValueNum(Key_File *kf, size_t num, void *v) {
   } else { errno = EINVAL; }
 
   free(tmp);
+  return true;
 }

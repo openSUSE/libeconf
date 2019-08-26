@@ -403,36 +403,25 @@ char *econf_getValue(String, NULL)
 bool econf_getValue(Bool, 0)
 
 /* SETTER FUNCTIONS */
-
-void econf_setIntValue(Key_File *kf, char *group, char *key, int64_t value) {
-  if (!kf) { errno = ENODATA; return; }
-  setKeyValue(setIntValueNum, kf, group, key, &value);
+/* The econf_set*Value functions are identical except for return
+   type, so let's create them via a macro. */
+#define libeconf_setValue(TYPE, VALTYPE)						\
+  bool econf_set ## TYPE ## Value(Key_File *kf, char *group, char *key, VALTYPE value, econf_err *error) {	\
+  if (!kf) { \
+    if (error) *error = ECONF_ERROR; \
+    return false; \
+  } \
+  return setKeyValue(set ## TYPE ## ValueNum, kf, group, key, &value, error); \
 }
 
-void econf_setUIntValue(Key_File *kf, char *group, char *key, uint64_t value) {
-  if (!kf) { errno = ENODATA; return; }
-  setKeyValue(setUIntValueNum, kf, group, key, &value);
-}
-
-void econf_setFloatValue(Key_File *kf, char *group, char *key, float value) {
-  if (!kf) { errno = ENODATA; return; }
-  setKeyValue(setFloatValueNum, kf, group, key, &value);
-}
-
-void econf_setDoubleValue(Key_File *kf, char *group, char *key, double value) {
-  if (!kf) { errno = ENODATA; return; }
-  setKeyValue(setDoubleValueNum, kf, group, key, &value);
-}
-
-void econf_setStringValue(Key_File *kf, char *group, char *key, char *value) {
-  if (!kf) { errno = ENODATA; return; }
-  setKeyValue(setStringValueNum, kf, group, key, value);
-}
-
-void econf_setBoolValue(Key_File *kf, char *group, char *key, char *value) {
-  if (!kf) { errno = ENODATA; return; }
-  setKeyValue(setBoolValueNum, kf, group, key, value);
-}
+libeconf_setValue(Int, int32_t)
+libeconf_setValue(Int64, int64_t)
+libeconf_setValue(UInt, uint32_t)
+libeconf_setValue(UInt64, uint64_t)
+libeconf_setValue(Float, float)
+libeconf_setValue(Double, double)
+libeconf_setValue(String, char *)
+libeconf_setValue(Bool, char *)
 
 /* --- DESTROY FUNCTIONS --- */
 
