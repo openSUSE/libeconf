@@ -124,7 +124,7 @@ extern bool econf_setUInt64Value(Key_File *kf, char *group, char *key, uint64_t 
 extern bool econf_setFloatValue(Key_File *kf, char *group, char *key, float value, econf_err *error);
 extern bool econf_setDoubleValue(Key_File *kf, char *group, char *key, double value, econf_err *error);
 extern bool econf_setStringValue(Key_File *kf, char *group, char *key, const char *value, econf_err *error);
-extern bool econf_setBoolValue(Key_File *kf, char *group, char *key, char *value, econf_err *error);
+extern bool econf_setBoolValue(Key_File *kf, char *group, char *key, const char *value, econf_err *error);
 
 /* --- HELPERS --- */
 
