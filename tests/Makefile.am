@@ -1,6 +1,6 @@
 
-AM_CFLAGS = -I$(top_srcdir)/include -DTESTSDIR=\"$(top_srcdir)/tests/\"
-LDADD = $(top_builddir)/lib/libeconf.la
+AM_CFLAGS = @CFLAGS_CHECKS@ -I$(top_srcdir)/include -DTESTSDIR=\"$(top_srcdir)/tests/\"
+LDADD = @LDFLAGS_CHECKS@ $(top_builddir)/lib/libeconf.la
 
 CLEANFILES = *~
 
