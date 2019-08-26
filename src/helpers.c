@@ -130,8 +130,11 @@ size_t hashstring(char *string) {
 }
 
 // Look for matching key
-size_t find_key(Key_File key_file, char *group, char *key) {
-  if (!key || !*key) { errno = ENODATA; return -1; }
+size_t find_key(Key_File key_file, char *group, char *key, econf_err *error) {
+  if (!key || !*key) {
+    if (error) *error = ECONF_ERROR;
+    return -1;
+  }
   size_t g = KEY_FILE_NULL_VALUE_HASH, k = hashstring(key);
   if (group && *group) { g = hashstring(group); }
   for (int i = 0; i < key_file.length; i++) {
@@ -141,6 +144,8 @@ size_t find_key(Key_File key_file, char *group, char *key) {
     }
   }
   // Key not found
+  if (error)
+    *error = ECONF_NOKEY;
   return -1;
 }
 
@@ -161,7 +166,7 @@ void setKeyValue(void (*function) (Key_File*, size_t, void*), Key_File *kf, char
   errno = 0;
   char *tmp = ((!group || !*group) ? strdup(KEY_FILE_NULL_VALUE) :
                addbrackets(strdup(group)));
-  int num = find_key(*kf, tmp, key);
+  int num = find_key(*kf, tmp, key, NULL /* XXX */);
   if (errno) { free(tmp); return; }
   if (num != -1) {
     free(tmp);

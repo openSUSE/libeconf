@@ -35,7 +35,8 @@ static const char *messages[] = {
   "Configuration file not found", /*ECONF_NOFILE */
   "Group not found", /* ECONF_NOGROUP */
   "Key not found", /* ECONF_NOKEY */
-  "Key has empty value" /* ECONF_EMPTYKEY */
+  "Key has empty value", /* ECONF_EMPTYKEY */
+  "Error creating or writing to a file" /* ECONF_WRITEERROR */
 };
 
 const char *

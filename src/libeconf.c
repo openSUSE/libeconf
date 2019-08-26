@@ -151,31 +151,66 @@ Key_File *econf_merge_key_files(Key_File *usr_file, Key_File *etc_file, econf_er
 Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
                                    const char *etc_conf_dir,
                                    char *project_name, char *config_suffix,
-                                   char *delim, char comment) {
+                                   char *delim, char comment,
+                                   econf_err *error) {
   size_t size = 1;
   Key_File **key_files = malloc(size * sizeof(Key_File*));
+  if (key_files == NULL)
+    {
+      if (error)
+	*error = ECONF_NOMEM;
+      return NULL;
+    }
+
+  /* config_suffix must be provided and should not be "" */
+  if (config_suffix == NULL || strlen (config_suffix) == 0)
+    {
+      if (error)
+	*error = ECONF_ERROR;
+      return NULL;
+    }
 
   // Prepend a . to the config suffix if not provided
-  config_suffix = strchr(config_suffix, '.') ? strdup(config_suffix) :
-      combine_strings("", config_suffix, '.');
+  if (config_suffix[0] == '.')
+    config_suffix = strdup (config_suffix);
+  else
+    config_suffix = combine_strings("", config_suffix, '.');
+  if (config_suffix == NULL)
+    {
+      if (error) *error = ECONF_NOMEM;
+      return NULL;
+    }
+
   char *file_name = combine_strings(project_name, &*(config_suffix + 1), '.');
+  if (file_name == NULL)
+    {
+      if (error) *error = ECONF_NOMEM;
+      return NULL;
+    }
 
   // Get the list of directories to search for config files
   char **default_dirs = get_default_dirs(usr_conf_dir, etc_conf_dir);
+  if (*default_dirs == NULL)
+    {
+      if (error) *error = ECONF_NOMEM;
+      return NULL;
+    }
   char **default_ptr = default_dirs, *project_path;
 
   Key_File *key_file;
   while (*default_dirs) {
     project_path = combine_strings(*default_dirs, project_name, '/');
+    /* XXX ENOMEM/NULL pointer check */
 
     // Check if the config file exists directly in the given config directory
     char *file_path = combine_strings(*default_dirs, file_name, '/');
-    key_file = econf_get_key_file(file_path, delim, comment, NULL /* XXX */);
+    key_file = econf_get_key_file(file_path, delim, comment, NULL);
     free(file_path);
     if(key_file) {
       key_file->on_merge_delete = 1;
       key_files[size - 1] = key_file;
       key_files = realloc(key_files, ++size * sizeof(Key_File *));
+      /* XXX ENOMEM check */
     }
 
     // Indicate which directories to look for
@@ -190,6 +225,7 @@ Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
     // given project name
     key_files = traverse_conf_dirs(key_files, conf_dirs, &size, project_path,
                                    config_suffix, delim, comment);
+    /* XXX ENOMEM/NULL pointer check */
 
     free(project_path);
 
@@ -204,7 +240,7 @@ Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
   econf_destroy(default_ptr);
 
   // Merge the list of acquired key_files into merged_file
-  Key_File *merged_file = merge_Key_Files(key_files);
+  Key_File *merged_file = merge_Key_Files(key_files, error);
   free(key_files);
 
   return merged_file;
@@ -212,21 +248,29 @@ Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
 
 // Write content of a Key_File struct to specified location
 void econf_write_key_file(Key_File *key_file, const char *save_to_dir,
-                          const char *file_name) {
-  if (!key_file) { errno = ENODATA; return; }
+                          const char *file_name, econf_err *error) {
+  if (!key_file) {
+    if (error) *error = ECONF_ERROR;
+    return;
+  }
   // Check if the directory exists
+  // XXX use stat instead of opendir
   DIR *dir = opendir(save_to_dir);
   if (dir) {
     closedir(dir);
   } else {
-    errno = ENOENT;
+    if (error) *error = ECONF_NOFILE;
     return;
   }
   // Create a file handle for the specified file
   char *save_to = combine_strings(save_to_dir, file_name, '/');
+  if (save_to == NULL) {
+    if (error) *error = ECONF_NOMEM;
+    return;
+  }
   FILE *kf = fopen(save_to, "w");
   if (kf == NULL) {
-    errno = EPERM;
+    if (error) *error = ECONF_WRITEERROR;
     return;
   }
 
@@ -249,17 +293,22 @@ void econf_write_key_file(Key_File *key_file, const char *save_to_dir,
 }
 
 /* GETTER FUNCTIONS */
-// TODO: Return values in error case
-
 // TODO: Currently only works with a sorted Key_File. If a new
 // key with an existing group is appended at the end the group
 // will show twice. So the key file either needs to be sorted
 // upon entering a new key or the function must ensure only
 // unique values are returned.
-char **econf_getGroups(Key_File *kf, size_t *length) {
-  if (!kf) { errno = ENODATA; return NULL; }
+char **econf_getGroups(Key_File *kf, size_t *length, econf_err *error) {
+  if (!kf) {
+    if (error) *error = ECONF_ERROR;
+    return NULL;
+  }
   size_t tmp = 0;
   bool *uniques = calloc(kf->length,sizeof(bool));
+  if (uniques == NULL) {
+    if (error) *error = ECONF_NOMEM;
+    return NULL;
+  }
   for (int i = 0; i < kf->length; i++) {
     if ((!i || strcmp(kf->file_entry[i].group, kf->file_entry[i - 1].group)) &&
         strcmp(kf->file_entry[i].group, KEY_FILE_NULL_VALUE)) {
@@ -269,6 +318,10 @@ char **econf_getGroups(Key_File *kf, size_t *length) {
   }
   if (!tmp) { free(uniques); return NULL; }
   char **groups = calloc(tmp + 1, sizeof(char*));
+  if (groups == NULL) {
+    if (error) *error = ECONF_NOMEM;
+    return NULL;
+  }
   tmp = 0;
   for(int i = 0; i < kf->length; i++) {
     if (uniques[i]) { groups[tmp++] = strdup(kf->file_entry[i].group); }
@@ -281,12 +334,25 @@ char **econf_getGroups(Key_File *kf, size_t *length) {
 }
 
 // TODO: Same issue as with getGroups()
-char **econf_getKeys(Key_File *kf, const char *grp, size_t *length) {
-  if (!kf) { errno = ENODATA; return NULL; }
+char **econf_getKeys(Key_File *kf, const char *grp, size_t *length, econf_err *error) {
+  if (!kf) {
+    if (error) *error = ECONF_ERROR;
+    return NULL;
+  }
+
   size_t tmp = 0;
   char *group = ((!grp || !*grp) ? strdup(KEY_FILE_NULL_VALUE) :
                  addbrackets(strdup(grp)));
+  if (group == NULL) {
+    if (error) *error = ECONF_NOMEM;
+    return NULL;
+  }
   bool *uniques = calloc(kf->length, sizeof(bool));
+  if (uniques == NULL) {
+    free(group);
+    if (error) *error = ECONF_NOMEM;
+    return NULL;
+  }
   for (int i = 0; i < kf->length; i++) {
     if (!strcmp(kf->file_entry[i].group, group) &&
         (!i || strcmp(kf->file_entry[i].key, kf->file_entry[i - 1].key))) {
@@ -297,6 +363,11 @@ char **econf_getKeys(Key_File *kf, const char *grp, size_t *length) {
   free(group);
   if (!tmp) { free(uniques); return NULL; }
   char **keys = calloc(tmp + 1, sizeof(char*));
+  if (keys == NULL) {
+    if (error) *error = ECONF_NOMEM;
+    free (uniques);
+    return NULL;
+  }
   for(int i = 0, tmp = 0; i < kf->length; i++) {
     if (uniques[i]) { keys[tmp++] = strdup(kf->file_entry[i].key); }
   }
@@ -307,61 +378,29 @@ char **econf_getKeys(Key_File *kf, const char *grp, size_t *length) {
   return keys;
 }
 
-int32_t econf_getIntValue(Key_File *kf, char *group, char *key) {
-  if (!kf) { errno = ENODATA; return -1; }
-  size_t num = find_key(*kf, group, key);
-  if (num == -1) { errno = ENOKEY; return -1; }
-  return getIntValueNum(*kf, num);
+/* The econf_get*Value functions are identical except for return
+   type, so let's create them via a macro. */
+#define econf_getValue(TYPE, ERROR) \
+  econf_get ## TYPE ## Value(Key_File *kf, char *group, char *key, econf_err *error) { \
+  if (!kf) { \
+    if (error) *error = ECONF_ERROR; \
+    return ERROR; \
+  } \
+  size_t num = find_key(*kf, group, key, error); \
+  if (num == -1) \
+    return ERROR; \
+  else if (error) *error = ECONF_SUCCESS; \
+  return get ## TYPE ## ValueNum(*kf, num); \
 }
 
-int64_t econf_getInt64Value(Key_File *kf, char *group, char *key) {
-  if (!kf) { errno = ENODATA; return -1; }
-  size_t num = find_key(*kf, group, key);
-  if (num == -1) { errno = ENOKEY; return -1; }
-  return getInt64ValueNum(*kf, num);
-}
-
-uint32_t econf_getUIntValue(Key_File *kf, char *group, char *key) {
-  if (!kf) { errno = ENODATA; return -1; }
-  size_t num = find_key(*kf, group, key);
-  if (num == -1) { errno = ENOKEY; return -1; }
-  return getUIntValueNum(*kf, num);
-}
-
-uint64_t econf_getUInt64Value(Key_File *kf, char *group, char *key) {
-  if (!kf) { errno = ENODATA; return -1; }
-  size_t num = find_key(*kf, group, key);
-  if (num == -1) { errno = ENOKEY; return -1; }
-  return getUInt64ValueNum(*kf, num);
-}
-
-float econf_getFloatValue(Key_File *kf, char *group, char *key) {
-  if (!kf) { errno = ENODATA; return -1; }
-  size_t num = find_key(*kf, group, key);
-  if (num == -1) { errno = ENOKEY; return -1; }
-  return getFloatValueNum(*kf, num);
-}
-
-double econf_getDoubleValue(Key_File *kf, char *group, char *key) {
-  if (!kf) { errno = ENODATA; return -1; }
-  size_t num = find_key(*kf, group, key);
-  if (num == -1) { errno = ENOKEY; return -1; }
-  return getDoubleValueNum(*kf, num);
-}
-
-char *econf_getStringValue(Key_File *kf, char *group, char *key) {
-  if (!kf) { errno = ENODATA; return NULL; }
-  size_t num = find_key(*kf, group, key);
-  if (num == -1) { errno = ENOKEY; return NULL; }
-  return getStringValueNum(*kf, num);
-}
-
-bool econf_getBoolValue(Key_File *kf, char *group, char *key) {
-  if (!kf) { errno = ENODATA; return 0; }
-  size_t num = find_key(*kf, group, key);
-  if (num == -1) { errno = ENOKEY; return 0; }
-  return getBoolValueNum(*kf, num);
-}
+int32_t econf_getValue(Int, -1)
+int64_t econf_getValue(Int64, -1)
+uint32_t econf_getValue(UInt, -1)
+uint64_t econf_getValue(UInt64, -1)
+float econf_getValue(Float, -1)
+double econf_getValue(Double, -1)
+char *econf_getValue(String, NULL)
+bool econf_getValue(Bool, 0)
 
 /* SETTER FUNCTIONS */
 

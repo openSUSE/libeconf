@@ -18,18 +18,20 @@
 int
 check_key(Key_File *key_file, char *key, char *expected_val)
 {
-  char *val = econf_getStringValue (key_file, "", key);
+  econf_err error = ECONF_SUCCESS;
+  char *val = econf_getStringValue (key_file, "", key, &error);
   if (expected_val == NULL)
     {
       if (val == NULL)
-	return 0;
+        return 0;
 
       fprintf (stderr, "ERROR: %s has value \"%s\"\n", key, val);
       return 1;
     }
   if (val == NULL || strlen(val) == 0)
     {
-      fprintf (stderr, "ERROR: %s returns nothing!\n", key);
+      fprintf (stderr, "ERROR: %s returns nothing! (%s)\n", key,
+               econf_errString(error));
       return 1;
     }
   if (strcmp (val, expected_val) != 0)
@@ -47,14 +49,16 @@ main(int argc, char **argv)
 {
   Key_File *key_file;
   int retval = 0;
+  econf_err error;
 
   key_file = econf_get_conf_from_dirs (
 				       TESTSDIR"tst-getconfdirs3-data/usr/etc",
 				       TESTSDIR"tst-getconfdirs3-data/etc",
-				       "getconfdir", ".conf", "=", '#');
+				       "getconfdir", ".conf", "=", '#', &error);
   if (key_file == NULL)
     {
-      fprintf (stderr, "ERROR: econf_get_conf_from_dirs returned NULL\n");
+      fprintf (stderr, "ERROR: econf_get_conf_from_dirs returned NULL: %s\n",
+	       econf_errString(error));
       return 1;
     }
 

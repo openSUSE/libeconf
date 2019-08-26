@@ -108,15 +108,26 @@ size_t add_new_groups(struct file_entry **fe, Key_File *uf, Key_File *ef,
 // TODO: Make this function configureable with econf_set_opt()
 char **get_default_dirs(const char *usr_conf_dir, const char *etc_conf_dir) {
   size_t default_dir_number = 3, dir_num = 0;
+
   char **default_dirs = malloc(default_dir_number * sizeof(char *));
+  if (default_dirs == NULL)
+    return NULL;
 
-  // Set config directory in /etc
-  default_dirs[dir_num++] = strdup(etc_conf_dir);
-  // Set config directory in /usr
-  default_dirs[dir_num++] = strdup(usr_conf_dir);
-
+  if (etc_conf_dir)
+    {
+      // Set config directory in /etc
+      default_dirs[dir_num++] = strdup(etc_conf_dir); /* XXX ENOMEM check */
+    }
+  if (usr_conf_dir)
+    {
+      // Set config directory in /usr
+      default_dirs[dir_num++] = strdup(usr_conf_dir); /* XXX ENOMEM check */
+    }
   #if 0
   // TODO: Use secure_getenv() instead and check if the variable is actually set
+  // For security reasons, this code should only be enabled if the application
+  // sets a flag to do so (introduce econf_set_opt() for this.
+  // Using user supplied configs can lead to a security problem (e.g. su)
 
   // If XDG_CONFIG_DIRS is set check it as well
   if(getenv("XDG_CONFIG_DIRS")) {
@@ -146,8 +157,10 @@ Key_File **traverse_conf_dirs(Key_File **key_files, char *conf_dirs,
   while ((dir = strrchr(conf_dirs, ' '))) {
     c = *(dir + 1); *dir = 0;
     dir = strrchr(conf_dirs, ' ');
+    char *fulldir = combine_strings(path, &*(dir + 1), c);
+    /* XXX ENOMEM check */
     key_files = check_conf_dir(key_files, size,
-        combine_strings(path, &*(dir + 1), c), config_suffix, delim, comment);
+        fulldir, config_suffix, delim, comment);
     *dir = 0;
   }
   free(conf_dirs);
@@ -181,14 +194,24 @@ Key_File **check_conf_dir(Key_File **key_files, size_t *size, char *path,
   return key_files;
 }
 
-Key_File *merge_Key_Files(Key_File **key_files) {
+Key_File *merge_Key_Files(Key_File **key_files, econf_err *error) {
+  if (key_files == NULL) {
+    if (error) *error = ECONF_ERROR;
+    return NULL;
+  }
+
   Key_File *merged_file = *key_files++;
-  if(!merged_file) { errno = ENOENT; return NULL; }
+  if(!merged_file) { 
+    if (error) *error = ECONF_ERROR;
+    return NULL;
+  }
 
   while(*key_files) {
     Key_File *tmp = merged_file;
 
-    merged_file = econf_merge_key_files(merged_file, *key_files, NULL /* XXX */);
+    merged_file = econf_merge_key_files(merged_file, *key_files, error);
+    if (merged_file == NULL)
+      return NULL;
     merged_file->on_merge_delete = 1;
 
     if(tmp->on_merge_delete) { econf_destroy(tmp); }

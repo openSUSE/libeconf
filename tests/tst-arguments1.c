@@ -26,8 +26,9 @@ main(int argc, char **argv)
       return 1;
     }
 
-  val = econf_getStringValue (key_file, "", "KEY");
-  if (val == NULL || strlen(val) == 0)
+  error = ECONF_SUCCESS;
+  val = econf_getStringValue (key_file, "", "KEY", &error);
+  if (val == NULL || strlen(val) == 0 || error != ECONF_SUCCESS)
     {
       fprintf (stderr, "KEY returns nothing!\n");
       return 1;
