@@ -26,7 +26,6 @@
 #include "../include/helpers.h"
 
 #include <ctype.h>
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -101,7 +100,7 @@ char *stripbrackets(char *string) {
 }
 
 // Add '[' and ']' to the given string
-char *addbrackets(char *string) {
+char *addbrackets(const char *string) {
   size_t length = strlen(string);
   if (!(*string == '[' && string[length - 1] == ']')) {
     char *buffer = malloc(length + 3);
@@ -171,8 +170,8 @@ bool new_key(Key_File *key_file, char *group, char *key, econf_err *error) {
 // does not exist it is created.
 // TODO: function/void pointer might not be necessary if the value is converted
 // into a string beforehand.
-bool setKeyValue(bool (*function) (Key_File*, size_t, void*, econf_err *),
-		 Key_File *kf, char *group, char *key, void *value,
+bool setKeyValue(bool (*function) (Key_File*, size_t, const void*, econf_err *),
+		 Key_File *kf, char *group, char *key, const void *value,
 		 econf_err *error) {
   econf_err local_err = ECONF_SUCCESS;
   char *tmp = ((!group || !*group) ? strdup(KEY_FILE_NULL_VALUE) :

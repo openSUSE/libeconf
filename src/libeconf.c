@@ -29,7 +29,6 @@
 #include "../include/keyfile.h"
 #include "../include/mergefiles.h"
 
-#include <errno.h>
 #include <dirent.h>
 #include <stdio.h>
 #include <string.h>
@@ -399,29 +398,29 @@ uint32_t econf_getValue(UInt, -1)
 uint64_t econf_getValue(UInt64, -1)
 float econf_getValue(Float, -1)
 double econf_getValue(Double, -1)
-char *econf_getValue(String, NULL)
+const char *econf_getValue(String, NULL)
 bool econf_getValue(Bool, 0)
 
 /* SETTER FUNCTIONS */
 /* The econf_set*Value functions are identical except for return
    type, so let's create them via a macro. */
-#define libeconf_setValue(TYPE, VALTYPE)						\
+#define libeconf_setValue(TYPE, VALTYPE, VALARG)						\
   bool econf_set ## TYPE ## Value(Key_File *kf, char *group, char *key, VALTYPE value, econf_err *error) {	\
   if (!kf) { \
     if (error) *error = ECONF_ERROR; \
     return false; \
   } \
-  return setKeyValue(set ## TYPE ## ValueNum, kf, group, key, &value, error); \
+  return setKeyValue(set ## TYPE ## ValueNum, kf, group, key, VALARG, error); \
 }
 
-libeconf_setValue(Int, int32_t)
-libeconf_setValue(Int64, int64_t)
-libeconf_setValue(UInt, uint32_t)
-libeconf_setValue(UInt64, uint64_t)
-libeconf_setValue(Float, float)
-libeconf_setValue(Double, double)
-libeconf_setValue(String, char *)
-libeconf_setValue(Bool, char *)
+libeconf_setValue(Int, int32_t, &value)
+libeconf_setValue(Int64, int64_t, &value)
+libeconf_setValue(UInt, uint32_t, &value)
+libeconf_setValue(UInt64, uint64_t, &value)
+libeconf_setValue(Float, float, &value)
+libeconf_setValue(Double, double, &value)
+libeconf_setValue(String, const char *, value)
+libeconf_setValue(Bool, const char *, value)
 
 /* --- DESTROY FUNCTIONS --- */
 

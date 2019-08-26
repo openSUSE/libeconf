@@ -45,17 +45,17 @@ uint32_t getUIntValueNum(Key_File key_file, size_t num);
 uint64_t getUInt64ValueNum(Key_File key_file, size_t num);
 float getFloatValueNum(Key_File key_file, size_t num);
 double getDoubleValueNum(Key_File key_file, size_t num);
-char *getStringValueNum(Key_File key_file, size_t num);
+const char *getStringValueNum(Key_File key_file, size_t num);
 bool getBoolValueNum(Key_File key_file, size_t num);
 
 /* SETTERS */
 bool setGroup(Key_File *key_file, size_t num, char *value, econf_err *error);
 bool setKey(Key_File *key_file, size_t num, char *value, econf_err *error);
-bool setIntValueNum(Key_File *key_file, size_t num, void *value, econf_err *error);
-bool setInt64ValueNum(Key_File *key_file, size_t num, void *value, econf_err *error);
-bool setUIntValueNum(Key_File *key_file, size_t num, void *value, econf_err *error);
-bool setUInt64ValueNum(Key_File *key_file, size_t num, void *value, econf_err *error);
-bool setFloatValueNum(Key_File *key_file, size_t num, void *value, econf_err *error);
-bool setDoubleValueNum(Key_File *key_file, size_t num, void *value, econf_err *error);
-bool setStringValueNum(Key_File *key_file, size_t num, void *value, econf_err *error);
-bool setBoolValueNum(Key_File *key_file, size_t num, void *value, econf_err *error);
+bool setIntValueNum(Key_File *key_file, size_t num, const void *value, econf_err *error);
+bool setInt64ValueNum(Key_File *key_file, size_t num, const void *value, econf_err *error);
+bool setUIntValueNum(Key_File *key_file, size_t num, const void *value, econf_err *error);
+bool setUInt64ValueNum(Key_File *key_file, size_t num, const void *value, econf_err *error);
+bool setFloatValueNum(Key_File *key_file, size_t num, const void *value, econf_err *error);
+bool setDoubleValueNum(Key_File *key_file, size_t num, const void *value, econf_err *error);
+bool setStringValueNum(Key_File *key_file, size_t num, const void *value, econf_err *error);
+bool setBoolValueNum(Key_File *key_file, size_t num, const void *value, econf_err *error);

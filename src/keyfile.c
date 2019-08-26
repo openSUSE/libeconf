@@ -70,7 +70,7 @@ double getDoubleValueNum(Key_File key_file, size_t num) {
   return strtod(key_file.file_entry[num].value, NULL);
 }
 
-char *getStringValueNum(Key_File key_file, size_t num) {
+const char *getStringValueNum(Key_File key_file, size_t num) {
   return key_file.file_entry[num].value;
 }
 
@@ -121,7 +121,7 @@ bool setKey(Key_File *key_file, size_t num, char *value, econf_err *error) {
   return true;
 }
 
-bool setIntValueNum(Key_File *kf, size_t num, void *v, econf_err *error) {
+bool setIntValueNum(Key_File *kf, size_t num, const void *v, econf_err *error) {
   int32_t *value = (int32_t*) v;
   free(kf->file_entry[num].value);
   size_t length = (*value == 0) ? 2 : log10(fabs(*value)) + (*value < 0) + 2;
@@ -129,7 +129,7 @@ bool setIntValueNum(Key_File *kf, size_t num, void *v, econf_err *error) {
   return true;
 }
 
-bool setInt64ValueNum(Key_File *kf, size_t num, void *v, econf_err *error) {
+bool setInt64ValueNum(Key_File *kf, size_t num, const void *v, econf_err *error) {
   int64_t *value = (int64_t*) v;
   free(kf->file_entry[num].value);
   size_t length = (*value == 0) ? 2 : log10(fabs(*value)) + (*value < 0) + 2;
@@ -137,7 +137,7 @@ bool setInt64ValueNum(Key_File *kf, size_t num, void *v, econf_err *error) {
   return true;
 }
 
-bool setUIntValueNum(Key_File *key_file, size_t num, void *v, econf_err *error) {
+bool setUIntValueNum(Key_File *key_file, size_t num, const void *v, econf_err *error) {
   uint32_t *value = (uint32_t*) v;
   free(key_file->file_entry[num].value);
   size_t length = (*value == 0) ? 2 : log10(*value) + 2;
@@ -145,7 +145,7 @@ bool setUIntValueNum(Key_File *key_file, size_t num, void *v, econf_err *error) 
   return true;
 }
 
-bool setUInt64ValueNum(Key_File *key_file, size_t num, void *v, econf_err *error) {
+bool setUInt64ValueNum(Key_File *key_file, size_t num, const void *v, econf_err *error) {
   uint64_t *value = (uint64_t*) v;
   free(key_file->file_entry[num].value);
   size_t length = (*value == 0) ? 2 : log10(*value) + 2;
@@ -153,7 +153,7 @@ bool setUInt64ValueNum(Key_File *key_file, size_t num, void *v, econf_err *error
   return true;
 }
 
-bool setFloatValueNum(Key_File *key_file, size_t num, void *v, econf_err *error) {
+bool setFloatValueNum(Key_File *key_file, size_t num, const void *v, econf_err *error) {
   float *value = (float*) v;
   free(key_file->file_entry[num].value);
   size_t length = snprintf(NULL, 0, "%.*g", FLT_DECIMAL_DIG - 1, *value);
@@ -162,7 +162,7 @@ bool setFloatValueNum(Key_File *key_file, size_t num, void *v, econf_err *error)
   return true;
 }
 
-bool setDoubleValueNum(Key_File *key_file, size_t num, void *v, econf_err *error) {
+bool setDoubleValueNum(Key_File *key_file, size_t num, const void *v, econf_err *error) {
   double *value = (double*) v;
   free(key_file->file_entry[num].value);
   size_t length = snprintf(NULL, 0, "%.*g", DBL_DECIMAL_DIG - 1, *value);
@@ -171,15 +171,15 @@ bool setDoubleValueNum(Key_File *key_file, size_t num, void *v, econf_err *error
   return true;
 }
 
-bool setStringValueNum(Key_File *key_file, size_t num, void *v, econf_err *error) {
-  char *value = (char*) (v ? v : "");
+bool setStringValueNum(Key_File *key_file, size_t num, const void *v, econf_err *error) {
+  const char *value = (const char*) (v ? v : "");
   free(key_file->file_entry[num].value);
   key_file->file_entry[num].value = strdup(value);
   return true;
 }
 
-bool setBoolValueNum(Key_File *kf, size_t num, void *v, econf_err *error) {
-  char *value = (char*) (v ? v : "");
+bool setBoolValueNum(Key_File *kf, size_t num, const void *v, econf_err *error) {
+  const char *value = (const char*) (v ? v : "");
 
   char *tmp = strdup(value);
   size_t hash = hashstring(toLowerCase(tmp));
