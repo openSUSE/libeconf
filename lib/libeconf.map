@@ -26,7 +26,10 @@ LIBECONF_0.1 {
     econf_setStringValue;
     econf_setUIntValue;
     econf_setUInt64Value;
-    econf_write_key_file;
   local:
     *;
 };
+LIBECONF_ALPHA {
+  global:
+    econf_write_key_file;
+} LIBECONF_0.1;
