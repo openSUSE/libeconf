@@ -29,7 +29,6 @@
 #include "../include/keyfile.h"
 #include "../include/mergefiles.h"
 
-#include <errno.h>
 #include <dirent.h>
 #include <stdio.h>
 #include <string.h>

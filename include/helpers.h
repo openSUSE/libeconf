@@ -58,9 +58,9 @@ bool new_key(Key_File *key_file, char *group, char *key, econf_err *);
 
 // Set value for the given group, key combination. If the combination
 // does not exist it is created.
-bool setKeyValue(bool (*function) (Key_File*, size_t, void*, econf_err *),
+bool setKeyValue(bool (*function) (Key_File*, size_t, const void*, econf_err *),
                  Key_File *kf, char *group, char *key,
-		 void *value, econf_err *error);
+		 const void *value, econf_err *error);
 
 // Copy the contents of a file_entry struct
 struct file_entry cpy_file_entry(struct file_entry fe);
