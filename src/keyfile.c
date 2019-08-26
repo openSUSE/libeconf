@@ -95,7 +95,7 @@ bool setGroup(Key_File *key_file, size_t num, char *value, econf_err *error) {
     }
   if (key_file->file_entry[num].group)
     free(key_file->file_entry[num].group);
-  key_file->file_entry[num].group = value;
+  key_file->file_entry[num].group = strdup(value);
   if (key_file->file_entry[num].group == NULL)
     {
       if (error) *error = ECONF_NOMEM;
