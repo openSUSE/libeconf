@@ -125,7 +125,7 @@ bool setIntValueNum(Key_File *kf, size_t num, void *v, econf_err *error) {
   int32_t *value = (int32_t*) v;
   free(kf->file_entry[num].value);
   size_t length = (*value == 0) ? 2 : log10(fabs(*value)) + (*value < 0) + 2;
-  snprintf(kf->file_entry[num].value = malloc(length), length, "%" PRId64, *value);
+  snprintf(kf->file_entry[num].value = malloc(length), length, "%" PRId32, *value);
   return true;
 }
 
@@ -141,7 +141,7 @@ bool setUIntValueNum(Key_File *key_file, size_t num, void *v, econf_err *error) 
   uint32_t *value = (uint32_t*) v;
   free(key_file->file_entry[num].value);
   size_t length = (*value == 0) ? 2 : log10(*value) + 2;
-  snprintf(key_file->file_entry[num].value = malloc(length), length, "%" PRIu64, *value);
+  snprintf(key_file->file_entry[num].value = malloc(length), length, "%" PRIu32, *value);
   return true;
 }
 
