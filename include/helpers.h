@@ -48,18 +48,15 @@ void initialize(Key_File *key_file, size_t num);
 char *toLowerCase(char *str);
 
 // Turn given string into a hash value
-size_t hashstring(char *str);
+size_t hashstring(const char *str);
 
 // Look for matching key
-size_t find_key(Key_File key_file, char *group, char *key, econf_err *);
-
-// Append a new key to an existing Key_File
-bool new_key(Key_File *key_file, char *group, char *key, econf_err *);
+size_t find_key(Key_File key_file, const char *group, const char *key, econf_err *);
 
 // Set value for the given group, key combination. If the combination
 // does not exist it is created.
 bool setKeyValue(bool (*function) (Key_File*, size_t, const void*, econf_err *),
-                 Key_File *kf, char *group, char *key,
+                 Key_File *kf, const char *group, const char *key,
 		 const void *value, econf_err *error);
 
 // Copy the contents of a file_entry struct
