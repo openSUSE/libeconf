@@ -156,18 +156,18 @@ bool setUInt64ValueNum(Key_File *key_file, size_t num, const void *v, econf_err 
 bool setFloatValueNum(Key_File *key_file, size_t num, const void *v, econf_err *error) {
   float *value = (float*) v;
   free(key_file->file_entry[num].value);
-  size_t length = snprintf(NULL, 0, "%.*g", FLT_DECIMAL_DIG - 1, *value);
+  size_t length = snprintf(NULL, 0, "%.*g", FLT_DECIMAL_DIG, *value);
   snprintf(key_file->file_entry[num].value = malloc(length + 1), length + 1, "%.*g",
-           FLT_DECIMAL_DIG - 1, *value);
+           FLT_DECIMAL_DIG, *value);
   return true;
 }
 
 bool setDoubleValueNum(Key_File *key_file, size_t num, const void *v, econf_err *error) {
   double *value = (double*) v;
   free(key_file->file_entry[num].value);
-  size_t length = snprintf(NULL, 0, "%.*g", DBL_DECIMAL_DIG - 1, *value);
+  size_t length = snprintf(NULL, 0, "%.*g", DBL_DECIMAL_DIG, *value);
   snprintf(key_file->file_entry[num].value = malloc(length + 1), length + 1, "%.*g",
-           DBL_DECIMAL_DIG - 1, *value);
+           DBL_DECIMAL_DIG, *value);
   return true;
 }
 
