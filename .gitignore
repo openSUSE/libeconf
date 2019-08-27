@@ -49,3 +49,4 @@ tests/tst-getconfdirs2
 tests/tst-getconfdirs3
 tests/tst-econf_errstring1
 tests/tst-setgetvalues1
+tests/tst-groups1
