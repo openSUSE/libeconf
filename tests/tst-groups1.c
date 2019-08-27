@@ -38,11 +38,17 @@ bool check_String (Key_File *key_file, const char *value,
   econf_err error;
 
   if (!econf_setStringValue(key_file, setgroup, "KEY", value, &error))
-    print_error_set ("String", error);
+    {
+      print_error_set ("String", error);
+      return false;
+    }
 
   const char *val_String = econf_getStringValue(key_file, getgroup, "KEY", &error);
   if (error)
-    print_error_get (value, setgroup, getgroup, error);
+    {
+      print_error_get (value, setgroup, getgroup, error);
+      return false;
+    }
   /* NULL means empty string */
   if (strcmp(val_String, value?value:"") != 0)
     {
