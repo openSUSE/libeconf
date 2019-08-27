@@ -17,7 +17,7 @@ main(int argc, char **argv)
   Key_File *key_file;
   char **keys;
   size_t key_number;
-  const char *val;
+  char *val;
   econf_err error;
 
   key_file = econf_get_key_file (TESTSDIR"tst-logindefs1-data/etc/login.defs", " \t", '#', &error);
@@ -44,6 +44,7 @@ main(int argc, char **argv)
       fprintf (stderr, "USERGROUPS_ENAB returns wrong value: '%s'\n", val);
       return 1;
     }
+  free (val);
 
   val = econf_getStringValue (key_file, "", "UMASK", &error);
   if (val == NULL)
@@ -62,6 +63,7 @@ main(int argc, char **argv)
       fprintf (stderr, "UMASK returns wrong value: '%s'\n", val);
       return 1;
     }
+  free (val);
 
   keys = econf_getKeys(key_file, NULL, &key_number, &error);
   if (keys == NULL && error)

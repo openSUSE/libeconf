@@ -15,7 +15,7 @@ int
 main(int argc, char **argv)
 {
   Key_File *key_file;
-  const char *val;
+  char *val;
   econf_err error;
 
   key_file = econf_get_key_file (TESTSDIR"tst-arguments-data/etc/arguments.conf", "=", '#', &error);
@@ -32,6 +32,7 @@ main(int argc, char **argv)
       fprintf (stderr, "KEY returns nothing!\n");
       return 1;
     }
+  free (val);
 
   econf_destroy (key_file);
 

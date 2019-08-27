@@ -70,8 +70,8 @@ double getDoubleValueNum(Key_File key_file, size_t num) {
   return strtod(key_file.file_entry[num].value, NULL);
 }
 
-const char *getStringValueNum(Key_File key_file, size_t num) {
-  return key_file.file_entry[num].value;
+char *getStringValueNum(Key_File key_file, size_t num) {
+  return strdup(key_file.file_entry[num].value);
 }
 
 bool getBoolValueNum(Key_File key_file, size_t num) {

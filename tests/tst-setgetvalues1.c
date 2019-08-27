@@ -65,7 +65,7 @@ bool check_String (Key_File *key_file, const char *value)
   if (!econf_setStringValue(key_file, NULL, "KEY", value, &error))
     exit_with_error_set ("String", error);
 
-  const char *val_String = econf_getStringValue(key_file, NULL, "KEY", &error);
+  char *val_String = econf_getStringValue(key_file, NULL, "KEY", &error);
   if (error)
     exit_with_error_get ("String", error);
   /* NULL means empty string */
@@ -74,6 +74,7 @@ bool check_String (Key_File *key_file, const char *value)
       fprintf (stderr, "ERROR: Set String: '%s', Got: '%s'\n", value, val_String);
       return false;
     }
+  free(val_String);
   return true;
 }
 
