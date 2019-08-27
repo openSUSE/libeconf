@@ -43,7 +43,7 @@ bool check_String (Key_File *key_file, const char *value,
       return false;
     }
 
-  const char *val_String = econf_getStringValue(key_file, getgroup, "KEY", &error);
+  char *val_String = econf_getStringValue(key_file, getgroup, "KEY", &error);
   if (error)
     {
       print_error_get (value, setgroup, getgroup, error);
@@ -55,6 +55,7 @@ bool check_String (Key_File *key_file, const char *value,
       fprintf (stderr, "ERROR: Set String: '%s', Got: '%s'\n", value, val_String);
       return false;
     }
+  free(val_String);
   return true;
 }
 
