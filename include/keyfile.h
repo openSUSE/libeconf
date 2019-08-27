@@ -49,8 +49,8 @@ char *getStringValueNum(Key_File key_file, size_t num);
 bool getBoolValueNum(Key_File key_file, size_t num);
 
 /* SETTERS */
-bool setGroup(Key_File *key_file, size_t num, char *value, econf_err *error);
-bool setKey(Key_File *key_file, size_t num, char *value, econf_err *error);
+bool setGroup(Key_File *key_file, size_t num, const char *value, econf_err *error);
+bool setKey(Key_File *key_file, size_t num, const char *value, econf_err *error);
 bool setIntValueNum(Key_File *key_file, size_t num, const void *value, econf_err *error);
 bool setInt64ValueNum(Key_File *key_file, size_t num, const void *value, econf_err *error);
 bool setUIntValueNum(Key_File *key_file, size_t num, const void *value, econf_err *error);

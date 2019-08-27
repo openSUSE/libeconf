@@ -148,33 +148,19 @@ char **get_default_dirs(const char *usr_conf_dir, const char *etc_conf_dir) {
   return default_dirs;
 }
 
-Key_File **traverse_conf_dirs(Key_File **key_files, char *conf_dirs,
-                              size_t *size, char *path, char *config_suffix,
-                              char *delim, char comment) {
-  char *dir, c;
-  conf_dirs = strdup(conf_dirs);
-  while ((dir = strrchr(conf_dirs, ' '))) {
-    c = *(dir + 1); *dir = 0;
-    dir = strrchr(conf_dirs, ' ');
-    char *fulldir = combine_strings(path, &*(dir + 1), c);
-    /* XXX ENOMEM check */
-    key_files = check_conf_dir(key_files, size,
-        fulldir, config_suffix, delim, comment);
-    *dir = 0;
-  }
-  free(conf_dirs);
-  return key_files;
-}
-
-Key_File **check_conf_dir(Key_File **key_files, size_t *size, char *path,
-                          char *config_suffix, char *delim, char comment) {
+// Check if the given directory exists. If so look for config files
+// with the given suffix
+static Key_File **
+check_conf_dir(Key_File **key_files, size_t *size, const char *path,
+	       const char *config_suffix, const char *delim, char comment)
+{
   struct dirent **de;
   int num_dirs = scandir(path, &de, NULL, alphasort);
   if(num_dirs > 0) {
     for (int i = 0; i < num_dirs; i++) {
       size_t lenstr = strlen(de[i]->d_name);
       size_t lensuffix = strlen(config_suffix);
-      if (lensuffix < lenstr && 
+      if (lensuffix < lenstr &&
           strncmp(de[i]->d_name + lenstr - lensuffix, config_suffix, lensuffix) == 0) {
         char *file_path = combine_strings(path, de[i]->d_name, '/');
         Key_File *key_file = econf_get_key_file(file_path, delim, comment, NULL);
@@ -189,7 +175,27 @@ Key_File **check_conf_dir(Key_File **key_files, size_t *size, char *path,
     }
     free(de);
   }
-  free(path);
+  return key_files;
+}
+
+Key_File **traverse_conf_dirs(Key_File **key_files, const char *config_dirs,
+                              size_t *size, const char *path,
+			      const char *config_suffix,
+                              const char *delim, char comment) {
+  char *conf_dirs, *dir, c;
+  conf_dirs = strdup(config_dirs);
+  /* XXX ENOMEM check, is config_dirs != NULL? */
+  while ((dir = strrchr(conf_dirs, ' '))) {
+    c = *(dir + 1); *dir = 0;
+    dir = strrchr(conf_dirs, ' ');
+    char *fulldir = combine_strings(path, &*(dir + 1), c);
+    /* XXX ENOMEM/NULL pointer check */
+    key_files = check_conf_dir(key_files, size,
+        fulldir, config_suffix, delim, comment);
+    free (fulldir);
+    *dir = 0;
+  }
+  free(conf_dirs);
   return key_files;
 }
 
@@ -200,7 +206,7 @@ Key_File *merge_Key_Files(Key_File **key_files, econf_err *error) {
   }
 
   Key_File *merged_file = *key_files++;
-  if(!merged_file) { 
+  if(!merged_file) {
     if (error) *error = ECONF_ERROR;
     return NULL;
   }

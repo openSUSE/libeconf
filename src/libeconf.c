@@ -63,7 +63,7 @@ Key_File *econf_newIniFile(econf_err *error) {
 }
 
 // Process the file of the given file_name and save its contents into key_file
-Key_File *econf_get_key_file(const char *file_name, char *delim,
+Key_File *econf_get_key_file(const char *file_name, const char *delim,
                              const char comment, econf_err *error) {
   econf_err t_err;
 
@@ -149,10 +149,12 @@ Key_File *econf_merge_key_files(Key_File *usr_file, Key_File *etc_file, econf_er
 
 Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
                                    const char *etc_conf_dir,
-                                   char *project_name, char *config_suffix,
-                                   char *delim, char comment,
+                                   const char *project_name,
+				   const char *config_suffix,
+                                   const char *delim, char comment,
                                    econf_err *error) {
   size_t size = 1;
+  char *suffix;
   Key_File **key_files = malloc(size * sizeof(Key_File*));
   if (key_files == NULL)
     {
@@ -171,16 +173,16 @@ Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
 
   // Prepend a . to the config suffix if not provided
   if (config_suffix[0] == '.')
-    config_suffix = strdup (config_suffix);
+    suffix = strdup (config_suffix);
   else
-    config_suffix = combine_strings("", config_suffix, '.');
-  if (config_suffix == NULL)
+    suffix = combine_strings("", config_suffix, '.');
+  if (suffix == NULL)
     {
       if (error) *error = ECONF_NOMEM;
       return NULL;
     }
 
-  char *file_name = combine_strings(project_name, &*(config_suffix + 1), '.');
+  char *file_name = combine_strings(project_name, &*(suffix + 1), '.');
   if (file_name == NULL)
     {
       if (error) *error = ECONF_NOMEM;
@@ -220,10 +222,10 @@ Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
     // "default_dirs/project_name.d/"
     // in this order
     char *conf_dirs = " d . conf.d . conf.d / 0 ";
-    // Check for '$config_suffix' files in config directories with the
+    // Check for '$suffix' files in config directories with the
     // given project name
     key_files = traverse_conf_dirs(key_files, conf_dirs, &size, project_path,
-                                   config_suffix, delim, comment);
+                                   suffix, delim, comment);
     /* XXX ENOMEM/NULL pointer check */
 
     free(project_path);
@@ -235,7 +237,8 @@ Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
   key_files[size - 1] = NULL;
 
   // Free allocated memory and return
-  free(file_name); free(config_suffix);
+  free(file_name);
+  free(suffix);
   econf_destroy(default_ptr);
 
   // Merge the list of acquired key_files into merged_file
@@ -380,7 +383,8 @@ char **econf_getKeys(Key_File *kf, const char *grp, size_t *length, econf_err *e
 /* The econf_get*Value functions are identical except for return
    type, so let's create them via a macro. */
 #define econf_getValue(TYPE, ERROR) \
-  econf_get ## TYPE ## Value(Key_File *kf, char *group, char *key, econf_err *error) { \
+  econf_get ## TYPE ## Value(Key_File *kf, const char *group, \
+			     const char *key, econf_err *error) {	\
   if (!kf) { \
     if (error) *error = ECONF_ERROR; \
     return ERROR; \
@@ -405,7 +409,8 @@ bool econf_getValue(Bool, 0)
 /* The econf_set*Value functions are identical except for return
    type, so let's create them via a macro. */
 #define libeconf_setValue(TYPE, VALTYPE, VALARG)						\
-  bool econf_set ## TYPE ## Value(Key_File *kf, char *group, char *key, VALTYPE value, econf_err *error) {	\
+bool econf_set ## TYPE ## Value(Key_File *kf, const char *group, \
+  const char *key, VALTYPE value, econf_err *error) {	\
   if (!kf) { \
     if (error) *error = ECONF_ERROR; \
     return false; \

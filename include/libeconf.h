@@ -84,7 +84,7 @@ extern Key_File *econf_newKeyFile(char delimiter, char comment, econf_err *);
 extern Key_File *econf_newIniFile(econf_err *);
 
 // Process the file of the given file_name and save its contents into key_file
-extern Key_File *econf_get_key_file(const char *file_name, char *delim,
+extern Key_File *econf_get_key_file(const char *file_name, const char *delim,
 				    const char comment, econf_err *);
 
 // Merge the contents of two key files
@@ -97,35 +97,35 @@ extern void econf_write_key_file(Key_File *key_file, const char *save_to_dir,
 
 extern Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
 					  const char *etch_conf_dir,
-					  char *project_name,
-					  char *config_suffix,
-					  char *delimt, char comment,
+					  const char *project_name,
+					  const char *config_suffix,
+					  const char *delimt, char comment,
 					  econf_err *);
 
 /* --- GETTERS --- */
 
 extern char **econf_getGroups(Key_File *kf, size_t *length, econf_err *);
 extern char **econf_getKeys(Key_File *kf, const char *group, size_t *length, econf_err *);
-extern int32_t econf_getIntValue(Key_File *kf, char *group, char *key, econf_err *);
-extern int64_t econf_getInt64Value(Key_File *kf, char *group, char *key, econf_err *);
-extern uint32_t econf_getUIntValue(Key_File *kf, char *group, char *key, econf_err *);
-extern uint64_t econf_getUInt64Value(Key_File *kf, char *group, char *key, econf_err *);
-extern float econf_getFloatValue(Key_File *kf, char *group, char *key, econf_err *);
-extern double econf_getDoubleValue(Key_File *kf, char *group, char *key, econf_err *);
+extern int32_t econf_getIntValue(Key_File *kf, const char *group, const char *key, econf_err *);
+extern int64_t econf_getInt64Value(Key_File *kf, const char *group, const char *key, econf_err *);
+extern uint32_t econf_getUIntValue(Key_File *kf, const char *group, const char *key, econf_err *);
+extern uint64_t econf_getUInt64Value(Key_File *kf, const char *group, const char *key, econf_err *);
+extern float econf_getFloatValue(Key_File *kf, const char *group, const char *key, econf_err *);
+extern double econf_getDoubleValue(Key_File *kf, const char *group, const char *key, econf_err *);
 /* Returns a newly allocated string or NULL in error case. */
-extern char *econf_getStringValue(Key_File *kf, char *group, char *key, econf_err *);
-extern bool econf_getBoolValue(Key_File *kf, char *group, char *key, econf_err *);
+extern char *econf_getStringValue(Key_File *kf, const char *group, const char *key, econf_err *);
+extern bool econf_getBoolValue(Key_File *kf, const char *group, const char *key, econf_err *);
 
 /* --- SETTERS --- */
 
-extern bool econf_setIntValue(Key_File *kf, char *group, char *key, int32_t value, econf_err *error);
-extern bool econf_setInt64Value(Key_File *kf, char *group, char *key, int64_t value, econf_err *error);
-extern bool econf_setUIntValue(Key_File *kf, char *group, char *key, uint32_t value, econf_err *error);
-extern bool econf_setUInt64Value(Key_File *kf, char *group, char *key, uint64_t value, econf_err *error);
-extern bool econf_setFloatValue(Key_File *kf, char *group, char *key, float value, econf_err *error);
-extern bool econf_setDoubleValue(Key_File *kf, char *group, char *key, double value, econf_err *error);
-extern bool econf_setStringValue(Key_File *kf, char *group, char *key, const char *value, econf_err *error);
-extern bool econf_setBoolValue(Key_File *kf, char *group, char *key, const char *value, econf_err *error);
+extern bool econf_setIntValue(Key_File *kf, const char *group, const char *key, int32_t value, econf_err *error);
+extern bool econf_setInt64Value(Key_File *kf, const char *group, const char *key, int64_t value, econf_err *error);
+extern bool econf_setUIntValue(Key_File *kf, const char *group, const char *key, uint32_t value, econf_err *error);
+extern bool econf_setUInt64Value(Key_File *kf, const char *group, const char *key, uint64_t value, econf_err *error);
+extern bool econf_setFloatValue(Key_File *kf, const char *group, const char *key, float value, econf_err *error);
+extern bool econf_setDoubleValue(Key_File *kf, const char *group, const char *key, double value, econf_err *error);
+extern bool econf_setStringValue(Key_File *kf, const char *group, const char *key, const char *value, econf_err *error);
+extern bool econf_setBoolValue(Key_File *kf, const char *group, const char *key, const char *value, econf_err *error);
 
 /* --- HELPERS --- */
 

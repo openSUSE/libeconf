@@ -87,7 +87,7 @@ bool getBoolValueNum(Key_File key_file, size_t num) {
 
 /* --- SETTERS --- */
 
-bool setGroup(Key_File *key_file, size_t num, char *value, econf_err *error) {
+bool setGroup(Key_File *key_file, size_t num, const char *value, econf_err *error) {
   if (key_file == NULL || value == NULL)
     {
       if (error) *error = ECONF_ERROR;
@@ -104,7 +104,7 @@ bool setGroup(Key_File *key_file, size_t num, char *value, econf_err *error) {
   return true;
 }
 
-bool setKey(Key_File *key_file, size_t num, char *value, econf_err *error) {
+bool setKey(Key_File *key_file, size_t num, const char *value, econf_err *error) {
   if (key_file == NULL || value == NULL)
     {
       if (error) *error = ECONF_ERROR;

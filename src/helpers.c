@@ -124,7 +124,7 @@ char *toLowerCase(char *string) {
 
 // Turn the given string into a hash value
 // Hash function djb2 from Dan J. Bernstein
-size_t hashstring(char *string) {
+size_t hashstring(const char *string) {
   size_t hash = 5381;
   char c;
   while ((c = *string++)) { hash = ((hash << 5) + hash) + c; }
@@ -132,7 +132,7 @@ size_t hashstring(char *string) {
 }
 
 // Look for matching key
-size_t find_key(Key_File key_file, char *group, char *key, econf_err *error) {
+size_t find_key(Key_File key_file, const char *group, const char *key, econf_err *error) {
   if (!key || !*key) {
     if (error) *error = ECONF_ERROR;
     return -1;
@@ -154,7 +154,9 @@ size_t find_key(Key_File key_file, char *group, char *key, econf_err *error) {
 // Append a new key to an existing Key_File
 // TODO: If the group is already known the new key should be appended
 // at the end of that group not at the end of the file.
-bool new_key(Key_File *key_file, char *group, char *key, econf_err *error) {
+static bool
+new_key (Key_File *key_file, const char *group, const char *key, econf_err *error)
+{
   if (key_file == NULL || key == NULL)
     {
       if (error) *error = ECONF_ERROR;
@@ -172,8 +174,8 @@ bool new_key(Key_File *key_file, char *group, char *key, econf_err *error) {
 // TODO: function/void pointer might not be necessary if the value is converted
 // into a string beforehand.
 bool setKeyValue(bool (*function) (Key_File*, size_t, const void*, econf_err *),
-		 Key_File *kf, char *group, char *key, const void *value,
-		 econf_err *error) {
+		 Key_File *kf, const char *group, const char *key,
+		 const void *value, econf_err *error) {
   econf_err local_err = ECONF_SUCCESS;
   char *tmp = ((!group || !*group) ? strdup(KEY_FILE_NULL_VALUE) :
                addbrackets(group));
