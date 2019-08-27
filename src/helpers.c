@@ -108,6 +108,7 @@ char *addbrackets(const char *string) {
     *cp++ = '[';
     cp = stpcpy (cp, string);
     *cp++ = ']';
+    *cp = '\0';
     return buffer;
   }
   return strdup(string);
