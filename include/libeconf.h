@@ -112,7 +112,8 @@ extern uint32_t econf_getUIntValue(Key_File *kf, char *group, char *key, econf_e
 extern uint64_t econf_getUInt64Value(Key_File *kf, char *group, char *key, econf_err *);
 extern float econf_getFloatValue(Key_File *kf, char *group, char *key, econf_err *);
 extern double econf_getDoubleValue(Key_File *kf, char *group, char *key, econf_err *);
-extern const char *econf_getStringValue(Key_File *kf, char *group, char *key, econf_err *);
+/* Returns a newly allocated string or NULL in error case. */
+extern char *econf_getStringValue(Key_File *kf, char *group, char *key, econf_err *);
 extern bool econf_getBoolValue(Key_File *kf, char *group, char *key, econf_err *);
 
 /* --- SETTERS --- */

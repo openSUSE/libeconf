@@ -19,7 +19,7 @@ int
 check_key(Key_File *key_file, char *key, char *expected_val)
 {
   econf_err error = ECONF_SUCCESS;
-  const char *val = econf_getStringValue (key_file, "", key, &error);
+  char *val = econf_getStringValue (key_file, "", key, &error);
   if (expected_val == NULL)
     {
       if (val == NULL)
@@ -41,6 +41,7 @@ check_key(Key_File *key_file, char *key, char *expected_val)
     }
 
   printf("Ok: %s=%s\n", key, val);
+  free (val);
   return 0;
 }
 
