@@ -85,6 +85,7 @@ Key_File *econf_get_key_file(const char *file_name, const char *delim,
   if (read_file == NULL) {
     if (error)
       *error = ECONF_NOMEM;
+    fclose (kf);
     return NULL;
   }
 
@@ -155,13 +156,6 @@ Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
                                    econf_err *error) {
   size_t size = 1;
   char *suffix;
-  Key_File **key_files = malloc(size * sizeof(Key_File*));
-  if (key_files == NULL)
-    {
-      if (error)
-	*error = ECONF_NOMEM;
-      return NULL;
-    }
 
   /* config_suffix must be provided and should not be "" */
   if (config_suffix == NULL || strlen (config_suffix) == 0)
@@ -196,16 +190,19 @@ Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
       if (error) *error = ECONF_NOMEM;
       return NULL;
     }
-  char **default_ptr = default_dirs, *project_path;
+  char **default_ptr = default_dirs;
 
-  Key_File *key_file;
+  Key_File **key_files = malloc(size * sizeof(Key_File*));
+  if (key_files == NULL)
+    {
+      if (error)
+	*error = ECONF_NOMEM;
+      return NULL;
+    }
   while (*default_dirs) {
-    project_path = combine_strings(*default_dirs, project_name, '/');
-    /* XXX ENOMEM/NULL pointer check */
-
     // Check if the config file exists directly in the given config directory
     char *file_path = combine_strings(*default_dirs, file_name, '/');
-    key_file = econf_get_key_file(file_path, delim, comment, NULL);
+    Key_File *key_file = econf_get_key_file(file_path, delim, comment, NULL);
     free(file_path);
     if(key_file) {
       key_file->on_merge_delete = 1;
@@ -222,12 +219,13 @@ Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
     // "default_dirs/project_name.d/"
     // in this order
     char *conf_dirs = " d . conf.d . conf.d / 0 ";
+    char *project_path = combine_strings(*default_dirs, project_name, '/');
+    /* XXX ENOMEM/NULL pointer check */
     // Check for '$suffix' files in config directories with the
     // given project name
     key_files = traverse_conf_dirs(key_files, conf_dirs, &size, project_path,
                                    suffix, delim, comment);
     /* XXX ENOMEM/NULL pointer check */
-
     free(project_path);
 
     // If /etc configuration exists igonre /usr config
