@@ -118,7 +118,10 @@ char *addbrackets(const char *string) {
 char *toLowerCase(char *string) {
   char *ptr = string;
   while (*string)
-    *string++ = tolower(*string);
+    {
+      *string = tolower(*string);
+      string++;
+    }
   return ptr;
 }
 
@@ -167,7 +170,7 @@ new_key (Key_File *key_file, const char *group, const char *key, econf_err *erro
                addbrackets(group);
   if (grp == NULL) {
     if (error) *error = ECONF_NOMEM;
-    return -1;
+    return false;
   }
   if (key_file == NULL || key == NULL)
     {
