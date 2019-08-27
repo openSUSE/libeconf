@@ -10,6 +10,7 @@ EXTRA_DIST = tst-arguments-data tst-logindefs1-data tst-merge1-data \
 TESTS = tst-filedoesnotexit1 tst-merge1 tst-merge2 tst-logindefs1 \
 	tst-arguments1 tst-arguments2 tst-arguments3 tst-arguments4 \
 	tst-getconfdirs1 tst-getconfdirs2 tst-getconfdirs3 \
+	tst-getconfdirs4 \
 	tst-econf_errstring1 \
 	tst-setgetvalues1 \
 	tst-groups1
