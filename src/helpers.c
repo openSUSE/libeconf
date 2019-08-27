@@ -133,21 +133,28 @@ size_t hashstring(const char *string) {
 
 // Look for matching key
 size_t find_key(Key_File key_file, const char *group, const char *key, econf_err *error) {
-  if (!key || !*key) {
-    if (error) *error = ECONF_ERROR;
+  char *grp = (!group || !*group) ? strdup(KEY_FILE_NULL_VALUE) :
+               addbrackets(group);
+  if (grp == NULL) {
+    if (error) *error = ECONF_NOMEM;
     return -1;
   }
-  size_t g = KEY_FILE_NULL_VALUE_HASH, k = hashstring(key);
-  if (group && *group) { g = hashstring(group); }
+  if (!key || !*key) {
+    if (error) *error = ECONF_ERROR;
+    free(grp);
+    return -1;
+  }
   for (int i = 0; i < key_file.length; i++) {
-    if (g == hashstring(key_file.file_entry[i].group) &&
-        k == hashstring(key_file.file_entry[i].key)) {
+    if (!strcmp(key_file.file_entry[i].group, grp) &&
+        !strcmp(key_file.file_entry[i].key, key)) {
+      free(grp);
       return i;
     }
   }
   // Key not found
   if (error)
     *error = ECONF_NOKEY;
+  free(grp);
   return -1;
 }
 
@@ -155,17 +162,28 @@ size_t find_key(Key_File key_file, const char *group, const char *key, econf_err
 // TODO: If the group is already known the new key should be appended
 // at the end of that group not at the end of the file.
 static bool
-new_key (Key_File *key_file, const char *group, const char *key, econf_err *error)
-{
+new_key (Key_File *key_file, const char *group, const char *key, econf_err *error) {
+  char *grp = (!group || !*group) ? strdup(KEY_FILE_NULL_VALUE) :
+               addbrackets(group);
+  if (grp == NULL) {
+    if (error) *error = ECONF_NOMEM;
+    return -1;
+  }
   if (key_file == NULL || key == NULL)
     {
       if (error) *error = ECONF_ERROR;
+      free(grp);
       return false;
     }
-  if (!key_file_append(key_file, error))
+  if (!key_file_append(key_file, error)) {
+    free(grp);
     return false;
-  if (!setGroup(key_file, key_file->length - 1, group, error))
+  }
+  if (!setGroup(key_file, key_file->length - 1, grp, error)) {
+    free(grp);
     return false;
+  }
+  free(grp);
   return setKey(key_file, key_file->length - 1, key, error);
 }
 
@@ -177,33 +195,17 @@ bool setKeyValue(bool (*function) (Key_File*, size_t, const void*, econf_err *),
 		 Key_File *kf, const char *group, const char *key,
 		 const void *value, econf_err *error) {
   econf_err local_err = ECONF_SUCCESS;
-  char *tmp = ((!group || !*group) ? strdup(KEY_FILE_NULL_VALUE) :
-               addbrackets(group));
-  if (tmp == NULL)
-    {
-      if (error) *error = ECONF_NOMEM;
+  int num = find_key(*kf, group, key, &local_err);
+  if (num == -1) {
+    if (local_err && local_err != ECONF_NOKEY) {
+      if (error) *error = local_err;
+	    return false;
+	  }
+    if (!new_key(kf, group, key, error)) {
       return false;
     }
-  int num = find_key(*kf, tmp, key, &local_err);
-  if (num == -1)
-    {
-      if (local_err && local_err != ECONF_NOKEY)
-	{
-	  if (error) *error = local_err;
-	  free (tmp);
-	  return false;
-	}
-
-      if (!new_key(kf, tmp, key, error))
-	{
-	  free (tmp);
-	  return false;
-	}
-
-      num = kf->length - 1;
-    }
-
-  free (tmp);
+    num = kf->length - 1;
+  }
   return function(kf, num, value, error);
 }
 

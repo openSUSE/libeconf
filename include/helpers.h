@@ -57,7 +57,7 @@ size_t find_key(Key_File key_file, const char *group, const char *key, econf_err
 // does not exist it is created.
 bool setKeyValue(bool (*function) (Key_File*, size_t, const void*, econf_err *),
                  Key_File *kf, const char *group, const char *key,
-		 const void *value, econf_err *error);
+                 const void *value, econf_err *error);
 
 // Copy the contents of a file_entry struct
 struct file_entry cpy_file_entry(struct file_entry fe);
