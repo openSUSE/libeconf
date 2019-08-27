@@ -53,7 +53,9 @@ int main() {
   printf("Double: %.*g\n", 16, econf_getDoubleValue(key_file, "[Basic Types]", "Double", NULL));
 
   econf_setStringValue(key_file, "[Basic Types]", "String", "\" Hello World! \"", NULL);
-  printf("String: %s\n", econf_getStringValue(key_file, "[Basic Types]", "String", NULL));
+  char *string = econf_getStringValue(key_file, "[Basic Types]", "String", NULL);
+  printf("String: %s\n", string);
+  free(string);
 
   // Square brackets around the group/section are not needed
   econf_setBoolValue(key_file, "Basic Types", "Bool", "YeS", NULL);
