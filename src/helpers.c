@@ -106,7 +106,7 @@ char *addbrackets(const char *string) {
     char *buffer = malloc(length + 3);
     char *cp = buffer;
     *cp++ = '[';
-    stpcpy (cp, string);
+    cp = stpcpy (cp, string);
     *cp++ = ']';
     return buffer;
   }
