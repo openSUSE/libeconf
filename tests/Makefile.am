@@ -14,8 +14,6 @@ TESTS = tst-filedoesnotexit1 tst-merge1 tst-merge2 tst-logindefs1 \
 	tst-setgetvalues1 \
 	tst-groups1
 
-XFAIL_TESTS = tst-groups1
-
 check_PROGRAMS = ${TESTS}
 
 tst_getconfdirs1_CFLAGS = $(AM_CFLAGS) -DSUFFIX=\".conf\"
