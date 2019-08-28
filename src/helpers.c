@@ -147,7 +147,7 @@ size_t find_key(Key_File key_file, const char *group, const char *key, econf_err
     free(grp);
     return -1;
   }
-  for (int i = 0; i < key_file.length; i++) {
+  for (size_t i = 0; i < key_file.length; i++) {
     if (!strcmp(key_file.file_entry[i].group, grp) &&
         !strcmp(key_file.file_entry[i].key, key)) {
       free(grp);

@@ -76,9 +76,9 @@ main(int argc, char **argv)
       fprintf (stderr, "No keys found?\n");
       return 1;
     }
-  for (int i = 0; i < key_number; i++)
+  for (size_t i = 0; i < key_number; i++)
     {
-      printf ("%i: %s\n", i, keys[i]);
+      printf ("%li: %s\n", i, keys[i]);
     }
 
   econf_destroy (keys);
