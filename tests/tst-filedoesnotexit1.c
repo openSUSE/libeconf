@@ -13,10 +13,10 @@
 int
 main(int argc, char **argv)
 {
-  Key_File *key_file;
+  Key_File *key_file = NULL;
   econf_err error;
 
-  key_file = econf_get_key_file ("doesnotexist1.conf", "=", '#', &error);
+  error = econf_get_key_file (&key_file, "doesnotexist1.conf", "=", '#');
   if (key_file)
     {
       fprintf (stderr, "Got key_file for non-existing configuration file!\n");

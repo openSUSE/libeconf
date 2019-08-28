@@ -53,11 +53,11 @@ main(int argc, char **argv)
   int retval = 0;
   econf_err error;
 
-  key_file = econf_get_conf_from_dirs (
-				       TESTSDIR"tst-getconfdirs1-data/usr/etc",
-				       TESTSDIR"tst-getconfdirs1-data/etc",
-				       "getconfdir", SUFFIX, "=", '#', &error);
-  if (key_file == NULL)
+  error = econf_get_conf_from_dirs (&key_file,
+				    TESTSDIR"tst-getconfdirs1-data/usr/etc",
+				    TESTSDIR"tst-getconfdirs1-data/etc",
+				    "getconfdir", SUFFIX, "=", '#');
+  if (error)
     {
       fprintf (stderr, "ERROR: econf_get_conf_from_dirs: %s\n",
 	       econf_errString(error));
@@ -66,7 +66,6 @@ main(int argc, char **argv)
 
   if (check_key(key_file, "KEY1", "etcconfd") != 0)
     retval = 1;
-  /* XXX fails as we have no way to differentiate between key does not exist and key is empty yet */
   if (check_key(key_file, "USRETC", NULL) != 0)
     retval = 1;
   if (check_key(key_file, "ETC", "true") != 0)

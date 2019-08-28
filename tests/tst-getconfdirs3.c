@@ -52,11 +52,11 @@ main(int argc, char **argv)
   int retval = 0;
   econf_err error;
 
-  key_file = econf_get_conf_from_dirs (
-				       TESTSDIR"tst-getconfdirs3-data/usr/etc",
-				       TESTSDIR"tst-getconfdirs3-data/etc",
-				       "getconfdir", ".conf", "=", '#', &error);
-  if (key_file == NULL)
+  error = econf_get_conf_from_dirs (&key_file,
+				    TESTSDIR"tst-getconfdirs3-data/usr/etc",
+				    TESTSDIR"tst-getconfdirs3-data/etc",
+				    "getconfdir", ".conf", "=", '#');
+  if (error)
     {
       fprintf (stderr, "ERROR: econf_get_conf_from_dirs returned NULL: %s\n",
 	       econf_errString(error));

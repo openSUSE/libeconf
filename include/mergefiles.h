@@ -51,4 +51,4 @@ Key_File **traverse_conf_dirs(Key_File **key_files, const char *conf_dirs,
                               const char *delim, char comment);
 
 // Merge an array of given Key_Files into one
-Key_File *merge_Key_Files(Key_File **key_files, econf_err *);
+econf_err merge_Key_Files(Key_File **key_files, Key_File **merged_files);

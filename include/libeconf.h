@@ -84,28 +84,28 @@ extern econf_err econf_newKeyFile(Key_File **result, char delimiter, char commen
 extern econf_err econf_newIniFile(Key_File **result);
 
 // Process the file of the given file_name and save its contents into key_file
-extern Key_File *econf_get_key_file(const char *file_name, const char *delim,
-				    const char comment, econf_err *);
+extern econf_err econf_get_key_file(Key_File **result, const char *file_name,
+				    const char *delim, const char comment);
 
 // Merge the contents of two key files
-extern Key_File *econf_merge_key_files(Key_File *usr_file, Key_File *etc_file,
-                                       econf_err *);
+extern econf_err econf_merge_key_files(Key_File **merged_file, 
+				       Key_File *usr_file, Key_File *etc_file);
 
 // Write content of a Key_File struct to specified location
-extern void econf_write_key_file(Key_File *key_file, const char *save_to_dir,
-				 const char *file_name, econf_err *);
+extern econf_err econf_write_key_file(Key_File *key_file, const char *save_to_dir,
+				      const char *file_name);
 
-extern Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
+extern econf_err econf_get_conf_from_dirs(Key_File **key_file,
+					  const char *usr_conf_dir,
 					  const char *etch_conf_dir,
 					  const char *project_name,
 					  const char *config_suffix,
-					  const char *delimt, char comment,
-					  econf_err *);
+					  const char *delimt, char comment);
 
 /* --- GETTERS --- */
 
-extern char **econf_getGroups(Key_File *kf, size_t *length, econf_err *);
-extern char **econf_getKeys(Key_File *kf, const char *group, size_t *length, econf_err *);
+extern econf_err econf_getGroups(Key_File *kf, size_t *length, char **groups);
+extern econf_err econf_getKeys(Key_File *kf, const char *group, size_t *length, char ***keys);
 extern econf_err econf_getIntValue(Key_File *kf, const char *group, const char *key, int32_t *result);
 extern econf_err econf_getInt64Value(Key_File *kf, const char *group, const char *key, int64_t *result);
 extern econf_err econf_getUIntValue(Key_File *kf, const char *group, const char *key, uint32_t *result);

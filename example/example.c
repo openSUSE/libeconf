@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <time.h>
 
-int main() {
+int main(void) {
 
   printf("------------------------ OUTPUT START ------------------------\n");
 
@@ -37,8 +37,11 @@ int main() {
   //Key_File *key_file = econf_newIniFile();
   //Key_File *key_file = econf_get_key_file("example/etc/example/example.ini", "=", '#');
 
-  Key_File *key_file = econf_get_conf_from_dirs("example/usr/etc", "example/etc",
-                                                "example", ".ini", "=", '#', NULL);
+  Key_File *key_file;
+
+  if (!econf_get_conf_from_dirs(&key_file, "example/usr/etc", "example/etc",
+				"example", ".ini", "=", '#'))
+    return 1; /* XXX better error handling */
 
   econf_setInt64Value(key_file, "[Basic Types]", "Int", INT64_MAX);
   int64_t i64val;
@@ -76,7 +79,9 @@ int main() {
   econf_setValue(key_file, "Basic Types", "Generic", "Any value can go here!");
 
   size_t key_number = 0;
-  char **keys = econf_getKeys(key_file, "Basic Types", &key_number, NULL);
+  char **keys;
+  if (!econf_getKeys(key_file, "Basic Types", &key_number, &keys))
+    return 1; /* XXX better error handling */
   printf("Keys: ");
   for (size_t i = 0; i < key_number; i++) {
     printf("%s, ", keys[i]);
@@ -84,7 +89,7 @@ int main() {
   puts("\n");
   econf_destroy(keys);
 
-  econf_write_key_file(key_file, "example/", "test.ini", NULL);
+  econf_write_key_file(key_file, "example/", "test.ini");
 
   econf_destroy(key_file);
 

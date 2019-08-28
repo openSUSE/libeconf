@@ -69,76 +69,63 @@ econf_err econf_newIniFile(Key_File **result) {
 }
 
 // Process the file of the given file_name and save its contents into key_file
-Key_File *econf_get_key_file(const char *file_name, const char *delim,
-                             const char comment, econf_err *error) {
+econf_err econf_get_key_file(Key_File **key_file, const char *file_name,
+			     const char *delim, const char comment)
+{
   econf_err t_err;
 
   // Get absolute path if not provided
-  char *absolute_path = get_absolute_path(file_name, error);
+  char *absolute_path = get_absolute_path(file_name, &t_err);
   if (absolute_path == NULL)
-    return NULL;
+    return t_err;
 
   // File handle for the given file_name
   FILE *kf = fopen(absolute_path, "rb");
   free(absolute_path);
-  if (kf == NULL) {
-    if (error)
-      *error = ECONF_NOFILE;
-    return NULL;
-  }
+  if (kf == NULL)
+    return ECONF_NOFILE;
 
-  Key_File *read_file = malloc(sizeof(Key_File));
-  if (read_file == NULL) {
-    if (error)
-      *error = ECONF_NOMEM;
+  *key_file = malloc(sizeof(Key_File));
+  if (key_file == NULL) {
     fclose (kf);
-    return NULL;
+    return ECONF_NOMEM;
   }
 
-  read_file->comment = comment;
-  read_file->length = 0;
-  read_file->alloc_length = 0;
+  (*key_file)->comment = comment;
+  (*key_file)->length = 0;
+  (*key_file)->alloc_length = 0;
 
-  t_err = fill_key_file(read_file, kf, delim);
-  read_file->on_merge_delete = 0;
+  t_err = fill_key_file(*key_file, kf, delim);
+  (*key_file)->on_merge_delete = 0;
   fclose(kf);
 
   if(t_err) {
-    if (error)
-      *error = t_err;
-    econf_destroy(read_file);
-    return NULL;
+    econf_destroy(*key_file);
+    return t_err;
   }
 
-  return read_file;
+  return ECONF_SUCCESS;
 }
 
 // Merge the contents of two key files
-Key_File *econf_merge_key_files(Key_File *usr_file, Key_File *etc_file, econf_err *error) {
-  if (usr_file == NULL || etc_file == NULL) {
-    if (error)
-      *error = ECONF_ERROR;
-    return NULL;
-  }
+econf_err econf_merge_key_files(Key_File **merged_file, Key_File *usr_file, Key_File *etc_file)
+{
+  if (merged_file == NULL || usr_file == NULL || etc_file == NULL)
+    return ECONF_ERROR;
 
-  Key_File *merge_file = malloc(sizeof(Key_File));
-  if (merge_file == NULL)
-    {
-      if (error)
-	*error = ECONF_NOMEM;
-      return NULL;
-    }
+  *merged_file = malloc(sizeof(Key_File));
+  if (merged_file == NULL)
+    return ECONF_NOMEM;
 
-  merge_file->delimiter = usr_file->delimiter;
-  merge_file->comment = usr_file->comment;
+  (*merged_file)->delimiter = usr_file->delimiter;
+  (*merged_file)->comment = usr_file->comment;
   struct file_entry *fe =
       malloc((etc_file->length + usr_file->length) * sizeof(struct file_entry));
   if (fe == NULL)
     {
-      free (merge_file);
-      if (error)
-	*error = ECONF_NOMEM;
-      return NULL;
+      free (*merged_file);
+      *merged_file = NULL;
+      return ECONF_NOMEM;
     }
 
   size_t merge_length = 0;
@@ -149,29 +136,26 @@ Key_File *econf_merge_key_files(Key_File *usr_file, Key_File *etc_file, econf_er
   }
   merge_length = merge_existing_groups(&fe, usr_file, etc_file, merge_length);
   merge_length = add_new_groups(&fe, usr_file, etc_file, merge_length);
-  merge_file->length = merge_length;
-  merge_file->alloc_length = merge_length;
+  (*merged_file)->length = merge_length;
+  (*merged_file)->alloc_length = merge_length;
 
-  merge_file->file_entry = fe;
-  return merge_file;
+  (*merged_file)->file_entry = fe;
+  return ECONF_SUCCESS;
 }
 
-Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
+econf_err econf_get_conf_from_dirs(Key_File **result,
+				   const char *usr_conf_dir,
                                    const char *etc_conf_dir,
                                    const char *project_name,
                                    const char *config_suffix,
-                                   const char *delim, char comment,
-                                   econf_err *error) {
+                                   const char *delim, char comment)
+{
   size_t size = 1;
   char *suffix;
 
   /* config_suffix must be provided and should not be "" */
   if (config_suffix == NULL || strlen (config_suffix) == 0)
-    {
-      if (error)
-	*error = ECONF_ERROR;
-      return NULL;
-    }
+    return ECONF_ERROR;
 
   // Prepend a . to the config suffix if not provided
   if (config_suffix[0] == '.')
@@ -179,48 +163,42 @@ Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
   else
     suffix = combine_strings("", config_suffix, '.');
   if (suffix == NULL)
-    {
-      if (error) *error = ECONF_NOMEM;
-      return NULL;
-    }
+    return ECONF_NOMEM;
 
   char *file_name = combine_strings(project_name, &*(suffix + 1), '.');
   if (file_name == NULL)
-    {
-      if (error) *error = ECONF_NOMEM;
-      return NULL;
-    }
+    return ECONF_NOMEM;
 
   // Get the list of directories to search for config files
   char **default_dirs = get_default_dirs(usr_conf_dir, etc_conf_dir);
   if (*default_dirs == NULL)
-    {
-      if (error) *error = ECONF_NOMEM;
-      return NULL;
-    }
+    return ECONF_NOMEM;
+
   char **default_ptr = default_dirs;
 
   Key_File **key_files = malloc(size * sizeof(Key_File*));
   if (key_files == NULL)
-    {
-      if (error)
-	*error = ECONF_NOMEM;
-      return NULL;
-    }
+    return ECONF_NOMEM;
+
   while (*default_dirs) {
+    econf_err error;
+    Key_File *key_file = NULL;
     // Check if the config file exists directly in the given config directory
     char *file_path = combine_strings(*default_dirs, file_name, '/');
-    Key_File *key_file = econf_get_key_file(file_path, delim, comment, NULL);
+    if (file_path == NULL)
+      return ECONF_NOMEM;
+
+    error = econf_get_key_file(&key_file, file_path, delim, comment);
     free(file_path);
-    if(key_file) {
+
+    if(key_file && !error) {
       key_file->on_merge_delete = 1;
       key_files[size - 1] = key_file;
       Key_File **tmp = realloc(key_files, ++size * sizeof(Key_File *));
       if (!tmp) {
         for (size_t i = 0; i < size - 1; i++) free(key_files[i]);
         free(key_files);
-        if (error) *error = ECONF_NOMEM;
-        return NULL;
+        return ECONF_NOMEM;
       }
       key_files = tmp;
     }
@@ -254,39 +232,34 @@ Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
   econf_destroy(default_ptr);
 
   // Merge the list of acquired key_files into merged_file
-  Key_File *merged_file = merge_Key_Files(key_files, error);
+  econf_err error = merge_Key_Files(key_files, result);
   free(key_files);
 
-  return merged_file;
+  return error;
 }
 
 // Write content of a Key_File struct to specified location
-void econf_write_key_file(Key_File *key_file, const char *save_to_dir,
-                          const char *file_name, econf_err *error) {
-  if (!key_file) {
-    if (error) *error = ECONF_ERROR;
-    return;
-  }
+econf_err econf_write_key_file(Key_File *key_file, const char *save_to_dir,
+			       const char *file_name) {
+  if (!key_file)
+    return ECONF_ERROR;
+
   // Check if the directory exists
   // XXX use stat instead of opendir
   DIR *dir = opendir(save_to_dir);
-  if (dir) {
+  if (dir)
     closedir(dir);
-  } else {
-    if (error) *error = ECONF_NOFILE;
-    return;
-  }
+  else
+    return ECONF_NOFILE;
+
   // Create a file handle for the specified file
   char *save_to = combine_strings(save_to_dir, file_name, '/');
-  if (save_to == NULL) {
-    if (error) *error = ECONF_NOMEM;
-    return;
-  }
+  if (save_to == NULL)
+    return ECONF_NOMEM;
+
   FILE *kf = fopen(save_to, "w");
-  if (kf == NULL) {
-    if (error) *error = ECONF_WRITEERROR;
-    return;
-  }
+  if (kf == NULL)
+    return ECONF_WRITEERROR;
 
   // Write to file
   for (size_t i = 0; i < key_file->length; i++) {
@@ -304,6 +277,7 @@ void econf_write_key_file(Key_File *key_file, const char *save_to_dir,
   // Clean up
   free(save_to);
   fclose(kf);
+  return ECONF_SUCCESS;
 }
 
 /* GETTER FUNCTIONS */
@@ -312,17 +286,17 @@ void econf_write_key_file(Key_File *key_file, const char *save_to_dir,
 // will show twice. So the key file either needs to be sorted
 // upon entering a new key or the function must ensure only
 // unique values are returned.
-char **econf_getGroups(Key_File *kf, size_t *length, econf_err *error) {
-  if (!kf) {
-    if (error) *error = ECONF_ERROR;
-    return NULL;
-  }
+econf_err
+econf_getGroups(Key_File *kf, size_t *length, char **groups)
+{
+  if (!kf)
+    return ECONF_ERROR;
+
   size_t tmp = 0;
   bool *uniques = calloc(kf->length,sizeof(bool));
-  if (uniques == NULL) {
-    if (error) *error = ECONF_NOMEM;
-    return NULL;
-  }
+  if (uniques == NULL)
+    return ECONF_NOMEM;
+
   for (size_t i = 0; i < kf->length; i++) {
     if ((!i || strcmp(kf->file_entry[i].group, kf->file_entry[i - 1].group)) &&
         strcmp(kf->file_entry[i].group, KEY_FILE_NULL_VALUE)) {
@@ -330,12 +304,11 @@ char **econf_getGroups(Key_File *kf, size_t *length, econf_err *error) {
       tmp++;
     }
   }
-  if (!tmp) { free(uniques); return NULL; }
-  char **groups = calloc(tmp + 1, sizeof(char*));
-  if (groups == NULL) {
-    if (error) *error = ECONF_NOMEM;
-    return NULL;
-  }
+  if (!tmp) { free(uniques); return ECONF_ERROR; }
+  groups = calloc(tmp + 1, sizeof(char*));
+  if (groups == NULL)
+    return ECONF_NOMEM;
+
   tmp = 0;
   for (size_t i = 0; i < kf->length; i++) {
     if (uniques[i]) { groups[tmp++] = strdup(kf->file_entry[i].group); }
@@ -344,29 +317,28 @@ char **econf_getGroups(Key_File *kf, size_t *length, econf_err *error) {
   if (length != NULL) { *length = tmp; }
 
   free(uniques);
-  return groups;
+  return ECONF_SUCCESS;
 }
 
 // TODO: Same issue as with getGroups()
-char **econf_getKeys(Key_File *kf, const char *grp, size_t *length, econf_err *error) {
-  if (!kf) {
-    if (error) *error = ECONF_ERROR;
-    return NULL;
-  }
+econf_err
+econf_getKeys(Key_File *kf, const char *grp, size_t *length, char ***keys)
+{
+  if (!kf)
+    return ECONF_ERROR;
 
   size_t tmp = 0;
   char *group = ((!grp || !*grp) ? strdup(KEY_FILE_NULL_VALUE) :
                  addbrackets(grp));
-  if (group == NULL) {
-    if (error) *error = ECONF_NOMEM;
-    return NULL;
-  }
+  if (group == NULL)
+    return ECONF_NOMEM;
+
   bool *uniques = calloc(kf->length, sizeof(bool));
-  if (uniques == NULL) {
-    free(group);
-    if (error) *error = ECONF_NOMEM;
-    return NULL;
-  }
+  if (uniques == NULL)
+    {
+      free(group);
+      return ECONF_NOMEM;
+    }
   for (size_t i = 0; i < kf->length; i++) {
     if (!strcmp(kf->file_entry[i].group, group) &&
         (!i || strcmp(kf->file_entry[i].key, kf->file_entry[i - 1].key))) {
@@ -375,22 +347,26 @@ char **econf_getKeys(Key_File *kf, const char *grp, size_t *length, econf_err *e
     }
   }
   free(group);
-  if (!tmp) { free(uniques); return NULL; }
-  char **keys = calloc(tmp + 1, sizeof(char*));
+  if (!tmp)
+    {
+      free (uniques);
+      return ECONF_ERROR;
+    }
+  *keys = calloc(tmp + 1, sizeof(char*));
   if (keys == NULL) {
-    if (error) *error = ECONF_NOMEM;
     free (uniques);
-    return NULL;
+    return ECONF_NOMEM;
   }
 
-  for (size_t i = 0, j = 0; i < kf->length; i++) {
-    if (uniques[i]) { keys[j++] = strdup(kf->file_entry[i].key); }
-  }
+  for (size_t i = 0, j = 0; i < kf->length; i++)
+    if (uniques[i])
+      (*keys)[j++] = strdup(kf->file_entry[i].key);
 
-  if (length != NULL) { *length = tmp; }
+  if (length != NULL)
+    *length = tmp;
 
   free(uniques);
-  return keys;
+  return ECONF_SUCCESS;
 }
 
 /* The econf_get*Value functions are identical except for result

@@ -20,8 +20,7 @@ main(int argc, char **argv)
   char *val;
   econf_err error;
 
-  key_file = econf_get_key_file (TESTSDIR"tst-logindefs1-data/etc/login.defs", " \t", '#', &error);
-  if (key_file == NULL)
+  if ((error = econf_get_key_file (&key_file, TESTSDIR"tst-logindefs1-data/etc/login.defs", " \t", '#')))
     {
       fprintf (stderr, "ERROR: couldn't read configuration file: %s\n", econf_errString(error));
       return 1;
@@ -63,8 +62,8 @@ main(int argc, char **argv)
     }
   free (val);
 
-  keys = econf_getKeys(key_file, NULL, &key_number, &error);
-  if (keys == NULL && error)
+  error = econf_getKeys(key_file, NULL, &key_number, &keys);
+  if (error)
     {
       fprintf (stderr, "Error getting all keys: %s\n", econf_errString(error));
       return 1;
