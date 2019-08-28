@@ -25,7 +25,7 @@ main(int argc, char **argv)
       return 1;
     }
 
-  if (!econf_getStringValue (key_file, "", NULL, &val) || val != NULL)
+  if (!econf_getStringValue (key_file, "", NULL, &val))
     {
       fprintf (stderr, "ERROR: return values for NULL key_file are wrong!\n");
       return 1;
