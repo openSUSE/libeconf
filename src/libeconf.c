@@ -151,7 +151,7 @@ Key_File *econf_merge_key_files(Key_File *usr_file, Key_File *etc_file, econf_er
 Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
                                    const char *etc_conf_dir,
                                    const char *project_name,
-				   const char *config_suffix,
+                                   const char *config_suffix,
                                    const char *delim, char comment,
                                    econf_err *error) {
   size_t size = 1;
@@ -209,7 +209,7 @@ Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
       key_files[size - 1] = key_file;
       Key_File **tmp = realloc(key_files, ++size * sizeof(Key_File *));
       if (!tmp) {
-        for (int i = 0; i < size - 1; i++) free(key_files[i]);
+        for (size_t i = 0; i < size - 1; i++) free(key_files[i]);
         free(key_files);
         if (error) *error = ECONF_NOMEM;
         return NULL;
@@ -281,7 +281,7 @@ void econf_write_key_file(Key_File *key_file, const char *save_to_dir,
   }
 
   // Write to file
-  for (int i = 0; i < key_file->length; i++) {
+  for (size_t i = 0; i < key_file->length; i++) {
     if (!i || strcmp(key_file->file_entry[i - 1].group,
                      key_file->file_entry[i].group)) {
       if (i)
@@ -315,7 +315,7 @@ char **econf_getGroups(Key_File *kf, size_t *length, econf_err *error) {
     if (error) *error = ECONF_NOMEM;
     return NULL;
   }
-  for (int i = 0; i < kf->length; i++) {
+  for (size_t i = 0; i < kf->length; i++) {
     if ((!i || strcmp(kf->file_entry[i].group, kf->file_entry[i - 1].group)) &&
         strcmp(kf->file_entry[i].group, KEY_FILE_NULL_VALUE)) {
       uniques[i] = 1;
@@ -329,7 +329,7 @@ char **econf_getGroups(Key_File *kf, size_t *length, econf_err *error) {
     return NULL;
   }
   tmp = 0;
-  for(int i = 0; i < kf->length; i++) {
+  for (size_t i = 0; i < kf->length; i++) {
     if (uniques[i]) { groups[tmp++] = strdup(kf->file_entry[i].group); }
   }
 
@@ -359,7 +359,7 @@ char **econf_getKeys(Key_File *kf, const char *grp, size_t *length, econf_err *e
     if (error) *error = ECONF_NOMEM;
     return NULL;
   }
-  for (int i = 0; i < kf->length; i++) {
+  for (size_t i = 0; i < kf->length; i++) {
     if (!strcmp(kf->file_entry[i].group, group) &&
         (!i || strcmp(kf->file_entry[i].key, kf->file_entry[i - 1].key))) {
       uniques[i] = 1;
@@ -374,7 +374,7 @@ char **econf_getKeys(Key_File *kf, const char *grp, size_t *length, econf_err *e
     free (uniques);
     return NULL;
   }
-  for(int i = 0, tmp = 0; i < kf->length; i++) {
+  for (size_t i = 0, tmp = 0; i < kf->length; i++) {
     if (uniques[i]) { keys[tmp++] = strdup(kf->file_entry[i].key); }
   }
 
@@ -444,7 +444,7 @@ void econf_char_a_destroy(char** array) {
 // Free memory allocated by key_file
 void econf_Key_File_destroy(Key_File *key_file) {
   if (!key_file) { return; }
-  for (int i = 0; i < key_file->alloc_length; i++) {
+  for (size_t i = 0; i < key_file->alloc_length; i++) {
     free(key_file->file_entry[i].group);
     free(key_file->file_entry[i].key);
     free(key_file->file_entry[i].value);

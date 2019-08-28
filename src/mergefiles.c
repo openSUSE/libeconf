@@ -49,15 +49,15 @@ size_t merge_existing_groups(struct file_entry **fe, Key_File *uf, Key_File *ef,
                              const size_t etc_start) {
   char new_key;
   size_t merge_length = etc_start, tmp = etc_start, added_keys = etc_start;
-  for (int i = 0; i <= uf->length; i++) {
+  for (size_t i = 0; i <= uf->length; i++) {
     // Check if the group has changed in the last iteration
     if (i == uf->length ||
         (i && strcmp(uf->file_entry[i].group, uf->file_entry[i - 1].group))) {
-      for (int j = etc_start; j < ef->length; j++) {
+      for (size_t j = etc_start; j < ef->length; j++) {
         // Check for matching groups
         if (!strcmp(uf->file_entry[i - 1].group, ef->file_entry[j].group)) {
           new_key = 1;
-          for (int k = merge_length; k < i + tmp; k++) {
+          for (size_t k = merge_length; k < i + tmp; k++) {
             // If an existing key is found in ef take the value from ef
             if (!strcmp((*fe)[k].key, ef->file_entry[j].key)) {
               free((*fe)[k].value);
@@ -86,11 +86,11 @@ size_t add_new_groups(struct file_entry **fe, Key_File *uf, Key_File *ef,
                       const size_t merge_length) {
   size_t added_keys = merge_length;
   char new_key;
-  for (int i = 0; i < ef->length; i++) {
+  for (size_t i = 0; i < ef->length; i++) {
     if (!strcmp(ef->file_entry[i].group, KEY_FILE_NULL_VALUE))
       continue;
     new_key = 1;
-    for (int j = 0; j < uf->length; j++) {
+    for (size_t j = 0; j < uf->length; j++) {
       if (!strcmp(uf->file_entry[j].group, ef->file_entry[i].group)) {
         new_key = 0;
         break;
