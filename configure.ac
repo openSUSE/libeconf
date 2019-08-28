@@ -26,8 +26,21 @@ if test x"$enable_compiler_checks" = x"yes" ; then
    LDFLAGS_CHECKS="-fsanitize=address"
 fi
 
+dnl enable additional compiler warnings
+AC_ARG_ENABLE([compiler-warnings],
+    AS_HELP_STRING([--enable-compiler-warnings],[enables additional compiler warnings]))
+
+if test x"$enable_compiler_warnings" = x"yes" ; then
+   if test x"$enable_compiler_checks" = x"yes" ; then
+      AC_MSG_ERROR([Conflicting options: --enable-compiler-warnings cannot be used together with --eanble-compiler-checks])  
+   fi
+   CFLAGS_WARNINGS="-O2 -g -W -Wall -DXTSTRINGDEFINES -D_FORTIFY_SOURCE=2 -fstack-protector-strong -funwind-tables -fasynchronous-unwind-tables -fstack-clash-protection -Werror=return-type -flto=8 -Wbad-function-cast -Wcast-align -Wcast-qual -Winline -Wmissing-declarations -Wmissing-prototypes -Wnested-externs -Wshadow -Wstrict-prototypes -Wundef"
+   LDFLAGS_WARNINGS=""
+fi
 
 AC_SUBST(CFLAGS_CHECKS)
 AC_SUBST(LDFLAGS_CHECKS)
+AC_SUBST(CFLAGS_WARNINGS)
+AC_SUBST(LDFLAGS_WARNINGS)
 AC_CONFIG_FILES([Makefile lib/Makefile include/Makefile bin/Makefile tests/Makefile lib/libeconf.pc])
 AC_OUTPUT
