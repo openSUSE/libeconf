@@ -41,7 +41,7 @@ fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
   // is allocated
   const size_t LLEN = 8;
   size_t file_length = 0, lnum = KEY_FILE_DEFAULT_LENGTH, llen = LLEN, vlen = 0;
-  char ch;
+  size_t ch;
 
   // Allocate memory for the Key_File based on KEY_FILE_DEFAULT_LENGTH
   struct file_entry *fe = malloc(KEY_FILE_DEFAULT_LENGTH * sizeof(struct file_entry));
@@ -107,12 +107,12 @@ fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
   free(buffer);
   // Check if the file is really at its end after EOF is encountered.
   if (!feof(kf)) {
-    read_file->length = -EBADF;
     return ECONF_ERROR;
   }
   if (!strcmp(fe->key, KEY_FILE_NULL_VALUE)) {
     fe->key = NULL;
     free(fe->group);
+    return ECONF_ERROR;
   }
   read_file->length = file_length;
   read_file->alloc_length = file_length;
