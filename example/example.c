@@ -78,7 +78,7 @@ int main() {
   size_t key_number = 0;
   char **keys = econf_getKeys(key_file, "Basic Types", &key_number, NULL);
   printf("Keys: ");
-  for (int i = 0; i < key_number; i++) {
+  for (size_t i = 0; i < key_number; i++) {
     printf("%s, ", keys[i]);
   }
   puts("\n");

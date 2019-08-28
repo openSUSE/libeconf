@@ -96,6 +96,8 @@ Key_File *econf_get_key_file(const char *file_name, const char *delim,
   }
 
   read_file->comment = comment;
+  read_file->length = 0;
+  read_file->alloc_length = 0;
 
   t_err = fill_key_file(read_file, kf, delim);
   read_file->on_merge_delete = 0;
@@ -157,7 +159,7 @@ Key_File *econf_merge_key_files(Key_File *usr_file, Key_File *etc_file, econf_er
 Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
                                    const char *etc_conf_dir,
                                    const char *project_name,
-				   const char *config_suffix,
+                                   const char *config_suffix,
                                    const char *delim, char comment,
                                    econf_err *error) {
   size_t size = 1;
@@ -335,7 +337,7 @@ char **econf_getGroups(Key_File *kf, size_t *length, econf_err *error) {
     return NULL;
   }
   tmp = 0;
-  for(size_t i = 0; i < kf->length; i++) {
+  for (size_t i = 0; i < kf->length; i++) {
     if (uniques[i]) { groups[tmp++] = strdup(kf->file_entry[i].group); }
   }
 
@@ -381,7 +383,7 @@ char **econf_getKeys(Key_File *kf, const char *grp, size_t *length, econf_err *e
     return NULL;
   }
 
-  for(size_t i = 0, j = 0; i < kf->length; i++) {
+  for (size_t i = 0, j = 0; i < kf->length; i++) {
     if (uniques[i]) { keys[j++] = strdup(kf->file_entry[i].key); }
   }
 
