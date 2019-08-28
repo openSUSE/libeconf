@@ -207,8 +207,14 @@ Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
     if(key_file) {
       key_file->on_merge_delete = 1;
       key_files[size - 1] = key_file;
-      key_files = realloc(key_files, ++size * sizeof(Key_File *));
-      /* XXX ENOMEM check */
+      Key_File **tmp = realloc(key_files, ++size * sizeof(Key_File *));
+      if (!tmp) {
+        for (int i = 0; i < size - 1; i++) free(key_files[i]);
+        free(key_files);
+        if (error) *error = ECONF_NOMEM;
+        return NULL;
+      }
+      key_files = tmp;
     }
 
     // Indicate which directories to look for

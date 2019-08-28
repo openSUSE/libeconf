@@ -58,6 +58,7 @@ fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
   fe->group = strdup(KEY_FILE_NULL_VALUE);
   if (fe->group == NULL)
     {
+      free (buffer);
       free (fe);
       return ECONF_NOMEM;
     }
@@ -65,13 +66,14 @@ fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
 
   while ((ch = getc(kf)) != EOF) {
     if (vlen >= llen) {
-      buffer = realloc(buffer, llen * 2);
-      if (buffer == NULL)
-	{
-	  free (fe->group);
-	  free (fe);
-	  return ECONF_NOMEM;
-	}
+      char *tmp = realloc(buffer, llen * 2);
+      if (!tmp) {
+        free (buffer);
+        free (fe->group);
+        free (fe);
+        return ECONF_NOMEM;
+      }
+      buffer = tmp;
       llen *= 2;
     }
     if (ch == '\n') {
@@ -114,8 +116,12 @@ fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
   }
   read_file->length = file_length;
   read_file->alloc_length = file_length;
-  fe = realloc(fe, file_length * sizeof(struct file_entry));
-  read_file->file_entry = fe;
+  struct file_entry *tmp = realloc(fe, file_length * sizeof(struct file_entry));
+  if (!tmp) {
+    free(fe);
+    return ECONF_NOMEM;
+  }
+  read_file->file_entry = tmp;
 
   return ECONF_SUCCESS;
 }
