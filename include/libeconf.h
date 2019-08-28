@@ -57,7 +57,7 @@ typedef enum econf_err econf_err;
 // string (as *char).
 // Note: Does not detect "yes", "no", 1 and 0 as boolean type. If you want to
 // set a bool value use "true" or "false" or use setBoolValue() directly.
-#define econf_setValue(kf, group, key, value, error) ((	\
+#define econf_setValue(kf, group, key, value) ((	\
   _Generic((value), \
     int: econf_setIntValue, \
     long: econf_setInt64Value, \
@@ -66,7 +66,7 @@ typedef enum econf_err econf_err;
     float: econf_setFloatValue, \
     double: econf_setDoubleValue, \
     char*: econf_setStringValue, void*: econf_setStringValue)) \
-(kf, group, key, value, error))
+(kf, group, key, value))
 
 // Generic macro to free memory allocated by econf_ functions
 // Use: econf_destroy(_generic_ value);
