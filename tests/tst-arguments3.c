@@ -15,7 +15,7 @@ int
 main(int argc, char **argv)
 {
   Key_File *key_file;
-  const char *val;
+  char *val;
   econf_err error;
 
   key_file = econf_get_key_file (TESTSDIR"tst-arguments-data/etc/arguments.conf", "=", '#', &error);
@@ -25,9 +25,7 @@ main(int argc, char **argv)
       return 1;
     }
 
-  error = ECONF_SUCCESS;
-  val = econf_getStringValue (key_file, "", NULL, &error);
-  if (val != NULL && error != ECONF_ERROR)
+  if (!econf_getStringValue (key_file, "", NULL, &val) || val != NULL)
     {
       fprintf (stderr, "ERROR: return values for NULL key_file are wrong!\n");
       return 1;

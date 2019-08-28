@@ -1,4 +1,4 @@
-LIBECONF_0.1 {
+LIBECONF_0.2 {
   global:
     econf_char_a_destroy;
     econf_errString;
@@ -32,4 +32,4 @@ LIBECONF_0.1 {
 LIBECONF_ALPHA {
   global:
     econf_write_key_file;
-} LIBECONF_0.1;
+} LIBECONF_0.2;

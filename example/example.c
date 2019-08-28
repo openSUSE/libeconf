@@ -40,28 +40,40 @@ int main() {
   Key_File *key_file = econf_get_conf_from_dirs("example/usr/etc", "example/etc",
                                                 "example", ".ini", "=", '#', NULL);
 
-  econf_setInt64Value(key_file, "[Basic Types]", "Int", INT64_MAX, NULL);
-  printf("Int: %ld\n", econf_getInt64Value(key_file, "[Basic Types]", "Int", NULL));
+  econf_setInt64Value(key_file, "[Basic Types]", "Int", INT64_MAX);
+  int64_t i64val;
+  econf_getInt64Value(key_file, "[Basic Types]", "Int", &i64val);
+  printf("Int: %ld\n", i64val);
 
-  econf_setUInt64Value(key_file, "[Basic Types]", "UInt", UINT64_MAX, NULL);
-  printf("Unsigned Int: %lu\n", econf_getUInt64Value(key_file, "[Basic Types]", "UInt", NULL));
 
-  econf_setFloatValue(key_file, "[Basic Types]", "Float", M_PI, NULL);
-  printf("Float: %.*g\n", 8, econf_getFloatValue(key_file, "[Basic Types]", "Float", NULL));
+  econf_setUInt64Value(key_file, "[Basic Types]", "UInt", UINT64_MAX);
+  uint64_t u64val;
+  econf_getUInt64Value(key_file, "[Basic Types]", "UInt", &u64val);
+  printf("Unsigned Int: %lu\n", u64val);
 
-  econf_setDoubleValue(key_file, "[Basic Types]", "Double", M_PI, NULL);
-  printf("Double: %.*g\n", 16, econf_getDoubleValue(key_file, "[Basic Types]", "Double", NULL));
+  econf_setFloatValue(key_file, "[Basic Types]", "Float", M_PI);
+  float fval;
+  econf_getFloatValue(key_file, "[Basic Types]", "Float", &fval);
+  printf("Float: %.*g\n", 8, fval);
 
-  econf_setStringValue(key_file, "[Basic Types]", "String", "\" Hello World! \"", NULL);
-  char *string = econf_getStringValue(key_file, "[Basic Types]", "String", NULL);
+  econf_setDoubleValue(key_file, "[Basic Types]", "Double", M_PI);
+  double dval;
+  econf_getDoubleValue(key_file, "[Basic Types]", "Double", &dval);
+  printf("Double: %.*g\n", 16, dval);
+
+  econf_setStringValue(key_file, "[Basic Types]", "String", "\" Hello World! \"");
+  char *string;
+  econf_getStringValue(key_file, "[Basic Types]", "String", &string);
   printf("String: %s\n", string);
   free(string);
 
   // Square brackets around the group/section are not needed
-  econf_setBoolValue(key_file, "Basic Types", "Bool", "YeS", NULL);
-  printf("Bool: %d\n", econf_getBoolValue(key_file, "[Basic Types]", "Bool", NULL));
+  econf_setBoolValue(key_file, "Basic Types", "Bool", "YeS");
+  bool bval;
+  econf_getBoolValue(key_file, "[Basic Types]", "Bool", &bval);
+  printf("Bool: %d\n", bval);
 
-  econf_setValue(key_file, "Basic Types", "Generic", "Any value can go here!", NULL);
+  econf_setValue(key_file, "Basic Types", "Generic", "Any value can go here!");
 
   size_t key_number = 0;
   char **keys = econf_getKeys(key_file, "Basic Types", &key_number, NULL);

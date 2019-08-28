@@ -36,26 +36,26 @@ typedef struct Key_File {
   bool on_merge_delete;
 } Key_File;
 
-bool key_file_append(Key_File *key_file, econf_err *);
+econf_err key_file_append(Key_File *key_file);
 
 /* GETTERS */
-int32_t getIntValueNum(Key_File key_file, size_t num);
-int64_t getInt64ValueNum(Key_File key_file, size_t num);
-uint32_t getUIntValueNum(Key_File key_file, size_t num);
-uint64_t getUInt64ValueNum(Key_File key_file, size_t num);
-float getFloatValueNum(Key_File key_file, size_t num);
-double getDoubleValueNum(Key_File key_file, size_t num);
-char *getStringValueNum(Key_File key_file, size_t num);
-bool getBoolValueNum(Key_File key_file, size_t num);
+econf_err getIntValueNum(Key_File key_file, size_t num, int32_t *result);
+econf_err getInt64ValueNum(Key_File key_file, size_t num, int64_t *result);
+econf_err getUIntValueNum(Key_File key_file, size_t num, uint32_t *result);
+econf_err getUInt64ValueNum(Key_File key_file, size_t num, uint64_t *result);
+econf_err getFloatValueNum(Key_File key_file, size_t num, float *result);
+econf_err getDoubleValueNum(Key_File key_file, size_t num, double *result);
+econf_err getStringValueNum(Key_File key_file, size_t num, char **result);
+econf_err getBoolValueNum(Key_File key_file, size_t num, bool *result);
 
 /* SETTERS */
-bool setGroup(Key_File *key_file, size_t num, const char *value, econf_err *error);
-bool setKey(Key_File *key_file, size_t num, const char *value, econf_err *error);
-bool setIntValueNum(Key_File *key_file, size_t num, const void *value, econf_err *error);
-bool setInt64ValueNum(Key_File *key_file, size_t num, const void *value, econf_err *error);
-bool setUIntValueNum(Key_File *key_file, size_t num, const void *value, econf_err *error);
-bool setUInt64ValueNum(Key_File *key_file, size_t num, const void *value, econf_err *error);
-bool setFloatValueNum(Key_File *key_file, size_t num, const void *value, econf_err *error);
-bool setDoubleValueNum(Key_File *key_file, size_t num, const void *value, econf_err *error);
-bool setStringValueNum(Key_File *key_file, size_t num, const void *value, econf_err *error);
-bool setBoolValueNum(Key_File *key_file, size_t num, const void *value, econf_err *error);
+econf_err setGroup(Key_File *key_file, size_t num, const char *value);
+econf_err setKey(Key_File *key_file, size_t num, const char *value);
+econf_err setIntValueNum(Key_File *key_file, size_t num, const void *value);
+econf_err setInt64ValueNum(Key_File *key_file, size_t num, const void *value);
+econf_err setUIntValueNum(Key_File *key_file, size_t num, const void *value);
+econf_err setUInt64ValueNum(Key_File *key_file, size_t num, const void *value);
+econf_err setFloatValueNum(Key_File *key_file, size_t num, const void *value);
+econf_err setDoubleValueNum(Key_File *key_file, size_t num, const void *value);
+econf_err setStringValueNum(Key_File *key_file, size_t num, const void *value);
+econf_err setBoolValueNum(Key_File *key_file, size_t num, const void *value);

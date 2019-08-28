@@ -386,42 +386,39 @@ char **econf_getKeys(Key_File *kf, const char *grp, size_t *length, econf_err *e
   return keys;
 }
 
-/* The econf_get*Value functions are identical except for return
-   type, so let's create them via a macro. */
-#define econf_getValue(TYPE, ERROR) \
-  econf_get ## TYPE ## Value(Key_File *kf, const char *group, \
-			     const char *key, econf_err *error) {	\
-  if (!kf) { \
-    if (error) *error = ECONF_ERROR; \
-    return ERROR; \
-  } \
-  size_t num = find_key(*kf, group, key, error); \
-  if (num == -1) \
-    return ERROR; \
-  else if (error) *error = ECONF_SUCCESS; \
-  return get ## TYPE ## ValueNum(*kf, num); \
+/* The econf_get*Value functions are identical except for result
+   value type, so let's create them via a macro. */
+#define econf_getValue(FCT_TYPE, TYPE)			      \
+econf_err econf_get ## FCT_TYPE ## Value(Key_File *kf, const char *group, \
+			     const char *key, TYPE *result) {	\
+  if (!kf) \
+    return ECONF_ERROR; \
+\
+  size_t num; \
+  econf_err error = find_key(*kf, group, key, &num);	\
+  if (error) \
+    return error; \
+  return get ## FCT_TYPE ## ValueNum(*kf, num, result);	\
 }
 
-int32_t econf_getValue(Int, -1)
-int64_t econf_getValue(Int64, -1)
-uint32_t econf_getValue(UInt, -1)
-uint64_t econf_getValue(UInt64, -1)
-float econf_getValue(Float, -1)
-double econf_getValue(Double, -1)
-char *econf_getValue(String, NULL)
-bool econf_getValue(Bool, 0)
+econf_getValue(Int, int32_t)
+econf_getValue(Int64, int64_t)
+econf_getValue(UInt, uint32_t)
+econf_getValue(UInt64, uint64_t)
+econf_getValue(Float, float)
+econf_getValue(Double, double)
+econf_getValue(String, char *)
+econf_getValue(Bool, bool)
 
 /* SETTER FUNCTIONS */
-/* The econf_set*Value functions are identical except for return
-   type, so let's create them via a macro. */
-#define libeconf_setValue(TYPE, VALTYPE, VALARG)						\
-bool econf_set ## TYPE ## Value(Key_File *kf, const char *group, \
-  const char *key, VALTYPE value, econf_err *error) {	\
-  if (!kf) { \
-    if (error) *error = ECONF_ERROR; \
-    return false; \
-  } \
-  return setKeyValue(set ## TYPE ## ValueNum, kf, group, key, VALARG, error); \
+/* The econf_set*Value functions are identical except for set
+   value type, so let's create them via a macro. */
+#define libeconf_setValue(TYPE, VALTYPE, VALARG) \
+econf_err econf_set ## TYPE ## Value(Key_File *kf, const char *group,		\
+  const char *key, VALTYPE value) {	\
+  if (!kf) \
+    return ECONF_ERROR; \
+  return setKeyValue(set ## TYPE ## ValueNum, kf, group, key, VALARG); \
 }
 
 libeconf_setValue(Int, int32_t, &value)

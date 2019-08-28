@@ -19,8 +19,8 @@
 int
 check_key(Key_File *key_file, char *key, char *expected_val)
 {
-  econf_err error = ECONF_SUCCESS;
-  char *val = econf_getStringValue (key_file, "", key, &error);
+  char *val = NULL;
+  econf_err error = econf_getStringValue (key_file, "", key, &val);
   if (expected_val == NULL)
     {
       if (val == NULL)

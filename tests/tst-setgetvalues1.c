@@ -37,10 +37,10 @@ bool check_ ## FCT_TYPE (Key_File *key_file, TYPE value) \
 { \
    econf_err error; \
 \
-  if (!econf_set ## FCT_TYPE ## Value(key_file, NULL, "KEY", value, &error)) \
+   if ((error = econf_set ## FCT_TYPE ## Value(key_file, NULL, "KEY", value))) \
     exit_with_error_set (FCT_TYPE_STR, error); \
-  TYPE val_ ## FCT_TYPE = econf_get ## FCT_TYPE ## Value(key_file, NULL, "KEY", &error); \
-  if (error) \
+  TYPE val_ ## FCT_TYPE; \
+  if ((error = econf_get ## FCT_TYPE ## Value(key_file, NULL, "KEY", &val_ ## FCT_TYPE))) \
     exit_with_error_get (FCT_TYPE_STR, error); \
   if (val_ ## FCT_TYPE != value) \
     { \
@@ -62,11 +62,11 @@ bool check_String (Key_File *key_file, const char *value)
 {
   econf_err error;
 
-  if (!econf_setStringValue(key_file, NULL, "KEY", value, &error))
+  if ((error = econf_setStringValue(key_file, NULL, "KEY", value)))
     exit_with_error_set ("String", error);
 
-  char *val_String = econf_getStringValue(key_file, NULL, "KEY", &error);
-  if (error)
+  char *val_String;
+  if ((error = econf_getStringValue(key_file, NULL, "KEY", &val_String)))
     exit_with_error_get ("String", error);
   /* NULL means empty string */
   if (strcmp(val_String, value?value:"") != 0)
@@ -84,11 +84,11 @@ bool check_Bool (Key_File *key_file, const char *value, bool expect)
 {
   econf_err error;
 
-  if (!econf_setBoolValue(key_file, NULL, "KEY", value, &error))
+  if ((error = econf_setBoolValue(key_file, NULL, "KEY", value)))
     exit_with_error_set ("Bool", error);
 
-  bool val_Bool = econf_getBoolValue(key_file, NULL, "KEY", &error);
-  if (error)
+  bool val_Bool;
+  if ((error = econf_getBoolValue(key_file, NULL, "KEY", &val_Bool)))
     exit_with_error_get ("Bool", error);
   if (val_Bool != expect)
     {
@@ -115,8 +115,8 @@ main(int argc, char **argv)
     }
 
   /* test reading a key from an empty key_file */
-  econf_getIntValue(key_file, NULL, "KEY", &error);
-  if (error != ECONF_NOKEY)
+  int dummy;
+  if ((error = econf_getIntValue(key_file, NULL, "KEY", &dummy)) != ECONF_NOKEY)
     exit_with_error_get ("int", error);
 
   if (!check_Int (key_file, INT32_MAX)) retval=1;

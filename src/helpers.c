@@ -135,81 +135,75 @@ size_t hashstring(const char *string) {
 }
 
 // Look for matching key
-size_t find_key(Key_File key_file, const char *group, const char *key, econf_err *error) {
+econf_err find_key(Key_File key_file, const char *group, const char *key, size_t *num) {
   char *grp = (!group || !*group) ? strdup(KEY_FILE_NULL_VALUE) :
                addbrackets(group);
-  if (grp == NULL) {
-    if (error) *error = ECONF_NOMEM;
-    return -1;
-  }
+  if (grp == NULL)
+    return  ECONF_NOMEM;
   if (!key || !*key) {
-    if (error) *error = ECONF_ERROR;
     free(grp);
-    return -1;
+    return ECONF_ERROR;
   }
   for (size_t i = 0; i < key_file.length; i++) {
     if (!strcmp(key_file.file_entry[i].group, grp) &&
         !strcmp(key_file.file_entry[i].key, key)) {
       free(grp);
-      return i;
+      *num = i;
+      return ECONF_SUCCESS;
     }
   }
   // Key not found
-  if (error)
-    *error = ECONF_NOKEY;
   free(grp);
-  return -1;
+  return ECONF_NOKEY;
 }
 
 // Append a new key to an existing Key_File
 // TODO: If the group is already known the new key should be appended
 // at the end of that group not at the end of the file.
-static bool
-new_key (Key_File *key_file, const char *group, const char *key, econf_err *error) {
+static econf_err
+new_key (Key_File *key_file, const char *group, const char *key) {
+  econf_err error;
   char *grp = (!group || !*group) ? strdup(KEY_FILE_NULL_VALUE) :
                addbrackets(group);
-  if (grp == NULL) {
-    if (error) *error = ECONF_NOMEM;
-    return false;
-  }
+  if (grp == NULL)
+    return ECONF_NOMEM;
   if (key_file == NULL || key == NULL)
     {
-      if (error) *error = ECONF_ERROR;
       free(grp);
-      return false;
+      return ECONF_ERROR;
     }
-  if (!key_file_append(key_file, error)) {
+  if ((error = key_file_append(key_file))) {
     free(grp);
-    return false;
+    return error;
   }
-  if (!setGroup(key_file, key_file->length - 1, grp, error)) {
+  if ((error = setGroup(key_file, key_file->length - 1, grp))) {
     free(grp);
-    return false;
+    return error;
   }
   free(grp);
-  return setKey(key_file, key_file->length - 1, key, error);
+  return setKey(key_file, key_file->length - 1, key);
 }
 
 // Set value for the given group, key combination. If the combination
 // does not exist it is created.
 // TODO: function/void pointer might not be necessary if the value is converted
 // into a string beforehand.
-bool setKeyValue(bool (*function) (Key_File*, size_t, const void*, econf_err *),
-		 Key_File *kf, const char *group, const char *key,
-		 const void *value, econf_err *error) {
-  econf_err local_err = ECONF_SUCCESS;
-  int num = find_key(*kf, group, key, &local_err);
-  if (num == -1) {
-    if (local_err && local_err != ECONF_NOKEY) {
-      if (error) *error = local_err;
-	    return false;
-	  }
-    if (!new_key(kf, group, key, error)) {
-      return false;
+econf_err setKeyValue(econf_err (*function) (Key_File*, size_t, const void*),
+		      Key_File *kf, const char *group, const char *key,
+		      const void *value)
+{
+  size_t num;
+  econf_err error = find_key(*kf, group, key, &num);
+  if (error) {
+    if (error != ECONF_NOKEY) {
+      return error;
+    }
+    if ((error = new_key(kf, group, key))) {
+      return error;
     }
     num = kf->length - 1;
   }
-  return function(kf, num, value, error);
+  return function(kf, num, value);
 }
 
 struct file_entry cpy_file_entry(struct file_entry fe) {
