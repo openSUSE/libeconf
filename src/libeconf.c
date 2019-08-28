@@ -90,6 +90,8 @@ Key_File *econf_get_key_file(const char *file_name, const char *delim,
   }
 
   read_file->comment = comment;
+  read_file->length = 0;
+  read_file->alloc_length = 0;
 
   t_err = fill_key_file(read_file, kf, delim);
   read_file->on_merge_delete = 0;
