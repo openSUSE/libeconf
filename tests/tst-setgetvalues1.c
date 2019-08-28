@@ -14,7 +14,7 @@
    to verify, they where correctly stored.
 */
 
-void
+static void
 exit_with_error_set (const char *type, econf_err error)
 {
   fprintf (stderr, "ERROR: couldn't set type '%s': %s\n",
@@ -22,7 +22,7 @@ exit_with_error_set (const char *type, econf_err error)
   exit (1);
 }
 
-void
+static void
 exit_with_error_get (const char *type, econf_err error)
 {
   fprintf (stderr, "ERROR: couldn't get type '%s': %s\n",
@@ -33,7 +33,7 @@ exit_with_error_get (const char *type, econf_err error)
 /* The econf_get*Value functions are identical except for return
    type, so let's create them via a macro. */
 #define check_type(TYPE, FCT_TYPE, FCT_TYPE_STR, PR)	 \
-bool check_ ## FCT_TYPE (Key_File *key_file, TYPE value) \
+static bool check_ ## FCT_TYPE (Key_File *key_file, TYPE value) \
 { \
    econf_err error; \
 \
@@ -58,7 +58,8 @@ check_type(float, Float, "Float", "%f")
 check_type(double, Double, "Double", "%f")
 
 /* check_type(const char *, String, "String", "%s") */
-bool check_String (Key_File *key_file, const char *value)
+static bool
+check_String (Key_File *key_file, const char *value)
 {
   econf_err error;
 
@@ -80,7 +81,8 @@ bool check_String (Key_File *key_file, const char *value)
 
 
 /* check_type(bool, Bool, "Bool", "%s") */
-bool check_Bool (Key_File *key_file, const char *value, bool expect)
+static bool
+check_Bool (Key_File *key_file, const char *value, bool expect)
 {
   econf_err error;
 
@@ -106,8 +108,7 @@ main(int argc, char **argv)
   econf_err error;
   int retval = 0;
 
-  key_file = econf_newKeyFile('=', '#', &error);
-  if (key_file == NULL)
+  if ((error = econf_newKeyFile(&key_file, '=', '#')))
     {
       fprintf (stderr, "ERROR: couldn't create new file: %s\n",
 	       econf_errString(error));

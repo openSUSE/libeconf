@@ -67,8 +67,7 @@ main(int argc, char **argv)
   econf_err error;
   int retval = 0;
 
-  key_file = econf_newKeyFile('=', '#', &error);
-  if (key_file == NULL)
+  if ((error = econf_newKeyFile(&key_file, '=', '#')))
     {
       fprintf (stderr, "ERROR: couldn't create new file: %s\n",
 	       econf_errString(error));

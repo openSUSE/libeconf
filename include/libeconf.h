@@ -80,8 +80,8 @@ typedef enum econf_err econf_err;
 
 typedef struct Key_File Key_File;
 
-extern Key_File *econf_newKeyFile(char delimiter, char comment, econf_err *);
-extern Key_File *econf_newIniFile(econf_err *);
+extern econf_err econf_newKeyFile(Key_File **result, char delimiter, char comment);
+extern econf_err econf_newIniFile(Key_File **result);
 
 // Process the file of the given file_name and save its contents into key_file
 extern Key_File *econf_get_key_file(const char *file_name, const char *delim,

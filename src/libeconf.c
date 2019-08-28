@@ -33,33 +33,39 @@
 #include <stdio.h>
 #include <string.h>
 
-// Create a new Key_File. Allocation is based on KEY_FILE_KEY_FILE_KEY_FILE_DEFAULT_LENGTH
+// Create a new Key_File. Allocation is based on
+// KEY_FILE_KEY_FILE_KEY_FILE_DEFAULT_LENGTH
 // defined in include/defines.h
-Key_File *econf_newKeyFile(char delimiter, char comment, econf_err *error) {
+econf_err
+econf_newKeyFile(Key_File **result, char delimiter, char comment)
+{
   Key_File *key_file = malloc(sizeof(Key_File));
 
   if (key_file == NULL)
-    {
-      if (error)
-	*error = ECONF_NOMEM;
-      return NULL;
-    }
+    return ECONF_NOMEM;
+
   key_file->alloc_length = KEY_FILE_DEFAULT_LENGTH;
   key_file->length = 0;
   key_file->delimiter = delimiter;
   key_file->comment = comment;
 
   key_file->file_entry = malloc(KEY_FILE_DEFAULT_LENGTH * sizeof(struct file_entry));
+  if (key_file->file_entry == NULL)
+    {
+      free (key_file);
+      return ECONF_NOMEM;
+    }
 
-  for (size_t i = 0; i < KEY_FILE_DEFAULT_LENGTH; i++) {
+  for (size_t i = 0; i < KEY_FILE_DEFAULT_LENGTH; i++)
     initialize(key_file, i);
-  }
 
-  return key_file;
+  *result = key_file;
+
+  return ECONF_SUCCESS;
 }
 
-Key_File *econf_newIniFile(econf_err *error) {
-  return econf_newKeyFile('=', '#', error);
+econf_err econf_newIniFile(Key_File **result) {
+  return econf_newKeyFile(result, '=', '#');
 }
 
 // Process the file of the given file_name and save its contents into key_file
@@ -209,7 +215,7 @@ Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
       key_files[size - 1] = key_file;
       Key_File **tmp = realloc(key_files, ++size * sizeof(Key_File *));
       if (!tmp) {
-        for (int i = 0; i < size - 1; i++) free(key_files[i]);
+        for (size_t i = 0; i < size - 1; i++) free(key_files[i]);
         free(key_files);
         if (error) *error = ECONF_NOMEM;
         return NULL;
@@ -281,7 +287,7 @@ void econf_write_key_file(Key_File *key_file, const char *save_to_dir,
   }
 
   // Write to file
-  for (int i = 0; i < key_file->length; i++) {
+  for (size_t i = 0; i < key_file->length; i++) {
     if (!i || strcmp(key_file->file_entry[i - 1].group,
                      key_file->file_entry[i].group)) {
       if (i)
@@ -315,7 +321,7 @@ char **econf_getGroups(Key_File *kf, size_t *length, econf_err *error) {
     if (error) *error = ECONF_NOMEM;
     return NULL;
   }
-  for (int i = 0; i < kf->length; i++) {
+  for (size_t i = 0; i < kf->length; i++) {
     if ((!i || strcmp(kf->file_entry[i].group, kf->file_entry[i - 1].group)) &&
         strcmp(kf->file_entry[i].group, KEY_FILE_NULL_VALUE)) {
       uniques[i] = 1;
@@ -329,7 +335,7 @@ char **econf_getGroups(Key_File *kf, size_t *length, econf_err *error) {
     return NULL;
   }
   tmp = 0;
-  for(int i = 0; i < kf->length; i++) {
+  for(size_t i = 0; i < kf->length; i++) {
     if (uniques[i]) { groups[tmp++] = strdup(kf->file_entry[i].group); }
   }
 
@@ -359,7 +365,7 @@ char **econf_getKeys(Key_File *kf, const char *grp, size_t *length, econf_err *e
     if (error) *error = ECONF_NOMEM;
     return NULL;
   }
-  for (int i = 0; i < kf->length; i++) {
+  for (size_t i = 0; i < kf->length; i++) {
     if (!strcmp(kf->file_entry[i].group, group) &&
         (!i || strcmp(kf->file_entry[i].key, kf->file_entry[i - 1].key))) {
       uniques[i] = 1;
@@ -374,8 +380,9 @@ char **econf_getKeys(Key_File *kf, const char *grp, size_t *length, econf_err *e
     free (uniques);
     return NULL;
   }
-  for(int i = 0, tmp = 0; i < kf->length; i++) {
-    if (uniques[i]) { keys[tmp++] = strdup(kf->file_entry[i].key); }
+
+  for(size_t i = 0, j = 0; i < kf->length; i++) {
+    if (uniques[i]) { keys[j++] = strdup(kf->file_entry[i].key); }
   }
 
   if (length != NULL) { *length = tmp; }
@@ -441,7 +448,7 @@ void econf_char_a_destroy(char** array) {
 // Free memory allocated by key_file
 void econf_Key_File_destroy(Key_File *key_file) {
   if (!key_file) { return; }
-  for (int i = 0; i < key_file->alloc_length; i++) {
+  for (size_t i = 0; i < key_file->alloc_length; i++) {
     free(key_file->file_entry[i].group);
     free(key_file->file_entry[i].key);
     free(key_file->file_entry[i].value);
