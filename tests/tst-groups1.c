@@ -37,14 +37,14 @@ bool check_String (Key_File *key_file, const char *value,
 {
   econf_err error;
 
-  if (!econf_setStringValue(key_file, setgroup, "KEY", value, &error))
+  if ((error = econf_setStringValue(key_file, setgroup, "KEY", value)))
     {
       print_error_set ("String", error);
       return false;
     }
 
-  char *val_String = econf_getStringValue(key_file, getgroup, "KEY", &error);
-  if (error)
+  char *val_String;
+  if ((error = econf_getStringValue(key_file, getgroup, "KEY", &val_String)))
     {
       print_error_get (value, setgroup, getgroup, error);
       return false;
@@ -76,8 +76,8 @@ main(int argc, char **argv)
     }
 
   /* test reading a key from an empty key_file */
-  econf_getIntValue(key_file, "doesnotexist", "KEY", &error);
-  if (error != ECONF_NOKEY)
+  int dummy;
+  if ((error = econf_getIntValue(key_file, "doesnotexist", "KEY", &dummy)) != ECONF_NOKEY)
     {
       print_error_get ("int", "doesnotexist", "doesnotexist", error);
       retval = 1;

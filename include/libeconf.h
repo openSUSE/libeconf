@@ -106,26 +106,26 @@ extern Key_File *econf_get_conf_from_dirs(const char *usr_conf_dir,
 
 extern char **econf_getGroups(Key_File *kf, size_t *length, econf_err *);
 extern char **econf_getKeys(Key_File *kf, const char *group, size_t *length, econf_err *);
-extern int32_t econf_getIntValue(Key_File *kf, const char *group, const char *key, econf_err *);
-extern int64_t econf_getInt64Value(Key_File *kf, const char *group, const char *key, econf_err *);
-extern uint32_t econf_getUIntValue(Key_File *kf, const char *group, const char *key, econf_err *);
-extern uint64_t econf_getUInt64Value(Key_File *kf, const char *group, const char *key, econf_err *);
-extern float econf_getFloatValue(Key_File *kf, const char *group, const char *key, econf_err *);
-extern double econf_getDoubleValue(Key_File *kf, const char *group, const char *key, econf_err *);
+extern econf_err econf_getIntValue(Key_File *kf, const char *group, const char *key, int32_t *result);
+extern econf_err econf_getInt64Value(Key_File *kf, const char *group, const char *key, int64_t *result);
+extern econf_err econf_getUIntValue(Key_File *kf, const char *group, const char *key, uint32_t *result);
+extern econf_err econf_getUInt64Value(Key_File *kf, const char *group, const char *key, uint64_t *result);
+extern econf_err econf_getFloatValue(Key_File *kf, const char *group, const char *key, float *result);
+extern econf_err econf_getDoubleValue(Key_File *kf, const char *group, const char *key, double *result);
 /* Returns a newly allocated string or NULL in error case. */
-extern char *econf_getStringValue(Key_File *kf, const char *group, const char *key, econf_err *);
-extern bool econf_getBoolValue(Key_File *kf, const char *group, const char *key, econf_err *);
+extern econf_err econf_getStringValue(Key_File *kf, const char *group, const char *key, char **result);
+extern econf_err econf_getBoolValue(Key_File *kf, const char *group, const char *key, bool *result);
 
 /* --- SETTERS --- */
 
-extern bool econf_setIntValue(Key_File *kf, const char *group, const char *key, int32_t value, econf_err *error);
-extern bool econf_setInt64Value(Key_File *kf, const char *group, const char *key, int64_t value, econf_err *error);
-extern bool econf_setUIntValue(Key_File *kf, const char *group, const char *key, uint32_t value, econf_err *error);
-extern bool econf_setUInt64Value(Key_File *kf, const char *group, const char *key, uint64_t value, econf_err *error);
-extern bool econf_setFloatValue(Key_File *kf, const char *group, const char *key, float value, econf_err *error);
-extern bool econf_setDoubleValue(Key_File *kf, const char *group, const char *key, double value, econf_err *error);
-extern bool econf_setStringValue(Key_File *kf, const char *group, const char *key, const char *value, econf_err *error);
-extern bool econf_setBoolValue(Key_File *kf, const char *group, const char *key, const char *value, econf_err *error);
+extern econf_err econf_setIntValue(Key_File *kf, const char *group, const char *key, int32_t value);
+extern econf_err econf_setInt64Value(Key_File *kf, const char *group, const char *key, int64_t value);
+extern econf_err econf_setUIntValue(Key_File *kf, const char *group, const char *key, uint32_t value);
+extern econf_err econf_setUInt64Value(Key_File *kf, const char *group, const char *key, uint64_t value);
+extern econf_err econf_setFloatValue(Key_File *kf, const char *group, const char *key, float value);
+extern econf_err econf_setDoubleValue(Key_File *kf, const char *group, const char *key, double value);
+extern econf_err econf_setStringValue(Key_File *kf, const char *group, const char *key, const char *value);
+extern econf_err econf_setBoolValue(Key_File *kf, const char *group, const char *key, const char *value);
 
 /* --- HELPERS --- */
 

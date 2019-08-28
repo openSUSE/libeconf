@@ -27,8 +27,7 @@ main(int argc, char **argv)
       return 1;
     }
 
-  val = econf_getStringValue (key_file, NULL, "USERGROUPS_ENAB", &error);
-  if (val == NULL)
+  if ((error = econf_getStringValue (key_file, NULL, "USERGROUPS_ENAB", &val)))
     {
       fprintf (stderr, "Error reading USERGROUPS_ENAB: %s\n",
 	       econf_errString(error));
@@ -46,8 +45,7 @@ main(int argc, char **argv)
     }
   free (val);
 
-  val = econf_getStringValue (key_file, "", "UMASK", &error);
-  if (val == NULL)
+  if ((error = econf_getStringValue (key_file, "", "UMASK", &val)))
     {
       fprintf (stderr, "Error reading UMASK: %s\n",
 	       econf_errString(error));
