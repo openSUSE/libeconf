@@ -41,7 +41,7 @@ fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
   // is allocated
   const size_t LLEN = 8;
   size_t file_length = 0, lnum = KEY_FILE_DEFAULT_LENGTH, llen = LLEN, vlen = 0;
-  size_t ch;
+  int ch;
 
   // Allocate memory for the Key_File based on KEY_FILE_DEFAULT_LENGTH
   struct file_entry *fe = malloc(KEY_FILE_DEFAULT_LENGTH * sizeof(struct file_entry));
