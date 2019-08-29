@@ -179,22 +179,30 @@ check_conf_dir(econf_file **key_files, size_t *size, const char *path,
   return key_files;
 }
 
+/* XXX Convert to return econf_err */
 econf_file **traverse_conf_dirs(econf_file **key_files, const char *config_dirs,
                               size_t *size, const char *path,
 			      const char *config_suffix,
                               const char *delim, const char *comment) {
-  char *conf_dirs, *dir, c;
+  char *conf_dirs, *dir;
+
+  if (config_dirs == NULL)
+    return NULL; /* XXX ECONF_ERROR */
+
   conf_dirs = strdup(config_dirs);
-  /* XXX ENOMEM check, is config_dirs != NULL? */
+  if (conf_dirs == NULL)
+    return NULL; /* XXX ECONF_NOMEN */
+
   while ((dir = strrchr(conf_dirs, ' '))) {
-    c = *(dir + 1); *dir = 0;
+    char c = *(dir + 1); 
+    *dir = '\0';
     dir = strrchr(conf_dirs, ' ');
     char *fulldir = combine_strings(path, &*(dir + 1), c);
     /* XXX ENOMEM/NULL pointer check */
     key_files = check_conf_dir(key_files, size,
         fulldir, config_suffix, delim, comment);
     free (fulldir);
-    *dir = 0;
+    *dir = '\0';
   }
   free(conf_dirs);
   return key_files;
@@ -205,7 +213,7 @@ econf_err merge_econf_files(econf_file **key_files, econf_file **merged_files) {
     return ECONF_ERROR;
 
   *merged_files = *key_files++;
-  if(!merged_files)
+  if(*merged_files == NULL)
     return ECONF_ERROR;
 
   while(*key_files) {
@@ -213,7 +221,7 @@ econf_err merge_econf_files(econf_file **key_files, econf_file **merged_files) {
     econf_file *tmp = *merged_files;
 
     error = econf_mergeFiles(merged_files, *merged_files, *key_files);
-    if (error || merged_files == NULL)
+    if (error || *merged_files == NULL)
       return error;
     (*merged_files)->on_merge_delete = 1;
 

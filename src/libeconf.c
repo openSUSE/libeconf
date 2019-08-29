@@ -89,7 +89,7 @@ econf_err econf_readFile(econf_file **key_file, const char *file_name,
     return ECONF_NOFILE;
 
   *key_file = malloc(sizeof(econf_file));
-  if (key_file == NULL) {
+  if (*key_file == NULL) {
     fclose (kf);
     return ECONF_NOMEM;
   }
@@ -120,7 +120,7 @@ econf_err econf_mergeFiles(econf_file **merged_file, econf_file *usr_file, econf
     return ECONF_ERROR;
 
   *merged_file = malloc(sizeof(econf_file));
-  if (merged_file == NULL)
+  if (*merged_file == NULL)
     return ECONF_NOMEM;
 
   (*merged_file)->delimiter = usr_file->delimiter;
@@ -360,7 +360,7 @@ econf_getKeys(econf_file *kf, const char *grp, size_t *length, char ***keys)
       return ECONF_ERROR;
     }
   *keys = calloc(tmp + 1, sizeof(char*));
-  if (keys == NULL) {
+  if (*keys == NULL) {
     free (uniques);
     return ECONF_NOMEM;
   }
