@@ -152,7 +152,7 @@ char **get_default_dirs(const char *usr_conf_dir, const char *etc_conf_dir) {
 // with the given suffix
 static econf_file **
 check_conf_dir(econf_file **key_files, size_t *size, const char *path,
-	       const char *config_suffix, const char *delim, char comment)
+	       const char *config_suffix, const char *delim, const char *comment)
 {
   struct dirent **de;
   int num_dirs = scandir(path, &de, NULL, alphasort);
@@ -182,7 +182,7 @@ check_conf_dir(econf_file **key_files, size_t *size, const char *path,
 econf_file **traverse_conf_dirs(econf_file **key_files, const char *config_dirs,
                               size_t *size, const char *path,
 			      const char *config_suffix,
-                              const char *delim, char comment) {
+                              const char *delim, const char *comment) {
   char *conf_dirs, *dir, c;
   conf_dirs = strdup(config_dirs);
   /* XXX ENOMEM check, is config_dirs != NULL? */

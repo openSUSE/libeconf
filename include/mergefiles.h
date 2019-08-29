@@ -48,7 +48,7 @@ char **get_default_dirs(const char *usr_conf_dir, const char *etc_conf_dir);
 econf_file **traverse_conf_dirs(econf_file **key_files, const char *conf_dirs,
                               size_t *size, const char *path, 
 			      const char *config_suffix,
-                              const char *delim, char comment);
+                              const char *delim, const char *comment);
 
 // Merge an array of given econf_files into one
 econf_err merge_econf_files(econf_file **key_files, econf_file **merged_files);

@@ -55,7 +55,7 @@ main(void)
   error = econf_readDirs (&key_file,
 				    TESTSDIR"tst-getconfdirs3-data/usr/etc",
 				    TESTSDIR"tst-getconfdirs3-data/etc",
-				    "getconfdir", ".conf", "=", '#');
+				    "getconfdir", ".conf", "=", "#");
   if (error)
     {
       fprintf (stderr, "ERROR: econf_readDirs returned NULL: %s\n",

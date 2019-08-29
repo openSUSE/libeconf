@@ -35,12 +35,12 @@ int main(void) {
   clock_t begin = clock();
 
   //econf_file *key_file = econf_newIniFile();
-  //econf_file *key_file = econf_readFile("example/etc/example/example.ini", "=", '#');
+  //econf_file *key_file = econf_readFile("example/etc/example/example.ini", "=", "#");
 
   econf_file *key_file;
 
-  if (!econf_readDirs(&key_file, "example/usr/etc", "example/etc",
-				"example", ".ini", "=", '#'))
+  if (econf_readDirs(&key_file, "example/usr/etc", "example/etc",
+				"example", ".ini", "=", "#"))
     return 1; /* XXX better error handling */
 
   econf_setInt64Value(key_file, "[Basic Types]", "Int", INT64_MAX);
@@ -80,7 +80,7 @@ int main(void) {
 
   size_t key_number = 0;
   char **keys;
-  if (!econf_getKeys(key_file, "Basic Types", &key_number, &keys))
+  if (econf_getKeys(key_file, "Basic Types", &key_number, &keys))
     return 1; /* XXX better error handling */
   printf("Keys: ");
   for (size_t i = 0; i < key_number; i++) {

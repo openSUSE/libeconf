@@ -20,7 +20,7 @@ main(void)
   char *val;
   econf_err error;
 
-  if ((error = econf_readFile (&key_file, TESTSDIR"tst-logindefs1-data/etc/login.defs", " \t", '#')))
+  if ((error = econf_readFile (&key_file, TESTSDIR"tst-logindefs1-data/etc/login.defs", " \t", "#")))
     {
       fprintf (stderr, "ERROR: couldn't read configuration file: %s\n", econf_errString(error));
       return 1;

@@ -16,7 +16,7 @@ main(void)
   econf_file *key_file = NULL;
   econf_err error;
 
-  error = econf_readFile (&key_file, "doesnotexist1.conf", "=", '#');
+  error = econf_readFile (&key_file, "doesnotexist1.conf", "=", "#");
   if (key_file)
     {
       fprintf (stderr, "Got key_file for non-existing configuration file!\n");
