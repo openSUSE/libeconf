@@ -23,17 +23,24 @@
 
 #pragma once
 
+/* --- getfilecontents.h --- */
+
 #include <stdio.h>
 
 #include "libeconf.h"
 #include "keyfile.h"
 
-// Fill the Key File struct with values from the given file handle
+/* This file contains the declaration of the functions used by
+   econf_readFile in libeconf.c to write the contents of a config file into
+   the econf_file struct.  */
+
+
+/* Fill the econf_file struct with values from the given file handle */
 extern econf_err fill_key_file(econf_file *read_file, FILE *kf, const char *delim);
 
-// Write the group/value entry to the given file_entry
-extern void end_of_line(struct file_entry **fe, size_t *len, size_t *lnum, size_t vlen,
-                 char *buffer);
+/* Write the group/value entry to the given file_entry */
+extern void end_of_line(struct file_entry **fe, size_t *len, size_t *lnum,
+                        size_t vlen, char *buffer);
 
-// Check whether the key file has enough memory allocated, if not realloc
+/* Check whether file_entry has enough memory allocated, if not realloc */
 extern void new_kf_line(struct file_entry **fe, size_t *file_length, size_t *lnum);
