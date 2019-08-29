@@ -70,9 +70,12 @@ econf_err econf_newIniFile(econf_file **result) {
 
 // Process the file of the given file_name and save its contents into key_file
 econf_err econf_readFile(econf_file **key_file, const char *file_name,
-			     const char *delim, const char comment)
+			     const char *delim, const char *comment)
 {
   econf_err t_err;
+
+  if (key_file == NULL || file_name == NULL || delim == NULL)
+    return ECONF_ERROR;
 
   // Get absolute path if not provided
   char *absolute_path = get_absolute_path(file_name, &t_err);
@@ -91,7 +94,10 @@ econf_err econf_readFile(econf_file **key_file, const char *file_name,
     return ECONF_NOMEM;
   }
 
-  (*key_file)->comment = comment;
+  if (comment && *comment)
+    (*key_file)->comment = comment[0];
+  else
+    (*key_file)->comment = '#';
   (*key_file)->length = 0;
   (*key_file)->alloc_length = 0;
 
@@ -148,13 +154,14 @@ econf_err econf_readDirs(econf_file **result,
                                    const char *etc_conf_dir,
                                    const char *project_name,
                                    const char *config_suffix,
-                                   const char *delim, char comment)
+                                   const char *delim,
+				   const char *comment)
 {
   size_t size = 1;
   char *suffix;
 
   /* config_suffix must be provided and should not be "" */
-  if (config_suffix == NULL || strlen (config_suffix) == 0)
+  if (config_suffix == NULL || strlen (config_suffix) == 0 || delim == NULL)
     return ECONF_ERROR;
 
   // Prepend a . to the config suffix if not provided

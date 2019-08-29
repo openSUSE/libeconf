@@ -19,7 +19,7 @@ main(void)
   char *val;
   econf_err error;
 
-  error = econf_readFile (&key_file, TESTSDIR"tst-arguments-data/etc/arguments.conf", "=", '#');
+  error = econf_readFile (&key_file, TESTSDIR"tst-arguments-data/etc/arguments.conf", "=", "#");
   if (error)
     {
       fprintf (stderr, "ERROR: couldn't read configuration file: %s\n", econf_errString(error));

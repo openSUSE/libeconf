@@ -18,13 +18,13 @@ main(void)
   econf_file *key_file_1 = NULL, *key_file_2 = NULL, *key_file_m = NULL;
   econf_err error;
 
-  error = econf_readFile (&key_file_1, TESTSDIR"tst-merge1-data/etc/tst-merge1.conf", "=", '#');
+  error = econf_readFile (&key_file_1, TESTSDIR"tst-merge1-data/etc/tst-merge1.conf", "=", "#");
   if (!error || key_file_1 != NULL)
     {
       fprintf (stderr, "ERROR: /etc should not contain a config file\n");
       return 1;
     }
-  error = econf_readFile (&key_file_2, TESTSDIR"tst-merge1-data/usr/etc/tst-merge1.conf", "=", '#');
+  error = econf_readFile (&key_file_2, TESTSDIR"tst-merge1-data/usr/etc/tst-merge1.conf", "=", "#");
   if (error || key_file_2 == NULL)
     {
       fprintf (stderr, "ERROR: couldn't read /usr/etc configuration file: %s\n", econf_errString(error));

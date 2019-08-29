@@ -77,7 +77,7 @@ extern econf_err econf_newIniFile(econf_file **result);
 
 // Process the file of the given file_name and save its contents into key_file
 extern econf_err econf_readFile(econf_file **result, const char *file_name,
-				    const char *delim, const char comment);
+				    const char *delim, const char *comment);
 
 // Merge the contents of two key files
 extern econf_err econf_mergeFiles(econf_file **merged_file,
@@ -89,10 +89,11 @@ extern econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
 
 extern econf_err econf_readDirs(econf_file **key_file,
 					  const char *usr_conf_dir,
-					  const char *etch_conf_dir,
+					  const char *etc_conf_dir,
 					  const char *project_name,
 					  const char *config_suffix,
-					  const char *delimt, char comment);
+					  const char *delim,
+					  const char *comment);
 
 /* --- GETTERS --- */
 
