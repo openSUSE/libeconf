@@ -19,8 +19,8 @@ main(int argc, char **argv)
   char *val;
   econf_err error;
 
-  key_file = econf_get_key_file (TESTSDIR"tst-arguments-data/etc/arguments.conf", "=", '#', &error);
-  if (key_file == NULL)
+  error = econf_get_key_file (&key_file, TESTSDIR"tst-arguments-data/etc/arguments.conf", "=", '#');
+  if (error)
     {
       fprintf (stderr, "ERROR: couldn't read configuration file: %s\n", econf_errString(error));
       return 1;

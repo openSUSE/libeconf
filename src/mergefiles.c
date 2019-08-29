@@ -163,9 +163,10 @@ check_conf_dir(Key_File **key_files, size_t *size, const char *path,
       if (lensuffix < lenstr &&
           strncmp(de[i]->d_name + lenstr - lensuffix, config_suffix, lensuffix) == 0) {
         char *file_path = combine_strings(path, de[i]->d_name, '/');
-        Key_File *key_file = econf_get_key_file(file_path, delim, comment, NULL);
+        Key_File *key_file;
+	econf_err error = econf_get_key_file(&key_file, file_path, delim, comment);
         free(file_path);
-        if(key_file) {
+        if(!error && key_file) {
           key_file->on_merge_delete = 1;
           key_files[(*size) - 1] = key_file;
           key_files = realloc(key_files, ++(*size) * sizeof(Key_File *));
@@ -199,30 +200,27 @@ Key_File **traverse_conf_dirs(Key_File **key_files, const char *config_dirs,
   return key_files;
 }
 
-Key_File *merge_Key_Files(Key_File **key_files, econf_err *error) {
-  if (key_files == NULL) {
-    if (error) *error = ECONF_ERROR;
-    return NULL;
-  }
+econf_err merge_Key_Files(Key_File **key_files, Key_File **merged_files) {
+  if (key_files == NULL || merged_files == NULL)
+    return ECONF_ERROR;
 
-  Key_File *merged_file = *key_files++;
-  if(!merged_file) {
-    if (error) *error = ECONF_ERROR;
-    return NULL;
-  }
+  *merged_files = *key_files++;
+  if(!merged_files)
+    return ECONF_ERROR;
 
   while(*key_files) {
-    Key_File *tmp = merged_file;
+    econf_err error;
+    Key_File *tmp = *merged_files;
 
-    merged_file = econf_merge_key_files(merged_file, *key_files, error);
-    if (merged_file == NULL)
-      return NULL;
-    merged_file->on_merge_delete = 1;
+    error = econf_merge_key_files(merged_files, *merged_files, *key_files);
+    if (error || merged_files == NULL)
+      return error;
+    (*merged_files)->on_merge_delete = 1;
 
     if(tmp->on_merge_delete) { econf_destroy(tmp); }
     if((*key_files)->on_merge_delete) { econf_destroy(*key_files); }
 
     key_files++;
   }
-  return merged_file;
+  return ECONF_SUCCESS;
 }
