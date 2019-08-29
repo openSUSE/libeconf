@@ -14,7 +14,7 @@
    to verify, they where correctly stored.
 */
 
-int
+static int
 print_error_set (const char *type, econf_err error)
 {
   fprintf (stderr, "ERROR: couldn't set type '%s': %s\n",
@@ -22,9 +22,9 @@ print_error_set (const char *type, econf_err error)
   return 1;
 }
 
-int
+static int
 print_error_get (const char *value, const char *setgroup,
-		     const char *getgroup, econf_err error)
+                 const char *getgroup, econf_err error)
 {
   fprintf (stderr, "ERROR: set '%s' in group '%s', tried to get from '%s': %s\n",
 	   value, setgroup, getgroup, econf_errString(error));
@@ -32,8 +32,9 @@ print_error_get (const char *value, const char *setgroup,
 }
 
 /* check_type(const char *, String, "String", "%s") */
-bool check_String (Key_File *key_file, const char *value,
-		   const char *setgroup, const char *getgroup)
+static bool
+check_String (econf_file *key_file, const char *value,
+              const char *setgroup, const char *getgroup)
 {
   econf_err error;
 
@@ -61,9 +62,9 @@ bool check_String (Key_File *key_file, const char *value,
 
 
 int
-main(int argc, char **argv)
+main(void)
 {
-  Key_File *key_file;
+  econf_file *key_file;
   econf_err error;
   int retval = 0;
 
@@ -89,7 +90,7 @@ main(int argc, char **argv)
   if (!check_String (key_file, "TeST", "[group3]", "[group3]")) retval=1;
   if (!check_String (key_file, "dummy", "group4", "group4")) retval=1;
 
-  econf_destroy (key_file);
+  econf_free (key_file);
 
   return retval;
 }

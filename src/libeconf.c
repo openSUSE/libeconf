@@ -33,13 +33,13 @@
 #include <stdio.h>
 #include <string.h>
 
-// Create a new Key_File. Allocation is based on
+// Create a new econf_file. Allocation is based on
 // KEY_FILE_KEY_FILE_KEY_FILE_DEFAULT_LENGTH
 // defined in include/defines.h
 econf_err
-econf_newKeyFile(Key_File **result, char delimiter, char comment)
+econf_newKeyFile(econf_file **result, char delimiter, char comment)
 {
-  Key_File *key_file = malloc(sizeof(Key_File));
+  econf_file *key_file = malloc(sizeof(econf_file));
 
   if (key_file == NULL)
     return ECONF_NOMEM;
@@ -64,12 +64,12 @@ econf_newKeyFile(Key_File **result, char delimiter, char comment)
   return ECONF_SUCCESS;
 }
 
-econf_err econf_newIniFile(Key_File **result) {
+econf_err econf_newIniFile(econf_file **result) {
   return econf_newKeyFile(result, '=', '#');
 }
 
 // Process the file of the given file_name and save its contents into key_file
-econf_err econf_get_key_file(Key_File **key_file, const char *file_name,
+econf_err econf_readFile(econf_file **key_file, const char *file_name,
 			     const char *delim, const char comment)
 {
   econf_err t_err;
@@ -85,7 +85,7 @@ econf_err econf_get_key_file(Key_File **key_file, const char *file_name,
   if (kf == NULL)
     return ECONF_NOFILE;
 
-  *key_file = malloc(sizeof(Key_File));
+  *key_file = malloc(sizeof(econf_file));
   if (key_file == NULL) {
     fclose (kf);
     return ECONF_NOMEM;
@@ -100,7 +100,7 @@ econf_err econf_get_key_file(Key_File **key_file, const char *file_name,
   fclose(kf);
 
   if(t_err) {
-    econf_destroy(*key_file);
+    econf_free(*key_file);
     return t_err;
   }
 
@@ -108,12 +108,12 @@ econf_err econf_get_key_file(Key_File **key_file, const char *file_name,
 }
 
 // Merge the contents of two key files
-econf_err econf_merge_key_files(Key_File **merged_file, Key_File *usr_file, Key_File *etc_file)
+econf_err econf_mergeFiles(econf_file **merged_file, econf_file *usr_file, econf_file *etc_file)
 {
   if (merged_file == NULL || usr_file == NULL || etc_file == NULL)
     return ECONF_ERROR;
 
-  *merged_file = malloc(sizeof(Key_File));
+  *merged_file = malloc(sizeof(econf_file));
   if (merged_file == NULL)
     return ECONF_NOMEM;
 
@@ -143,7 +143,7 @@ econf_err econf_merge_key_files(Key_File **merged_file, Key_File *usr_file, Key_
   return ECONF_SUCCESS;
 }
 
-econf_err econf_get_conf_from_dirs(Key_File **result,
+econf_err econf_readDirs(econf_file **result,
 				   const char *usr_conf_dir,
                                    const char *etc_conf_dir,
                                    const char *project_name,
@@ -176,25 +176,25 @@ econf_err econf_get_conf_from_dirs(Key_File **result,
 
   char **default_ptr = default_dirs;
 
-  Key_File **key_files = malloc(size * sizeof(Key_File*));
+  econf_file **key_files = malloc(size * sizeof(econf_file*));
   if (key_files == NULL)
     return ECONF_NOMEM;
 
   while (*default_dirs) {
     econf_err error;
-    Key_File *key_file = NULL;
+    econf_file *key_file = NULL;
     // Check if the config file exists directly in the given config directory
     char *file_path = combine_strings(*default_dirs, file_name, '/');
     if (file_path == NULL)
       return ECONF_NOMEM;
 
-    error = econf_get_key_file(&key_file, file_path, delim, comment);
+    error = econf_readFile(&key_file, file_path, delim, comment);
     free(file_path);
 
     if(key_file && !error) {
       key_file->on_merge_delete = 1;
       key_files[size - 1] = key_file;
-      Key_File **tmp = realloc(key_files, ++size * sizeof(Key_File *));
+      econf_file **tmp = realloc(key_files, ++size * sizeof(econf_file *));
       if (!tmp) {
         for (size_t i = 0; i < size - 1; i++) free(key_files[i]);
         free(key_files);
@@ -229,17 +229,17 @@ econf_err econf_get_conf_from_dirs(Key_File **result,
   // Free allocated memory and return
   free(file_name);
   free(suffix);
-  econf_destroy(default_ptr);
+  econf_free(default_ptr);
 
   // Merge the list of acquired key_files into merged_file
-  econf_err error = merge_Key_Files(key_files, result);
+  econf_err error = merge_econf_files(key_files, result);
   free(key_files);
 
   return error;
 }
 
-// Write content of a Key_File struct to specified location
-econf_err econf_write_key_file(Key_File *key_file, const char *save_to_dir,
+// Write content of a econf_file struct to specified location
+econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
 			       const char *file_name) {
   if (!key_file)
     return ECONF_ERROR;
@@ -281,13 +281,13 @@ econf_err econf_write_key_file(Key_File *key_file, const char *save_to_dir,
 }
 
 /* GETTER FUNCTIONS */
-// TODO: Currently only works with a sorted Key_File. If a new
+// TODO: Currently only works with a sorted econf_file. If a new
 // key with an existing group is appended at the end the group
 // will show twice. So the key file either needs to be sorted
 // upon entering a new key or the function must ensure only
 // unique values are returned.
 econf_err
-econf_getGroups(Key_File *kf, size_t *length, char **groups)
+econf_getGroups(econf_file *kf, size_t *length, char **groups)
 {
   if (!kf)
     return ECONF_ERROR;
@@ -322,7 +322,7 @@ econf_getGroups(Key_File *kf, size_t *length, char **groups)
 
 // TODO: Same issue as with getGroups()
 econf_err
-econf_getKeys(Key_File *kf, const char *grp, size_t *length, char ***keys)
+econf_getKeys(econf_file *kf, const char *grp, size_t *length, char ***keys)
 {
   if (!kf)
     return ECONF_ERROR;
@@ -372,7 +372,7 @@ econf_getKeys(Key_File *kf, const char *grp, size_t *length, char ***keys)
 /* The econf_get*Value functions are identical except for result
    value type, so let's create them via a macro. */
 #define econf_getValue(FCT_TYPE, TYPE)			      \
-econf_err econf_get ## FCT_TYPE ## Value(Key_File *kf, const char *group, \
+econf_err econf_get ## FCT_TYPE ## Value(econf_file *kf, const char *group, \
 			     const char *key, TYPE *result) {	\
   if (!kf) \
     return ECONF_ERROR; \
@@ -397,7 +397,7 @@ econf_getValue(Bool, bool)
 /* The econf_set*Value functions are identical except for set
    value type, so let's create them via a macro. */
 #define libeconf_setValue(TYPE, VALTYPE, VALARG) \
-econf_err econf_set ## TYPE ## Value(Key_File *kf, const char *group,		\
+econf_err econf_set ## TYPE ## Value(econf_file *kf, const char *group,		\
   const char *key, VALTYPE value) {	\
   if (!kf) \
     return ECONF_ERROR; \
@@ -415,7 +415,7 @@ libeconf_setValue(Bool, const char *, value)
 
 /* --- DESTROY FUNCTIONS --- */
 
-void econf_char_a_destroy(char** array) {
+void econf_freeArray(char** array) {
   if (!array) { return; }
   char *tmp = (char*) array;
   while (*array)
@@ -424,7 +424,7 @@ void econf_char_a_destroy(char** array) {
 }
 
 // Free memory allocated by key_file
-void econf_Key_File_destroy(Key_File *key_file) {
+void econf_freeFile(econf_file *key_file) {
   if (!key_file) { return; }
   for (size_t i = 0; i < key_file->alloc_length; i++) {
     free(key_file->file_entry[i].group);

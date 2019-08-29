@@ -12,13 +12,13 @@
 */
 
 int
-main(int argc, char **argv)
+main(void)
 {
-  Key_File *key_file;
+  econf_file *key_file;
   char *val;
   econf_err error;
 
-  if ((error = econf_get_key_file (&key_file, TESTSDIR"tst-arguments-data/etc/arguments.conf", "=", '#')))
+  if ((error = econf_readFile (&key_file, TESTSDIR"tst-arguments-data/etc/arguments.conf", "=", '#')))
     {
       fprintf (stderr, "ERROR: couldn't read configuration file: %s\n", econf_errString(error));
       return 1;
@@ -31,7 +31,7 @@ main(int argc, char **argv)
     }
   free (val);
 
-  econf_destroy (key_file);
+  econf_free (key_file);
 
   return 0;
 }

@@ -25,7 +25,7 @@
 
 #include "../include/helpers.h"
 
-// Default Key_File length on creation
+// Default econf_file length on creation
 #define KEY_FILE_DEFAULT_LENGTH 8
 
 // NULL value

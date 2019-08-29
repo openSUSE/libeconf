@@ -33,7 +33,7 @@ exit_with_error_get (const char *type, econf_err error)
 /* The econf_get*Value functions are identical except for return
    type, so let's create them via a macro. */
 #define check_type(TYPE, FCT_TYPE, FCT_TYPE_STR, PR)	 \
-static bool check_ ## FCT_TYPE (Key_File *key_file, TYPE value) \
+static bool check_ ## FCT_TYPE (econf_file *key_file, TYPE value) \
 { \
    econf_err error; \
 \
@@ -59,7 +59,7 @@ check_type(double, Double, "Double", "%f")
 
 /* check_type(const char *, String, "String", "%s") */
 static bool
-check_String (Key_File *key_file, const char *value)
+check_String (econf_file *key_file, const char *value)
 {
   econf_err error;
 
@@ -82,7 +82,7 @@ check_String (Key_File *key_file, const char *value)
 
 /* check_type(bool, Bool, "Bool", "%s") */
 static bool
-check_Bool (Key_File *key_file, const char *value, bool expect)
+check_Bool (econf_file *key_file, const char *value, bool expect)
 {
   econf_err error;
 
@@ -102,9 +102,9 @@ check_Bool (Key_File *key_file, const char *value, bool expect)
 
 
 int
-main(int argc, char **argv)
+main(void)
 {
-  Key_File *key_file;
+  econf_file *key_file;
   econf_err error;
   int retval = 0;
 
@@ -152,7 +152,7 @@ main(int argc, char **argv)
   if (!check_Bool (key_file, "no", false)) retval=1;
   if (!check_Bool (key_file, "0", false)) retval=1;
 
-  econf_destroy (key_file);
+  econf_free (key_file);
 
   return retval;
 }

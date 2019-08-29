@@ -29,7 +29,7 @@
 #include "keyfile.h"
 
 // Fill the Key File struct with values from the given file handle
-extern econf_err fill_key_file(Key_File *read_file, FILE *kf, const char *delim);
+extern econf_err fill_key_file(econf_file *read_file, FILE *kf, const char *delim);
 
 // Write the group/value entry to the given file_entry
 extern void end_of_line(struct file_entry **fe, size_t *len, size_t *lnum, size_t vlen,

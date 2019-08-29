@@ -33,7 +33,7 @@
 
 // Insert the content of "etc_file.file_entry" into "fe" if there is no
 // group specified
-size_t insert_nogroup(struct file_entry **fe, Key_File *ef) {
+size_t insert_nogroup(struct file_entry **fe, econf_file *ef) {
   size_t etc_start = 0;
   while (etc_start < ef->length &&
          !strcmp(ef->file_entry[etc_start].group, KEY_FILE_NULL_VALUE)) {
@@ -45,7 +45,7 @@ size_t insert_nogroup(struct file_entry **fe, Key_File *ef) {
 
 // Merge contents from existing usr_file groups
 // uf: usr_file, ef: etc_file
-size_t merge_existing_groups(struct file_entry **fe, Key_File *uf, Key_File *ef,
+size_t merge_existing_groups(struct file_entry **fe, econf_file *uf, econf_file *ef,
                              const size_t etc_start) {
   char new_key;
   size_t merge_length = etc_start, tmp = etc_start, added_keys = etc_start;
@@ -82,7 +82,7 @@ size_t merge_existing_groups(struct file_entry **fe, Key_File *uf, Key_File *ef,
 }
 
 // Add entries from etc_file exclusive groups
-size_t add_new_groups(struct file_entry **fe, Key_File *uf, Key_File *ef,
+size_t add_new_groups(struct file_entry **fe, econf_file *uf, econf_file *ef,
                       const size_t merge_length) {
   size_t added_keys = merge_length;
   char new_key;
@@ -150,8 +150,8 @@ char **get_default_dirs(const char *usr_conf_dir, const char *etc_conf_dir) {
 
 // Check if the given directory exists. If so look for config files
 // with the given suffix
-static Key_File **
-check_conf_dir(Key_File **key_files, size_t *size, const char *path,
+static econf_file **
+check_conf_dir(econf_file **key_files, size_t *size, const char *path,
 	       const char *config_suffix, const char *delim, char comment)
 {
   struct dirent **de;
@@ -163,13 +163,13 @@ check_conf_dir(Key_File **key_files, size_t *size, const char *path,
       if (lensuffix < lenstr &&
           strncmp(de[i]->d_name + lenstr - lensuffix, config_suffix, lensuffix) == 0) {
         char *file_path = combine_strings(path, de[i]->d_name, '/');
-        Key_File *key_file;
-	econf_err error = econf_get_key_file(&key_file, file_path, delim, comment);
+        econf_file *key_file;
+	econf_err error = econf_readFile(&key_file, file_path, delim, comment);
         free(file_path);
         if(!error && key_file) {
           key_file->on_merge_delete = 1;
           key_files[(*size) - 1] = key_file;
-          key_files = realloc(key_files, ++(*size) * sizeof(Key_File *));
+          key_files = realloc(key_files, ++(*size) * sizeof(econf_file *));
         }
       }
       free(de[i]);
@@ -179,7 +179,7 @@ check_conf_dir(Key_File **key_files, size_t *size, const char *path,
   return key_files;
 }
 
-Key_File **traverse_conf_dirs(Key_File **key_files, const char *config_dirs,
+econf_file **traverse_conf_dirs(econf_file **key_files, const char *config_dirs,
                               size_t *size, const char *path,
 			      const char *config_suffix,
                               const char *delim, char comment) {
@@ -200,7 +200,7 @@ Key_File **traverse_conf_dirs(Key_File **key_files, const char *config_dirs,
   return key_files;
 }
 
-econf_err merge_Key_Files(Key_File **key_files, Key_File **merged_files) {
+econf_err merge_econf_files(econf_file **key_files, econf_file **merged_files) {
   if (key_files == NULL || merged_files == NULL)
     return ECONF_ERROR;
 
@@ -210,15 +210,15 @@ econf_err merge_Key_Files(Key_File **key_files, Key_File **merged_files) {
 
   while(*key_files) {
     econf_err error;
-    Key_File *tmp = *merged_files;
+    econf_file *tmp = *merged_files;
 
-    error = econf_merge_key_files(merged_files, *merged_files, *key_files);
+    error = econf_mergeFiles(merged_files, *merged_files, *key_files);
     if (error || merged_files == NULL)
       return error;
     (*merged_files)->on_merge_delete = 1;
 
-    if(tmp->on_merge_delete) { econf_destroy(tmp); }
-    if((*key_files)->on_merge_delete) { econf_destroy(*key_files); }
+    if(tmp->on_merge_delete) { econf_free(tmp); }
+    if((*key_files)->on_merge_delete) { econf_free(*key_files); }
 
     key_files++;
   }

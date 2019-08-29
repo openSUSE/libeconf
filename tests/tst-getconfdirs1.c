@@ -16,8 +16,8 @@
    libeconf should ignore /usr/etc/getconfdir.conf, as this contains
 */
 
-int
-check_key(Key_File *key_file, char *key, char *expected_val)
+static int
+check_key(econf_file *key_file, char *key, char *expected_val)
 {
   char *val = NULL;
   econf_err error = econf_getStringValue (key_file, "", key, &val);
@@ -47,19 +47,19 @@ check_key(Key_File *key_file, char *key, char *expected_val)
 }
 
 int
-main(int argc, char **argv)
+main(void)
 {
-  Key_File *key_file;
+  econf_file *key_file;
   int retval = 0;
   econf_err error;
 
-  error = econf_get_conf_from_dirs (&key_file,
+  error = econf_readDirs (&key_file,
 				    TESTSDIR"tst-getconfdirs1-data/usr/etc",
 				    TESTSDIR"tst-getconfdirs1-data/etc",
 				    "getconfdir", SUFFIX, "=", '#');
   if (error)
     {
-      fprintf (stderr, "ERROR: econf_get_conf_from_dirs: %s\n",
+      fprintf (stderr, "ERROR: econf_readDirs: %s\n",
 	       econf_errString(error));
       return 1;
     }
@@ -73,7 +73,7 @@ main(int argc, char **argv)
   if (check_key(key_file, "OVERRIDE", "true") != 0)
     retval = 1;
 
-  econf_destroy (key_file);
+  econf_free (key_file);
 
   return retval;
 }

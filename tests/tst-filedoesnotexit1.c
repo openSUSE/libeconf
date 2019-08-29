@@ -11,16 +11,16 @@
 */
 
 int
-main(int argc, char **argv)
+main(void)
 {
-  Key_File *key_file = NULL;
+  econf_file *key_file = NULL;
   econf_err error;
 
-  error = econf_get_key_file (&key_file, "doesnotexist1.conf", "=", '#');
+  error = econf_readFile (&key_file, "doesnotexist1.conf", "=", '#');
   if (key_file)
     {
       fprintf (stderr, "Got key_file for non-existing configuration file!\n");
-      econf_destroy(key_file);
+      econf_free(key_file);
       return 1;
     }
   if (error != ECONF_NOFILE)
