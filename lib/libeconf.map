@@ -1,23 +1,23 @@
 LIBECONF_0.2 {
   global:
-    econf_char_a_destroy;
     econf_errString;
-    econf_Key_File_destroy;
+    econf_freeArray;
+    econf_freeFile;
     econf_getBoolValue;
     econf_getDoubleValue;
     econf_getFloatValue;
     econf_getGroups;
     econf_getInt64Value;
     econf_getIntValue;
-    econf_get_key_file;
     econf_getKeys;
     econf_getStringValue;
     econf_getUInt64Value;
     econf_getUIntValue;
-    econf_merge_key_files;
-    econf_get_conf_from_dirs;
+    econf_mergeFiles;
     econf_newIniFile;
     econf_newKeyFile;
+    econf_readDirs;
+    econf_readFile;
     econf_setBoolValue;
     econf_setDoubleValue;
     econf_setFloatValue;
@@ -31,5 +31,5 @@ LIBECONF_0.2 {
 };
 LIBECONF_ALPHA {
   global:
-    econf_write_key_file;
+    econf_writeFile;
 } LIBECONF_0.2;

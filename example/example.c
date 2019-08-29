@@ -34,12 +34,12 @@ int main(void) {
 
   clock_t begin = clock();
 
-  //Key_File *key_file = econf_newIniFile();
-  //Key_File *key_file = econf_get_key_file("example/etc/example/example.ini", "=", '#');
+  //econf_file *key_file = econf_newIniFile();
+  //econf_file *key_file = econf_readFile("example/etc/example/example.ini", "=", '#');
 
-  Key_File *key_file;
+  econf_file *key_file;
 
-  if (!econf_get_conf_from_dirs(&key_file, "example/usr/etc", "example/etc",
+  if (!econf_readDirs(&key_file, "example/usr/etc", "example/etc",
 				"example", ".ini", "=", '#'))
     return 1; /* XXX better error handling */
 
@@ -87,11 +87,11 @@ int main(void) {
     printf("%s, ", keys[i]);
   }
   puts("\n");
-  econf_destroy(keys);
+  econf_free(keys);
 
-  econf_write_key_file(key_file, "example/", "test.ini");
+  econf_writeFile(key_file, "example/", "test.ini");
 
-  econf_destroy(key_file);
+  econf_free(key_file);
 
   clock_t end = clock();
 

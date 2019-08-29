@@ -33,7 +33,7 @@
 
 // Fill the Key File struct with values from the given file handle
 econf_err
-fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
+fill_key_file(econf_file *read_file, FILE *kf, const char *delim) {
   // KEY_FILE_DEFAULT_LENGTH: Default number of key-value pairs to be
   // allocated in key_file
   // LLEN: Base number of chars in a key, value or group name
@@ -43,7 +43,7 @@ fill_key_file(Key_File *read_file, FILE *kf, const char *delim) {
   size_t file_length = 0, lnum = KEY_FILE_DEFAULT_LENGTH, llen = LLEN, vlen = 0;
   int ch;
 
-  // Allocate memory for the Key_File based on KEY_FILE_DEFAULT_LENGTH
+  // Allocate memory for the econf_file based on KEY_FILE_DEFAULT_LENGTH
   struct file_entry *fe = malloc(KEY_FILE_DEFAULT_LENGTH * sizeof(struct file_entry));
   if (fe == NULL)
     return ECONF_NOMEM;

@@ -41,7 +41,7 @@ char *combine_strings(const char *string_one, const char *string_two,
 }
 
 // Set null value defined in include/defines.h
-void initialize(Key_File *key_file, size_t num) {
+void initialize(econf_file *key_file, size_t num) {
   key_file->file_entry[num].group = strdup(KEY_FILE_NULL_VALUE);
   key_file->file_entry[num].key = strdup(KEY_FILE_NULL_VALUE);
   key_file->file_entry[num].value = strdup(KEY_FILE_NULL_VALUE);
@@ -135,7 +135,7 @@ size_t hashstring(const char *string) {
 }
 
 // Look for matching key
-econf_err find_key(Key_File key_file, const char *group, const char *key, size_t *num) {
+econf_err find_key(econf_file key_file, const char *group, const char *key, size_t *num) {
   char *grp = (!group || !*group) ? strdup(KEY_FILE_NULL_VALUE) :
                addbrackets(group);
   if (grp == NULL)
@@ -157,11 +157,11 @@ econf_err find_key(Key_File key_file, const char *group, const char *key, size_t
   return ECONF_NOKEY;
 }
 
-// Append a new key to an existing Key_File
+// Append a new key to an existing econf_file
 // TODO: If the group is already known the new key should be appended
 // at the end of that group not at the end of the file.
 static econf_err
-new_key (Key_File *key_file, const char *group, const char *key) {
+new_key (econf_file *key_file, const char *group, const char *key) {
   econf_err error;
   char *grp = (!group || !*group) ? strdup(KEY_FILE_NULL_VALUE) :
                addbrackets(group);
@@ -188,8 +188,8 @@ new_key (Key_File *key_file, const char *group, const char *key) {
 // does not exist it is created.
 // TODO: function/void pointer might not be necessary if the value is converted
 // into a string beforehand.
-econf_err setKeyValue(econf_err (*function) (Key_File*, size_t, const void*),
-		      Key_File *kf, const char *group, const char *key,
+econf_err setKeyValue(econf_err (*function) (econf_file*, size_t, const void*),
+		      econf_file *kf, const char *group, const char *key,
 		      const void *value)
 {
   size_t num;

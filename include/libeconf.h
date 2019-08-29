@@ -31,26 +31,18 @@
 /* libeconf error codes */
 enum econf_err {
   ECONF_SUCCESS = 0, /* General purpose success code */
-#define ECONF_SUCCESS ECONF_SUCCESS
   ECONF_ERROR = 1, /* Generic Error */
-#define ECONF_ERROR ECONF_ERROR
   ECONF_NOMEM = 2, /* Out of memory */
-#define ECONF_NOMEM ECONF_NOMEM
   ECONF_NOFILE = 3, /* Config file not found */
-#define ECONF_NOFILE ECONF_NOFILE
   ECONF_NOGROUP = 4, /* Group not found */
-#define ECONF_NOGROUP ECONF_NOGROUP
   ECONF_NOKEY = 5, /* Key not found */
-#define ECONF_NOKEY ECONF_NOKEY
   ECONF_EMPTYKEY = 6, /* Key has empty vaue */
-#define ECONF_EMPTYKEY ECONF_EMPTYKEY
   ECONF_WRITEERROR = 7 /* Error creating or writing to a file */
-#define ECONF_WRITEERROR ECONF_WRITEERROR
 };
 typedef enum econf_err econf_err;
 
 // Generic macro calls setter function depending on value type
-// Use: econf_setValue(Key_File *key_file, char *group, char *key,
+// Use: econf_setValue(econf_file *key_file, char *group, char *key,
 //                     _generic_ value);
 // Replace _generic_ with one of the supported value types.
 // Supported Types: int, long, unsigned int, unsigned long, float, double,
@@ -69,33 +61,33 @@ typedef enum econf_err econf_err;
 (kf, group, key, value))
 
 // Generic macro to free memory allocated by econf_ functions
-// Use: econf_destroy(_generic_ value);
+// Use: econf_free(_generic_ value);
 // Replace _generic_ with one of the supported value types.
-// Supported Types: char** and Key_File*
-#define econf_destroy(value) (( \
+// Supported Types: char** and econf_file*
+#define econf_free(value) (( \
   _Generic((value), \
-    Key_File*: econf_Key_File_destroy , \
-    char**: econf_char_a_destroy)) \
+    econf_file*: econf_freeFile , \
+    char**: econf_freeArray)) \
 (value))
 
-typedef struct Key_File Key_File;
+typedef struct econf_file econf_file;
 
-extern econf_err econf_newKeyFile(Key_File **result, char delimiter, char comment);
-extern econf_err econf_newIniFile(Key_File **result);
+extern econf_err econf_newKeyFile(econf_file **result, char delimiter, char comment);
+extern econf_err econf_newIniFile(econf_file **result);
 
 // Process the file of the given file_name and save its contents into key_file
-extern econf_err econf_get_key_file(Key_File **result, const char *file_name,
+extern econf_err econf_readFile(econf_file **result, const char *file_name,
 				    const char *delim, const char comment);
 
 // Merge the contents of two key files
-extern econf_err econf_merge_key_files(Key_File **merged_file, 
-				       Key_File *usr_file, Key_File *etc_file);
+extern econf_err econf_mergeFiles(econf_file **merged_file,
+				       econf_file *usr_file, econf_file *etc_file);
 
-// Write content of a Key_File struct to specified location
-extern econf_err econf_write_key_file(Key_File *key_file, const char *save_to_dir,
+// Write content of a econf_file struct to specified location
+extern econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
 				      const char *file_name);
 
-extern econf_err econf_get_conf_from_dirs(Key_File **key_file,
+extern econf_err econf_readDirs(econf_file **key_file,
 					  const char *usr_conf_dir,
 					  const char *etch_conf_dir,
 					  const char *project_name,
@@ -104,28 +96,28 @@ extern econf_err econf_get_conf_from_dirs(Key_File **key_file,
 
 /* --- GETTERS --- */
 
-extern econf_err econf_getGroups(Key_File *kf, size_t *length, char **groups);
-extern econf_err econf_getKeys(Key_File *kf, const char *group, size_t *length, char ***keys);
-extern econf_err econf_getIntValue(Key_File *kf, const char *group, const char *key, int32_t *result);
-extern econf_err econf_getInt64Value(Key_File *kf, const char *group, const char *key, int64_t *result);
-extern econf_err econf_getUIntValue(Key_File *kf, const char *group, const char *key, uint32_t *result);
-extern econf_err econf_getUInt64Value(Key_File *kf, const char *group, const char *key, uint64_t *result);
-extern econf_err econf_getFloatValue(Key_File *kf, const char *group, const char *key, float *result);
-extern econf_err econf_getDoubleValue(Key_File *kf, const char *group, const char *key, double *result);
+extern econf_err econf_getGroups(econf_file *kf, size_t *length, char **groups);
+extern econf_err econf_getKeys(econf_file *kf, const char *group, size_t *length, char ***keys);
+extern econf_err econf_getIntValue(econf_file *kf, const char *group, const char *key, int32_t *result);
+extern econf_err econf_getInt64Value(econf_file *kf, const char *group, const char *key, int64_t *result);
+extern econf_err econf_getUIntValue(econf_file *kf, const char *group, const char *key, uint32_t *result);
+extern econf_err econf_getUInt64Value(econf_file *kf, const char *group, const char *key, uint64_t *result);
+extern econf_err econf_getFloatValue(econf_file *kf, const char *group, const char *key, float *result);
+extern econf_err econf_getDoubleValue(econf_file *kf, const char *group, const char *key, double *result);
 /* Returns a newly allocated string or NULL in error case. */
-extern econf_err econf_getStringValue(Key_File *kf, const char *group, const char *key, char **result);
-extern econf_err econf_getBoolValue(Key_File *kf, const char *group, const char *key, bool *result);
+extern econf_err econf_getStringValue(econf_file *kf, const char *group, const char *key, char **result);
+extern econf_err econf_getBoolValue(econf_file *kf, const char *group, const char *key, bool *result);
 
 /* --- SETTERS --- */
 
-extern econf_err econf_setIntValue(Key_File *kf, const char *group, const char *key, int32_t value);
-extern econf_err econf_setInt64Value(Key_File *kf, const char *group, const char *key, int64_t value);
-extern econf_err econf_setUIntValue(Key_File *kf, const char *group, const char *key, uint32_t value);
-extern econf_err econf_setUInt64Value(Key_File *kf, const char *group, const char *key, uint64_t value);
-extern econf_err econf_setFloatValue(Key_File *kf, const char *group, const char *key, float value);
-extern econf_err econf_setDoubleValue(Key_File *kf, const char *group, const char *key, double value);
-extern econf_err econf_setStringValue(Key_File *kf, const char *group, const char *key, const char *value);
-extern econf_err econf_setBoolValue(Key_File *kf, const char *group, const char *key, const char *value);
+extern econf_err econf_setIntValue(econf_file *kf, const char *group, const char *key, int32_t value);
+extern econf_err econf_setInt64Value(econf_file *kf, const char *group, const char *key, int64_t value);
+extern econf_err econf_setUIntValue(econf_file *kf, const char *group, const char *key, uint32_t value);
+extern econf_err econf_setUInt64Value(econf_file *kf, const char *group, const char *key, uint64_t value);
+extern econf_err econf_setFloatValue(econf_file *kf, const char *group, const char *key, float value);
+extern econf_err econf_setDoubleValue(econf_file *kf, const char *group, const char *key, double value);
+extern econf_err econf_setStringValue(econf_file *kf, const char *group, const char *key, const char *value);
+extern econf_err econf_setBoolValue(econf_file *kf, const char *group, const char *key, const char *value);
 
 /* --- HELPERS --- */
 
@@ -133,7 +125,7 @@ extern econf_err econf_setBoolValue(Key_File *kf, const char *group, const char 
 extern const char *econf_errString (const econf_err);
 
 // Free an array of type char** created by econf_getGroups() or econf_getKeys()
-extern void econf_char_a_destroy(char **array);
+extern void econf_freeArray(char **array);
 
 // Free memory allocated by key_file
-extern void econf_Key_File_destroy(Key_File *key_file);
+extern void econf_freeFile(econf_file *key_file);

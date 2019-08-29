@@ -12,15 +12,15 @@
 */
 
 int
-main(int argc, char **argv)
+main(void)
 {
-  Key_File *key_file;
+  econf_file *key_file;
   char **keys;
   size_t key_number;
   char *val;
   econf_err error;
 
-  if ((error = econf_get_key_file (&key_file, TESTSDIR"tst-logindefs1-data/etc/login.defs", " \t", '#')))
+  if ((error = econf_readFile (&key_file, TESTSDIR"tst-logindefs1-data/etc/login.defs", " \t", '#')))
     {
       fprintf (stderr, "ERROR: couldn't read configuration file: %s\n", econf_errString(error));
       return 1;
@@ -78,8 +78,8 @@ main(int argc, char **argv)
       printf ("%li: %s\n", i, keys[i]);
     }
 
-  econf_destroy (keys);
-  econf_destroy (key_file);
+  econf_free (keys);
+  econf_free (key_file);
 
   return 0;
 }

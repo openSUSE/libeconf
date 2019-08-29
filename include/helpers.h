@@ -42,7 +42,7 @@ char *stripbrackets(char *string);
 char *addbrackets(const char *string);
 
 // Set default value defined in include/defines.h
-void initialize(Key_File *key_file, size_t num);
+void initialize(econf_file *key_file, size_t num);
 
 // Return the lower case version of a string
 char *toLowerCase(char *str);
@@ -51,12 +51,12 @@ char *toLowerCase(char *str);
 size_t hashstring(const char *str);
 
 // Look for matching key
-econf_err find_key(Key_File key_file, const char *group, const char *key, size_t *num);
+econf_err find_key(econf_file key_file, const char *group, const char *key, size_t *num);
 
 // Set value for the given group, key combination. If the combination
 // does not exist it is created.
-econf_err setKeyValue(econf_err (*function) (Key_File*, size_t, const void*),
-                 Key_File *kf, const char *group, const char *key,
+econf_err setKeyValue(econf_err (*function) (econf_file*, size_t, const void*),
+                 econf_file *kf, const char *group, const char *key,
                  const void *value);
 
 // Copy the contents of a file_entry struct

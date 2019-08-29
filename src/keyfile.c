@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <string.h>
 
-econf_err key_file_append(Key_File *kf) {
+econf_err key_file_append(econf_file *kf) {
   /* XXX check return values and for NULL pointers */
   if(kf->length++ >= kf->alloc_length) {
     kf->alloc_length++;
@@ -47,42 +47,42 @@ econf_err key_file_append(Key_File *kf) {
 /* --- GETTERS --- */
 
 /* XXX all get*ValueNum functions are missing error handling */
-econf_err getIntValueNum(Key_File key_file, size_t num, int32_t *result) {
+econf_err getIntValueNum(econf_file key_file, size_t num, int32_t *result) {
   *result = strtol(key_file.file_entry[num].value, NULL, 10);
   return ECONF_SUCCESS;
 }
 
-econf_err getInt64ValueNum(Key_File key_file, size_t num, int64_t *result) {
+econf_err getInt64ValueNum(econf_file key_file, size_t num, int64_t *result) {
   *result = strtol(key_file.file_entry[num].value, NULL, 10);
   return ECONF_SUCCESS;
 }
 
-econf_err getUIntValueNum(Key_File key_file, size_t num, uint32_t *result) {
+econf_err getUIntValueNum(econf_file key_file, size_t num, uint32_t *result) {
   *result = strtoul(key_file.file_entry[num].value, NULL, 10);
   return ECONF_SUCCESS;
 }
 
-econf_err getUInt64ValueNum(Key_File key_file, size_t num, uint64_t *result) {
+econf_err getUInt64ValueNum(econf_file key_file, size_t num, uint64_t *result) {
   *result = strtoul(key_file.file_entry[num].value, NULL, 10);
   return ECONF_SUCCESS;
 }
 
-econf_err getFloatValueNum(Key_File key_file, size_t num, float *result) {
+econf_err getFloatValueNum(econf_file key_file, size_t num, float *result) {
   *result = strtof(key_file.file_entry[num].value, NULL);
   return ECONF_SUCCESS;
 }
 
-econf_err getDoubleValueNum(Key_File key_file, size_t num, double *result) {
+econf_err getDoubleValueNum(econf_file key_file, size_t num, double *result) {
   *result = strtod(key_file.file_entry[num].value, NULL);
   return ECONF_SUCCESS;
 }
 
-econf_err getStringValueNum(Key_File key_file, size_t num, char **result) {
+econf_err getStringValueNum(econf_file key_file, size_t num, char **result) {
   *result = strdup(key_file.file_entry[num].value);
   return ECONF_SUCCESS;
 }
 
-econf_err getBoolValueNum(Key_File key_file, size_t num, bool *result) {
+econf_err getBoolValueNum(econf_file key_file, size_t num, bool *result) {
   size_t hash = hashstring(key_file.file_entry[num].value);
   if (hash == TRUE) {
     *result = true;
@@ -94,7 +94,7 @@ econf_err getBoolValueNum(Key_File key_file, size_t num, bool *result) {
 
 /* --- SETTERS --- */
 
-econf_err setGroup(Key_File *key_file, size_t num, const char *value) {
+econf_err setGroup(econf_file *key_file, size_t num, const char *value) {
   if (key_file == NULL || value == NULL)
     return ECONF_ERROR;
   if (key_file->file_entry[num].group)
@@ -106,7 +106,7 @@ econf_err setGroup(Key_File *key_file, size_t num, const char *value) {
   return ECONF_SUCCESS;
 }
 
-econf_err setKey(Key_File *key_file, size_t num, const char *value) {
+econf_err setKey(econf_file *key_file, size_t num, const char *value) {
   if (key_file == NULL || value == NULL)
     return ECONF_ERROR;
   if (key_file->file_entry[num].key)
@@ -119,7 +119,7 @@ econf_err setKey(Key_File *key_file, size_t num, const char *value) {
 }
 
 /* XXX All set*ValueNum functions are missing error handling */
-econf_err setIntValueNum(Key_File *kf, size_t num, const void *v) {
+econf_err setIntValueNum(econf_file *kf, size_t num, const void *v) {
   int32_t *value = (int32_t*) v;
   free(kf->file_entry[num].value);
   size_t length = (*value == 0) ? 2 : log10(fabs(*value)) + (*value < 0) + 2;
@@ -127,7 +127,7 @@ econf_err setIntValueNum(Key_File *kf, size_t num, const void *v) {
   return ECONF_SUCCESS;
 }
 
-econf_err setInt64ValueNum(Key_File *kf, size_t num, const void *v) {
+econf_err setInt64ValueNum(econf_file *kf, size_t num, const void *v) {
   int64_t *value = (int64_t*) v;
   free(kf->file_entry[num].value);
   size_t length = (*value == 0) ? 2 : log10(fabs(*value)) + (*value < 0) + 2;
@@ -135,7 +135,7 @@ econf_err setInt64ValueNum(Key_File *kf, size_t num, const void *v) {
   return ECONF_SUCCESS;
 }
 
-econf_err setUIntValueNum(Key_File *key_file, size_t num, const void *v) {
+econf_err setUIntValueNum(econf_file *key_file, size_t num, const void *v) {
   uint32_t *value = (uint32_t*) v;
   free(key_file->file_entry[num].value);
   size_t length = (*value == 0) ? 2 : log10(*value) + 2;
@@ -143,7 +143,7 @@ econf_err setUIntValueNum(Key_File *key_file, size_t num, const void *v) {
   return ECONF_SUCCESS;
 }
 
-econf_err setUInt64ValueNum(Key_File *key_file, size_t num, const void *v) {
+econf_err setUInt64ValueNum(econf_file *key_file, size_t num, const void *v) {
   uint64_t *value = (uint64_t*) v;
   free(key_file->file_entry[num].value);
   size_t length = (*value == 0) ? 2 : log10(*value) + 2;
@@ -151,7 +151,7 @@ econf_err setUInt64ValueNum(Key_File *key_file, size_t num, const void *v) {
   return ECONF_SUCCESS;
 }
 
-econf_err setFloatValueNum(Key_File *key_file, size_t num, const void *v) {
+econf_err setFloatValueNum(econf_file *key_file, size_t num, const void *v) {
   float *value = (float*) v;
   free(key_file->file_entry[num].value);
   size_t length = snprintf(NULL, 0, "%.*g", FLT_DECIMAL_DIG, *value);
@@ -160,7 +160,7 @@ econf_err setFloatValueNum(Key_File *key_file, size_t num, const void *v) {
   return ECONF_SUCCESS;
 }
 
-econf_err setDoubleValueNum(Key_File *key_file, size_t num, const void *v) {
+econf_err setDoubleValueNum(econf_file *key_file, size_t num, const void *v) {
   double *value = (double*) v;
   free(key_file->file_entry[num].value);
   size_t length = snprintf(NULL, 0, "%.*g", DBL_DECIMAL_DIG, *value);
@@ -169,14 +169,14 @@ econf_err setDoubleValueNum(Key_File *key_file, size_t num, const void *v) {
   return ECONF_SUCCESS;
 }
 
-econf_err setStringValueNum(Key_File *key_file, size_t num, const void *v) {
+econf_err setStringValueNum(econf_file *key_file, size_t num, const void *v) {
   const char *value = (const char*) (v ? v : "");
   free(key_file->file_entry[num].value);
   key_file->file_entry[num].value = strdup(value);
   return ECONF_SUCCESS;
 }
 
-econf_err setBoolValueNum(Key_File *kf, size_t num, const void *v) {
+econf_err setBoolValueNum(econf_file *kf, size_t num, const void *v) {
   const char *value = (const char*) (v ? v : "");
   econf_err error = ECONF_SUCCESS;
   char *tmp = strdup(value);
