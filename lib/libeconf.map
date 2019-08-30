@@ -14,8 +14,6 @@ LIBECONF_0.2 {
     econf_getUInt64Value;
     econf_getUIntValue;
     econf_mergeFiles;
-    econf_newIniFile;
-    econf_newKeyFile;
     econf_readDirs;
     econf_readFile;
     econf_setBoolValue;
@@ -31,5 +29,7 @@ LIBECONF_0.2 {
 };
 LIBECONF_ALPHA {
   global:
+    econf_newIniFile;
+    econf_newKeyFile;
     econf_writeFile;
 } LIBECONF_0.2;

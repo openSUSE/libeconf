@@ -72,9 +72,6 @@ typedef enum econf_err econf_err;
 
 typedef struct econf_file econf_file;
 
-extern econf_err econf_newKeyFile(econf_file **result, char delimiter, char comment);
-extern econf_err econf_newIniFile(econf_file **result);
-
 // Process the file of the given file_name and save its contents into key_file
 extern econf_err econf_readFile(econf_file **result, const char *file_name,
 				    const char *delim, const char *comment);
@@ -83,10 +80,6 @@ extern econf_err econf_readFile(econf_file **result, const char *file_name,
 extern econf_err econf_mergeFiles(econf_file **merged_file,
 				       econf_file *usr_file, econf_file *etc_file);
 
-// Write content of a econf_file struct to specified location
-extern econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
-				      const char *file_name);
-
 extern econf_err econf_readDirs(econf_file **key_file,
 					  const char *usr_conf_dir,
 					  const char *etc_conf_dir,
@@ -94,6 +87,15 @@ extern econf_err econf_readDirs(econf_file **key_file,
 					  const char *config_suffix,
 					  const char *delim,
 					  const char *comment);
+
+/* The API/ABI of the following three functions (econf_newKeyFile,
+   econf_newIniFile and econf_writeFile) are not stable and will change */
+extern econf_err econf_newKeyFile(econf_file **result, char delimiter, char comment);
+extern econf_err econf_newIniFile(econf_file **result);
+
+// Write content of a econf_file struct to specified location
+extern econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
+				      const char *file_name);
 
 /* --- GETTERS --- */
 
