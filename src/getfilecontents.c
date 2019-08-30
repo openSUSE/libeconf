@@ -105,6 +105,7 @@ fill_key_file(econf_file *read_file, FILE *kf, const char *delim) {
     vlen = 0;
   }
   free(buffer);
+
   // Check if the file is really at its end after EOF is encountered.
   if (!feof(kf)) {
     return ECONF_ERROR;

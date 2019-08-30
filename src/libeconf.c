@@ -294,9 +294,9 @@ econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
 // upon entering a new key or the function must ensure only
 // unique values are returned.
 econf_err
-econf_getGroups(econf_file *kf, size_t *length, char **groups)
+econf_getGroups(econf_file *kf, size_t *length, char ***groups)
 {
-  if (!kf)
+  if (!kf || groups == NULL)
     return ECONF_ERROR;
 
   size_t tmp = 0;
@@ -311,17 +311,21 @@ econf_getGroups(econf_file *kf, size_t *length, char **groups)
       tmp++;
     }
   }
-  if (!tmp) { free(uniques); return ECONF_ERROR; }
-  groups = calloc(tmp + 1, sizeof(char*));
-  if (groups == NULL)
+  if (!tmp) {
+    free(uniques);
+    return ECONF_ERROR;
+  }
+  *groups = calloc(tmp + 1, sizeof(char*));
+  if (*groups == NULL)
     return ECONF_NOMEM;
 
   tmp = 0;
-  for (size_t i = 0; i < kf->length; i++) {
-    if (uniques[i]) { groups[tmp++] = strdup(kf->file_entry[i].group); }
-  }
+  for (size_t i = 0; i < kf->length; i++)
+    if (uniques[i])
+      (*groups)[tmp++] = strdup(kf->file_entry[i].group);
 
-  if (length != NULL) { *length = tmp; }
+  if (length != NULL)
+    *length = tmp;
 
   free(uniques);
   return ECONF_SUCCESS;

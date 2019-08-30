@@ -97,7 +97,7 @@ extern econf_err econf_readDirs(econf_file **key_file,
 
 /* --- GETTERS --- */
 
-extern econf_err econf_getGroups(econf_file *kf, size_t *length, char **groups);
+extern econf_err econf_getGroups(econf_file *kf, size_t *length, char ***groups);
 extern econf_err econf_getKeys(econf_file *kf, const char *group, size_t *length, char ***keys);
 extern econf_err econf_getIntValue(econf_file *kf, const char *group, const char *key, int32_t *result);
 extern econf_err econf_getInt64Value(econf_file *kf, const char *group, const char *key, int64_t *result);

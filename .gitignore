@@ -52,3 +52,7 @@ tests/tst-getconfdirs4
 tests/tst-econf_errstring1
 tests/tst-setgetvalues1
 tests/tst-groups1
+tests/tst-groups2
+tests/tst-groups3
+tests/tst-groups4
+tests/tst-parseconfig1
