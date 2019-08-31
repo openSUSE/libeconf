@@ -45,7 +45,7 @@ size_t add_new_groups(struct file_entry **fe, econf_file *uf, econf_file *ef,
 char **get_default_dirs(const char *usr_conf_dir, const char *etc_conf_dir);
 
 // Receives a list of config directories to look for and calls 'check_conf_dir'
-econf_file **traverse_conf_dirs(econf_file **key_files, const char *conf_dirs,
+econf_file **traverse_conf_dirs(econf_file **key_files, const char *conf_dirs[],
                               size_t *size, const char *path, 
 			      const char *config_suffix,
                               const char *delim, const char *comment);

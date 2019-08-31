@@ -150,15 +150,18 @@ econf_err econf_mergeFiles(econf_file **merged_file, econf_file *usr_file, econf
 }
 
 econf_err econf_readDirs(econf_file **result,
-				   const char *usr_conf_dir,
+				   const char *dist_conf_dir,
                                    const char *etc_conf_dir,
                                    const char *project_name,
                                    const char *config_suffix,
                                    const char *delim,
 				   const char *comment)
 {
-  size_t size = 1;
-  char *suffix;
+  size_t size = 0;
+  const char *suffix, *default_dirs[3] = {NULL, NULL, NULL};
+  char *distfile, *etcfile, *cp;
+  econf_file **key_files, *key_file;
+  econf_err error;
 
   /* config_suffix must be provided and should not be "" */
   if (config_suffix == NULL || strlen (config_suffix) == 0 || delim == NULL)
@@ -166,80 +169,94 @@ econf_err econf_readDirs(econf_file **result,
 
   // Prepend a . to the config suffix if not provided
   if (config_suffix[0] == '.')
-    suffix = strdup (config_suffix);
+    suffix = config_suffix;
   else
-    suffix = combine_strings("", config_suffix, '.');
-  if (suffix == NULL)
-    return ECONF_NOMEM;
+    {
+      cp = alloca (strlen(config_suffix + 2));
+      cp[0] = '.';
+      strcpy(cp+1, config_suffix);
+      suffix = cp;
+    }
 
-  char *file_name = combine_strings(project_name, &*(suffix + 1), '.');
-  if (file_name == NULL)
-    return ECONF_NOMEM;
+  /* create file names for etc and distribution config */
+  distfile = alloca(strlen (dist_conf_dir) + strlen (project_name) +
+		    strlen (suffix) + 2);
+  etcfile = alloca(strlen (etc_conf_dir) + strlen (project_name) +
+		   strlen (suffix) + 2);
 
-  // Get the list of directories to search for config files
-  char **default_dirs = get_default_dirs(usr_conf_dir, etc_conf_dir);
-  if (*default_dirs == NULL)
-    return ECONF_NOMEM;
+  cp = stpcpy (distfile, dist_conf_dir);
+  *cp++ = '/';
+  cp = stpcpy (cp, project_name);
+  stpcpy (cp, suffix);
 
-  char **default_ptr = default_dirs;
+  cp = stpcpy (etcfile, etc_conf_dir);
+  *cp++ = '/';
+  cp = stpcpy (cp, project_name);
+  stpcpy (cp, suffix);
 
-  econf_file **key_files = malloc(size * sizeof(econf_file*));
+  error = econf_readFile(&key_file, etcfile, delim, comment);
+  if (error && error != ECONF_NOFILE)
+      return error;
+
+  if (!error) {
+    /* /etc/<project_name>.<suffix> does exist, ignore /usr */
+    default_dirs[0] = etc_conf_dir;
+    size = 1;
+  } else {
+    /* /etc/<project_name>.<suffix> does not exist, so read /usr/etc
+       and merge all *.d files. */
+    error = econf_readFile(&key_file, distfile, delim, comment);
+    if (error && error != ECONF_NOFILE)
+      return error;
+
+    if (!error) /* /usr/etc/<project_name>.<suffix> does exist */
+      size = 1;
+
+    default_dirs[0] = dist_conf_dir;
+    default_dirs[1] = etc_conf_dir;
+  }
+
+  /* XXX Re-add get_default_dirs in a reworked version, which
+     adds additional directories to look at, e.g. XDG or home directory */
+
+  /* create space to store the econf_files for merging */
+  key_files = malloc((++size) * sizeof(econf_file*));
   if (key_files == NULL)
     return ECONF_NOMEM;
 
-  while (*default_dirs) {
-    econf_err error;
-    econf_file *key_file = NULL;
-    // Check if the config file exists directly in the given config directory
-    char *file_path = combine_strings(*default_dirs, file_name, '/');
-    if (file_path == NULL)
-      return ECONF_NOMEM;
-
-    error = econf_readFile(&key_file, file_path, delim, comment);
-    free(file_path);
-
-    if(key_file && !error) {
+  if (size == 2)
+    {
       key_file->on_merge_delete = 1;
-      key_files[size - 1] = key_file;
-      econf_file **tmp = realloc(key_files, ++size * sizeof(econf_file *));
-      if (!tmp) {
-        for (size_t i = 0; i < size - 1; i++) free(key_files[i]);
-        free(key_files);
-        return ECONF_NOMEM;
-      }
-      key_files = tmp;
+      key_files[0] = key_file;
     }
 
-    // Indicate which directories to look for
-    // Gets expanded to:
-    // "default_dirs/project_name/"
-    // "default_dirs/project_name/conf.d/"
-    // "default_dirs/project_name.conf.d/"
-    // "default_dirs/project_name.d/"
-    // in this order
-    char *conf_dirs = " d . conf.d . conf.d / 0 ";
-    char *project_path = combine_strings(*default_dirs, project_name, '/');
+  int i = 0;
+  while (default_dirs[i]) {
+    /*
+      Indicate which directories to look for. The order is:
+       "default_dirs/project_name.suffix.d/"
+       "default_dirs/project_name/conf.d/"
+       "default_dirs/project_name.d/"
+       "default_dirs/project_name/"
+    */
+    const char *conf_dirs[] = {  NULL, "/conf.d/", ".d/", "/", NULL};
+    char *project_path = combine_strings(default_dirs[i], project_name, '/');
+    char *suffix_d = malloc (strlen(suffix) + 4); /* + strlen(".d/") */
     /* XXX ENOMEM/NULL pointer check */
-    // Check for '$suffix' files in config directories with the
-    // given project name
+    cp = stpcpy(suffix_d, suffix);
+    stpcpy(cp, ".d/");
+    conf_dirs[0] = suffix_d;
     key_files = traverse_conf_dirs(key_files, conf_dirs, &size, project_path,
                                    suffix, delim, comment);
     /* XXX ENOMEM/NULL pointer check */
+    free(suffix_d);
     free(project_path);
-
-    // If /etc configuration exists igonre /usr config
-    if ((size - 1) && (default_dirs == default_ptr)) { default_dirs++; }
-    default_dirs++;
+    i++;
   }
   key_files[size - 1] = NULL;
 
-  // Free allocated memory and return
-  free(file_name);
-  free(suffix);
-  econf_free(default_ptr);
-
   // Merge the list of acquired key_files into merged_file
-  econf_err error = merge_econf_files(key_files, result);
+  error = merge_econf_files(key_files, result);
   free(key_files);
 
   return error;
