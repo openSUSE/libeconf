@@ -104,7 +104,10 @@ size_t add_new_groups(struct file_entry **fe, econf_file *uf, econf_file *ef,
 }
 
 
+#if 0
 // TODO: Make this function configureable with econf_set_opt()
+// TODO: provide the initial array from the calling function (needs to be
+// already big enough to hold this additional two entries)
 char **get_default_dirs(const char *usr_conf_dir, const char *etc_conf_dir) {
   size_t default_dir_number = 3, dir_num = 0;
 
@@ -122,7 +125,7 @@ char **get_default_dirs(const char *usr_conf_dir, const char *etc_conf_dir) {
       // Set config directory in /usr
       default_dirs[dir_num++] = strdup(usr_conf_dir); /* XXX ENOMEM check */
     }
-  #if 0
+
   // TODO: Use secure_getenv() instead and check if the variable is actually set
   // For security reasons, this code should only be enabled if the application
   // sets a flag to do so (introduce econf_set_opt() for this.
@@ -141,12 +144,12 @@ char **get_default_dirs(const char *usr_conf_dir, const char *etc_conf_dir) {
             strlen(getenv("USERNAME")) + 1), "/home/%s/.config",
             getenv("USERNAME"));
   }
-  #endif
 
   default_dirs[dir_num] = NULL;
 
   return default_dirs;
 }
+#endif
 
 // Check if the given directory exists. If so look for config files
 // with the given suffix
@@ -180,31 +183,29 @@ check_conf_dir(econf_file **key_files, size_t *size, const char *path,
 }
 
 /* XXX Convert to return econf_err */
-econf_file **traverse_conf_dirs(econf_file **key_files, const char *config_dirs,
-                              size_t *size, const char *path,
-			      const char *config_suffix,
-                              const char *delim, const char *comment) {
-  char *conf_dirs, *dir;
+econf_file **traverse_conf_dirs(econf_file **key_files,
+				const char *config_dirs[],
+				size_t *size, const char *path,
+				const char *config_suffix,
+				const char *delim, const char *comment) {
+  int i;
 
   if (config_dirs == NULL)
     return NULL; /* XXX ECONF_ERROR */
 
-  conf_dirs = strdup(config_dirs);
-  if (conf_dirs == NULL)
-    return NULL; /* XXX ECONF_NOMEN */
+  i = 0;
+  while (config_dirs[i] != NULL) {
+    char *fulldir, *cp;
 
-  while ((dir = strrchr(conf_dirs, ' '))) {
-    char c = *(dir + 1); 
-    *dir = '\0';
-    dir = strrchr(conf_dirs, ' ');
-    char *fulldir = combine_strings(path, &*(dir + 1), c);
-    /* XXX ENOMEM/NULL pointer check */
+    if ((fulldir = malloc (strlen(path) + strlen (config_dirs[i]) + 1)) == NULL)
+      return NULL;
+
+    cp = stpcpy (fulldir, path);
+    stpcpy (cp, config_dirs[i++]);
     key_files = check_conf_dir(key_files, size,
         fulldir, config_suffix, delim, comment);
     free (fulldir);
-    *dir = '\0';
   }
-  free(conf_dirs);
   return key_files;
 }
 
