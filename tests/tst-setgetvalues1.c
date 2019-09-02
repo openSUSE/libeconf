@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <values.h>
+#include <inttypes.h>
 
 #include "libeconf.h"
 
@@ -44,18 +45,18 @@ static bool check_ ## FCT_TYPE (econf_file *key_file, TYPE value) \
     exit_with_error_get (FCT_TYPE_STR, error); \
   if (val_ ## FCT_TYPE != value) \
     { \
-      fprintf (stderr, "ERROR: Set "FCT_TYPE_STR": '"PR"', Got: '"PR"'\n", value, val_ ## FCT_TYPE); \
+      fprintf (stderr, "ERROR: Set "FCT_TYPE_STR": '%"PR"', Got: '%"PR"'\n", value, val_ ## FCT_TYPE); \
       return false; \
     } \
   return true; \
 }
 
-check_type(int32_t, Int, "Int", "%i")
-check_type(uint32_t, UInt, "UInt", "%ui")
-check_type(int64_t, Int64, "Int64", "%li")
-check_type(uint64_t, UInt64, "UInt64", "%lu")
-check_type(float, Float, "Float", "%f")
-check_type(double, Double, "Double", "%f")
+check_type(int32_t, Int, "Int", PRId32)
+check_type(uint32_t, UInt, "UInt", PRIu32)
+check_type(int64_t, Int64, "Int64", PRId64)
+check_type(uint64_t, UInt64, "UInt64", PRIu64)
+check_type(float, Float, "Float", "f")
+check_type(double, Double, "Double", "f")
 
 /* check_type(const char *, String, "String", "%s") */
 static bool
