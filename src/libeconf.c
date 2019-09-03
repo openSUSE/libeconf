@@ -378,7 +378,7 @@ econf_getKeys(econf_file *kf, const char *grp, size_t *length, char ***keys)
   if (!tmp)
     {
       free (uniques);
-      return ECONF_ERROR;
+      return ECONF_NOKEY;
     }
   *keys = calloc(tmp + 1, sizeof(char*));
   if (*keys == NULL) {
