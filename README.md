@@ -33,17 +33,8 @@ exists:
 
 * /usr/_vendor_/_example_._suffix_
 * /usr/_vendor_/_example_._suffix_.d/*._suffix_
-* /usr/_vendor_/_example_/conf.d/*._suffix_
-* /usr/_vendor_/_example_.d/*._suffix_
-* /usr/_vendor_/_example_/*._suffix_
 * /etc/_example_._suffix_.d/*._suffix_
-* /etc/_example_/conf.d/*._suffix_
-* /etc/_example_.d/*._suffix_
-* /etc/_example_/*._suffix_
 
 If a /etc/_example_._suffix_ files exists:
 * /etc/_example_._suffix_
 * /etc/_example_._suffix_.d/*._suffix_
-* /etc/_example_/conf.d/*._suffix_
-* /etc/_example_.d/*._suffix_
-* /etc/_example_/*._suffix_
