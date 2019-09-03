@@ -253,11 +253,13 @@ econf_err econf_readDirs(econf_file **result,
     /*
       Indicate which directories to look for. The order is:
        "default_dirs/project_name.suffix.d/"
+
+       XXX make this configureable:
        "default_dirs/project_name/conf.d/"
        "default_dirs/project_name.d/"
        "default_dirs/project_name/"
     */
-    const char *conf_dirs[] = {  NULL, "/conf.d/", ".d/", "/", NULL};
+    const char *conf_dirs[] = {  NULL, /* "/conf.d/", ".d/", "/", */ NULL};
     char *project_path = combine_strings(default_dirs[i], project_name, '/');
     char *suffix_d = malloc (strlen(suffix) + 4); /* + strlen(".d/") */
     /* XXX ENOMEM/NULL pointer check */
@@ -277,7 +279,10 @@ econf_err econf_readDirs(econf_file **result,
   error = merge_econf_files(key_files, result);
   free(key_files);
 
-  return error;
+  if (size == 1)
+    return ECONF_NOFILE;
+  else
+    return error;
 }
 
 // Write content of a econf_file struct to specified location
