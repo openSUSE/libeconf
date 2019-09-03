@@ -36,7 +36,7 @@ enum econf_err {
   ECONF_NOFILE = 3, /* Config file not found */
   ECONF_NOGROUP = 4, /* Group not found */
   ECONF_NOKEY = 5, /* Key not found */
-  ECONF_EMPTYKEY = 6, /* Key has empty vaue */
+  ECONF_EMPTYKEY = 6, /* Key has empty value */
   ECONF_WRITEERROR = 7 /* Error creating or writing to a file */
 };
 typedef enum econf_err econf_err;
