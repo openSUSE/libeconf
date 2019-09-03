@@ -164,7 +164,8 @@ econf_err econf_readDirs(econf_file **result,
   econf_err error;
 
   /* config_suffix must be provided and should not be "" */
-  if (config_suffix == NULL || strlen (config_suffix) == 0 || delim == NULL)
+  if (config_suffix == NULL || strlen (config_suffix) == 0 ||
+      project_name == NULL || strlen (project_name) == 0 || delim == NULL)
     return ECONF_ERROR;
 
   // Prepend a . to the config suffix if not provided
@@ -179,37 +180,54 @@ econf_err econf_readDirs(econf_file **result,
     }
 
   /* create file names for etc and distribution config */
-  distfile = alloca(strlen (dist_conf_dir) + strlen (project_name) +
-		    strlen (suffix) + 2);
-  etcfile = alloca(strlen (etc_conf_dir) + strlen (project_name) +
-		   strlen (suffix) + 2);
+  if (dist_conf_dir != NULL)
+    {
+      distfile = alloca(strlen (dist_conf_dir) + strlen (project_name) +
+			strlen (suffix) + 2);
 
-  cp = stpcpy (distfile, dist_conf_dir);
-  *cp++ = '/';
-  cp = stpcpy (cp, project_name);
-  stpcpy (cp, suffix);
+      cp = stpcpy (distfile, dist_conf_dir);
+      *cp++ = '/';
+      cp = stpcpy (cp, project_name);
+      stpcpy (cp, suffix);
+    }
+  else
+    distfile = NULL;
 
-  cp = stpcpy (etcfile, etc_conf_dir);
-  *cp++ = '/';
-  cp = stpcpy (cp, project_name);
-  stpcpy (cp, suffix);
+  if (etc_conf_dir != NULL)
+    {
+      etcfile = alloca(strlen (etc_conf_dir) + strlen (project_name) +
+		       strlen (suffix) + 2);
 
-  error = econf_readFile(&key_file, etcfile, delim, comment);
-  if (error && error != ECONF_NOFILE)
-      return error;
+      cp = stpcpy (etcfile, etc_conf_dir);
+      *cp++ = '/';
+      cp = stpcpy (cp, project_name);
+      stpcpy (cp, suffix);
+    }
+  else
+    etcfile = NULL;
 
-  if (!error) {
+  if (etcfile)
+    {
+      error = econf_readFile(&key_file, etcfile, delim, comment);
+      if (error && error != ECONF_NOFILE)
+	return error;
+    }
+
+  if (etcfile && !error) {
     /* /etc/<project_name>.<suffix> does exist, ignore /usr */
     default_dirs[0] = etc_conf_dir;
     size = 1;
   } else {
     /* /etc/<project_name>.<suffix> does not exist, so read /usr/etc
        and merge all *.d files. */
-    error = econf_readFile(&key_file, distfile, delim, comment);
-    if (error && error != ECONF_NOFILE)
-      return error;
+    if (distfile)
+      {
+	error = econf_readFile(&key_file, distfile, delim, comment);
+	if (error && error != ECONF_NOFILE)
+	  return error;
+      }
 
-    if (!error) /* /usr/etc/<project_name>.<suffix> does exist */
+    if (distfile && !error) /* /usr/etc/<project_name>.<suffix> does exist */
       size = 1;
 
     default_dirs[0] = dist_conf_dir;
