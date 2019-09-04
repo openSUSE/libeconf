@@ -170,10 +170,6 @@ fill_key_file(econf_file *read_file, FILE *kf, const char *delim, const char *co
 static econf_err
 store (econf_file *file, const char *group, const char *key, const char *value)
 {
-
-  printf ("group='%s', key='%s', value='%s'\n",
-	  group, key, value);
-
   if (file->alloc_length == file->length) {
     struct file_entry *tmp;
 
