@@ -88,7 +88,7 @@ econf_err econf_readFile(econf_file **key_file, const char *file_name,
   if (kf == NULL)
     return ECONF_NOFILE;
 
-  *key_file = malloc(sizeof(econf_file));
+  *key_file = calloc(1, sizeof(econf_file));
   if (*key_file == NULL) {
     fclose (kf);
     return ECONF_NOMEM;
@@ -98,11 +98,8 @@ econf_err econf_readFile(econf_file **key_file, const char *file_name,
     (*key_file)->comment = comment[0];
   else
     (*key_file)->comment = '#';
-  (*key_file)->length = 0;
-  (*key_file)->alloc_length = 0;
 
-  t_err = fill_key_file(*key_file, kf, delim);
-  (*key_file)->on_merge_delete = 0;
+  t_err = fill_key_file(*key_file, kf, delim, comment);
   fclose(kf);
 
   if(t_err) {
@@ -476,12 +473,16 @@ void econf_freeArray(char** array) {
 
 // Free memory allocated by key_file
 void econf_freeFile(econf_file *key_file) {
-  if (!key_file) { return; }
+  if (!key_file)
+    return;
+
   for (size_t i = 0; i < key_file->alloc_length; i++) {
     free(key_file->file_entry[i].group);
     free(key_file->file_entry[i].key);
     free(key_file->file_entry[i].value);
   }
-  free(key_file->file_entry);
+
+  if (key_file->file_entry)
+    free(key_file->file_entry);
   free(key_file);
 }
