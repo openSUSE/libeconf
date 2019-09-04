@@ -16,6 +16,6 @@ jobs:
     - name: make
       run: make
     - name: make check
-      run: make check
+      run: make check; cat tests/*.log
     - name: make distcheck
       run: make distcheck
