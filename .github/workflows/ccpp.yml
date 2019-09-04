@@ -16,6 +16,9 @@ jobs:
     - name: make
       run: make
     - name: make check
-      run: make check; cat tests/test-suite.log
+      run: make check
+    - name: check_failure
+      if: failure()
+      run: cat tests/test-suite.log
     - name: make distcheck
       run: make distcheck
