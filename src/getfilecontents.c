@@ -210,9 +210,6 @@ fill_key_file(econf_file *read_file, FILE *kf, const char *delim, const char *co
   while (fgets(buf, sizeof(buf), kf)) {
     char *p, *name, *data = NULL;
 
-    if (*buf == '#' || *buf == '\n')
-      continue;       /* only comment or empty line */
-
     /* go throug all comment characters and check, if one of could be found */
     for (int i = 0; i < strlen(comment); i++) {
       p = strchr(buf, comment[i]);
