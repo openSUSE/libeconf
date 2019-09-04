@@ -14,7 +14,7 @@
 int
 main(void)
 {
-  econf_file *key_file;
+  econf_file *key_file = NULL;
   char **groups;
   size_t group_number;
   char *val;
@@ -30,16 +30,18 @@ main(void)
   if ((error = econf_getGroups(key_file, &group_number, &groups)))
     {
       fprintf (stderr, "Error getting all groups: %s\n", econf_errString(error));
+      econf_free (key_file);
       return 1;
     }
   if (group_number == 0)
     {
       fprintf (stderr, "No groups found?\n");
+      econf_free (key_file);
       return 1;
     }
-  if (group_number != 6)
+  if (group_number != 5)
     {
-      fprintf (stderr, "Wrong number of groups found, got %lu, expected 6\n",
+      fprintf (stderr, "Wrong number of groups found, got %lu, expected 5\n",
 	       group_number);
       retval = 1;
     }
@@ -56,8 +58,11 @@ main(void)
 		   groups[i], econf_errString(error));
 	  retval = 1;
 	}
-      printf ("%lu: Group: %s, Value: %s\n", i, groups[i], val);
-      free (val);
+      else
+	{
+	  printf ("%lu: Group: %s, Value: %s\n", i, groups[i], val);
+	  free (val);
+	}
     }
 
   econf_free (groups);
