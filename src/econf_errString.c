@@ -36,7 +36,8 @@ static const char *messages[] = {
   "Group not found", /* ECONF_NOGROUP */
   "Key not found", /* ECONF_NOKEY */
   "Key has empty value", /* ECONF_EMPTYKEY */
-  "Error creating or writing to a file" /* ECONF_WRITEERROR */
+  "Error creating or writing to a file", /* ECONF_WRITEERROR */
+  "Parse error" /* ECONF_PARSE_ERROR */
 };
 
 const char *
