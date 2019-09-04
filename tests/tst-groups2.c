@@ -15,7 +15,7 @@
 int
 main(void)
 {
-  econf_file *key_file;
+  econf_file *key_file = NULL;
   char **groups;
   size_t group_number;
   const char *group = "towel";

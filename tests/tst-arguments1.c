@@ -15,7 +15,7 @@
 int
 main(void)
 {
-  econf_file *key_file;
+  econf_file *key_file = NULL;
   char *val;
   econf_err error;
 
