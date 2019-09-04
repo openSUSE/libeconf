@@ -57,7 +57,8 @@ main(void)
 	       "STRING", "this_is_string", strval?strval:"NULL");
       retval = 1;
     }
-  free (strval);
+  if (strval)
+    free (strval);
 
   int intval = 0;
   econf_getIntValue (key_file, NULL, "NUMBER", &intval);
@@ -78,6 +79,40 @@ main(void)
     }
 
   strval = NULL;
+  econf_getStringValue (key_file, NULL, "CRAZY1", &strval);
+  if (strval == NULL || strcmp (strval, "this is crazy format") != 0)
+    {
+      fprintf (stderr, "ERROR: %s, expected: '%s', got: '%s'\n",
+	       "CRAZY1", "this is crazy format", strval?strval:"NULL");
+      retval = 1;
+    }
+  if (strval)
+    free (strval);
+
+  strval = NULL;
+  econf_getStringValue (key_file, NULL, "CRAZY2", &strval);
+  if (strval == NULL || strcmp (strval, "fooBar") != 0)
+    {
+      fprintf (stderr, "ERROR: %s, expected: '%s', got: '%s'\n",
+	       "CRAZY1", "fooBar", strval?strval:"NULL");
+      retval = 1;
+    }
+  if (strval)
+    free (strval);
+
+  strval = NULL;
+  econf_getStringValue (key_file, NULL, "CRAZY3", &strval);
+  if (strval == NULL || strcmp (strval, "FoooBaaar") != 0)
+    {
+      fprintf (stderr, "ERROR: %s, expected: '%s', got: '%s'\n",
+	       "CRAZY3", "FoooBaaar", strval?strval:"NULL");
+      retval = 1;
+    }
+  if (strval)
+    free (strval);
+
+
+  strval = NULL;
   econf_getStringValue (key_file, NULL, "EMPTY", &strval);
   if (strval == NULL || strcmp (strval, "") != 0)
     {
@@ -85,6 +120,30 @@ main(void)
 	       "EMPTY", "", strval?strval:"NULL");
       retval = 1;
     }
+  if (strval)
+    free (strval);
+
+  strval = NULL;
+  econf_getStringValue (key_file, NULL, "END", &strval);
+  if (strval == NULL || strcmp (strval, "the is end") != 0)
+    {
+      fprintf (stderr, "ERROR: %s, expected: '%s', got: '%s'\n",
+	       "END", "the is end", strval?strval:"NULL");
+      retval = 1;
+    }
+  if (strval)
+    free (strval);
+
+  strval = NULL;
+  econf_getStringValue (key_file, NULL, "NOTEXIST", &strval);
+  if (strval != NULL)
+    {
+      fprintf (stderr, "ERROR: %s, expected: '%s', got: '%s'\n",
+	       "NOTEXIST", "NULL", strval?strval:"NULL");
+      retval = 1;
+    }
+  if (strval)
+    free (strval);
 
   econf_free (keys);
   econf_free (key_file);
