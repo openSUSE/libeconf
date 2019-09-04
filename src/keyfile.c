@@ -83,12 +83,19 @@ econf_err getStringValueNum(econf_file key_file, size_t num, char **result) {
 }
 
 econf_err getBoolValueNum(econf_file key_file, size_t num, bool *result) {
-  size_t hash = hashstring(key_file.file_entry[num].value);
-  if (hash == TRUE) {
+  char *value, *tmp;
+  tmp = strdupa(key_file.file_entry[num].value);
+  value = toLowerCase(tmp);
+  size_t hash = hashstring(toLowerCase(key_file.file_entry[num].value));
+
+  if ((*value == '1' && strlen(tmp) == 1) || hash == YES || hash == TRUE)
     *result = true;
-  } else if (hash == FALSE) {
+  else if ((*value == '0' && strlen(tmp) == 1) || !*value ||
+	   hash == NO || hash == FALSE)
     *result = false;
-  }
+  else
+    return ECONF_PARSE_ERROR;
+
   return ECONF_SUCCESS;
 }
 
