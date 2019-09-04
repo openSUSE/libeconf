@@ -16,7 +16,7 @@
 int
 main(void)
 {
-  econf_file *key_file;
+  econf_file *key_file = NULL;
   char **keys;
   size_t key_number;
   econf_err error;
@@ -30,18 +30,22 @@ main(void)
   if ((error = econf_getKeys(key_file, NULL, &key_number, &keys)))
     {
       fprintf (stderr, "Error getting all keys: %s\n", econf_errString(error));
+      econf_free(key_file);
       return 1;
     }
   if (key_number == 0)
     {
       fprintf (stderr, "No keys found?\n");
+      econf_free(key_file);
       return 1;
     }
   for (size_t i = 0; i < key_number; i++)
     {
-      char *value;
+      char *value = NULL;
       econf_getStringValue(key_file, NULL, keys[i], &value);
       printf ("%lu: %s: '%s'\n", i, keys[i], value);
+      if (value != NULL)
+	free (value);
     }
 
   int retval = 0;
@@ -50,9 +54,10 @@ main(void)
   if (strval == NULL || strcmp (strval, "this_is_string") != 0)
     {
       fprintf (stderr, "ERROR: %s, expected: %s, got: '%s'\n",
-	       "STRING", "this_is_string", strval);
+	       "STRING", "this_is_string", strval?strval:"NULL");
       retval = 1;
     }
+  free (strval);
 
   int intval = 0;
   econf_getIntValue (key_file, NULL, "NUMBER", &intval);
@@ -77,7 +82,7 @@ main(void)
   if (strval == NULL || strcmp (strval, "") != 0)
     {
       fprintf (stderr, "ERROR: %s, expected: '%s', got: '%s'\n",
-	       "EMPTY", "", strval);
+	       "EMPTY", "", strval?strval:"NULL");
       retval = 1;
     }
 

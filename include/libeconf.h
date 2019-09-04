@@ -37,7 +37,8 @@ enum econf_err {
   ECONF_NOGROUP = 4, /* Group not found */
   ECONF_NOKEY = 5, /* Key not found */
   ECONF_EMPTYKEY = 6, /* Key has empty value */
-  ECONF_WRITEERROR = 7 /* Error creating or writing to a file */
+  ECONF_WRITEERROR = 7, /* Error creating or writing to a file */
+  ECONF_PARSE_ERROR = 8 /* Syntax error in input file */
 };
 typedef enum econf_err econf_err;
 
