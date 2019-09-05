@@ -210,8 +210,11 @@ fill_key_file(econf_file *read_file, FILE *kf, const char *delim, const char *co
   while (fgets(buf, sizeof(buf), kf)) {
     char *p, *name, *data = NULL;
 
+    if (*buf == '\n')
+      continue; /* ignore empty lines */
+
     /* go throug all comment characters and check, if one of could be found */
-    for (int i = 0; i < strlen(comment); i++) {
+    for (size_t i = 0; i < strlen(comment); i++) {
       p = strchr(buf, comment[i]);
       if (p)
 	*p = '\0';
@@ -258,18 +261,24 @@ fill_key_file(econf_file *read_file, FILE *kf, const char *delim, const char *co
     if (!*name || data == name)
       continue;
 
-    /* go to the begin of the value */
-    while (*data
-	   && (isspace((unsigned)*data) || strchr(delim, *data) != NULL
-	       || *data == '"'))
-      data++;
+    if (*data == '\0')
+      /* No seperator -> return NULL pointer, there is no value,
+	 not even an empty key */
+      data = NULL;
+    else {
+      /* go to the begin of the value */
+      while (*data
+	     && (isspace((unsigned)*data) || strchr(delim, *data) != NULL
+		 || *data == '"'))
+	data++;
 
-    /* remove space at the end of the value */
-    p = data + strlen(data);
-    if (p > data)
-      p--;
-    while (p > data && (isspace((unsigned)*p) || *p == '"'))
-      *p-- = '\0';
+      /* remove space at the end of the value */
+      p = data + strlen(data);
+      if (p > data)
+	p--;
+      while (p > data && (isspace((unsigned)*p) || *p == '"'))
+	*p-- = '\0';
+    }
 
     retval = store(read_file, current_group, name, data);
     if (retval)

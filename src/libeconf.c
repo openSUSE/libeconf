@@ -477,9 +477,12 @@ void econf_freeFile(econf_file *key_file) {
     return;
 
   for (size_t i = 0; i < key_file->alloc_length; i++) {
-    free(key_file->file_entry[i].group);
-    free(key_file->file_entry[i].key);
-    free(key_file->file_entry[i].value);
+    if (key_file->file_entry[i].group)
+      free(key_file->file_entry[i].group);
+    if (key_file->file_entry[i].key)
+      free(key_file->file_entry[i].key);
+    if (key_file->file_entry[i].value)
+      free(key_file->file_entry[i].value);
   }
 
   if (key_file->file_entry)

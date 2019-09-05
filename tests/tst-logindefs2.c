@@ -114,10 +114,10 @@ main(void)
 
   strval = NULL;
   econf_getStringValue (key_file, NULL, "EMPTY", &strval);
-  if (strval == NULL || strcmp (strval, "") != 0)
+  if (strval != NULL)
     {
-      fprintf (stderr, "ERROR: %s, expected: '%s', got: '%s'\n",
-	       "EMPTY", "", strval?strval:"NULL");
+      fprintf (stderr, "ERROR: %s, expected: 'NULL', got: '%s'\n",
+	       "EMPTY", strval?strval:"NULL");
       retval = 1;
     }
   if (strval)
