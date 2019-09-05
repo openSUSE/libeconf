@@ -28,5 +28,5 @@
 #include "libeconf.h"
 #include "keyfile.h"
 
-// Fill the Key File struct with values from the given file handle
+/* Fill the econf_file struct with values from the given file handle */
 extern econf_err fill_key_file(econf_file *read_file, FILE *kf, const char *delim, const char *comment);

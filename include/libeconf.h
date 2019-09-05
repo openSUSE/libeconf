@@ -19,14 +19,18 @@
   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
-
 */
 
 #pragma once
 
+/* libeconf.h */
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+
+/* Public API for the econf library */
+
 
 /* libeconf error codes */
 enum econf_err {
@@ -40,17 +44,18 @@ enum econf_err {
   ECONF_WRITEERROR = 7, /* Error creating or writing to a file */
   ECONF_PARSE_ERROR = 8 /* Syntax error in input file */
 };
+
 typedef enum econf_err econf_err;
 
-// Generic macro calls setter function depending on value type
-// Use: econf_setValue(econf_file *key_file, char *group, char *key,
-//                     _generic_ value);
-// Replace _generic_ with one of the supported value types.
-// Supported Types: int, long, unsigned int, unsigned long, float, double,
-// string (as *char).
-// Note: Does not detect "yes", "no", 1 and 0 as boolean type. If you want to
-// set a bool value use "true" or "false" or use setBoolValue() directly.
-#define econf_setValue(kf, group, key, value) ((	\
+/* Generic macro calls setter function depending on value type
+   Use: econf_setValue(econf_file *key_file, char *group, char *key,
+                       _generic_ value);
+   Replace _generic_ with one of the supported value types.
+   Supported Types: int, long, unsigned int, unsigned long, float, double,
+   string (as *char).
+   Note: Does not detect "yes", "no", 1 and 0 as boolean type. If you want to
+   set a bool value use "true" or "false" or use setBoolValue() directly.  */
+#define econf_setValue(kf, group, key, value) (( \
   _Generic((value), \
     int: econf_setIntValue, \
     long: econf_setInt64Value, \
@@ -61,10 +66,10 @@ typedef enum econf_err econf_err;
     char*: econf_setStringValue, void*: econf_setStringValue)) \
 (kf, group, key, value))
 
-// Generic macro to free memory allocated by econf_ functions
-// Use: econf_free(_generic_ value);
-// Replace _generic_ with one of the supported value types.
-// Supported Types: char** and econf_file*
+/* Generic macro to free memory allocated by econf_ functions
+   Use: econf_free(_generic_ value);
+   Replace _generic_ with one of the supported value types.
+   Supported Types: char** and econf_file*.  */
 #define econf_free(value) (( \
   _Generic((value), \
     econf_file*: econf_freeFile , \
@@ -91,10 +96,12 @@ extern econf_err econf_readDirs(econf_file **key_file,
 
 /* The API/ABI of the following three functions (econf_newKeyFile,
    econf_newIniFile and econf_writeFile) are not stable and will change */
+
+/* Create a new econf_file object */
 extern econf_err econf_newKeyFile(econf_file **result, char delimiter, char comment);
 extern econf_err econf_newIniFile(econf_file **result);
 
-// Write content of a econf_file struct to specified location
+/* Write content of a econf_file struct to specified location */
 extern econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
 				      const char *file_name);
 

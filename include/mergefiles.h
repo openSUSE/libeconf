@@ -27,28 +27,30 @@
 
 #include <stddef.h>
 
-// Insert the content of "etc_file.file_entry" into "fe" if there is no
-// group specified
-// "[]", ef: etc_file
+/* This file contains the declaration of the functions used by econf_mergeFiles
+   to merge the contents of two econf_files.  */
+
+
+/* Insert the content of "etc_file.file_entry" into "fe" if there is no
+   group specified.  */
 size_t insert_nogroup(struct file_entry **fe, econf_file *ef);
 
-// Merge contents from existing usr_file groups
-// uf: usr_file, ef: etc_file
+/* Merge contents from existing usr_file groups */
 size_t merge_existing_groups(struct file_entry **fe, econf_file *uf, econf_file *ef,
                              const size_t etc_start);
 
-// Add entries from etc_file exclusive groups
+/* Add entries from etc_file exclusive groups */
 size_t add_new_groups(struct file_entry **fe, econf_file *uf, econf_file *ef,
                       const size_t merge_length);
 
-// Returns the default dirs to iterate through when merging
+/* Returns the default dirs to iterate through when merging */
 char **get_default_dirs(const char *usr_conf_dir, const char *etc_conf_dir);
 
-// Receives a list of config directories to look for and calls 'check_conf_dir'
+/* Receives a list of config directories to look for and calls 'check_conf_dir' */
 econf_file **traverse_conf_dirs(econf_file **key_files, const char *conf_dirs[],
                               size_t *size, const char *path, 
-			      const char *config_suffix,
+                              const char *config_suffix,
                               const char *delim, const char *comment);
 
-// Merge an array of given econf_files into one
+/* Merge an array of given econf_files into one */
 econf_err merge_econf_files(econf_file **key_files, econf_file **merged_files);
