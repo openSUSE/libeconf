@@ -6,7 +6,6 @@ libeconf_la_CPPFLAGS = -I$(top_srcdir)/include
 libeconf_la_LDFLAGS = @LDFLAGS_CHECKS@ @CFLAGS_WARNINGS@ \
 	-version-info 3:0:3 -Wl,--no-undefined \
 	-Wl,--version-script=$(top_srcdir)/lib/libeconf.map
-libeconf_la_LIBADD = -lm
 
 CLEANFILES = *~
 DISTCLEANFILES = *.pc
