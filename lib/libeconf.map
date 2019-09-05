@@ -33,3 +33,16 @@ LIBECONF_ALPHA {
     econf_newKeyFile;
     econf_writeFile;
 } LIBECONF_0.2;
+LIBECONF_0.3 {
+  global:
+    econf_getBoolValueDef;
+    econf_getDoubleValueDef;
+    econf_getFloatValueDef;
+    econf_getGroupsDef;
+    econf_getInt64ValueDef;
+    econf_getIntValueDef;
+    econf_getKeysDef;
+    econf_getStringValueDef;
+    econf_getUInt64ValueDef;
+    econf_getUIntValueDef;
+} LIBECONF_0.2;

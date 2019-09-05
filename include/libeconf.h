@@ -112,6 +112,17 @@ extern econf_err econf_getDoubleValue(econf_file *kf, const char *group, const c
 extern econf_err econf_getStringValue(econf_file *kf, const char *group, const char *key, char **result);
 extern econf_err econf_getBoolValue(econf_file *kf, const char *group, const char *key, bool *result);
 
+/* If key is not found, the default value is returned and error is ECONF_NOKEY */
+extern econf_err econf_getIntValueDef(econf_file *kf, const char *group, const char *key, int32_t *result, int32_t def);
+extern econf_err econf_getInt64ValueDef(econf_file *kf, const char *group, const char *key, int64_t *result, int64_t def);
+extern econf_err econf_getUIntValueDef(econf_file *kf, const char *group, const char *key, uint32_t *result, uint32_t def);
+extern econf_err econf_getUInt64ValueDef(econf_file *kf, const char *group, const char *key, uint64_t *result, uint64_t def);
+extern econf_err econf_getFloatValueDef(econf_file *kf, const char *group, const char *key, float *result, float def);
+extern econf_err econf_getDoubleValueDef(econf_file *kf, const char *group, const char *key, double *result, double def);
+/* Returns a newly allocated string, even if "default" is returned. */
+extern econf_err econf_getStringValueDef(econf_file *kf, const char *group, const char *key, char **result, char *def);
+extern econf_err econf_getBoolValueDef(econf_file *kf, const char *group, const char *key, bool *result, bool def);
+
 /* --- SETTERS --- */
 
 extern econf_err econf_setIntValue(econf_file *kf, const char *group, const char *key, int32_t value);
