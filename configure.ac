@@ -42,5 +42,5 @@ AC_SUBST(CFLAGS_CHECKS)
 AC_SUBST(LDFLAGS_CHECKS)
 AC_SUBST(CFLAGS_WARNINGS)
 AC_SUBST(LDFLAGS_WARNINGS)
-AC_CONFIG_FILES([Makefile lib/Makefile include/Makefile bin/Makefile tests/Makefile lib/libeconf.pc])
+AC_CONFIG_FILES([Makefile lib/Makefile include/Makefile bin/Makefile tests/Makefile util/Makefile lib/libeconf.pc])
 AC_OUTPUT
