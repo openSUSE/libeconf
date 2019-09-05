@@ -23,16 +23,20 @@
 
 #pragma once
 
+/* --- defines.h --- */
+
 #include "../include/helpers.h"
 
-// Default econf_file length on creation
+/* Defines default values used in the library  */
+
+/* Default econf_file length on creation */
 #define KEY_FILE_DEFAULT_LENGTH 8
 
-// NULL value
+/* NULL value */
 #define KEY_FILE_NULL_VALUE "_none_"
 #define KEY_FILE_NULL_VALUE_HASH hashstring(KEY_FILE_NULL_VALUE)
 
-// Bool values
+/* Bool values */
 #define YES hashstring("yes")
 #define NO hashstring("no")
 #define TRUE hashstring("true")

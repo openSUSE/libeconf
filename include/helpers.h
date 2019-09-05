@@ -23,41 +23,52 @@
 
 #pragma once
 
+/* -- helpers.h --- */
+
 #include "keyfile.h"
 
-// Combine file path and file name
+/* This file contains the declaration of functions used by other functions to
+   perform certain basic tasks on multiple instances.  */
+
+
+/* Combine the two given strings with the given delimiter and return the
+   resulting string.  */
 char *combine_strings(const char *string_one, const char *string_two,
                       const char delimiter);
 
-// Remove whitespace from beginning and end, append string terminator
+/* Remove whitespace from beginning and end, append string terminator */
 char *clearblank(size_t *vlen, char *string);
 
-// Returns the absolute path of a given path
+/* Returns the absolute path of a given path */
 char *get_absolute_path(const char *path, econf_err *error);
 
-// Remove '[' and ']' from beginning and end
+/* Remove '[' and ']' from beginning and end */
+/* TODO: Function is currently not in use. But needs to be used to strip
+         the brackets from group elements before returning them to the user  */
 char *stripbrackets(char *string);
 
-// Add '[' and ']' to the given string
+/* Add '[' and ']' to the given string */
 char *addbrackets(const char *string);
 
-// Set default value defined in include/defines.h
+/* Set default value defined in include/defines.h */
 void initialize(econf_file *key_file, size_t num);
 
-// Return the lower case version of a string
+/* Return the lower case version of a string */
 char *toLowerCase(char *str);
 
-// Turn given string into a hash value
+/* Turn given string into a hash value */
 size_t hashstring(const char *str);
 
-// Look for matching key
+/* Look for a matching key in the given econf_file.
+   If the key is found num will point to the number of the array which contains
+   the key, if not it will point to -1.  */
 econf_err find_key(econf_file key_file, const char *group, const char *key, size_t *num);
 
-// Set value for the given group, key combination. If the combination
-// does not exist it is created.
+/* Set value for the given group, key combination. If the combination
+   does not exist it is created.  */
 econf_err setKeyValue(econf_err (*function) (econf_file*, size_t, const void*),
                  econf_file *kf, const char *group, const char *key,
                  const void *value);
 
-// Copy the contents of a file_entry struct
+/* Copy the contents of a file_entry struct */
 struct file_entry cpy_file_entry(struct file_entry fe);
