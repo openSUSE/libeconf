@@ -78,7 +78,11 @@ econf_err getDoubleValueNum(econf_file key_file, size_t num, double *result) {
 }
 
 econf_err getStringValueNum(econf_file key_file, size_t num, char **result) {
-  *result = strdup(key_file.file_entry[num].value);
+  if (key_file.file_entry[num].value)
+    *result = strdup(key_file.file_entry[num].value);
+  else
+    *result = NULL;
+
   return ECONF_SUCCESS;
 }
 

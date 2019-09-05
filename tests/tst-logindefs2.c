@@ -114,10 +114,32 @@ main(void)
 
   strval = NULL;
   econf_getStringValue (key_file, NULL, "EMPTY", &strval);
-  if (strval == NULL || strcmp (strval, "") != 0)
+  if (strval != NULL)
+    {
+      fprintf (stderr, "ERROR: %s, expected: 'NULL', got: '%s'\n",
+	       "EMPTY", strval?strval:"NULL");
+      retval = 1;
+    }
+  if (strval)
+    free (strval);
+
+  strval = NULL;
+  econf_getStringValue (key_file, NULL, "END", &strval);
+  if (strval == NULL || strcmp (strval, "the is end") != 0)
     {
       fprintf (stderr, "ERROR: %s, expected: '%s', got: '%s'\n",
-	       "EMPTY", "", strval?strval:"NULL");
+	       "END", "the is end", strval?strval:"NULL");
+      retval = 1;
+    }
+  if (strval)
+    free (strval);
+
+  strval = NULL;
+  econf_getStringValue (key_file, NULL, "NOTEXIST", &strval);
+  if (strval != NULL)
+    {
+      fprintf (stderr, "ERROR: %s, expected: '%s', got: '%s'\n",
+	       "NOTEXIST", "NULL", strval?strval:"NULL");
       retval = 1;
     }
   if (strval)
