@@ -1,3 +1,7 @@
+Version 0.3.0
+* New parser
+* Add econf_get*ValueDef functions
+
 Version 0.2.0
 * Reading of files is stable now
 
