@@ -1,10 +1,10 @@
-AC_INIT([libeconf], [0.2.0])
+AC_INIT([libeconf], [0.3.0])
 AC_SUBST(PACKAGE)
 AC_SUBST(VERSION)
 
 AM_INIT_AUTOMAKE([subdir-objects])
 
-AC_CONFIG_SRCDIR([src/libeconf.c])
+AC_CONFIG_SRCDIR([lib/libeconf.c])
 AC_CONFIG_MACRO_DIRS([m4])
 
 AC_PROG_CC
@@ -34,7 +34,7 @@ if test x"$enable_compiler_warnings" = x"yes" ; then
    if test x"$enable_compiler_checks" = x"yes" ; then
       AC_MSG_ERROR([Conflicting options: --enable-compiler-warnings cannot be used together with --eanble-compiler-checks])  
    fi
-   CFLAGS_WARNINGS="-O2 -g -W -Wall -DXTSTRINGDEFINES -D_FORTIFY_SOURCE=2 -fstack-protector-strong -funwind-tables -fasynchronous-unwind-tables -fstack-clash-protection -Werror=return-type -flto=8 -Wbad-function-cast -Wcast-align -Wcast-qual -Winline -Wmissing-declarations -Wmissing-prototypes -Wnested-externs -Wshadow -Wstrict-prototypes -Wundef"
+   CFLAGS_WARNINGS="-O2 -g -Werror -W -Wall -DXTSTRINGDEFINES -D_FORTIFY_SOURCE=2 -fstack-protector-strong -funwind-tables -fasynchronous-unwind-tables -fstack-clash-protection -Werror=return-type -flto=8 -Wbad-function-cast -Wcast-align -Wcast-qual -Winline -Wmissing-declarations -Wmissing-prototypes -Wnested-externs -Wshadow -Wstrict-prototypes -Wundef"
    LDFLAGS_WARNINGS=""
 fi
 

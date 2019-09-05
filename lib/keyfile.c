@@ -129,64 +129,48 @@ econf_err setKey(econf_file *key_file, size_t num, const char *value) {
   return ECONF_SUCCESS;
 }
 
-/* XXX All set*ValueNum functions are missing error handling */
-econf_err setIntValueNum(econf_file *kf, size_t num, const void *v) {
-  int32_t *value = (int32_t*) v;
-  free(kf->file_entry[num].value);
-  size_t length = (*value == 0) ? 2 : log10(fabs(*value)) + (*value < 0) + 2;
-  snprintf(kf->file_entry[num].value = malloc(length), length, "%" PRId32, *value);
-  return ECONF_SUCCESS;
+
+#define econf_setValueNum(FCT_TYPE, TYPE, FMT, PR)			\
+econf_err set ## FCT_TYPE ## ValueNum(econf_file *ef, size_t num, const void *v) { \
+  const TYPE *value = (const TYPE*) v; \
+  char *ptr; \
+\
+  if (asprintf (&ptr, FMT PR, *value) == -1) \
+    return ECONF_NOMEM; \
+\
+  if (ef->file_entry[num].value) \
+    free(ef->file_entry[num].value); \
+\
+  ef->file_entry[num].value = ptr; \
+\
+  return ECONF_SUCCESS; \
 }
 
-econf_err setInt64ValueNum(econf_file *kf, size_t num, const void *v) {
-  int64_t *value = (int64_t*) v;
-  free(kf->file_entry[num].value);
-  size_t length = (*value == 0) ? 2 : log10(fabs(*value)) + (*value < 0) + 2;
-  snprintf(kf->file_entry[num].value = malloc(length), length, "%" PRId64, *value);
-  return ECONF_SUCCESS;
-}
+econf_setValueNum(Int, int32_t, "%", PRId32)
+econf_setValueNum(Int64, int64_t, "%",  PRId64)
+econf_setValueNum(UInt, uint32_t, "%", PRIu32)
+econf_setValueNum(UInt64, uint64_t, "%", PRIu64)
+#define PRFLOAT ,FLT_DECIMAL_DIG
+econf_setValueNum(Float, float, "%.*g", PRFLOAT)
+#define PRDOUBLE ,DBL_DECIMAL_DIG
+econf_setValueNum(Double, double, "%.*g", PRDOUBLE)
 
-econf_err setUIntValueNum(econf_file *key_file, size_t num, const void *v) {
-  uint32_t *value = (uint32_t*) v;
-  free(key_file->file_entry[num].value);
-  size_t length = (*value == 0) ? 2 : log10(*value) + 2;
-  snprintf(key_file->file_entry[num].value = malloc(length), length, "%" PRIu32, *value);
-  return ECONF_SUCCESS;
-}
-
-econf_err setUInt64ValueNum(econf_file *key_file, size_t num, const void *v) {
-  uint64_t *value = (uint64_t*) v;
-  free(key_file->file_entry[num].value);
-  size_t length = (*value == 0) ? 2 : log10(*value) + 2;
-  snprintf(key_file->file_entry[num].value = malloc(length), length, "%" PRIu64, *value);
-  return ECONF_SUCCESS;
-}
-
-econf_err setFloatValueNum(econf_file *key_file, size_t num, const void *v) {
-  float *value = (float*) v;
-  free(key_file->file_entry[num].value);
-  size_t length = snprintf(NULL, 0, "%.*g", FLT_DECIMAL_DIG, *value);
-  snprintf(key_file->file_entry[num].value = malloc(length + 1), length + 1, "%.*g",
-           FLT_DECIMAL_DIG, *value);
-  return ECONF_SUCCESS;
-}
-
-econf_err setDoubleValueNum(econf_file *key_file, size_t num, const void *v) {
-  double *value = (double*) v;
-  free(key_file->file_entry[num].value);
-  size_t length = snprintf(NULL, 0, "%.*g", DBL_DECIMAL_DIG, *value);
-  snprintf(key_file->file_entry[num].value = malloc(length + 1), length + 1, "%.*g",
-           DBL_DECIMAL_DIG, *value);
-  return ECONF_SUCCESS;
-}
-
-econf_err setStringValueNum(econf_file *key_file, size_t num, const void *v) {
+econf_err setStringValueNum(econf_file *ef, size_t num, const void *v) {
   const char *value = (const char*) (v ? v : "");
-  free(key_file->file_entry[num].value);
-  key_file->file_entry[num].value = strdup(value);
+  char *ptr;
+
+  if ((ptr = strdup (value)) == NULL)
+    return ECONF_NOMEM;
+
+  if (ef->file_entry[num].value)
+    free(ef->file_entry[num].value);
+
+  ef->file_entry[num].value = ptr;
+
   return ECONF_SUCCESS;
 }
 
+/* XXX This needs to be optimised and error checking added */
 econf_err setBoolValueNum(econf_file *kf, size_t num, const void *v) {
   const char *value = (const char*) (v ? v : "");
   econf_err error = ECONF_SUCCESS;

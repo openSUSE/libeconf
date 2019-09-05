@@ -4,6 +4,4 @@ SUBDIRS = lib include bin tests
 
 ACLOCAL_AMFLAGS = -I m4
 
-pkgconfig_DATA = lib/libeconf.pc
-
 CLEANFILES = *~
