@@ -11,9 +11,15 @@ jobs:
     - uses: actions/checkout@v1
     - name: autogen.sh
       run: ./autogen.sh
-    - name: configure
+    - name: configure with compiler warnings
+      run: ./configure --enable-compiler-warnings
+    - name: make with compiler warnings
+      run: make
+    - name: distclean
+      run: make distclean
+    - name: configure with checks
       run: ./configure --enable-compiler-checks
-    - name: make
+    - name: make with compiler checks
       run: make
     - name: make check
       run: make check
