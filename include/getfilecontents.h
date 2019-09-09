@@ -23,10 +23,9 @@
 
 #pragma once
 
-#include <stdio.h>
-
 #include "libeconf.h"
 #include "keyfile.h"
 
-/* Fill the econf_file struct with values from the given file handle */
-extern econf_err fill_key_file(econf_file *read_file, FILE *kf, const char *delim, const char *comment);
+/* Fill the econf_file struct with values from the given file */
+extern econf_err read_file(econf_file *read_file, const char *file,
+			   const char *delim, const char *comment);
