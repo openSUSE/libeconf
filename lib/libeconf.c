@@ -39,7 +39,7 @@
 econf_err
 econf_newKeyFile(econf_file **result, char delimiter, char comment)
 {
-  econf_file *key_file = malloc(sizeof(econf_file));
+  econf_file *key_file = calloc(1, sizeof(econf_file));
 
   if (key_file == NULL)
     return ECONF_NOMEM;
@@ -82,15 +82,9 @@ econf_err econf_readFile(econf_file **key_file, const char *file_name,
   if (absolute_path == NULL)
     return t_err;
 
-  // File handle for the given file_name
-  FILE *kf = fopen(absolute_path, "rb");
-  free(absolute_path);
-  if (kf == NULL)
-    return ECONF_NOFILE;
-
   *key_file = calloc(1, sizeof(econf_file));
   if (*key_file == NULL) {
-    fclose (kf);
+    free (absolute_path);
     return ECONF_NOMEM;
   }
 
@@ -99,8 +93,8 @@ econf_err econf_readFile(econf_file **key_file, const char *file_name,
   else
     (*key_file)->comment = '#';
 
-  t_err = fill_key_file(*key_file, kf, delim, comment);
-  fclose(kf);
+  t_err = read_file(*key_file, absolute_path, delim, comment);
+  free (absolute_path);
 
   if(t_err) {
     econf_free(*key_file);
@@ -116,7 +110,7 @@ econf_err econf_mergeFiles(econf_file **merged_file, econf_file *usr_file, econf
   if (merged_file == NULL || usr_file == NULL || etc_file == NULL)
     return ECONF_ERROR;
 
-  *merged_file = malloc(sizeof(econf_file));
+  *merged_file = calloc(1, sizeof(econf_file));
   if (*merged_file == NULL)
     return ECONF_NOMEM;
 
@@ -235,7 +229,7 @@ econf_err econf_readDirs(econf_file **result,
      adds additional directories to look at, e.g. XDG or home directory */
 
   /* create space to store the econf_files for merging */
-  key_files = malloc((++size) * sizeof(econf_file*));
+  key_files = calloc((++size), sizeof(econf_file*));
   if (key_files == NULL)
     return ECONF_NOMEM;
 
@@ -487,5 +481,8 @@ void econf_freeFile(econf_file *key_file) {
 
   if (key_file->file_entry)
     free(key_file->file_entry);
+  if (key_file->path)
+    free(key_file->path);
+
   free(key_file);
 }
