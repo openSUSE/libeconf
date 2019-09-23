@@ -1,6 +1,7 @@
 /*
   Copyright (C) 2019 SUSE LLC
   Author: Pascal Arlt <parlt@suse.com>
+  Author: Dominik Gedon <dgedon@suse.com>
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -21,11 +22,23 @@
   SOFTWARE.
 */
 
+/**
+ * @file getfilecontents.h
+ * @brief Fills the econf_file struct with data from a given file.
+ */
+
 #pragma once
 
 #include "libeconf.h"
 #include "keyfile.h"
 
-/* Fill the econf_file struct with values from the given file */
+/**
+ * @brief Read the file line by line and parse for comments, keys and values.
+ * @param read_file The econf_file struct where the data will be stored.
+ * @param file The file to read from.
+ * @param delim A char used to assign a value to a key.
+ * @param comment Specifies which char to regard as comment indicator.
+ * @return An econf error code. See libeconf.h for details.
+ */
 extern econf_err read_file(econf_file *read_file, const char *file,
 			   const char *delim, const char *comment);

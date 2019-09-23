@@ -181,35 +181,35 @@ extern econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
 
 
 /**
- * @brief Functions used to get data from an econf_file key_file.
+ * @brief Functions used to get data from a key_file kf.
  * @defgroup econf_getter econf getter functions
  */
 
 /**
- * @brief Retrieve the groups of a specified key_file.
+ * @brief Retrieve the groups of a key_file kf.
  * @ingroup econf_getter
  *
  * @param kf The econf_file struct.
- * @param length
+ * @param length The length of groups.
  * @param groups The groups to retrieve.
  * @return An econf_err error code.
  */
 extern econf_err econf_getGroups(econf_file *kf, size_t *length, char ***groups);
 
 /**
- * @brief Retrieve the keys in group of a specified key_file.
+ * @brief Retrieve the keys in group of a key_file kf.
  * @ingroup econf_getter
  *
  * @param kf The econf_file struct.
  * @param group The group the key belongs to.
- * @param length
+ * @param length The length of keys.
  * @param keys The keys to retrieve.
  * @return An econf_err error code.
  */
 extern econf_err econf_getKeys(econf_file *kf, const char *group, size_t *length, char ***keys);
 
 /**
- * @brief Functions used to get a set value from key_file.
+ * @brief Functions used to get a set value from a key_file kf.
  * @ingroup econf_getter
  *
  * @param kf The econf_file struct.
@@ -230,7 +230,7 @@ extern econf_err econf_getDoubleValue(econf_file *kf, const char *group, const c
 /** @}*/
 
 /**
- * @brief Retrieve the string of a key.
+ * @brief Retrieve the string of a key from a key_file kf.
  * @ingroup econf_getter
  *
  * @param kf The econf_file struct.
@@ -242,7 +242,7 @@ extern econf_err econf_getDoubleValue(econf_file *kf, const char *group, const c
 extern econf_err econf_getStringValue(econf_file *kf, const char *group, const char *key, char **result);
 
 /**
- * @brief Retrieve the bool value of a key.
+ * @brief Retrieve the bool value of a key from a key_file kf.
  * @ingroup econf_getter
  *
  * @param kf The econf_file struct.
@@ -254,7 +254,7 @@ extern econf_err econf_getStringValue(econf_file *kf, const char *group, const c
 extern econf_err econf_getBoolValue(econf_file *kf, const char *group, const char *key, bool *result);
 
 /**
- * @brief Functions used to get a set value from key_file.
+ * @brief Functions used to get a set value from key_file kf.
  * @defgroup econf_def_getter econf default getter functions
  *
  * @param kf The econf_file struct.
@@ -264,7 +264,7 @@ extern econf_err econf_getBoolValue(econf_file *kf, const char *group, const cha
  * @param def The default value.
  * @return An econf_err error code.
  *
- * @note If key is not found, the default value is returned and the error is ECONF_NOKEY
+ * @note If key is not found, the default value is returned and the error is ECONF_NOKEY.
  */
 /** @ingroup econf_def_getter
  * @{
@@ -279,7 +279,7 @@ extern econf_err econf_getDoubleValueDef(econf_file *kf, const char *group, cons
 
 
 /**
- * @brief Retrieves the string of a key.
+ * @brief Retrieves the string of a key from a key_file kf.
  * @ingroup econf_def_getter
  *
  * @param kf The econf_file struct.
@@ -292,7 +292,7 @@ extern econf_err econf_getDoubleValueDef(econf_file *kf, const char *group, cons
 extern econf_err econf_getStringValueDef(econf_file *kf, const char *group, const char *key, char **result, char *def);
 
 /**
- * @brief Retrieves the bool value of a key.
+ * @brief Retrieves the bool value of a key of a key_file kf.
  * @ingroup econf_def_getter
  *
  * @param kf The econf_file struct.
@@ -306,11 +306,11 @@ extern econf_err econf_getBoolValueDef(econf_file *kf, const char *group, const 
 
 
 /**
- * @brief Functions used to modify data from an econf_file key_file.
+ * @brief Functions used to modify data from a key_file kf.
  * @defgroup econf_setter econf setter functions
  *
  * @param kf The econf_file struct.
- * @param group The group the key belongs to
+ * @param group The group the key belongs to.
  * @param key The key whose value is to be set.
  * @param value The value to set.
  * @return An econf_err error code.

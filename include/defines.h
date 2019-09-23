@@ -1,6 +1,7 @@
 /*
   Copyright (C) 2019 LLC
   Author: Pascal Arlt <parlt@suse.com>
+  Author: Dominik Gedon <dgedon@suse.com>
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -21,23 +22,44 @@
   SOFTWARE.
 */
 
-#pragma once
+/**
+ * @file defines.h
+ * @brief Defines default values used in the libeconf library.
+ */
 
-/* --- defines.h --- */
+#pragma once
 
 #include "../include/helpers.h"
 
-/* Defines default values used in the library  */
-
-/* Default econf_file length on creation */
+/**
+ * @brief Default econf_file length on creation.
+ */
 #define KEY_FILE_DEFAULT_LENGTH 8
 
-/* NULL value */
+/**
+ * @brief Default NULL value.
+ */
 #define KEY_FILE_NULL_VALUE "_none_"
+
+/**
+ * @brief Default NULL value hash.
+ */
 #define KEY_FILE_NULL_VALUE_HASH hashstring(KEY_FILE_NULL_VALUE)
 
-/* Bool values */
+/**
+ * @brief Default bool values.
+ * @defgroup defaults default values
+ * @{
+ */
+/** @brief default YES value. */
 #define YES hashstring("yes")
+
+/** @brief default NO value. */
 #define NO hashstring("no")
+
+/** @brief default bool TRUE value. */
 #define TRUE hashstring("true")
+
+/** @brief default bool FALSE value. */
 #define FALSE hashstring("false")
+/** @} */
