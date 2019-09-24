@@ -87,6 +87,7 @@ read_file(econf_file *ef, const char *file,
     fclose (kf);
     return ECONF_NOMEM;
   }
+  ef->delimiter = *delim;
 
   while (fgets(buf, sizeof(buf), kf)) {
     char *p, *name, *data = NULL;
