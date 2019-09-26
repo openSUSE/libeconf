@@ -1,0 +1,6 @@
+# /etc/default/su is an override of /etc/login.defs for su.
+# See /etc/login.defs and su(1) for more.
+#
+# List of supported variables:
+# ALWAYS_SET_PATH, ENV_PATH, ENV_ROOTPATH, ENV_SUPATH, FAIL_DELAY
+#
