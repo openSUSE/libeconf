@@ -1,3 +1,6 @@
+Version 0.3.2
+* Bugfix for merging empty configuration files
+
 Version 0.3.1
 * Bugfix for writing files (Set delimiter in readFile)
 
