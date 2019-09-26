@@ -39,6 +39,9 @@ tests/*.trs
 tests/tst-filedoesnotexit1
 tests/tst-merge1
 tests/tst-merge2
+tests/tst-merge3
+tests/tst-merge4
+tests/tst-merge5
 tests/tst-arguments1
 tests/tst-arguments2
 tests/tst-arguments3
