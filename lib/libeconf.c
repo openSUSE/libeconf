@@ -98,6 +98,7 @@ econf_err econf_readFile(econf_file **key_file, const char *file_name,
 
   if(t_err) {
     econf_free(*key_file);
+    *key_file = NULL;
     return t_err;
   }
 
