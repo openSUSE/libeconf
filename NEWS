@@ -1,3 +1,6 @@
+Version 0.3.3
+* Reset *key_file to NULL after free
+
 Version 0.3.2
 * Bugfix for merging empty configuration files
 
