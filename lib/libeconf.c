@@ -167,7 +167,7 @@ econf_err econf_readDirs(econf_file **result,
     suffix = config_suffix;
   else
     {
-      cp = alloca (strlen(config_suffix + 2));
+      cp = alloca (strlen(config_suffix) + 2);
       cp[0] = '.';
       strcpy(cp+1, config_suffix);
       suffix = cp;
