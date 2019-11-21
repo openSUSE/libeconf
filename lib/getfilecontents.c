@@ -67,6 +67,22 @@ store (econf_file *ef, const char *group, const char *key,
   return ECONF_SUCCESS;
 }
 
+static void
+check_delim(const char *str, bool *has_wsp, bool *has_nonwsp)
+{
+  const char *p;
+  *has_wsp = *has_nonwsp = false;
+
+  if (str == NULL)
+    return;
+  for (p = str; *p && !(*has_wsp && *has_nonwsp); p++) {
+    if (isspace((unsigned)*p))
+      *has_wsp = true;
+    else
+      *has_nonwsp = true;
+  }
+}
+
 /* Read the file line by line and parse for comments, keys and values */
 econf_err
 read_file(econf_file *ef, const char *file,
@@ -76,11 +92,13 @@ read_file(econf_file *ef, const char *file,
   char *current_group = NULL;
   econf_err retval = ECONF_SUCCESS;
   uint64_t line = 0;
-
+  bool has_wsp, has_nonwsp;
   FILE *kf = fopen(file, "rbe");
 
   if (kf == NULL)
     return ECONF_NOFILE;
+
+  check_delim(delim, &has_wsp, &has_nonwsp);
 
   ef->path = strdup (file);
   if (ef->path == NULL) {
@@ -91,6 +109,7 @@ read_file(econf_file *ef, const char *file,
 
   while (fgets(buf, sizeof(buf), kf)) {
     char *p, *name, *data = NULL;
+    bool quote_seen = false, delim_seen = false;
 
     line++;
 
@@ -139,8 +158,19 @@ read_file(econf_file *ef, const char *file,
     while (*data && !(isspace((unsigned)*data) ||
 		      strchr(delim, *data) != NULL))
       data++;
-    if (data > name && *data)
+    if (data > name && *data) {
+      if (has_wsp && has_nonwsp)
+	/*
+	 * delim contains both whitespace and non-whitespace characters.
+	 * In this case delim_seen has the special meaning "non-whitespace
+	 * delim seen". See comment below.
+	 */
+	delim_seen = !isspace((unsigned)*data) &&
+	  strchr(delim, *data) != NULL;
+      else
+	delim_seen = strchr(delim, *data) != NULL;
       *data++ = '\0';
+    }
 
     if (!*name || data == name)
       continue;
@@ -151,17 +181,59 @@ read_file(econf_file *ef, const char *file,
       data = NULL;
     else {
       /* go to the begin of the value */
-      while (*data
-	     && (isspace((unsigned)*data) || strchr(delim, *data) != NULL
-		 || *data == '"'))
+      while (*data && isspace((unsigned)*data))
 	data++;
+      if (!has_wsp && !delim_seen) {
+	/*
+	 * If delim consists only of non-whitespace characters,
+	 * require at least one delimiter, and skip more whitespace
+	 * after it.
+	 */
+	if (!*data || strchr(delim, *data) == NULL) {
+	  retval = ECONF_PARSE_ERROR;
+	  goto out;
+	}
+	data++;
+	while (*data && isspace((unsigned)*data))
+	  data++;
+      } else if (has_wsp && has_nonwsp && !delim_seen &&
+		 *data && strchr(delim, *data) != NULL) {
+	/*
+	 * If delim contains both whitespace and non-whitespace characters,
+	 * use any combination of one non-whitespace delimiter and
+	 * many whitespace delimiters as separator, but not multiple
+	 * non-whitespace delimiters. Example with delim = " =":
+	 * key value -> "value"
+	 * key=value -> "value"
+	 * key = value -> "value"
+	 * key=  value -> "value"
+	 * key == value -> "= value"
+	 * key==value -> "=value"
+	 */
+	data++;
+	while (*data && isspace((unsigned)*data))
+	  data++;
+      }
+      if (*data == '"') {
+	quote_seen = true;
+	data++;
+      }
 
       /* remove space at the end of the value */
       p = data + strlen(data);
       if (p > data)
 	p--;
-      while (p > data && (isspace((unsigned)*p) || *p == '"'))
-	*p-- = '\0';
+      while (p > data && (isspace((unsigned)*p)))
+	p--;
+      /* Strip double quotes only if both leading and trainling quote exist. */
+      if (p > data && quote_seen) {
+	if (*p == '"')
+	  p--;
+	else
+	  data--;
+      }
+      if (*(p + 1) != '\0')
+	*(p + 1) = '\0';
     }
 
     retval = store(ef, current_group, name, data, line);

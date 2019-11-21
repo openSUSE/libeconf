@@ -25,7 +25,7 @@ TESTS = tst-filedoesnotexit1 tst-merge1 tst-merge2 tst-merge3 tst-merge4 \
 	tst-parseconfig1 \
 	tst-quote1
 
-XFAIL_TESTS = tst-quote1
+XFAIL_TESTS =
 
 check_PROGRAMS = ${TESTS}
 
