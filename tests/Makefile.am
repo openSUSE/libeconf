@@ -23,7 +23,7 @@ TESTS = tst-filedoesnotexit1 tst-merge1 tst-merge2 tst-merge3 tst-merge4 \
 	tst-groups1 tst-groups2 tst-groups3 tst-groups4 \
 	tst-parseconfig1
 
-XFAIL_TESTS = tst-getconfdirs5
+XFAIL_TESTS =
 
 check_PROGRAMS = ${TESTS}
 
