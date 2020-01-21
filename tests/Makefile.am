@@ -9,7 +9,8 @@ EXTRA_DIST = tst-arguments-data tst-logindefs1-data tst-logindefs2-data \
 	tst-merge5-data \
 	tst-getconfdirs1-data tst-getconfdirs3-data \
 	tst-getconfdirs4-data tst-getconfdirs5-data tst-getconfdirs6-data \
-	tst-arguments5-data tst-groups3-data tst-parseconfig-data
+	tst-arguments5-data tst-groups3-data tst-parseconfig-data \
+	tst-quote1-data
 
 TESTS = tst-filedoesnotexit1 tst-merge1 tst-merge2 tst-merge3 tst-merge4 \
 	tst-merge5 \
@@ -21,9 +22,10 @@ TESTS = tst-filedoesnotexit1 tst-merge1 tst-merge2 tst-merge3 tst-merge4 \
 	tst-econf_errstring1 \
 	tst-setgetvalues1 \
 	tst-groups1 tst-groups2 tst-groups3 tst-groups4 \
-	tst-parseconfig1
+	tst-parseconfig1 \
+	tst-quote1
 
-XFAIL_TESTS = tst-getconfdirs5
+XFAIL_TESTS =
 
 check_PROGRAMS = ${TESTS}
 
