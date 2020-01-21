@@ -1,3 +1,7 @@
+Version 0.3.4
+* Fix parsing of quoted strings, and values starting with delimiters
+* Fix buffer overflow in econf_readDirs
+
 Version 0.3.3
 * Reset *key_file to NULL after free
 
