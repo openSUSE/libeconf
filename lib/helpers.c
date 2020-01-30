@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2019 SUSE LLC
+  Copyright (C) 2019, 2020 SUSE LLC
   Author: Pascal Arlt <parlt@suse.com>
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -210,6 +210,9 @@ struct file_entry cpy_file_entry(struct file_entry fe) {
   struct file_entry copied_fe;
   copied_fe.group = strdup(fe.group);
   copied_fe.key = strdup(fe.key);
-  copied_fe.value = strdup(fe.value);
+  if (fe.value)
+    copied_fe.value = strdup(fe.value);
+  else
+    copied_fe.value = NULL;
   return copied_fe;
 }
