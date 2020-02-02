@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
-#include <values.h>
+#include <float.h>
 #include <inttypes.h>
 
 #include "libeconf.h"
