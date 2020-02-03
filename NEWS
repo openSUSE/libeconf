@@ -1,3 +1,7 @@
+Version 0.3.5
+* Initial Haiku Port
+* Bugfix: helpers.c - Check for empty value (NULL pointer) before calling strdup.
+
 Version 0.3.4
 * Fix parsing of quoted strings, and values starting with delimiters
 * Fix buffer overflow in econf_readDirs

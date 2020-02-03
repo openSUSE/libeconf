@@ -1,4 +1,4 @@
-AC_INIT([libeconf], [0.3.4])
+AC_INIT([libeconf], [0.3.5])
 AC_SUBST(PACKAGE)
 AC_SUBST(VERSION)
 
