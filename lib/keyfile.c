@@ -88,9 +88,10 @@ econf_err getStringValueNum(econf_file key_file, size_t num, char **result) {
 
 econf_err getBoolValueNum(econf_file key_file, size_t num, bool *result) {
   char *value, *tmp;
-  tmp = strdupa(key_file.file_entry[num].value);
+  tmp = strdup(key_file.file_entry[num].value);
   value = toLowerCase(tmp);
   size_t hash = hashstring(toLowerCase(key_file.file_entry[num].value));
+  econf_err err = ECONF_SUCCESS;
 
   if ((*value == '1' && strlen(tmp) == 1) || hash == YES || hash == TRUE)
     *result = true;
@@ -98,9 +99,10 @@ econf_err getBoolValueNum(econf_file key_file, size_t num, bool *result) {
 	   hash == NO || hash == FALSE)
     *result = false;
   else
-    return ECONF_PARSE_ERROR;
+    err = ECONF_PARSE_ERROR;
 
-  return ECONF_SUCCESS;
+  free(tmp);
+  return err;
 }
 
 /* --- SETTERS --- */
