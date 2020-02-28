@@ -25,6 +25,10 @@
 
 /* libeconf.h */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -151,3 +155,7 @@ extern void econf_freeArray(char **array);
 
 // Free memory allocated by key_file
 extern void econf_freeFile(econf_file *key_file);
+
+#ifdef __cplusplus
+}
+#endif
