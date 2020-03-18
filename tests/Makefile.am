@@ -4,6 +4,8 @@ LDADD = @LDFLAGS_CHECKS@ @LDFLAGS_WARNINGS@ $(top_builddir)/lib/libeconf.la
 
 CLEANFILES = *~
 
+check_SCRIPTS = tst-econftool_show1.sh tst-econftool1.sh
+
 EXTRA_DIST = tst-arguments-data tst-logindefs1-data tst-logindefs2-data \
 	tst-merge1-data tst-merge2-data tst-merge3-data tst-merge4-data \
 	tst-merge5-data \
@@ -11,9 +13,10 @@ EXTRA_DIST = tst-arguments-data tst-logindefs1-data tst-logindefs2-data \
 	tst-getconfdirs4-data tst-getconfdirs5-data tst-getconfdirs6-data \
 	tst-getconfdirs7-data \
 	tst-arguments5-data tst-groups3-data tst-parseconfig-data \
-	tst-quote1-data
+	tst-quote1-data \
+	tst-econftool-data $(check_SCRIPTS)
 
-TESTS = tst-filedoesnotexit1 tst-merge1 tst-merge2 tst-merge3 tst-merge4 \
+check_PROGRAMS = tst-filedoesnotexit1 tst-merge1 tst-merge2 tst-merge3 tst-merge4 \
 	tst-merge5 \
 	tst-logindefs1 tst-logindefs2 \
 	tst-arguments1 tst-arguments2 tst-arguments3 tst-arguments4 \
@@ -29,7 +32,7 @@ TESTS = tst-filedoesnotexit1 tst-merge1 tst-merge2 tst-merge3 tst-merge4 \
 
 XFAIL_TESTS =
 
-check_PROGRAMS = ${TESTS}
+TESTS = $(check_SCRIPTS) ${check_PROGRAMS}
 
 tst_getconfdirs1_CFLAGS = $(AM_CFLAGS) -DSUFFIX=\".conf\"
 tst_getconfdirs2_CFLAGS = $(AM_CFLAGS) -DSUFFIX=\"conf\"
