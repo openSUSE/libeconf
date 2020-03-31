@@ -78,7 +78,7 @@ int main (int argc, char *argv[])
         {0,        0,                 0,  0 }
     };
 
-    while ((opt = getopt_long(argc, argv, "hf",longopts, &index)) != -1) {
+    while ((opt = getopt_long(argc, argv, "hf", longopts, &index)) != -1) {
         switch(opt) {
         case 'f':
             /* overwrite path */
@@ -125,9 +125,9 @@ int main (int argc, char *argv[])
      * that into account when extracting the suffix.
      */
     if (argc == 3)
-        posLastDot = strrchr(argv[2], 46); /* . (dot) in ASCII is 46 */
+        posLastDot = strrchr(argv[2], '.');
     else
-        posLastDot = strrchr(argv[3], 46); /* . (dot) in ASCII is 46 */
+        posLastDot = strrchr(argv[3], '.');
 
     if (posLastDot == NULL) {
         fprintf(stderr, "Currently only works with a dot in the filename!\n");
@@ -192,7 +192,7 @@ int main (int argc, char *argv[])
      *        values as an application would see them.
      */
     if (strcmp(argv[optind], "show") == 0) {
-        if ((error = econf_readDirs(&key_file, usrRootDir, rootDir, filename, suffix,"=", "#"))) {
+        if ((error = econf_readDirs(&key_file, usrRootDir, rootDir, filename, suffix, "=", "#"))) {
             fprintf(stderr, "%s\n", econf_errString(error));
             econf_free(key_file);
             return EXIT_FAILURE;
@@ -273,10 +273,9 @@ int main (int argc, char *argv[])
                 fprintf(stderr, "Missing filename!\n");
                 exit(EXIT_FAILURE);
         } else {
-            error = econf_readDirs(&key_file, usrRootDir, rootDir, filename, suffix,"=", "#");
+            error = econf_readDirs(&key_file, usrRootDir, rootDir, filename, suffix, "=", "#");
 
-            if (error == 3) {
-            /* the file does not exist */
+            if (error == ECONF_NOFILE) {
 
                 /* create empty key file */
                 if ((error = econf_newIniFile(&key_file))) {
@@ -284,8 +283,7 @@ int main (int argc, char *argv[])
                     econf_free(key_file);
                     return EXIT_FAILURE;
                 }
-            } else if ((error =! 3) || (error != 0)) {
-                /* other errors besides "missing config file" or "no error" */
+            } else if ((error =! ECONF_NOFILE) || (error != ECONF_SUCCESS)) {
                 fprintf(stderr, "%s\n", econf_errString(error));
                 econf_free(key_file);
                 return EXIT_FAILURE;
@@ -307,8 +305,8 @@ int main (int argc, char *argv[])
     }
 
     /****************************************************************
-     * @biref Revert all changes to the vendor version. In the end this means
-     *        most likely to delete all files in /etc for this.
+     * @biref Revert all changes to the vendor version. This means,
+     *        delete all files in /etc for this config.
      */
     } else if (strcmp(argv[optind], "revert") == 0) {
         char input[3] = "";
@@ -373,16 +371,12 @@ static void usage(void)
  */
 static void deleteTmpFiles(void)
 {
-    size_t combined_length = strlen(TMPPATH) + strlen(TMPFILE_ORIG) + 2;
-    char tmpfile_editedOne[combined_length];
-    memset(tmpfile_editedOne, 0, combined_length);
-    snprintf(tmpfile_editedOne, combined_length, "%s%s%s", TMPPATH, "/", TMPFILE_ORIG);
+    char tmpfile_editedOne[PATH_MAX];
+    snprintf(tmpfile_editedOne, PATH_MAX, "%s%s%s", TMPPATH, "/", TMPFILE_ORIG);
     remove(tmpfile_editedOne);
 
-    combined_length = strlen(TMPPATH) + strlen(TMPFILE_EDIT) + 2;
-    char tmpfile_editedTwo[combined_length];
-    memset(tmpfile_editedTwo, 0, combined_length);
-    snprintf(tmpfile_editedTwo, combined_length, "%s%s%s", TMPPATH, "/", TMPFILE_EDIT);
+    char tmpfile_editedTwo[PATH_MAX];
+    snprintf(tmpfile_editedTwo, PATH_MAX, "%s%s%s", TMPPATH, "/", TMPFILE_EDIT);
     remove(tmpfile_editedTwo);
 }
 
@@ -499,10 +493,9 @@ static void newProcess(const char *command, char *path, const char *filenameSuff
             exit(EXIT_FAILURE);
         }
         /* combine path and filename of the tmp files and set permission to 600 */
-        size_t combined_length = strlen(TMPPATH) + strlen(TMPFILE_ORIG) + 2;
-        char combined_tmp1[combined_length];
-        memset(combined_tmp1, 0, combined_length);
-        snprintf(combined_tmp1, combined_length, "%s%s%s", TMPPATH, "/", TMPFILE_ORIG);
+        char combined_tmp1[PATH_MAX];
+        memset(combined_tmp1, 0, PATH_MAX);
+        snprintf(combined_tmp1, PATH_MAX, "%s%s%s", TMPPATH, "/", TMPFILE_ORIG);
 
         int perm = chmod(combined_tmp1, S_IRUSR | S_IWUSR);
         if (perm != 0) {
@@ -510,10 +503,9 @@ static void newProcess(const char *command, char *path, const char *filenameSuff
             deleteTmpFiles();
             exit(EXIT_FAILURE);
         }
-        combined_length = strlen(TMPPATH) + strlen(TMPFILE_EDIT) + 2;
-        char path_tmpfile_edit[combined_length];
-        memset(path_tmpfile_edit, 0, combined_length);
-        snprintf(path_tmpfile_edit, combined_length, "%s%s%s", TMPPATH, "/", TMPFILE_EDIT);
+        char path_tmpfile_edit[PATH_MAX];
+        memset(path_tmpfile_edit, 0, PATH_MAX);
+        snprintf(path_tmpfile_edit, PATH_MAX, "%s%s%s", TMPPATH, "/", TMPFILE_EDIT);
 
         perm = chmod(path_tmpfile_edit, S_IRUSR | S_IWUSR);
         if (perm != 0) {
@@ -533,10 +525,9 @@ static void newProcess(const char *command, char *path, const char *filenameSuff
         }
 
         /* save edits from TMPFILE_EDIT in key_file_edit */
-        size_t combined_length = strlen(TMPPATH) + strlen(TMPFILE_EDIT) + 2;
-        char tmpfile_edited[combined_length];
-        memset(tmpfile_edited, 0, combined_length);
-        snprintf(tmpfile_edited, combined_length, "%s%s%s", TMPPATH, "/", TMPFILE_EDIT);
+        char tmpfile_edited[PATH_MAX];
+        memset(tmpfile_edited, 0, PATH_MAX);
+        snprintf(tmpfile_edited, PATH_MAX, "%s%s%s", TMPPATH, "/", TMPFILE_EDIT);
 
         if ((error = econf_readFile(&key_file_edit, tmpfile_edited, "=", "#"))) {
             fprintf(stderr, "%s\n", econf_errString(error));
@@ -639,7 +630,7 @@ static void newProcess(const char *command, char *path, const char *filenameSuff
 void changeRootDir(char *path)
 {
     if (getenv("ECONFTOOL_ROOT") != NULL) {
-        if (strlen(path) + strlen(getenv("ECONFTOOL_ROOT")) > PATH_MAX) {
+        if (strlen(path) + strlen(getenv("ECONFTOOL_ROOT")) >= PATH_MAX) {
             fprintf(stderr, "ECONFTOOL_ROOT + path is too long\n");
             exit(EXIT_FAILURE);
         }
