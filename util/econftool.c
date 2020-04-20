@@ -65,7 +65,7 @@ int main (int argc, char *argv[])
     memset(pathFilename, 0, PATH_MAX);
 
     /* parse command line arguments. See getopt_long(3) */
-    int opt;
+    int opt, nonopts;
     int index = 0;
     static struct option longopts[] = {
     /*   name,     arguments,      flag, value */
@@ -92,22 +92,15 @@ int main (int argc, char *argv[])
             break;
         }
     }
+    nonopts = argc - optind;
 
     /* only do something if we have an input */
-    if (argc < 2)
+    if (argc < 2) {
         usage();
-    else if (argc - optind < 1 ||
-            argc - optind == 1 && strchr(argv[optind], '.') != NULL) {
-        fprintf(stderr, "Please specify a command\n");
-        exit(EXIT_FAILURE);
-    } else if (argc - optind > 2) {
-        fprintf(stderr, "Too many arguments!\n");
-        exit(EXIT_FAILURE);
-    } else if (argc - optind == 1 && strchr(argv[optind], '.') == NULL) {
-        fprintf(stderr, "Missing filename!\n");
-        exit(EXIT_FAILURE);
+    } else if (argc < 3 || nonopts < 2) {
+        fprintf(stderr, "Invalid number of Arguments\n\n");
+        usage();
     }
-
     /**** initialization ****/
 
     /* basic write permission check */
@@ -117,23 +110,18 @@ int main (int argc, char *argv[])
         isRoot = false;
 
     /* get the position of the last dot in the filename to extract
-     * the suffix from it. With edit we have to include the
-     * possibility that someone uses the --full option and take
-     * that into account when extracting the suffix.
+     * the suffix from it.
      */
     posLastDot = strrchr(argv[optind + 1], '.');
 
     if (posLastDot == NULL) {
-        fprintf(stderr, "Currently only works with a dot in the filename!\n");
-        exit(EXIT_FAILURE);
+        fprintf(stderr, "Currently only works with a dot in the filename!\n\n");
+        usage();
     }
     suffix = posLastDot;
 
-    /* set filename to the proper argv argument
-     * argc == 3 -> edit
-     * argc == 4 -> edit --full
-     */
-    if (strlen(argv[2]) > sizeof(filename)) {
+    /* set filename to the proper argv argument */
+    if (strlen(argv[optind + 1]) > sizeof(filename)) {
         fprintf(stderr, "Filename too long\n");
         return EXIT_FAILURE;
     }

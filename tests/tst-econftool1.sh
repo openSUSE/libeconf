@@ -6,13 +6,15 @@ declare -a teststrings=(""
                         "-j"
                         "-f"
                         "randomstring.conf"
-                        "-f randomstring.conf")
+                        "-f randomstring.conf"
+                        "randomstring randomstring.conf")
 declare -a experr=("Usage: econftool"
                    "Usage: econftool"
                    "invalid option -- 'j'"
-                   "Please specify a command"
-                   "Please specify a command"
-                   "Please specify a command")
+                   "Invalid number of Arguments"
+                   "Invalid number of Arguments"
+                   "Invalid number of Arguments"
+                   "Unknown command!")
 
 
 teststringslength=${#teststrings[@]}
