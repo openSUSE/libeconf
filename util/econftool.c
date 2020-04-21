@@ -27,6 +27,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <limits.h>
+#include <ftw.h>
 
 #include "libeconf.h"
 
@@ -34,6 +35,7 @@ static const char *utilname = "econftool";
 static const char *DROPINFILENAME = "90_econftool.conf";
 static bool isRoot = false;
 static bool isDropinFile = true;
+static bool nonInteractive = false;
 static econf_file *key_file = NULL;
 static econf_file *key_file_edit = NULL;
 
@@ -42,6 +44,7 @@ static void diffGroups(char **, char **, char ***, char ***, char ***, size_t *,
 static void newProcess(const char *, char *, const char *, econf_file *);
 static void usage(void);
 static void changeRootDir(char *);
+static int nftwRemove(const char *path, const struct stat *sb, int flag, struct FTW *ftwbuf);
 
 int main (int argc, char *argv[])
 {
@@ -71,10 +74,11 @@ int main (int argc, char *argv[])
     /*   name,     arguments,      flag, value */
         {"full",   no_argument,       0, 'f'},
         {"help",   no_argument,       0, 'h'},
+        {"yes",    no_argument,       0, 'y'},
         {0,        0,                 0,  0 }
     };
 
-    while ((opt = getopt_long(argc, argv, "hf", longopts, &index)) != -1) {
+    while ((opt = getopt_long(argc, argv, "hfy", longopts, &index)) != -1) {
         switch(opt) {
         case 'f':
             /* overwrite path */
@@ -84,6 +88,9 @@ int main (int argc, char *argv[])
             break;
         case 'h':
             usage();
+            break;
+        case 'y':
+            nonInteractive = true;
             break;
         case '?':
         default:
@@ -279,15 +286,29 @@ int main (int argc, char *argv[])
         char path_tmpfile_edit[PATH_MAX];
         char path_tmpfile_orig[PATH_MAX];
         char *TMPPATH = getenv("TMPDIR");
+        char *tmpName = NULL;
         if (TMPPATH == NULL)
             TMPPATH = "/tmp";
 
-        snprintf(path_tmpfile_edit, sizeof(path_tmpfile_edit), "%s", tmpnam(NULL));
-        snprintf(tmpfile_edit, sizeof(tmpfile_edit), "%s",
-                strrchr(path_tmpfile_edit, '/') + 1);
-        snprintf(path_tmpfile_orig, sizeof(path_tmpfile_orig), "%s", tmpnam(NULL));
-        snprintf(tmpfile_orig, sizeof(tmpfile_orig), "%s",
-                strrchr(path_tmpfile_orig, '/') + 1);
+        tmpName = tmpnam(NULL);
+        if (tmpName != NULL) {
+            snprintf(path_tmpfile_edit, sizeof(path_tmpfile_edit), "%s", tmpName);
+            snprintf(tmpfile_edit, sizeof(tmpfile_edit), "%s",
+                    strrchr(path_tmpfile_edit, '/') + 1);
+            tmpName = NULL;
+        } else {
+            fprintf(stderr, "Couldn't generate tmpfile name\n");
+            exit(EXIT_FAILURE);
+        }
+        tmpName = tmpnam(NULL);
+        if (tmpName != NULL) {
+            snprintf(path_tmpfile_orig, sizeof(path_tmpfile_orig), "%s", tmpName);
+            snprintf(tmpfile_orig, sizeof(tmpfile_orig), "%s",
+                    strrchr(path_tmpfile_orig, '/') + 1);
+        } else {
+            fprintf(stderr, "Couldn't generate tmpfile name\n");
+            exit(EXIT_FAILURE);
+        }
 
         pid_t pid = fork();
 
@@ -365,11 +386,11 @@ int main (int argc, char *argv[])
                 }
             }
             /* check if file already exists */
-            if (access(pathFilename, F_OK) == 0) {
+            if (access(pathFilename, F_OK) == 0 && !nonInteractive) {
                 char input[3] = "";
                 /* let the user verify that the file should really be overwritten */
                 do {
-                    fprintf(stdout, "The file %s%s%s already exists!\n", path, "/", filenameSuffix);
+                    fprintf(stdout, "The file %s/%s already exists!\n", path, filenameSuffix);
                     fprintf(stdout, "Do you really want to overwrite it?\nYes [y], no [n]\n");
                     scanf("%2s", input);
                 } while (strcmp(input, "y") != 0 && strcmp(input, "n") != 0);
@@ -414,28 +435,55 @@ exit_failure:
     } else if (strcmp(argv[optind], "revert") == 0) {
         char input[3] = "";
 
-        /* let the user verify 2 times that the file should really be deleted */
-        do {
-            fprintf(stdout, "Delete file /etc/%s?\nYes [y], no [n]\n", argv[2]);
-            scanf("%2s", input);
-        } while (strcmp(input, "y") != 0 && strcmp(input, "n") != 0);
+        if (!isRoot) {
+            fprintf(stderr, "Root is needed for revert\n");
+            exit(EXIT_FAILURE);
+        }
 
-        if (strcmp(input, "y") == 0) {
-            memset(input, 0, 2);
-            do {
-                fprintf(stdout, "Do you really wish to delete the file /etc/%s?\n", argv[2]);
-                fprintf(stdout, "There is no going back!\nYes [y], no [n]\n");
+        snprintf(pathFilename, sizeof(pathFilename), "/etc/%s%s", filename, suffix);
+
+        if (access(pathFilename, F_OK) == -1 && access(path, F_OK) == -1) {
+            fprintf(stderr, "No config files with name %s in /etc found\n",
+                    argv[optind + 1]);
+            exit(EXIT_FAILURE);
+        }
+
+        /* Delete config file */
+        if (access(pathFilename, F_OK) == 0) {
+            /* let the user verify that the file should really be deleted */
+            while (strcmp(input, "y") != 0 && strcmp(input, "n") != 0
+                    && !nonInteractive) {
+                fprintf(stdout, "Delete file %s?\nYes [y], no [n]\n", pathFilename);
                 scanf("%2s", input);
-            } while (strcmp(input, "y") != 0 && strcmp(input, "n") != 0);
+            }
 
-            if(strcmp(input, "y") == 0) {
-                snprintf(pathFilename, sizeof(pathFilename), "/etc/%s%s", filename, suffix);
-
+            if (strcmp(input, "y") == 0 || nonInteractive) {
                 int status = remove(pathFilename);
                 if (status != 0)
                     fprintf(stdout, "%s\n", strerror(errno));
                 else
                     fprintf(stdout, "File %s deleted!\n", pathFilename);
+            }
+        }
+
+        /* Reset input */
+        strcpy(input, "");
+
+        /* Delete snippet directory */
+        if (access(path, F_OK) == 0) {
+            /* let the user verify that the directory should really be deleted */
+            while (strcmp(input, "y") != 0 && strcmp(input, "n") != 0
+                    && !nonInteractive) {
+                fprintf(stdout, "Delete directory %s?\nYes [y], no [n]\n", path);
+                scanf("%2s", input);
+            }
+
+            if (strcmp(input, "y") == 0 || nonInteractive) {
+                int status = nftw(path, nftwRemove, getdtablesize() - 10, FTW_DEPTH);
+                if (status != 0)
+                    fprintf(stdout, "%s\n", strerror(errno));
+                else
+                    fprintf(stdout, "Directory %s deleted!\n", path);
             }
         }
     } else {
@@ -461,10 +509,12 @@ static void usage(void)
     fprintf(stderr, "         read by libeconf.\n");
     fprintf(stderr, "edit     starts the editor EDITOR (environment variable) where the\n");
     fprintf(stderr, "         groups, keys and values can be modified and saved afterwards.\n");
-    fprintf(stderr, "   --full:   copy the original configuration file to /etc instead of\n");
-    fprintf(stderr, "             creating drop-in files.\n");
+    fprintf(stderr, "  -f, --full:      copy the original configuration file to /etc instead of\n");
+    fprintf(stderr, "                   creating drop-in files.\n");
+    fprintf(stderr, "  -y, --yes:       Assumes yes for all prompts.\n");
     fprintf(stderr, "revert   reverts all changes to the vendor versions. Basically deletes\n");
-    fprintf(stderr, "         the config file in /etc.\n\n");
+    fprintf(stderr, "         the config file and snippet directory in /etc.\n");
+    fprintf(stderr, "  -y, --yes:       Assumes yes for all prompts and runs non-interactively.\n\n");
     exit(EXIT_FAILURE);
 }
 
@@ -539,7 +589,7 @@ static void diffGroups(char **group1, char **group2, char ***new, char ***delete
  *
  * @param path The path to be changed
  */
-void changeRootDir(char *path)
+static void changeRootDir(char *path)
 {
     if (getenv("ECONFTOOL_ROOT") != NULL) {
         if (strlen(path) + strlen(getenv("ECONFTOOL_ROOT")) >= PATH_MAX) {
@@ -554,4 +604,9 @@ void changeRootDir(char *path)
 
         free(tmp);
     }
+}
+
+static int nftwRemove(const char *path, const struct stat *sb, int flag, struct FTW *ftwbuf)
+{
+    return remove(path);
 }
