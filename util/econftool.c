@@ -606,6 +606,10 @@ static void changeRootDir(char *path)
     }
 }
 
+/**
+ * @brief This function is used in conjunction with nftw to delete
+ * all files nftw finds.
+ */
 static int nftwRemove(const char *path, const struct stat *sb, int flag, struct FTW *ftwbuf)
 {
     return remove(path);
