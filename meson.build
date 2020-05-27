@@ -1,11 +1,15 @@
 project(
   'libeconf',
   'c',
-  meson_version : '>= 0.46.0',
-  default_options : ['default_library=both'],
+  meson_version : '>= 0.49.0',
+  default_options : ['buildtype=debugoptimized',
+  		  'default_library=shared',
+		  'b_pie=true'],
   license : 'MIT',
   version : '0.3.5',
 )
+
+add_global_arguments('-D_GNU_SOURCE=1', language : 'c')
 
 pkg = import('pkgconfig')
 inc = include_directories('include')
