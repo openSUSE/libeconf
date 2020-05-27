@@ -9,7 +9,7 @@ project(
 
 pkg = import('pkgconfig')
 inc = include_directories('include')
-src = files(
+libeconf_src = files(
   'lib/econf_errString.c',
   'lib/get_value_def.c',
   'lib/getfilecontents.c',
@@ -18,13 +18,14 @@ src = files(
   'lib/libeconf.c',
   'lib/mergefiles.c',
 )
+example_src = ['example/example.c']
 
 mapfile = 'lib/libeconf.map'
 version_flag = '-Wl,--version-script,@0@/@1@'.format(meson.current_source_dir(), mapfile)
 
 lib = library(
-  'libeconf',
-  src,
+  'econf',
+  libeconf_src,
   include_directories : inc,
   install : true,
   link_args : version_flag,
@@ -46,3 +47,5 @@ libeconf_dep = declare_dependency(
   link_with : lib,
   include_directories : inc,
 )
+
+executable('example', example_src, dependencies : libeconf_dep)
