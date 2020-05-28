@@ -4,15 +4,41 @@ project(
   meson_version : '>= 0.49.0',
   default_options : ['buildtype=debugoptimized',
   		  'default_library=shared',
-		  'b_pie=true'],
+		  'b_pie=true',
+		  'warning_level=3',],
   license : 'MIT',
   version : '0.3.5',
 )
 
-add_project_arguments('-D_GNU_SOURCE=1', language : 'c')
-
+cc = meson.get_compiler('c')
 pkg = import('pkgconfig')
 inc = include_directories('include')
+
+add_project_arguments(['-D_GNU_SOURCE=1',
+		       '-DXTSTRINGDEFINES',
+		       '-D_FORTIFY_SOURCE=2'], language : 'c')
+
+possible_cc_flags = [
+		  '-Werror',
+		  '-fstack-protector-strong',
+		  '-funwind-tables',
+		  '-fasynchronous-unwind-tables',
+		  '-fstack-clash-protection',
+		  '-Werror=return-type',
+		  '-flto=8',
+		  '-Wbad-function-cast',
+		  '-Wcast-align',
+		  '-Wcast-qual',
+		  '-Winline',
+		  '-Wmissing-declarations',
+		  '-Wmissing-prototypes',
+		  '-Wnested-externs',
+		  '-Wshadow',
+		  '-Wstrict-prototypes',
+		  '-Wundef',
+		  ]
+add_project_arguments(cc.get_supported_arguments(possible_cc_flags), language : 'c')
+
 libeconf_src = files(
   'lib/econf_errString.c',
   'lib/get_value_def.c',
