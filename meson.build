@@ -9,7 +9,7 @@ project(
   version : '0.3.5',
 )
 
-add_global_arguments('-D_GNU_SOURCE=1', language : 'c')
+add_project_arguments('-D_GNU_SOURCE=1', language : 'c')
 
 pkg = import('pkgconfig')
 inc = include_directories('include')
@@ -52,4 +52,9 @@ libeconf_dep = declare_dependency(
   include_directories : inc,
 )
 
+# Example
+
 executable('example', example_src, dependencies : libeconf_dep)
+
+# Unit tests
+subdir('tests')
