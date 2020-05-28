@@ -1,6 +1,7 @@
 # This file builds and runs the unit tests
 
-test_args = ['-DTESTSDIR="../tests/"']
+testdir = join_paths(meson.source_root(), 'tests/')
+test_args = ['-DTESTSDIR="' + testdir + '"']
 
 tst_filedoesnotexit1_exe = executable('tst-filedoesnotexit1', 'tst-filedoesnotexit1.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-filedoesnotexit1', tst_filedoesnotexit1_exe)
