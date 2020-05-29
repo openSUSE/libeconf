@@ -4,7 +4,8 @@ LDADD = @LDFLAGS_CHECKS@ @LDFLAGS_WARNINGS@ $(top_builddir)/lib/libeconf.la
 
 CLEANFILES = *~
 
-EXTRA_DIST = tst-arguments-data tst-logindefs1-data tst-logindefs2-data \
+EXTRA_DIST = meson.build \
+	tst-arguments-data tst-logindefs1-data tst-logindefs2-data \
 	tst-merge1-data tst-merge2-data tst-merge3-data tst-merge4-data \
 	tst-merge5-data \
 	tst-getconfdirs1-data tst-getconfdirs3-data \
