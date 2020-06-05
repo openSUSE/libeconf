@@ -75,7 +75,7 @@ main(void)
     }
   for (size_t i = 0; i < key_number; i++)
     {
-      printf ("%lu: %s\n", i, keys[i]);
+      printf ("%zu: %s\n", i, keys[i]);
     }
 
   econf_free (keys);

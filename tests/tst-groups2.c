@@ -65,12 +65,12 @@ main(void)
     }
   if (group_number > 1)
     {
-      fprintf (stderr, "Too many groups found? (got %lu, expected 1)\n", group_number);
+      fprintf (stderr, "Too many groups found? (got %zu, expected 1)\n", group_number);
       retval = 1;
     }
   for (size_t i = 0; i < group_number; i++)
     {
-      printf ("%lu: %s\n", i, groups[i]);
+      printf ("%zu: %s\n", i, groups[i]);
     }
 
   econf_free (groups);
