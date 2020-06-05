@@ -43,7 +43,7 @@ main(void)
     {
       char *value = NULL;
       econf_getStringValue(key_file, NULL, keys[i], &value);
-      printf ("%lu: %s: '%s'\n", i, keys[i], value);
+      printf ("%zu: %s: '%s'\n", i, keys[i], value);
       if (value != NULL)
 	free (value);
     }

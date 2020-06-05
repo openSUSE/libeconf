@@ -41,13 +41,13 @@ main(void)
     }
   if (group_number != 5)
     {
-      fprintf (stderr, "Wrong number of groups found, got %lu, expected 5\n",
+      fprintf (stderr, "Wrong number of groups found, got %zu, expected 5\n",
 	       group_number);
       retval = 1;
     }
   printf ("Found the following groups:\n");
   for (size_t i = 0; i < group_number; i++)
-    printf ("%lu: %s\n", i, groups[i]);
+    printf ("%zu: %s\n", i, groups[i]);
 
   /* Try to get the key for each group and check, it is the correct one */
   for (size_t i = 0; i < group_number; i++)
@@ -60,7 +60,7 @@ main(void)
 	}
       else
 	{
-	  printf ("%lu: Group: %s, Value: %s\n", i, groups[i], val);
+	  printf ("%zu: Group: %s, Value: %s\n", i, groups[i], val);
 	  free (val);
 	}
     }

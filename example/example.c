@@ -27,6 +27,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <time.h>
+#include <inttypes.h>
 
 int main(void) {
 
@@ -46,13 +47,13 @@ int main(void) {
   econf_setInt64Value(key_file, "[Basic Types]", "Int", INT64_MAX);
   int64_t i64val;
   econf_getInt64Value(key_file, "[Basic Types]", "Int", &i64val);
-  printf("Int: %ld\n", i64val);
+  printf("Int: %" PRId64 "\n", i64val);
 
 
   econf_setUInt64Value(key_file, "[Basic Types]", "UInt", UINT64_MAX);
   uint64_t u64val;
   econf_getUInt64Value(key_file, "[Basic Types]", "UInt", &u64val);
-  printf("Unsigned Int: %lu\n", u64val);
+  printf("Unsigned Int: %" PRIu64 "\n", u64val);
 
   econf_setFloatValue(key_file, "[Basic Types]", "Float", M_PI);
   float fval;
