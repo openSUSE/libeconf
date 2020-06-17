@@ -22,9 +22,9 @@
 */
 
 #include "libeconf.h"
-#include "../include/defines.h"
-#include "../include/helpers.h"
-#include "../include/keyfile.h"
+#include "defines.h"
+#include "helpers.h"
+#include "keyfile.h"
 
 #include <errno.h>
 #include <float.h>

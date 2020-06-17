@@ -22,9 +22,9 @@
 */
 
 #include "libeconf.h"
-#include "../include/defines.h"
-#include "../include/helpers.h"
-#include "../include/mergefiles.h"
+#include "defines.h"
+#include "helpers.h"
+#include "mergefiles.h"
 
 #include <dirent.h>
 #include <stdio.h>

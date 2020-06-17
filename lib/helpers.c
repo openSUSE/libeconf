@@ -22,8 +22,8 @@
 */
 
 #include "libeconf.h"
-#include "../include/defines.h"
-#include "../include/helpers.h"
+#include "defines.h"
+#include "helpers.h"
 
 #include <ctype.h>
 #include <stdio.h>
