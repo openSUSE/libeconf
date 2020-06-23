@@ -21,13 +21,13 @@
   SOFTWARE.
 */
 
-#include "../include/libeconf.h"
+#include "libeconf.h"
 
-#include "../include/defines.h"
-#include "../include/getfilecontents.h"
-#include "../include/helpers.h"
-#include "../include/keyfile.h"
-#include "../include/mergefiles.h"
+#include "defines.h"
+#include "getfilecontents.h"
+#include "helpers.h"
+#include "keyfile.h"
+#include "mergefiles.h"
 
 #include <dirent.h>
 #include <stdio.h>

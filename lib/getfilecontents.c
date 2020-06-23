@@ -22,9 +22,9 @@
 */
 
 #include "libeconf.h"
-#include "../include/defines.h"
-#include "../include/getfilecontents.h"
-#include "../include/helpers.h"
+#include "defines.h"
+#include "getfilecontents.h"
+#include "helpers.h"
 
 #include <errno.h>
 #include <stdio.h>

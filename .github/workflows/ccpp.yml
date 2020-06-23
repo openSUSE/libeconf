@@ -9,16 +9,9 @@ jobs:
     
     steps:
     - uses: actions/checkout@v2
-    - name: autogen.sh
-      run: ./autogen.sh
-    - name: configure with checks
-      run: ./configure --enable-compiler-checks
-    - name: make with compiler checks
-      run: make
+    - name: cmake configure with asan checks
+      run: cmake -B build -DCMAKE_BUILD_TYPE=SanitizeAddress
+    - name: make with asan checks
+      run: make -C build
     - name: make check
-      run: make check
-    - name: check_failure
-      if: failure()
-      run: cat tests/test-suite.log
-    - name: make distcheck
-      run: make distcheck
+      run: make -C build check
