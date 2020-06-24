@@ -1,6 +1,7 @@
 /*
   Copyright (C) 2019, 2020 SUSE LLC
   Author: Dominik Gedon <dgedon@suse.de>
+          Jorik Cronenberg <jcronenberg@suse.de>
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +25,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/stat.h>
 #include <sys/wait.h>
 #include <limits.h>
 #include <ftw.h>
@@ -32,482 +32,28 @@
 #include "libeconf.h"
 
 static const char *utilname = "econftool";
-static const char *DROPINFILENAME = "90_econftool.conf";
-static bool isRoot = false;
-static bool isDropinFile = true;
-static bool nonInteractive = false;
 static econf_file *key_file = NULL;
-static econf_file *key_file_edit = NULL;
-
-static void diffGroups(char **, char **, char ***, char ***, char ***, size_t *,
-        size_t *, size_t *, size_t *, size_t *);
-static void newProcess(const char *, char *, const char *, econf_file *);
-static void usage(void);
-static void changeRootDir(char *);
-static int nftwRemove(const char *path, const struct stat *sb, int flag, struct FTW *ftwbuf);
-
-int main (int argc, char *argv[])
-{
-    static const char CONFDIR[] = "/.config";
-    econf_err error;
-    char *suffix = NULL; /* the suffix of the filename e.g. .conf */
-    char *posLastDot;
-    char path[PATH_MAX]; /* the path of the config file */
-    char home[PATH_MAX]; /* the path of the home directory */
-    char filename[PATH_MAX]; /* the filename without the suffix */
-    char filenameSuffix[PATH_MAX]; /* the filename with the suffix */
-    char pathFilename[PATH_MAX]; /* the path concatenated with the filename and the suffix */
-    char rootDir[PATH_MAX] = "/etc";
-    char usrRootDir[PATH_MAX] = "/usr/etc";
-    uid_t uid = getuid();
-    uid_t euid = geteuid();
-
-    memset(path, 0, PATH_MAX);
-    memset(home, 0, PATH_MAX);
-    memset(filename, 0, PATH_MAX);
-    memset(pathFilename, 0, PATH_MAX);
-
-    /* parse command line arguments. See getopt_long(3) */
-    int opt, nonopts;
-    int index = 0;
-    static struct option longopts[] = {
-    /*   name,     arguments,      flag, value */
-        {"full",   no_argument,       0, 'f'},
-        {"help",   no_argument,       0, 'h'},
-        {"yes",    no_argument,       0, 'y'},
-        {0,        0,                 0,  0 }
-    };
-
-    while ((opt = getopt_long(argc, argv, "hfy", longopts, &index)) != -1) {
-        switch(opt) {
-        case 'f':
-            /* overwrite path */
-            snprintf(path, sizeof(path), "%s", "/etc");
-            changeRootDir(path);
-            isDropinFile = false;
-            break;
-        case 'h':
-            usage();
-            break;
-        case 'y':
-            nonInteractive = true;
-            break;
-        case '?':
-        default:
-            fprintf(stderr, "Try '%s --help' for more information.\n", utilname);
-            exit(EXIT_FAILURE);
-            break;
-        }
-    }
-    nonopts = argc - optind;
-
-    /* only do something if we have an input */
-    if (argc < 2) {
-        usage();
-    } else if (argc < 3 || nonopts < 2) {
-        fprintf(stderr, "Invalid number of Arguments\n\n");
-        usage();
-    }
-    /**** initialization ****/
-
-    /* basic write permission check */
-    if (uid == 0 && uid == euid)
-        isRoot = true;
-    else
-        isRoot = false;
-
-    /* get the position of the last dot in the filename to extract
-     * the suffix from it.
-     */
-    posLastDot = strrchr(argv[optind + 1], '.');
-
-    if (posLastDot == NULL) {
-        fprintf(stderr, "Currently only works with a dot in the filename!\n\n");
-        usage();
-    }
-    suffix = posLastDot;
-
-    /* set filename to the proper argv argument */
-    if (strlen(argv[optind + 1]) > sizeof(filename)) {
-        fprintf(stderr, "Filename too long\n");
-        return EXIT_FAILURE;
-    }
-    snprintf(filename, strlen(argv[optind + 1]) - strlen(posLastDot) + 1,
-            "%s", argv[optind + 1]);
-    snprintf(filenameSuffix, sizeof(filenameSuffix), argv[optind + 1]);
-
-    if (isDropinFile) {
-        snprintf(path, sizeof(path), "/etc/%s.d", filenameSuffix);
-        changeRootDir(path);
-    }
-    snprintf(pathFilename, sizeof(pathFilename), "%s/%s", path, filenameSuffix);
-
-    const char *editor = getenv("EDITOR");
-    if (editor == NULL) {
-        /* if no editor is specified take vi as default */
-        editor = "/usr/bin/vi";
-    }
-
-    if (getenv("ECONFTOOL_ROOT") == NULL)
-        snprintf(home, sizeof(home), "%s", getenv("HOME"));
-    else
-        changeRootDir(home);
-
-    char xdgConfigDir[PATH_MAX];
-    if (getenv("XDG_CONFIG_HOME") == NULL) {
-        /* if no XDG_CONFIG_HOME is specified take ~/.config as
-         * default
-         */
-        snprintf(xdgConfigDir, sizeof(xdgConfigDir), "%s%s", home, CONFDIR);
-    } else {
-        snprintf(xdgConfigDir, sizeof(xdgConfigDir), "%s", getenv("XDG_CONFIG_HOME"));
-    }
-
-    /* Change Root dirs */
-    changeRootDir(rootDir);
-    changeRootDir(usrRootDir);
-
-
-    /****************************************************************
-     * @brief This command will read all snippets for filename.conf
-     *        (econf_readDirs) and print all groups, keys and their
-     *        values as an application would see them.
-     */
-    if (strcmp(argv[optind], "show") == 0) {
-        if ((error = econf_readDirs(&key_file, usrRootDir, rootDir, filename,
-                        suffix, "=", "#"))) {
-            fprintf(stderr, "%s\n", econf_errString(error));
-            econf_free(key_file);
-            return EXIT_FAILURE;
-        }
-
-        char **groups = NULL;
-        char *value = NULL;
-        size_t group_count = 0;
-
-        /* show groups, keys and their value */
-        if ((error = econf_getGroups(key_file, &group_count, &groups))) {
-            fprintf(stderr, "%s\n", econf_errString(error));
-            econf_free(groups);
-            econf_free(key_file);
-            return EXIT_FAILURE;
-        }
-        char **keys = NULL;
-        size_t key_count = 0;
-
-        for (size_t g = 0; g < group_count; g++)
-        {
-            if (error = econf_getKeys(key_file, groups[g], &key_count, &keys))
-            {
-                fprintf(stderr, "%s\n", econf_errString(error));
-                econf_free(groups);
-                econf_free(keys);
-                econf_free(key_file);
-                return EXIT_FAILURE;
-            }
-            printf("%s\n", groups[g]);
-            for (size_t k = 0; k < key_count; k++) {
-                if ((error = econf_getStringValue(key_file, groups[g], keys[k], &value))
-                    || value == NULL || strlen(value) == 0) {
-                    fprintf(stderr, "%s\n", econf_errString(error));
-                    econf_free(groups);
-                    econf_free(keys);
-                    econf_free(key_file);
-                    free(value);
-                    return EXIT_FAILURE;
-                }
-                printf("%s = %s\n", keys[k], value);
-                free(value);
-            }
-            printf("\n");
-            econf_free(keys);
-        }
-        econf_free(groups);
-
-    /****************************************************************
-     * @brief This command will print the content of the files and the name of the
-     *        file in the order as read by econf_readDirs.
-     * TODO:
-     *        - Enhance the libeconf API first, then implement
-     */
-    } else if (strcmp(argv[optind], "cat") == 0) {
-        fprintf(stderr, "Not implemented yet!\n");
-
-    /****************************************************************
-     * @brief This command will start an editor (EDITOR environment variable),
-     *        which shows all groups, keys and their values (like econftool
-     *        show output), allows the admin to modify them, and stores the
-     *        changes afterwards in a drop-in file in /etc/filename.conf.d/.
-     *
-     * --full: copy the original config file to /etc instead of creating drop-in
-     *         files.
-     *
-     * If not root, the file will be created in XDG_CONF_HOME, which is normally
-     * $HOME/.config.
-     *
-     *  TODO:
-     *      - Replace static values of the path with future libeconf API calls
-     */
-    } else if (strcmp(argv[optind], "edit") == 0) {
-        error = econf_readDirs(&key_file, usrRootDir, rootDir, filename, suffix, "=", "#");
-
-        if (error == ECONF_NOFILE) {
-        /* the file does not exist */
-
-            /* create empty key file */
-            if ((error = econf_newIniFile(&key_file))) {
-                fprintf(stderr, "%s\n", econf_errString(error));
-                econf_free(key_file);
-                return EXIT_FAILURE;
-            }
-        } else if ((error =! ECONF_NOFILE) || (error != ECONF_SUCCESS)) {
-            /* other errors besides "missing config file" or "no error" */
-            fprintf(stderr, "%s\n", econf_errString(error));
-            econf_free(key_file);
-            return EXIT_FAILURE;
-        }
-        if (!isRoot) {
-            /* adjust path to home directory of the user.*/
-            snprintf(path, sizeof(path), "%s", xdgConfigDir);
-            changeRootDir(path);
-        } else {
-            if(isDropinFile) {
-                memset(filename, 0, PATH_MAX);
-                snprintf(filenameSuffix, sizeof(filenameSuffix), "%s", DROPINFILENAME);
-                snprintf(pathFilename, sizeof(pathFilename), "%s/%s", path,
-                        filenameSuffix);
-            }
-        }
-        
-        /* Open $EDITOR in new process */
-        int wstatus = 0;
-        char tmpfile_edit[FILENAME_MAX];
-        char tmpfile_orig[FILENAME_MAX];
-        char path_tmpfile_edit[PATH_MAX];
-        char path_tmpfile_orig[PATH_MAX];
-        char *TMPPATH = getenv("TMPDIR");
-        char *tmpName = NULL;
-        if (TMPPATH == NULL)
-            TMPPATH = "/tmp";
-
-        tmpName = tmpnam(NULL);
-        if (tmpName != NULL) {
-            snprintf(path_tmpfile_edit, sizeof(path_tmpfile_edit), "%s", tmpName);
-            snprintf(tmpfile_edit, sizeof(tmpfile_edit), "%s",
-                    strrchr(path_tmpfile_edit, '/') + 1);
-            tmpName = NULL;
-        } else {
-            fprintf(stderr, "Couldn't generate tmpfile name\n");
-            exit(EXIT_FAILURE);
-        }
-        tmpName = tmpnam(NULL);
-        if (tmpName != NULL) {
-            snprintf(path_tmpfile_orig, sizeof(path_tmpfile_orig), "%s", tmpName);
-            snprintf(tmpfile_orig, sizeof(tmpfile_orig), "%s",
-                    strrchr(path_tmpfile_orig, '/') + 1);
-        } else {
-            fprintf(stderr, "Couldn't generate tmpfile name\n");
-            exit(EXIT_FAILURE);
-        }
-
-        pid_t pid = fork();
-
-        if (pid == -1) {
-            fprintf(stderr, "fork() failed with: %s\n", strerror(errno));
-            exit(EXIT_FAILURE);
-        } else if (!pid) {
-        /* child */
-
-            /* write contents of key_file to 2 temporary files. In the future this
-             * will be used to make a diff between the two files and only save the
-             * changes the user made.
-             */
-            if (error = econf_writeFile(key_file, TMPPATH, tmpfile_orig)) {
-                fprintf(stderr, "%s\n", econf_errString(error));
-                goto exit_failure;
-            }
-            if (error = econf_writeFile(key_file, TMPPATH, tmpfile_edit)) {
-                fprintf(stderr, "%s\n", econf_errString(error));
-                goto exit_failure;
-            }
-            /* execute given command and save result in TMPFILE_EDIT */
-            execlp(editor, editor, path_tmpfile_edit, (char *) NULL);
-        } else {
-        /* parent */
-            if (waitpid(pid, &wstatus, 0) == - 1) {
-                fprintf(stderr, "Error using waitpid().\n");
-                goto exit_failure;
-            }
-
-            /* save edits from tmpfile_edit in key_file_edit */
-            if ((error = econf_readFile(&key_file_edit, path_tmpfile_edit, "=", "#"))) {
-                fprintf(stderr, "%s\n", econf_errString(error));
-                econf_free(key_file_edit);
-                goto exit_failure;
-            }
-            /*********************************************************************/
-            /* TODO: analyse the key_files of the 2 tmp files to extract the change
-             * - starting with groups, then keys and then values
-             */
-            char **groups = NULL;
-            char **groups_edit = NULL;
-            char **groups_new = NULL;
-            char **groups_common = NULL;
-            char **groups_deleted = NULL;
-            size_t group_count = 0;
-            size_t group_edit_count = 0;
-            size_t group_new_count = 0;
-            size_t group_deleted_count = 0;
-            size_t group_common_count = 0;
-
-            /* extract the groups of the original key_file into groups */
-            if ((error = econf_getGroups(key_file, &group_count, &groups))) {
-                fprintf(stderr, "%s\n", econf_errString(error));
-                econf_free(groups);
-                goto exit_failure;
-            }
-            /* extract the groups of the edited key_file into groups_edit */
-            if ((error = econf_getGroups(key_file_edit, &group_edit_count, &groups_edit))) {
-                fprintf(stderr, "%s\n", econf_errString(error));
-                econf_free(groups);
-                econf_free(groups_edit);
-                econf_free(key_file_edit);
-                goto exit_failure;
-            }
-
-            /* if /etc/filename.conf.d does not exist, create it */
-            if (access(path, F_OK) == -1 && errno == ENOENT) {
-                int mkDir = mkdir(path,
-                        S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH); // 755
-                if (mkDir != 0) {
-                    fprintf(stderr, "-->Error with mkdir()!\n");
-                    econf_free(key_file);
-                    exit(EXIT_FAILURE);
-                }
-            }
-            /* check if file already exists */
-            if (access(pathFilename, F_OK) == 0 && !nonInteractive) {
-                char input[3] = "";
-                /* let the user verify that the file should really be overwritten */
-                do {
-                    fprintf(stdout, "The file %s/%s already exists!\n", path, filenameSuffix);
-                    fprintf(stdout, "Do you really want to overwrite it?\nYes [y], no [n]\n");
-                    scanf("%2s", input);
-                } while (strcmp(input, "y") != 0 && strcmp(input, "n") != 0);
-
-                if (strcmp(input, "y") == 0) {
-                    if ((error = econf_writeFile(key_file_edit, path, filenameSuffix))) {
-                        fprintf(stderr, "%s\n", econf_errString(error));
-                        econf_free(key_file_edit);
-                        goto exit_failure;
-                    }
-                }
-            } else {
-                if ((error = econf_writeFile(key_file_edit, path, filenameSuffix))) {
-                    fprintf(stderr, "%s\n", econf_errString(error));
-                    econf_free(key_file_edit);
-                    goto exit_failure;
-                }
-            }
-            /* cleanup */
-            econf_free(key_file_edit);
-            econf_free(groups_edit);
-            econf_free(groups);
-            free(groups_new);
-            free(groups_deleted);
-            free(groups_common);
-            remove(path_tmpfile_edit);
-            remove(path_tmpfile_orig);
-            return EXIT_SUCCESS;
-
-exit_failure:
-            econf_free(key_file);
-            remove(path_tmpfile_edit);
-            remove(path_tmpfile_orig);
-            exit(EXIT_FAILURE);
-
-        }
-
-    /****************************************************************
-     * @biref Revert all changes to the vendor version. This means,
-     *        delete all files in /etc for this.
-     */
-    } else if (strcmp(argv[optind], "revert") == 0) {
-        char input[3] = "";
-
-        if (!isRoot) {
-            fprintf(stderr, "Root is needed for revert\n");
-            exit(EXIT_FAILURE);
-        }
-
-        snprintf(pathFilename, sizeof(pathFilename), "/etc/%s%s", filename, suffix);
-
-        if (access(pathFilename, F_OK) == -1 && access(path, F_OK) == -1) {
-            fprintf(stderr, "No config files with name %s in /etc found\n",
-                    argv[optind + 1]);
-            exit(EXIT_FAILURE);
-        }
-
-        /* Delete config file */
-        if (access(pathFilename, F_OK) == 0) {
-            /* let the user verify that the file should really be deleted */
-            while (strcmp(input, "y") != 0 && strcmp(input, "n") != 0
-                    && !nonInteractive) {
-                fprintf(stdout, "Delete file %s?\nYes [y], no [n]\n", pathFilename);
-                scanf("%2s", input);
-            }
-
-            if (strcmp(input, "y") == 0 || nonInteractive) {
-                int status = remove(pathFilename);
-                if (status != 0)
-                    fprintf(stdout, "%s\n", strerror(errno));
-                else
-                    fprintf(stdout, "File %s deleted!\n", pathFilename);
-            }
-        }
-
-        /* Reset input */
-        strcpy(input, "");
-
-        /* Delete snippet directory */
-        if (access(path, F_OK) == 0) {
-            /* let the user verify that the directory should really be deleted */
-            while (strcmp(input, "y") != 0 && strcmp(input, "n") != 0
-                    && !nonInteractive) {
-                fprintf(stdout, "Delete directory %s?\nYes [y], no [n]\n", path);
-                scanf("%2s", input);
-            }
-
-            if (strcmp(input, "y") == 0 || nonInteractive) {
-                int status = nftw(path, nftwRemove, getdtablesize() - 10, FTW_DEPTH);
-                if (status != 0)
-                    fprintf(stdout, "%s\n", strerror(errno));
-                else
-                    fprintf(stdout, "Directory %s deleted!\n", path);
-            }
-        }
-    } else {
-        fprintf(stderr, "Unknown command!\n");
-        exit(EXIT_FAILURE);
-    }
-
-    /* cleanup */
-    econf_free(key_file);
-    return EXIT_SUCCESS;
-}
+static bool non_interactive = false;
+char *suffix = NULL; /* the suffix of the filename e.g. .conf */
+char path[PATH_MAX]; /* the path of the config file */
+char filename[PATH_MAX]; /* the filename without the suffix */
+char filename_suffix[PATH_MAX]; /* the filename with the suffix */
+char path_filename[PATH_MAX]; /* the path concatenated with the filename and the suffix */
+char root_dir[PATH_MAX] = "/etc";
+char usr_root_dir[PATH_MAX] = "/usr/etc";
+char xdg_config_dir[PATH_MAX];
 
 /**
  * @brief Shows the usage.
  */
+
 static void usage(void)
 {
     fprintf(stderr, "Usage: %s COMMANDS [OPTIONS] filename.conf\n\n", utilname);
-    fprintf(stderr, "COMMANDS:\n");
+    fprintf(stderr, "COMMAND:\n");
     fprintf(stderr, "show     reads all snippets for filename.conf and prints all groups,\n");
     fprintf(stderr, "         keys and their values.\n");
-    fprintf(stderr, "cat      prints the content and the name of the file in the order as\n");
-    fprintf(stderr, "         read by libeconf.\n");
-    fprintf(stderr, "edit     starts the editor EDITOR (environment variable) where the\n");
+    fprintf(stderr, "edit     starts the editor $EDITOR (environment variable) where the\n");
     fprintf(stderr, "         groups, keys and values can be modified and saved afterwards.\n");
     fprintf(stderr, "  -f, --full:      copy the original configuration file to /etc instead of\n");
     fprintf(stderr, "                   creating drop-in files.\n");
@@ -515,73 +61,6 @@ static void usage(void)
     fprintf(stderr, "revert   reverts all changes to the vendor versions. Basically deletes\n");
     fprintf(stderr, "         the config file and snippet directory in /etc.\n");
     fprintf(stderr, "  -y, --yes:       Assumes yes for all prompts and runs non-interactively.\n\n");
-    exit(EXIT_FAILURE);
-}
-
-/**
- * @brief Compares two econf_file groups and stores the values in different pointers.
- *
- * This function compares group 1 and group 2 for common, new and missing elements.
- *
- * @par group1  The 1st group to compare.
- * @par group2  The 2nd group to compare.
- * @par new     Elements that are not found in group 1 but in group 2 are stored here.
- * @par deleted Elements that are found in group 1 but not in group 2 are stored here.
- * @par common  Elements that are found in group 1 and group 2 are stored here.
- * @par size_g1 The number of elements in group 1.
- * @par size_g2 The number of elements in group 2.
- * @par size_new The number of elements in new
- * @par size_deleted The number of elements in deleted
- * @par size_common The number of elements in common.
- * @return void.
- */
-static void diffGroups(char **group1, char **group2, char ***new, char ***deleted, char ***common,
-                       size_t *size_g1, size_t *size_g2, size_t *size_new, size_t *size_deleted,
-                       size_t *size_common)
-{
-    size_t size = *size_g1 + *size_g2 + 1;
-    bool found1 = false;
-    bool found2 = false;
-    *new = calloc(size, sizeof(char*));
-    *deleted = calloc(*size_g1 + 1, sizeof(char*));
-    *common = calloc(*size_g1 + 1, sizeof(char*));
-
-    if (*new == NULL || *deleted == NULL || *common == NULL) {
-        fprintf(stderr, "Error with calloc()!");
-        exit(EXIT_FAILURE);
-    }
-    /* compare group1 with group2 */
-    for(size_t i = 0; i < *size_g1; i++) {
-        found1 = false;
-        for (size_t j = 0; j < *size_g2; j++) {
-            if (strcmp(group1[i],group2[j]) == 0) {
-                (*common)[*size_common] = strdup(group1[i]);
-                (*size_common)++;
-                found1 = true;
-                break;
-            }
-        }
-        if (!found1) {
-            /* inside group1 but not in group2 -> deleted element */
-            (*deleted)[*size_deleted] = strdup(group1[i]);
-            (*size_deleted)++;
-        }
-    }
-    /* compare group2 with common */
-    for (size_t j = 0; j < *size_g2; j++) {
-        found2 = false;
-        for(size_t i = 0; i < *size_common; i++) {
-            if (strcmp(group2[j], (*common)[i]) == 0) {
-                found2 = true;
-                break;
-            }
-        }
-        if (!found2) {
-            /* not in common -> new element */
-            (*new)[*size_new] = strdup(group2[j]);
-            (*size_new)++;
-        }
-    }
 }
 
 /**
@@ -589,7 +68,7 @@ static void diffGroups(char **group1, char **group2, char ***new, char ***delete
  *
  * @param path The path to be changed
  */
-static void changeRootDir(char *path)
+static void change_root_dir(char path[PATH_MAX])
 {
     if (getenv("ECONFTOOL_ROOT") != NULL) {
         if (strlen(path) + strlen(getenv("ECONFTOOL_ROOT")) >= PATH_MAX) {
@@ -607,10 +86,472 @@ static void changeRootDir(char *path)
 }
 
 /**
- * @brief This function is used in conjunction with nftw to delete
- * all files nftw finds.
+ * @brief This function is used as a callback for nftw to delete
+ *        all files nftw finds.
  */
-static int nftwRemove(const char *path, const struct stat *sb, int flag, struct FTW *ftwbuf)
+static int nftw_remove(const char *path, const struct stat *sb, int flag, struct FTW *ftwbuf)
 {
     return remove(path);
+}
+
+/**
+ * @brief Generate a tmpfile using mkstemp() and write its name into tmp_name
+ */
+static int generate_tmp_file(char *tmp_name)
+{
+    int filedes;
+    char name_template[21] = "/tmp/econftool-XXXXXX";
+    filedes = mkstemp(name_template);
+    if (filedes == -1) {
+        perror("mkstemp() failed");
+        return -1;
+    }
+
+    char fdpath[PATH_MAX];
+    char tmp_filename[PATH_MAX];
+    snprintf(fdpath, PATH_MAX, "/proc/self/fd/%d", filedes);
+    ssize_t r = readlink(fdpath, tmp_filename, PATH_MAX);
+    tmp_filename[r] = '\0';
+    strcpy(tmp_name, tmp_filename);
+    return 0;
+}
+
+/**
+ * @brief This command will read all snippets for filename.conf
+ *        (econf_readDirs) and print all groups, keys and their
+ *        values as an application would see them.
+ */
+static int econf_show(void)
+{
+    econf_err econf_error;
+
+    econf_error = econf_readDirs(&key_file, usr_root_dir, root_dir, filename, suffix, "=", "#");
+    if (econf_error) {
+        fprintf(stderr, "%s\n", econf_errString(econf_error));
+        econf_free(key_file);
+        return -1;
+    }
+
+    char **groups = NULL;
+    char *value = NULL;
+    size_t groupCount = 0;
+
+    /* show groups, keys and their value */
+    econf_error = econf_getGroups(key_file, &groupCount, &groups);
+    if (econf_error) {
+        fprintf(stderr, "%s\n", econf_errString(econf_error));
+        econf_free(groups);
+        econf_free(key_file);
+        return -1;
+    }
+    for (size_t g = 0; g < groupCount; g++)
+    {
+        char **keys = NULL;
+        size_t key_count = 0;
+
+        econf_error = econf_getKeys(key_file, groups[g], &key_count, &keys);
+        if (econf_error)
+        {
+            fprintf(stderr, "%s\n", econf_errString(econf_error));
+            econf_free(groups);
+            econf_free(keys);
+            return -1;
+        }
+        printf("%s\n", groups[g]);
+        for (size_t k = 0; k < key_count; k++) {
+            econf_error = econf_getStringValue(key_file, groups[g], keys[k], &value);
+            if (econf_error) {
+                fprintf(stderr, "%s\n", econf_errString(econf_error));
+                econf_free(groups);
+                econf_free(keys);
+                free(value);
+                return -1;
+            }
+            if (value != NULL)
+                printf("%s = %s\n", keys[k], value);
+            free(value);
+        }
+        printf("\n");
+        econf_free(keys);
+    }
+    econf_free(groups);
+    return 0;
+}
+
+/**
+ * @brief Generates a tmpfiles from key_file and opens editor to allow user editing.
+ *        It then saves the edited in key_file_edit and deletes the tmpfile
+ */
+static int econf_edit_editor(struct econf_file **key_file_edit)
+{
+    econf_err econf_error;
+    int ret = 0;
+    int error;
+    int wstatus;
+    char *editor;
+    char tmpfile_edit[FILENAME_MAX];
+    char path_tmpfile_edit[PATH_MAX];
+    char tmp_name[PATH_MAX];
+    char *tmp_path = getenv("TMPDIR");
+    if (tmp_path == NULL)
+        tmp_path = "/tmp";
+
+    if (generate_tmp_file(tmp_name))
+        return -1;
+    snprintf(path_tmpfile_edit, sizeof(path_tmpfile_edit), "%s", tmp_name);
+    snprintf(tmpfile_edit, sizeof(tmpfile_edit), "%s", strrchr(path_tmpfile_edit, '/') + 1);
+
+    editor = getenv("EDITOR");
+    if (editor == NULL) {
+        /* if no editor is specified take vi as default */
+        editor = "vi";
+    }
+
+    pid_t pid = fork();
+
+    if (pid == -1) {
+        perror("fork() failed");
+        exit(EXIT_FAILURE);
+    } else if (!pid) {
+    /* child */
+
+        /* write contents of key_file to tmpfile */
+        econf_error = econf_writeFile(key_file, tmp_path, tmpfile_edit);
+        if (econf_error) {
+            fprintf(stderr, "%s\n", econf_errString(econf_error));
+            exit(EXIT_FAILURE);
+        }
+        /* execute given command and save result in tmpfile_edit */
+        error = execlp(editor, editor, path_tmpfile_edit, (char *) NULL);
+
+        if (error != 0) {
+            fprintf(stderr, "Couldn't open %s! %s\n", editor, strerror(errno));
+            exit(EXIT_FAILURE);
+        } else {
+            exit(EXIT_SUCCESS);
+        }
+    }
+    /* parent */
+    if (waitpid(pid, &wstatus, 0) == -1) {
+        fprintf(stderr, "Error using waitpid().\n");
+        ret = -1;
+        goto cleanup;
+    } else if (WIFEXITED(wstatus) && WEXITSTATUS(wstatus) != 0) {
+        ret = -1;
+        goto cleanup;
+    }
+
+    /* save edits from tmpfile_edit in key_file_edit */
+    econf_error = econf_readFile(&*key_file_edit, path_tmpfile_edit, "=", "#");
+    if (econf_error) {
+        fprintf(stderr, "%s\n", econf_errString(error));
+        ret = -1;
+    }
+
+    cleanup:
+    remove(path_tmpfile_edit);
+    return ret;
+}
+
+/**
+ * @brief This command will start an editor (EDITOR environment variable),
+ *        which shows all groups, keys and their values (like econftool
+ *        show output), allows the admin to modify them, and stores the
+ *        changes afterwards in a drop-in file in /etc/filename.conf.d/.
+ *
+ * --full: copy the original config file to /etc instead of creating drop-in
+ *         files.
+ *
+ * If not root, the file will be created in XDG_CONF_HOME, which is normally
+ * $HOME/.config.
+ *
+ *  TODO:
+ *      - Replace static values of the path with future libeconf API calls
+ */
+static int econf_edit(void)
+{
+    econf_err econf_error;
+    int ret = 0;
+    econf_file *key_file_edit = NULL;
+
+    econf_error = econf_readDirs(&key_file, usr_root_dir, root_dir, filename, suffix, "=", "#");
+
+    if (econf_error == ECONF_NOFILE) {
+    /* the file does not exist */
+
+        /* create empty key file */
+        if ((econf_error = econf_newIniFile(&key_file))) {
+            fprintf(stderr, "%s\n", econf_errString(econf_error));
+            return -1;
+        }
+    } else if (econf_error != ECONF_SUCCESS) {
+        /* other errors besides "missing config file" or "no error" */
+        fprintf(stderr, "%s\n", econf_errString(econf_error));
+        return -1;
+    }
+
+    if (econf_edit_editor(&key_file_edit)) {
+        econf_free(key_file_edit);
+        return -1;
+    }
+
+    /*********************************************************************/
+    /* TODO: analyse the key_files of the 2 tmp files to extract the change
+     * - starting with groups, then keys and then values
+     */
+    char **groups = NULL;
+    char **groupsEdit = NULL;
+    size_t groupCount = 0;
+    size_t groupEditCount = 0;
+
+    /* extract the groups of the original key_file into groups */
+    econf_error = econf_getGroups(key_file, &groupCount, &groups);
+    if (econf_error) {
+        fprintf(stderr, "%s\n", econf_errString(econf_error));
+        ret = -1;
+        goto cleanup;
+    }
+    /* extract the groups of the edited key_file into groupsEdit */
+    econf_error = econf_getGroups(key_file_edit, &groupEditCount, &groupsEdit);
+    if (econf_error) {
+        fprintf(stderr, "%s\n", econf_errString(econf_error));
+        ret = -1;
+        goto cleanup;
+    }
+
+    /* if path does not exist, create it */
+    if (access(path, F_OK) == -1 && errno == ENOENT) {
+        if (mkdir(path, 0755) != 0) {
+            perror("mkdir() failed");
+            ret = -1;
+            goto cleanup;
+        }
+    }
+    /* check if file already exists */
+    if (access(path_filename, F_OK) == 0 && !non_interactive) {
+        char input[3] = "";
+        /* let the user verify that the file should really be overwritten */
+        do {
+            fprintf(stdout, "The file %s/%s already exists!\n", path, filename_suffix);
+            fprintf(stdout, "Do you really want to overwrite it?\nYes [y], no [n]\n");
+            scanf("%2s", input);
+        } while (strcmp(input, "y") != 0 && strcmp(input, "n") != 0);
+
+        if (strcmp(input, "y") == 0) {
+            if ((econf_error = econf_writeFile(key_file_edit, path, filename_suffix))) {
+                fprintf(stderr, "%s\n", econf_errString(econf_error));
+                ret = -1;
+                goto cleanup;
+            }
+        }
+    } else {
+        if ((econf_error = econf_writeFile(key_file_edit, path, filename_suffix))) {
+            fprintf(stderr, "%s\n", econf_errString(econf_error));
+            econf_free(key_file_edit);
+            ret = -1;
+            goto cleanup;
+        }
+    }
+
+    /* cleanup */
+    cleanup:
+    econf_free(key_file_edit);
+    econf_free(groupsEdit);
+    econf_free(groups);
+    return ret;
+
+}
+
+/**
+ * @biref Revert all changes to the vendor version. If the user is root,
+ *        delete all files in /etc for config file including snippet directory.
+ *        If the user is not root delete the config file in xdg_config_dir.
+ */
+static int econf_revert(bool is_root)
+{
+    char input[3] = "";
+    int status = 0;
+
+    if (!is_root) {
+        snprintf(path_filename, sizeof(path_filename), "%s/%s", xdg_config_dir, filename_suffix);
+    } else {
+        snprintf(path_filename, sizeof(path_filename), "/etc/%s", filename_suffix);
+    }
+
+    if (access(path_filename, F_OK) == -1 && (access(path, F_OK) == -1 || !is_root)) {
+        fprintf(stderr, "Could not find %s or a snippet directory\n", path_filename);
+        return -1;
+    }
+
+    /* Delete config file */
+    if (access(path_filename, F_OK) == 0) {
+        /* let the user verify that the file should really be deleted */
+        while (strcmp(input, "y") != 0 && strcmp(input, "n") != 0
+                && !non_interactive) {
+            fprintf(stdout, "Delete file %s?\nYes [y], no [n]\n", path_filename);
+            scanf("%2s", input);
+        }
+
+        if (strcmp(input, "y") == 0 || non_interactive) {
+            status = remove(path_filename);
+            if (status)
+                perror("remove() failed");
+            else
+                fprintf(stdout, "File %s deleted!\n", path_filename);
+        }
+    }
+
+    if (!is_root)
+        return 0;
+
+    /* Reset input */
+    strcpy(input, "");
+
+    /* Delete snippet directory */
+    if (access(path, F_OK) == 0) {
+        /* let the user verify that the directory should really be deleted */
+        while (strcmp(input, "y") != 0 && strcmp(input, "n") != 0 && !non_interactive) {
+            fprintf(stdout, "Delete directory %s?\nYes [y], no [n]\n", path);
+            scanf("%2s", input);
+        }
+
+        if (strcmp(input, "y") == 0 || non_interactive) {
+            status = nftw(path, nftw_remove, getdtablesize() - 10, FTW_DEPTH);
+            if (status)
+                perror("nftw() failed");
+            else
+                fprintf(stdout, "Directory %s deleted!\n", path);
+        }
+    }
+
+    return status;
+}
+
+int main (int argc, char *argv[])
+{
+    static const char *dropin_filename = "90_econftool.conf";
+    char home[PATH_MAX]; /* the path of the home directory */
+    bool is_dropin_file = true;
+    bool is_root = false;
+    int ret = 0;
+    uid_t uid = getuid();
+
+    memset(path, 0, PATH_MAX);
+    memset(home, 0, PATH_MAX);
+    memset(filename, 0, PATH_MAX);
+    memset(path_filename, 0, PATH_MAX);
+
+    /* parse command line arguments. See getopt_long(3) */
+    int opt, nonopts;
+    int index = 0;
+    static struct option longopts[] = {
+    /*   name,     arguments,      flag, value */
+        {"full",   no_argument,       0, 'f'},
+        {"help",   no_argument,       0, 'h'},
+        {"yes",    no_argument,       0, 'y'},
+        {0,        0,                 0,  0 }
+    };
+
+    while ((opt = getopt_long(argc, argv, "hfy", longopts, &index)) != -1) {
+        switch(opt) {
+        case 'f':
+            /* overwrite path */
+            snprintf(path, sizeof(path), "%s", "/etc");
+            change_root_dir(path);
+            is_dropin_file = false;
+            break;
+        case 'h':
+            usage();
+            return EXIT_SUCCESS;
+        case 'y':
+            non_interactive = true;
+            break;
+        case '?':
+        default:
+            fprintf(stderr, "Try '%s --help' for more information.\n", utilname);
+            exit(EXIT_FAILURE);
+            break;
+        }
+    }
+    nonopts = argc - optind;
+
+    /* only do something if we have an input */
+    if (argc < 2) {
+        usage();
+        return EXIT_FAILURE;
+    } else if (argc < 3 || nonopts < 2) {
+        fprintf(stderr, "Invalid number of Arguments\n\n");
+        usage();
+        return EXIT_FAILURE;
+    }
+    /**** initialization ****/
+
+    /* basic write permission check */
+    is_root = uid == 0;
+
+    /* get the position of the last dot in the filename to extract
+     * the suffix from it.
+     */
+    suffix = strrchr(argv[optind + 1], '.');
+
+    if (suffix == NULL) {
+        fprintf(stderr, "Currently only works with a dot in the filename!\n\n");
+        usage();
+    }
+
+    /* set filename to the proper argv argument */
+    if (strlen(argv[optind + 1]) > sizeof(filename)) {
+        fprintf(stderr, "Filename too long\n");
+        return EXIT_FAILURE;
+    }
+    snprintf(filename, strlen(argv[optind + 1]) - strlen(suffix) + 1, "%s", argv[optind + 1]);
+    snprintf(filename_suffix, sizeof(filename_suffix), argv[optind + 1]);
+
+    if (is_dropin_file) {
+        snprintf(path, sizeof(path), "/etc/%s.d", filename_suffix);
+        change_root_dir(path);
+    }
+    snprintf(path_filename, sizeof(path_filename), "%s/%s", path, filename_suffix);
+
+    if (getenv("ECONFTOOL_ROOT") == NULL)
+        snprintf(home, sizeof(home), "%s", getenv("HOME"));
+    else
+        change_root_dir(home);
+
+    if (getenv("XDG_CONFIG_HOME") == NULL) {
+        /* if no XDG_CONFIG_HOME is specified take ~/.config as default */
+        snprintf(xdg_config_dir, sizeof(xdg_config_dir), "%s/%s", home, ".config");
+    } else {
+        snprintf(xdg_config_dir, sizeof(xdg_config_dir), "%s", getenv("XDG_CONFIG_HOME"));
+    }
+
+    /* Change Root dirs */
+    change_root_dir(root_dir);
+    change_root_dir(usr_root_dir);
+
+
+    if (strcmp(argv[optind], "show") == 0) {
+        ret = econf_show();
+    } else if (strcmp(argv[optind], "edit") == 0) {
+        if (!is_root) {
+            /* adjust path to home directory of the user.*/
+            snprintf(path, sizeof(path), "%s", xdg_config_dir);
+            change_root_dir(path);
+        } else if(is_dropin_file) {
+            snprintf(filename_suffix, sizeof(filename_suffix), "%s", dropin_filename);
+            snprintf(path_filename, sizeof(path_filename), "%s/%s", path,
+                    filename_suffix);
+        }
+
+        ret = econf_edit();
+    } else if (strcmp(argv[optind], "revert") == 0) {
+        ret = econf_revert(is_root);
+    } else {
+        fprintf(stderr, "Unknown command!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /* cleanup */
+    econf_free(key_file);
+    return ret;
 }
