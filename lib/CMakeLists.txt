@@ -57,12 +57,16 @@ configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/libeconfConfig.cmake.i
   NO_SET_AND_CHECK_MACRO
   NO_CHECK_REQUIRED_COMPONENTS_MACRO
 )
+install(FILES
+  ${CMAKE_BINARY_DIR}/libeconfConfig.cmake
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libeconf
+)
 write_basic_package_version_file(
   ${CMAKE_BINARY_DIR}/libeconfConfigVersion.cmake
   VERSION ${PROJECT_VERSION}
   COMPATIBILITY SameMinorVersion
 )
 install(FILES
-  ${CMAKE_BINARY_DIR}/libeconfConfig.cmake
+  ${CMAKE_BINARY_DIR}/libeconfConfigVersion.cmake
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libeconf
 )
