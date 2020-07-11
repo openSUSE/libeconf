@@ -11,7 +11,7 @@ two methods of overriding this vendor settings: copy the file from
 directory named _file_._suffix_.d/ within /etc can be created, with
 drop-in files in the form _name_._suffix_. This files contain only the
 changes of the specific settings the user is interested in. There can
-be serveral such drop-in files, they are processed in lexicographic order
+be several such drop-in files, they are processed in lexicographic order
 of their filename.
 
 
