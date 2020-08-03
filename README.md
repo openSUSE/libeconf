@@ -1,6 +1,6 @@
 # libeconf
 
-**libeconf** is a highly flexible and configureable library to parse and
+**libeconf** is a highly flexible and configurable library to parse and
 manage key=value configuration files.
 It reads configuration file snippets from different directories and builds
 the final configuration file for the application from it.
@@ -9,7 +9,7 @@ The first file is the vendor provided configuration file. There are
 two methods of overriding this vendor settings: copy the file from
 /usr/_vendordir_ to /etc and modify the settings. Alternatively, a
 directory named _file_._suffix_.d/ within /etc can be created, with
-drop-in files in the form _name_._suffix_. This files contain only the
+drop-in files in the form _name_._suffix_. These files contain only the
 changes of the specific settings the user is interested in. There can
 be several such drop-in files, they are processed in lexicographic order
 of their filename.
