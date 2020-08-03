@@ -14,7 +14,6 @@ changes of the specific settings the user is interested in. There can
 be several such drop-in files, they are processed in lexicographic order
 of their filename.
 
-
 The first method is useful to override the complete configuration file with an
 own one, the vendor supplied configuration is ignored.
 
@@ -36,5 +35,6 @@ exists:
 * /etc/_example_._suffix_.d/*._suffix_
 
 If a /etc/_example_._suffix_ files exists:
+
 * /etc/_example_._suffix_
 * /etc/_example_._suffix_.d/*._suffix_
