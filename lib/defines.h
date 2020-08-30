@@ -25,7 +25,7 @@
 
 /* --- defines.h --- */
 
-#include "../include/helpers.h"
+#include "helpers.h"
 
 /* Defines default values used in the library  */
 
