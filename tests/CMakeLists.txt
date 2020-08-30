@@ -53,3 +53,10 @@ set(TESTS tst-filedoesnotexit1
 foreach (TESTCASE ${TESTS})
   BuildAndAddTest(${TESTCASE})
 endforeach()
+
+find_program (BASH_PROGRAM bash)
+
+if (BASH_PROGRAM)
+    add_test (econftool1 ${BASH_PROGRAM} ${CMAKE_CURRENT_SOURCE_DIR}/tst-econftool1.sh)
+    add_test (econftool_show1 ${BASH_PROGRAM} ${CMAKE_CURRENT_SOURCE_DIR}/tst-econftool_show1.sh)
+endif (BASH_PROGRAM)

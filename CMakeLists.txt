@@ -64,6 +64,7 @@ set(CMAKE_C_FLAGS_RELWITHDEBINFOSTRICT
 
 add_subdirectory(lib)
 add_subdirectory(example)
+add_subdirectory(util)
 
 # Enable testing
 include(CTest)
