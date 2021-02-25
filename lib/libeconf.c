@@ -347,7 +347,7 @@ econf_getGroups(econf_file *kf, size_t *length, char ***groups)
   }
   if (!tmp) {
     free(uniques);
-    return ECONF_ERROR;
+    return ECONF_NOGROUP;
   }
   *groups = calloc(tmp + 1, sizeof(char*));
   if (*groups == NULL)

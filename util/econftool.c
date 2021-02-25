@@ -50,10 +50,12 @@ static char usr_root_dir[PATH_MAX] = "/usr/etc";
  */
 static void usage(void)
 {
-    fprintf(stderr, "Usage: %s COMMAND [OPTIONS] filename.conf\n\n", utilname);
+    fprintf(stderr, "Usage: %s COMMAND [OPTIONS] <filename>.conf\n\n", utilname);
     fprintf(stderr, "COMMANDS:\n");
-    fprintf(stderr, "show     reads all snippets for filename.conf and prints all groups,\n");
-    fprintf(stderr, "         keys and their values.\n");
+    fprintf(stderr, "show     reads all snippets for <filename>.conf (in /usr/etc and /etc),\n");
+    fprintf(stderr, "         and prints all groups,keys and their values.\n");
+    fprintf(stderr, "         The root directories is /. It can be set by the environment\n");
+    fprintf(stderr, "         variable $ECONFTOOL_ROOT \n");
     fprintf(stderr, "edit     starts the editor $EDITOR (environment variable) where the\n");
     fprintf(stderr, "         groups, keys and values can be modified and saved afterwards.\n");
     fprintf(stderr, "  -f, --full:      copy the original configuration file to /etc instead of\n");
@@ -106,7 +108,7 @@ static int nftw_remove(const char *path, const struct stat *sb, int flag, struct
 static int generate_tmp_file(char *tmp_name)
 {
     int filedes;
-    char tmp_filename[21] = "/tmp/econftool-XXXXXX";
+    char tmp_filename[] = "/tmp/econftool-XXXXXX";
     filedes = mkstemp(tmp_filename);
     if (filedes == -1) {
         perror("mkstemp() failed");
@@ -118,6 +120,14 @@ static int generate_tmp_file(char *tmp_name)
 }
 
 /**
+ * @brief freeing used memory which has been used for groups
+ */
+static void free_groups(char ***groups)
+{
+    econf_free(*groups);
+}
+
+/**
  * @brief This command will read all snippets for filename.conf
  *        (econf_readDirs) and print all groups, keys and their
  *        values as an application would see them.
@@ -125,25 +135,26 @@ static int generate_tmp_file(char *tmp_name)
 static int econf_show(struct econf_file **key_file)
 {
     econf_err econf_error;
-
+    printf ("Vendor config directory: %s\n",usr_root_dir);
+    printf ("Config directory for local changes:  %s\n",root_dir);
+    printf ("Basename: %s\n",conf_basename);
+    printf ("Suffix: %s\n",conf_suffix);
     econf_error = econf_readDirs(key_file, usr_root_dir, root_dir, conf_basename,
                                  conf_suffix, "=", "#");
     if (econf_error) {
-        fprintf(stderr, "%s\n", econf_errString(econf_error));
+        fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
         return -1;
     }
 
-    int ret = 0;
-    char **groups = NULL;
+    char **groups __attribute__ ((__cleanup__(free_groups))) = NULL;
     char *value = NULL;
     size_t groupCount = 0;
 
     /* show groups, keys and their value */
     econf_error = econf_getGroups(*key_file, &groupCount, &groups);
     if (econf_error) {
-        fprintf(stderr, "%s\n", econf_errString(econf_error));
-        ret = -1;
-        goto cleanup;
+        fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
+        return -1;
     }
     for (size_t g = 0; g < groupCount; g++) {
         char **keys = NULL;
@@ -151,19 +162,17 @@ static int econf_show(struct econf_file **key_file)
 
         econf_error = econf_getKeys(*key_file, groups[g], &key_count, &keys);
         if (econf_error) {
-            fprintf(stderr, "%s\n", econf_errString(econf_error));
+            fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
             econf_free(keys);
-            ret = -1;
-            goto cleanup;
+            return -1;
         }
         printf("%s\n", groups[g]);
         for (size_t k = 0; k < key_count; k++) {
             econf_error = econf_getStringValue(*key_file, groups[g], keys[k], &value);
             if (econf_error) {
-                fprintf(stderr, "%s\n", econf_errString(econf_error));
+                fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
                 econf_free(keys);
-                ret = -1;
-                goto cleanup;
+                return -1;
             }
             if (value != NULL)
                 printf("%s = %s\n", keys[k], value);
@@ -173,9 +182,7 @@ static int econf_show(struct econf_file **key_file)
         econf_free(keys);
     }
 
-  cleanup:
-    econf_free(groups);
-    return ret;
+    return 0;
 }
 
 /**
@@ -227,7 +234,7 @@ static int econf_edit_editor(struct econf_file **key_file_edit, struct econf_fil
     /* parent */
     int ret = 0;
     do {
-        if (waitpid(pid, &wstatus, 0) == -1) {
+        if (waitpid(pid, &wstatus, 0) == -1 && errno != EINTR) {
             perror("waitpid");
             ret = -1;
             goto cleanup;
@@ -317,12 +324,10 @@ static int econf_edit(struct econf_file **key_file)
     }
 
     /* if path does not exist, create it */
-    if (access(conf_dir, F_OK) == -1 && errno == ENOENT) {
-        if (mkdir(conf_dir, 0755) != 0) {
-            perror("mkdir() failed");
-            ret = -1;
-            goto cleanup;
-        }
+    if (mkdir(conf_dir, 0755) != 0 && errno == EEXIST) {
+        perror("mkdir() failed");
+        ret = -1;
+        goto cleanup;
     }
     /* check if file already exists */
     if (access(conf_path, F_OK) == 0 && !non_interactive) {
@@ -333,10 +338,12 @@ static int econf_edit(struct econf_file **key_file)
             fprintf(stdout, "Do you really want to overwrite it?\nYes [y], no [n]\n");
             if (scanf("%2s", input) != 1) {
                 fprintf(stderr, "Didn't read correctly\n");
+		strcpy(input, "");
             }
         } while (strcmp(input, "y") != 0 && strcmp(input, "n") != 0);
 
         if (strcmp(input, "y") == 0) {
+            printf( "Writing file %s to %s\n",conf_filename, conf_dir);
             if ((econf_error = econf_writeFile(key_file_edit, conf_dir, conf_filename))) {
                 fprintf(stderr, "%s\n", econf_errString(econf_error));
                 ret = -1;
