@@ -49,6 +49,7 @@ libeconf_src = files(
   'lib/mergefiles.c',
 )
 example_src = ['example/example.c']
+econftool_src = ['util/econftool.c']
 
 mapfile = 'lib/libeconf.map'
 version_flag = '-Wl,--version-script,@0@/@1@'.format(meson.current_source_dir(), mapfile)
@@ -81,6 +82,7 @@ libeconf_dep = declare_dependency(
 # Example
 
 executable('example', example_src, dependencies : libeconf_dep)
+executable('econftool', econftool_src, dependencies : libeconf_dep)
 
 # Unit tests
 subdir('tests')

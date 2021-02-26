@@ -77,3 +77,6 @@ test('tst-parseconfig1', tst_parseconfig1_exe)
 
 tst_quote1_exe = executable('tst-quote1', 'tst-quote1.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-quote1', tst_quote1_exe)
+
+test('tst_econftool1', find_program('tst-econftool1.sh'))
+test('tst_econftool_show1', find_program('tst-econftool_show1.sh'))
