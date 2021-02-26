@@ -60,7 +60,6 @@ static void usage(void)
     fprintf(stderr, "         groups, keys and values can be modified and saved afterwards.\n");
     fprintf(stderr, "  -f, --full:      copy the original configuration file to /etc instead of\n");
     fprintf(stderr, "                   creating drop-in files.\n");
-    fprintf(stderr, "  -y, --yes:       assumes yes for all prompts.\n");
     fprintf(stderr, "  --use-home:      only has an effect if the user is root.\n");
     fprintf(stderr, "                   chooses the root home directory instead of /etc.\n");
     fprintf(stderr, "revert   reverts all changes to the vendor versions. Basically deletes\n");
@@ -76,7 +75,13 @@ static void usage(void)
 static void change_root_dir(char change_path[PATH_MAX])
 {
     if (getenv("ECONFTOOL_ROOT") != NULL) {
-        if (strlen(change_path) + strlen(getenv("ECONFTOOL_ROOT")) >= PATH_MAX) {
+
+        int strlen_econftool_root = strlen(getenv("ECONFTOOL_ROOT"));
+        /* check if ECONFTOOL_ROOT has already been added */
+        if (strncmp(change_path, getenv("ECONFTOOL_ROOT"), strlen_econftool_root) == 0)
+            return;
+
+        if ((strlen(change_path) + strlen_econftool_root) >= PATH_MAX) {
             fprintf(stderr, "ECONFTOOL_ROOT + change_path is too long\n");
             exit(EXIT_FAILURE);
         }
@@ -324,10 +329,12 @@ static int econf_edit(struct econf_file **key_file)
     }
 
     /* if path does not exist, create it */
-    if (mkdir(conf_dir, 0755) != 0 && errno == EEXIST) {
-        perror("mkdir() failed");
-        ret = -1;
-        goto cleanup;
+    if (access(conf_dir, F_OK) == -1 && errno == ENOENT) {
+        if (mkdir(conf_dir, 0755) != 0) {
+            perror("mkdir() failed");
+            ret = -1;
+            goto cleanup;
+	}
     }
     /* check if file already exists */
     if (access(conf_path, F_OK) == 0 && !non_interactive) {
@@ -351,6 +358,7 @@ static int econf_edit(struct econf_file **key_file)
             }
         }
     } else {
+        printf( "Writing file %s to %s\n",conf_filename, conf_dir);
         if ((econf_error = econf_writeFile(key_file_edit, conf_dir, conf_filename))) {
             fprintf(stderr, "%s\n", econf_errString(econf_error));
             ret = -1;
@@ -368,7 +376,7 @@ static int econf_edit(struct econf_file **key_file)
 }
 
 /**
- * @biref Revert all changes to the vendor version. If the user is root,
+ * @brief Revert all changes to the vendor version. If the user is root,
  *        delete all files in /etc for config file including snippet directory.
  *        If the user is not root delete the config file in xdg_config_dir.
  */
