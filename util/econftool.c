@@ -562,6 +562,8 @@ int main (int argc, char *argv[])
             /* adjust path to home directory of the user.*/
             snprintf(conf_dir, sizeof(conf_dir), "%s", xdg_config_dir);
             change_root_dir(conf_dir);
+            snprintf(conf_path, sizeof(conf_path), "%s/%s", conf_dir,
+                    conf_filename);
         } else if(is_dropin_file) {
             snprintf(conf_filename, sizeof(conf_filename), "%s", dropin_filename);
             snprintf(conf_path, sizeof(conf_path), "%s/%s", conf_dir,
