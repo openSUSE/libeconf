@@ -23,7 +23,9 @@
 
 #pragma once
 
-/* libeconf.h */
+/** @file libeconf.h
+ * @brief Public API for the econf library
+ */
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -33,32 +35,41 @@
 extern "C" {
 #endif
 
-/* Public API for the econf library */
-
-
-/* libeconf error codes */
+/** @brief libeconf error codes
+ */
 enum econf_err {
-  ECONF_SUCCESS = 0, /* General purpose success code */
-  ECONF_ERROR = 1, /* Generic Error */
-  ECONF_NOMEM = 2, /* Out of memory */
-  ECONF_NOFILE = 3, /* Config file not found */
-  ECONF_NOGROUP = 4, /* Group not found */
-  ECONF_NOKEY = 5, /* Key not found */
-  ECONF_EMPTYKEY = 6, /* Key has empty value */
-  ECONF_WRITEERROR = 7, /* Error creating or writing to a file */
-  ECONF_PARSE_ERROR = 8 /* Syntax error in input file */
+  /** General purpose success code */
+  ECONF_SUCCESS = 0,
+  /** Generic Error */
+  ECONF_ERROR = 1,
+  /** Out of memory */  
+  ECONF_NOMEM = 2,
+  /** Config file not found */
+  ECONF_NOFILE = 3,
+  /** Group not found */
+  ECONF_NOGROUP = 4,
+  /** Key not found */
+  ECONF_NOKEY = 5,
+  /** Key has empty value */
+  ECONF_EMPTYKEY = 6,
+  /** Error creating or writing to a file */
+  ECONF_WRITEERROR = 7,
+  /** Syntax error in input file */
+  ECONF_PARSE_ERROR = 8
 };
 
 typedef enum econf_err econf_err;
 
-/* Generic macro calls setter function depending on value type
-   Use: econf_setValue(econf_file *key_file, char *group, char *key,
-                       _generic_ value);
-   Replace _generic_ with one of the supported value types.
-   Supported Types: int, long, unsigned int, unsigned long, float, double,
-   string (as *char).
-   Note: Does not detect "yes", "no", 1 and 0 as boolean type. If you want to
-   set a bool value use "true" or "false" or use setBoolValue() directly.  */
+/** @brief Generic macro calls setter function depending on value type.
+ *  Use: econf_setValue(econf_file *key_file, char *group, char *key,
+ *                      _generic_ value);
+ *
+ *  Replace _generic_ with one of the supported value types.
+ *  Supported Types: int, long, unsigned int, unsigned long, float, double,
+ *  string (as *char).
+ *  Note: Does not detect "yes", "no", 1 and 0 as boolean type. If you want to
+ *  set a bool value use "true" or "false" or use setBoolValue() directly.
+ */
 #define econf_setValue(kf, group, key, value) (( \
   _Generic((value), \
     int: econf_setIntValue, \
@@ -70,10 +81,12 @@ typedef enum econf_err econf_err;
     char*: econf_setStringValue, void*: econf_setStringValue)) \
 (kf, group, key, value))
 
-/* Generic macro to free memory allocated by econf_ functions
-   Use: econf_free(_generic_ value);
-   Replace _generic_ with one of the supported value types.
-   Supported Types: char** and econf_file*.  */
+/** @brief Generic macro to free memory allocated by econf_ functions.
+ *  Use: econf_free(_generic_ value);
+ *
+ *  Replace _generic_ with one of the supported value types.
+ *  Supported Types: char** and econf_file*.
+ */
 #define econf_free(value) (( \
   _Generic((value), \
     econf_file*: econf_freeFile , \
@@ -82,7 +95,27 @@ typedef enum econf_err econf_err;
 
 typedef struct econf_file econf_file;
 
-// Process the file of the given file_name and save its contents into key_file
+/** @brief Process the file of the given file_name and save its contents into key_file.
+ *
+ * @param result content of parsed file
+ * @param file_name absolute path of parsed file
+ * @param delim delimiters of key/value e.g. "\t ="
+ * @param comment array of character which define the start of a comment
+ * @return econf_err ECONF_SUCCESS or error code
+ *
+ * Usage:
+ * @code
+ *   #include "libeconf.h"
+ *
+ *   econf_file *key_file = NULL;
+ *   econf_err error;
+ *
+ *   error = econf_readFile (&key_file, /etc/test.conf", "=", "#");
+ *
+ *   econf_free (key_file);
+ * @endcode
+ *
+ */
 extern econf_err econf_readFile(econf_file **result, const char *file_name,
 				    const char *delim, const char *comment);
 
