@@ -27,6 +27,7 @@ Building with CMake is straightforward:
 $ cmake -B build
 $ make -C build
 $ make -C build check
+$ make -C build doc
 ```
 
 If you want to build with the address sanitizer enabled, add
