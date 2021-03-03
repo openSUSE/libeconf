@@ -536,11 +536,11 @@ extern econf_err econf_setBoolValue(econf_file *kf, const char *group, const cha
 
 /** @brief Convert an econf_err type to a string.
  *
- * @param econf_err error enum
+ * @param error error enum
  * @return human readable string
  *
  */
-extern const char *econf_errString (const econf_err);
+extern const char *econf_errString (const econf_err error);
 
 /** @brief Free an array of type char** created by econf_getGroups() or econf_getKeys().
  *

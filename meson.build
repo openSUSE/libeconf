@@ -86,3 +86,6 @@ executable('econftool', econftool_src, dependencies : libeconf_dep)
 
 # Unit tests
 subdir('tests')
+
+# documentation
+subdir('doc')
