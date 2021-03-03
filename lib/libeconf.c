@@ -34,8 +34,7 @@
 #include <string.h>
 
 // Create a new econf_file. Allocation is based on
-// KEY_FILE_KEY_FILE_KEY_FILE_DEFAULT_LENGTH
-// defined in include/defines.h
+// KEY_FILE_DEFAULT_LENGTH defined in include/defines.h
 econf_err
 econf_newKeyFile(econf_file **result, char delimiter, char comment)
 {

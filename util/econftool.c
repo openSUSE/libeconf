@@ -70,7 +70,7 @@ static void usage(void)
 /**
  * @brief Change root dir if enviroment variable "ECONFTOOL_ROOT" exists
  *
- * @param path The path to be changed
+ * @param change_path the path to be changed
  */
 static void change_root_dir(char change_path[PATH_MAX])
 {
