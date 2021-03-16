@@ -33,6 +33,7 @@ set(TESTS tst-filedoesnotexit1
           tst-arguments3
           tst-arguments4
           tst-arguments5
+	  tst-string
           tst-getconfdirs1
           tst-getconfdirs2
           tst-getconfdirs3

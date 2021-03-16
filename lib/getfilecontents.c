@@ -20,7 +20,6 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 */
-
 #include "libeconf.h"
 #include "defines.h"
 #include "getfilecontents.h"
@@ -34,8 +33,26 @@
 
 static econf_err
 store (econf_file *ef, const char *group, const char *key,
-       const char *value, uint64_t line_number)
+       const char *value, const uint64_t line_number,
+       const bool append_entry)
 {
+  if (append_entry)
+  {
+    /* Appending next line to the last entry. */
+    if (ef->length<=0)
+      return ECONF_PARSE_ERROR;
+    char *content = ef->file_entry[ef->length-1].value;
+    int ret = asprintf(&(ef->file_entry[ef->length-1].value), "%s\n%s", content,
+	     value);
+    if(ret<0)
+      return ECONF_NOMEM;
+    free(content);
+    /* Points to the end of the array. This is needed for the next entry. */
+    ef->file_entry[ef->length-1].line_number = line_number;
+    
+    return ECONF_SUCCESS;    
+  }
+  
   if (ef->alloc_length == ef->length) {
     struct file_entry *tmp;
 
@@ -83,6 +100,11 @@ check_delim(const char *str, bool *has_wsp, bool *has_nonwsp)
   }
 }
 
+static void free_buffer(char **buffer)
+{
+    free(*buffer);
+}
+
 /* Read the file line by line and parse for comments, keys and values */
 econf_err
 read_file(econf_file *ef, const char *file,
@@ -94,7 +116,7 @@ read_file(econf_file *ef, const char *file,
   uint64_t line = 0;
   bool has_wsp, has_nonwsp;
   FILE *kf = fopen(file, "rbe");
-
+  
   if (kf == NULL)
     return ECONF_NOFILE;
 
@@ -110,6 +132,7 @@ read_file(econf_file *ef, const char *file,
   while (fgets(buf, sizeof(buf), kf)) {
     char *p, *name, *data = NULL;
     bool quote_seen = false, delim_seen = false;
+    char *org_buf __attribute__ ((__cleanup__(free_buffer))) = strdup(buf);
 
     line++;
 
@@ -160,6 +183,7 @@ read_file(econf_file *ef, const char *file,
       data++;
     if (data > name && *data) {
       if (has_wsp && has_nonwsp)
+      {
 	/*
 	 * delim contains both whitespace and non-whitespace characters.
 	 * In this case delim_seen has the special meaning "non-whitespace
@@ -167,11 +191,45 @@ read_file(econf_file *ef, const char *file,
 	 */
 	delim_seen = !isspace((unsigned)*data) &&
 	  strchr(delim, *data) != NULL;
+      }
       else
+      {
 	delim_seen = strchr(delim, *data) != NULL;
+      }
       *data++ = '\0';
     }
 
+    /* Checking and adding multiline entries which are
+     * not defined by a beginning quote in the line before.
+     */
+    bool found_delim = delim_seen;
+    if (!found_delim)
+    {
+      /* searching the rest of the string for delimiters */
+      char *c = data;
+      while (*c && !(strchr(delim, *c) != NULL))
+	c++;
+      if (*c)
+	found_delim = true;
+    }
+    if (!found_delim &&
+        /* Entry has already been found */	
+	ef->length > 0 &&
+	/* The Entry must be the next line. Otherwise it is a new one */
+	ef->file_entry[ef->length-1].line_number+1 == line)
+    {
+      /* removing \n at the end of the line */
+      if( org_buf[strlen(org_buf)-1] == '\n' )
+        org_buf[strlen(org_buf)-1] = 0;
+      retval = store(ef, current_group, name, org_buf, line,
+		     true /* appending entry */);
+      if (retval)
+	goto out;
+      continue;
+    }
+    
+    /* Go on. It is not an multiline entry */
+    
     if (!*name || data == name)
       continue;
 
@@ -236,7 +294,8 @@ read_file(econf_file *ef, const char *file,
 	*(p + 1) = '\0';
     }
 
-    retval = store(ef, current_group, name, data, line);
+    retval = store(ef, current_group, name, data, line,
+		   false /* new entry */);
     if (retval)
       goto out;
   }

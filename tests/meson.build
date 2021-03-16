@@ -36,6 +36,8 @@ test('tst-arguments4', tst_arguments4_exe)
 tst_arguments5_exe = executable('tst-arguments5', 'tst-arguments5.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-arguments5', tst_arguments5_exe)
 
+tst_string_exe = executable('tst-string', 'tst-string.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-string', tst_string_exe)
 
 tst_getconfdirs1_exe = executable('tst-getconfdirs1', 'tst-getconfdirs1.c', c_args: ['-DSUFFIX=".conf"', test_args], dependencies : libeconf_dep)
 test('tst-getconfdirs1', tst_getconfdirs1_exe)
