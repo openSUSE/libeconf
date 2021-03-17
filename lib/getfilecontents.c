@@ -34,13 +34,16 @@
 static econf_err
 store (econf_file *ef, const char *group, const char *key,
        const char *value, const uint64_t line_number,
+       const char *comment_before_key, const char *comment_after_value,
        const bool append_entry)
 {
   if (append_entry)
   {
     /* Appending next line to the last entry. */
     if (ef->length<=0)
+    {
       return ECONF_PARSE_ERROR;
+    }
     char *content = ef->file_entry[ef->length-1].value;
     int ret = asprintf(&(ef->file_entry[ef->length-1].value), "%s\n%s", content,
 	     value);
@@ -49,6 +52,23 @@ store (econf_file *ef, const char *group, const char *key,
     free(content);
     /* Points to the end of the array. This is needed for the next entry. */
     ef->file_entry[ef->length-1].line_number = line_number;
+
+    if (comment_after_value)
+    {
+      ret = -1;
+      if (ef->file_entry[ef->length-1].comment_after_value)
+      {
+	content = ef->file_entry[ef->length-1].comment_after_value;
+	ret = asprintf(&(ef->file_entry[ef->length-1].comment_after_value), "%s\n%s", content,
+		       comment_after_value);
+	free(content);
+      } else {
+	ret = asprintf(&(ef->file_entry[ef->length-1].comment_after_value), "\n%s",
+		       comment_after_value);
+      }
+      if(ret<0)
+	return ECONF_NOMEM;      
+    }      
     
     return ECONF_SUCCESS;    
   }
@@ -81,6 +101,15 @@ store (econf_file *ef, const char *group, const char *key,
   else
     ef->file_entry[ef->length-1].value = NULL;
 
+  if (comment_before_key)
+    ef->file_entry[ef->length-1].comment_before_key = strdup(comment_before_key);
+  else
+    ef->file_entry[ef->length-1].comment_before_key = NULL;
+  if (comment_after_value)
+    ef->file_entry[ef->length-1].comment_after_value = strdup(comment_after_value);
+  else
+    ef->file_entry[ef->length-1].comment_after_value = NULL;
+
   return ECONF_SUCCESS;
 }
 
@@ -112,6 +141,7 @@ read_file(econf_file *ef, const char *file,
 {
   char buf[BUFSIZ];
   char *current_group = NULL;
+  char *current_comment_before_key, *current_comment_after_value = NULL;
   econf_err retval = ECONF_SUCCESS;
   uint64_t line = 0;
   bool has_wsp, has_nonwsp;
@@ -139,13 +169,6 @@ read_file(econf_file *ef, const char *file,
     if (*buf == '\n')
       continue; /* ignore empty lines */
 
-    /* go throug all comment characters and check, if one of could be found */
-    for (size_t i = 0; i < strlen(comment); i++) {
-      p = strchr(buf, comment[i]);
-      if (p)
-	*p = '\0';
-    }
-
     /* Remove trailing newline character */
     size_t n = strlen(buf);
     if (n && *(buf + n - 1) == '\n')
@@ -158,6 +181,25 @@ read_file(econf_file *ef, const char *file,
     name = buf;
     while (*name && isspace((unsigned)*name))
       name++;
+
+    /* go through all comment characters and check, if one of could be found */
+    for (size_t i = 0; i < strlen(comment); i++) {
+      p = strchr(name, comment[i]);
+      if (p)
+      {
+	if(p==name)
+	{
+	  /* Comment is defined in the line before the key/value line */
+	  current_comment_before_key = strdup(p);
+	  /* next line */
+	  continue;
+	} else {
+	  /* Comment is defined after the key/value in the same line */
+	  current_comment_after_value = strdup(p);
+	  *p = '\0';
+	}
+      }
+    }    
 
     /* check for groups */
     if (name[0] == '[') {
@@ -222,7 +264,12 @@ read_file(econf_file *ef, const char *file,
       if( org_buf[strlen(org_buf)-1] == '\n' )
         org_buf[strlen(org_buf)-1] = 0;
       retval = store(ef, current_group, name, org_buf, line,
+		     current_comment_before_key, current_comment_after_value,
 		     true /* appending entry */);
+      free(current_comment_before_key);
+      current_comment_before_key = NULL;
+      free(current_comment_after_value);
+      current_comment_after_value = NULL;
       if (retval)
 	goto out;
       continue;
@@ -295,7 +342,12 @@ read_file(econf_file *ef, const char *file,
     }
 
     retval = store(ef, current_group, name, data, line,
+		   current_comment_before_key, current_comment_after_value,
 		   false /* new entry */);
+    free(current_comment_before_key);
+    current_comment_before_key = NULL;
+    free(current_comment_after_value);
+    current_comment_after_value = NULL;    
     if (retval)
       goto out;
   }

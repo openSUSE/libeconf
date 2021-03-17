@@ -42,6 +42,7 @@ typedef struct econf_file {
      group is found or provided the group is set to KEY_FILE_NULL_VALUE.  */
   struct file_entry {
     char *group, *key, *value;
+    char *comment_before_key, *comment_after_value;
     uint64_t line_number;
   } * file_entry;
   /* length represents the current amount of key/value entries in econf_file and
