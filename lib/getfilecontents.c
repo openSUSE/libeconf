@@ -166,16 +166,13 @@ read_file(econf_file *ef, const char *file,
 
     line++;
 
-    if (*buf == '\n')
-      continue; /* ignore empty lines */
-
     /* Remove trailing newline character */
     size_t n = strlen(buf);
     if (n && *(buf + n - 1) == '\n')
       *(buf + n - 1) = '\0';
 
     if (!*buf)
-      continue;       /* empty line */
+      continue; /* empty line */
 
     /* ignore space at begin of the line */
     name = buf;
@@ -191,15 +188,16 @@ read_file(econf_file *ef, const char *file,
 	{
 	  /* Comment is defined in the line before the key/value line */
 	  current_comment_before_key = strdup(p);
-	  /* next line */
-	  continue;
 	} else {
 	  /* Comment is defined after the key/value in the same line */
 	  current_comment_after_value = strdup(p);
-	  *p = '\0';
 	}
+	*p = '\0';
       }
-    }    
+    }
+
+    if (!*buf)
+      continue; /* result is empty line */
 
     /* check for groups */
     if (name[0] == '[') {
