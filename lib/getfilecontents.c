@@ -188,10 +188,32 @@ read_file(econf_file *ef, const char *file,
 	if(p==name)
 	{
 	  /* Comment is defined in the line before the key/value line */
-	  current_comment_before_key = strdup(p);
+	  if (current_comment_before_key)
+          {
+	    /* appending */
+	    char *content = current_comment_before_key;
+	    int ret = asprintf(&current_comment_before_key, "%s\n%s", content,
+			       p+1);
+	    if(ret<0)
+	      return ECONF_NOMEM;
+	    free(content);
+	  } else {
+	    current_comment_before_key = strdup(p+1);
+	  }
 	} else {
 	  /* Comment is defined after the key/value in the same line */
-	  current_comment_after_value = strdup(p);
+	  if (current_comment_after_value)
+	  {
+	    /* appending */
+	    char *content = current_comment_after_value;
+	    int ret = asprintf(&current_comment_after_value, "%s\n%s", content,
+			       p+1);
+	    if(ret<0)
+	      return ECONF_NOMEM;
+	    free(content);
+	  } else {
+	    current_comment_after_value = strdup(p);
+	  }
 	}
 	*p = '\0';
       }
@@ -355,6 +377,10 @@ read_file(econf_file *ef, const char *file,
   fclose (kf);
   if (current_group)
     free (current_group);
+  if (current_comment_before_key)
+    free(current_comment_before_key);
+  if (current_comment_after_value)
+    free(current_comment_after_value);
 
   return retval;
 }

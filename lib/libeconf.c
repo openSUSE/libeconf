@@ -479,8 +479,11 @@ void econf_freeFile(econf_file *key_file) {
       free(key_file->file_entry[i].key);
     if (key_file->file_entry[i].value)
       free(key_file->file_entry[i].value);
+    if (key_file->file_entry[i].comment_before_key!=NULL)
+      free(key_file->file_entry[i].comment_before_key);
+    if (key_file->file_entry[i].comment_after_value)
+      free(key_file->file_entry[i].comment_after_value);
   }
-
   if (key_file->file_entry)
     free(key_file->file_entry);
   if (key_file->path)
