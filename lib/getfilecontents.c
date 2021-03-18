@@ -141,7 +141,8 @@ read_file(econf_file *ef, const char *file,
 {
   char buf[BUFSIZ];
   char *current_group = NULL;
-  char *current_comment_before_key, *current_comment_after_value = NULL;
+  char *current_comment_before_key = NULL;
+  char *current_comment_after_value = NULL;
   econf_err retval = ECONF_SUCCESS;
   uint64_t line = 0;
   bool has_wsp, has_nonwsp;
