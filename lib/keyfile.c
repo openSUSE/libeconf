@@ -105,6 +105,34 @@ econf_err getBoolValueNum(econf_file key_file, size_t num, bool *result) {
   return err;
 }
 
+econf_err getCommentsNum(econf_file key_file, size_t num,
+			 char **comment_before_key,
+			 char **comment_after_value) {
+  if (key_file.file_entry[num].comment_before_key)
+    *comment_before_key = strdup(key_file.file_entry[num].comment_before_key);
+  else
+    *comment_before_key = NULL;
+
+  if (key_file.file_entry[num].comment_after_value)
+    *comment_after_value = strdup(key_file.file_entry[num].comment_after_value);
+  else
+    *comment_after_value = NULL;
+
+  return ECONF_SUCCESS;
+}
+
+econf_err getLineNrNum(econf_file key_file, size_t num, uint64_t *line_nr) {
+  *line_nr = key_file.file_entry[num].line_number;
+
+  return ECONF_SUCCESS;
+}
+
+econf_err getPathNum(econf_file key_file, size_t num, char **path) {
+  *path = strdup(key_file.path);
+
+  return ECONF_SUCCESS;
+}
+
 /* --- SETTERS --- */
 
 econf_err setGroup(econf_file *key_file, size_t num, const char *value) {

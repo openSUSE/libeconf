@@ -1,5 +1,6 @@
 # Create the library
 set(econf_SRCS libeconf.c
+               libeconf_ext.c
                getfilecontents.c
                mergefiles.c
                helpers.c
@@ -15,7 +16,8 @@ set(econf_HDRS defines.h
                keyfile.h
                )
 
-add_library(econf SHARED ${econf_SRCS} ${econf_HDRS} "${PROJECT_SOURCE_DIR}/include/libeconf.h")
+add_library(econf SHARED ${econf_SRCS} ${econf_HDRS}
+               "${PROJECT_SOURCE_DIR}/include/libeconf.h" "${PROJECT_SOURCE_DIR}/include/libeconf_ext.h")
 
 target_include_directories(econf PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
@@ -28,7 +30,7 @@ set_target_properties(econf PROPERTIES
   COMPILE_FLAGS "-D_REENTRANT=1"
   C_STANDARD 11
   C_STANDARD_REQUIRED ON
-  PUBLIC_HEADER "${PROJECT_SOURCE_DIR}/include/libeconf.h"
+  PUBLIC_HEADER "${PROJECT_SOURCE_DIR}/include/libeconf.h;${PROJECT_SOURCE_DIR}/include/libeconf_ext.h"
   LINK_FLAGS "-Wl,--no-undefined -Wl,--version-script,\"${PROJECT_SOURCE_DIR}/lib/libeconf.map\""
 )
 

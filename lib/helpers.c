@@ -216,5 +216,13 @@ struct file_entry cpy_file_entry(struct file_entry fe) {
     copied_fe.value = strdup(fe.value);
   else
     copied_fe.value = NULL;
+  if (fe.comment_before_key)
+    copied_fe.comment_before_key = strdup(fe.comment_before_key);
+  else
+    copied_fe.comment_before_key = NULL;
+  if (fe.comment_after_value)
+    copied_fe.comment_after_value = strdup(fe.comment_after_value);
+  else
+    copied_fe.comment_after_value = NULL;  
   return copied_fe;
 }

@@ -80,6 +80,11 @@ econf_err getFloatValueNum(econf_file key_file, size_t num, float *result);
 econf_err getDoubleValueNum(econf_file key_file, size_t num, double *result);
 econf_err getStringValueNum(econf_file key_file, size_t num, char **result);
 econf_err getBoolValueNum(econf_file key_file, size_t num, bool *result);
+econf_err getCommentsNum(econf_file key_file, size_t num,
+		      char **comment_before_key,
+		      char **comment_after_value);
+econf_err getLineNrNum(econf_file key_file, size_t num, uint64_t *line_nr);
+econf_err getPathNum(econf_file key_file, size_t num, char **path);
 
 /* SETTERS */
 
