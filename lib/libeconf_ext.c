@@ -29,21 +29,24 @@
 
 static char *ltrim(char *s)
 {
-    while(isspace(*s)) s++;
-    return s;
+  while(isspace(*s)) s++;
+  return s;
 }
 
 static char *rtrim(char *s)
 {
-    char* back = s + strlen(s);
-    while(isspace(*--back));
-    *(back+1) = '\0';
+  if (strlen(s)<=0)
     return s;
+
+  char* back = s + strlen(s);
+  while(isspace(*--back));
+  *(back+1) = '\0';
+  return s;
 }
 
 static char *trim(char *s)
 {
-    return rtrim(ltrim(s));
+  return rtrim(ltrim(s));
 }
 
 econf_err
@@ -70,27 +73,36 @@ econf_getExtValue(econf_file *kf, const char *group,
 
   char *value_string = NULL;
   getStringValueNum(*kf, num, &value_string);
-  
-  /* splitting into a character array */
+
   char buf[BUFSIZ];
   char *line;
   int n_del = 0;
   strncpy(buf,value_string,BUFSIZ-1);
   free(value_string);
-  value_string = buf;
+  value_string = trim(buf);
   (*result)->values = NULL;
-  printf("---%s---\n", value_string);
-  while ((line = strsep(&value_string, "\n")) != NULL) {
+
+  if (value_string[0] == '\"')
+  {
+    /* one quoted string only */
     (*result)->values = realloc ((*result)->values, sizeof (char*) * ++n_del);
     if ((*result)->values == NULL)
       return ECONF_NOMEM; /* memory allocation failed */
-    (*result)->values[n_del-1] = strdup(trim(line));
+    (*result)->values[n_del-1] = strdup(value_string);
+  } else {
+    /* splitting into a character array */
+    while ((line = strsep(&value_string, "\n")) != NULL) {
+      (*result)->values = realloc ((*result)->values, sizeof (char*) * ++n_del);
+      if ((*result)->values == NULL)
+	return ECONF_NOMEM; /* memory allocation failed */
+      (*result)->values[n_del-1] = strdup(trim(line));
+    }
   }
 
-  /* realloc one extra element for the last NULL */
-  (*result)->values = realloc ((*result)->values, sizeof (char*) * n_del);
-  (*result)->values[n_del] = 0;
-  printf("---%d---\n", n_del);
+  /* realloc one extra element for the last 0 */
+  (*result)->values = realloc ((*result)->values, sizeof (char*) * ++n_del);
+  (*result)->values[n_del-1] = 0;
+
   return ECONF_SUCCESS;
 }
 

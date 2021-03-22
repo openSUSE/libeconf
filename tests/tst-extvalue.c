@@ -30,19 +30,20 @@ check_StringArray (econf_file *key_file, const char *group,
   if ((error = econf_getExtValue(key_file, group, key, &ext_val)))
   {
     print_error_get (group, key, error);
+    econf_freeExtValue(ext_val);
     return false;
   }
 
   int i=0;
   while (ext_val->values[i] != 0)
   {
-    printf("yxxxxx %d\n",i);    
     if ((ext_val->values[i] == NULL && values[i] != NULL) ||
 	(ext_val->values[i] != NULL && values[i] == NULL) ||
       strcmp(ext_val->values[i], values[i]))
     {
       fprintf (stderr, "ERROR: %s:Expected String:\n'%s'\n, Got:\n'%s'\n",
 	       key, values[i], ext_val->values[i]);
+      econf_freeExtValue(ext_val);
       return false;
     }
     i++;
@@ -53,6 +54,7 @@ check_StringArray (econf_file *key_file, const char *group,
     fprintf (stderr,
 	     "ERROR: String array does not have expected length: %d exp.: %d\n",
 	     i, lines);
+    econf_freeExtValue(ext_val);
     return false;    
   }  
   
@@ -72,18 +74,14 @@ main(void)
     const char *const val[3];
     const int lines;
   } tests[] = {
-    /*    
     { "string_empty", {""}, 1 },
     { "string_with_spaces", {"string with spaces"}, 1 },
     { "string_escaped_with_leading_and_trailing_spaces", {"string with spaces"}, 1 },
-    */
     { "string_with_newlines", {"line one","line two"}, 2 },
-    /*    
-    { "string_list_multiple_lines", {"","line one","line two"}, 3 },
+    { "string_list_multiple_lines", {"line one","line two"}, 2 },
     { "string_escaped_with_newlines", {"\"line one\n    line two\""}, 1 },
     { "string_with_quotes", {"\\\""}, 1 },
     { "string_with_quotes_v2", {"\\\""}, 1 }
-    */    
   };
   unsigned int i;  
 
@@ -95,10 +93,10 @@ main(void)
   }
 
   for (i = 0; i < sizeof(tests)/sizeof(*tests); i++)
-    {
-      if (!check_StringArray(key_file, "main", tests[i].key, tests[i].val, tests[i].lines))
-	retval = 1;
-    }
+  {
+    if (!check_StringArray(key_file, "main", tests[i].key, tests[i].val, tests[i].lines))
+      retval = 1;
+  }
 
   econf_free(key_file);
   return retval;  
