@@ -43,6 +43,7 @@ set(TESTS tst-filedoesnotexit1
           tst-getconfdirs5
           tst-getconfdirs6
           tst-getconfdirs7
+	  tst-os-release
           tst-econf_errstring1
           tst-setgetvalues1
           tst-groups1
