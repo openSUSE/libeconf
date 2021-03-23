@@ -68,7 +68,7 @@ econf_getExtValue(econf_file *kf, const char *group,
   getCommentsNum(*kf, num,
 		 &((*result)->comment_before_key),
 		 &((*result)->comment_after_value));
-  getPathNum(*kf, num, &((*result)->file));
+  getPath(*kf, &((*result)->file));
   getLineNrNum(*kf, num, &((*result)->line_number));
 
   char *value_string = NULL;
