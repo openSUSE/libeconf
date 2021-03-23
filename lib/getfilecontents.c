@@ -53,6 +53,12 @@ store (econf_file *ef, const char *group, const char *key,
     /* Points to the end of the array. This is needed for the next entry. */
     ef->file_entry[ef->length-1].line_number = line_number;
 
+    if (ef->file_entry[ef->length-1].comment_after_value &&
+	!comment_after_value)
+    { /* multiline entry. This line has no comment. So we have to add an empty entry. */
+      comment_after_value = "";
+    }
+
     if (comment_after_value)
     {
       ret = -1;
@@ -72,7 +78,8 @@ store (econf_file *ef, const char *group, const char *key,
     
     return ECONF_SUCCESS;    
   }
-  
+
+  /* not appending -> new entry */
   if (ef->alloc_length == ef->length) {
     struct file_entry *tmp;
 
@@ -212,7 +219,7 @@ read_file(econf_file *ef, const char *file,
 	      return ECONF_NOMEM;
 	    free(content);
 	  } else {
-	    current_comment_after_value = strdup(p);
+	    current_comment_after_value = strdup(p+1);
 	  }
 	}
 	*p = '\0';
