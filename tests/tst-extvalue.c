@@ -22,7 +22,9 @@ print_error_get (const char *getgroup, const char *key, econf_err error)
 
 static bool
 check_StringArray (econf_file *key_file, const char *group,
-		   const char *key, const char *const *values, const int lines)
+		   const char *key, const char *const *values,
+		   const int value_lines, const int line_nr,
+		   const char *filename)
 {
   econf_err error;
   econf_ext_value *ext_val;
@@ -30,6 +32,21 @@ check_StringArray (econf_file *key_file, const char *group,
   if ((error = econf_getExtValue(key_file, group, key, &ext_val)))
   {
     print_error_get (group, key, error);
+    return false;
+  }
+
+  if(ext_val->line_number != line_nr)
+  {
+    fprintf (stderr, "ERROR: %s:Expected line_nr:%d, got:%ld\n",
+	     key, line_nr, ext_val->line_number);
+    econf_freeExtValue(ext_val);
+    return false;
+  }
+
+  if (strcmp(ext_val->file, filename))
+  {
+    fprintf (stderr, "ERROR: Expected path:%s, got:%s\n",
+	     filename, ext_val->file);
     econf_freeExtValue(ext_val);
     return false;
   }
@@ -49,11 +66,11 @@ check_StringArray (econf_file *key_file, const char *group,
     i++;
   }
 
-  if (i != lines)
+  if (i != value_lines)
   {
     fprintf (stderr,
 	     "ERROR: String array does not have expected length: %d exp.: %d\n",
-	     i, lines);
+	     i, value_lines);
     econf_freeExtValue(ext_val);
     return false;    
   }  
@@ -73,15 +90,16 @@ main(void)
     const char *const key;
     const char *const val[3];
     const int lines;
+    const int line_nr;
   } tests[] = {
-    { "string_empty", {""}, 1 },
-    { "string_with_spaces", {"string with spaces"}, 1 },
-    { "string_escaped_with_leading_and_trailing_spaces", {"string with spaces"}, 1 },
-    { "string_with_newlines", {"line one","line two"}, 2 },
-    { "string_list_multiple_lines", {"line one","line two"}, 2 },
-    { "string_escaped_with_newlines", {"\"line one\n    line two\""}, 1 },
-    { "string_with_quotes", {"\\\""}, 1 },
-    { "string_with_quotes_v2", {"\\\""}, 1 }
+    { "string_empty", {""}, 1, 4 },
+    { "string_with_spaces", {"string with spaces"}, 1, 5 },
+    { "string_escaped_with_leading_and_trailing_spaces", {"string with spaces"}, 1, 6 },
+    { "string_with_newlines", {"line one","line two"}, 2, 8 },
+    { "string_list_multiple_lines", {"line one","line two"}, 2, 11 },
+    { "string_escaped_with_newlines", {"\"line one\n    line two\""}, 1, 13 },
+    { "string_with_quotes", {"\\\""}, 1, 14 },
+    { "string_with_quotes_v2", {"\\\""}, 1, 15 }
   };
   unsigned int i;  
 
@@ -94,10 +112,11 @@ main(void)
 
   for (i = 0; i < sizeof(tests)/sizeof(*tests); i++)
   {
-    if (!check_StringArray(key_file, "main", tests[i].key, tests[i].val, tests[i].lines))
+    if (!check_StringArray(key_file, "main", tests[i].key, tests[i].val, tests[i].lines,
+			   tests[i].line_nr, TESTSDIR"tst-arguments-string/etc/arguments.conf"))
       retval = 1;
   }
 
   econf_free(key_file);
-  return retval;  
+  return retval;
 }

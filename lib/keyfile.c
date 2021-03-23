@@ -128,7 +128,13 @@ econf_err getLineNrNum(econf_file key_file, size_t num, uint64_t *line_nr) {
 }
 
 econf_err getPathNum(econf_file key_file, size_t num, char **path) {
-  *path = strdup(key_file.path);
+  /* Fixme: The path sould be set for each value. */
+  if (key_file.path)
+  {
+    *path = strdup(key_file.path);
+  } else {
+    *path = NULL;
+  }
 
   return ECONF_SUCCESS;
 }
