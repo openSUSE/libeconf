@@ -8,7 +8,7 @@
 #include "libeconf.h"
 
 /* Test case:
-   Read file /usr/lib and /etc without a suffix
+   Reading a file from /usr/lib and /etc which has no suffix.
 */
 
 static int

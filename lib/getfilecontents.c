@@ -20,6 +20,7 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 */
+
 #include "libeconf.h"
 #include "defines.h"
 #include "getfilecontents.h"
@@ -154,7 +155,7 @@ read_file(econf_file *ef, const char *file,
   uint64_t line = 0;
   bool has_wsp, has_nonwsp;
   FILE *kf = fopen(file, "rbe");
-  
+
   if (kf == NULL)
     return ECONF_NOFILE;
 

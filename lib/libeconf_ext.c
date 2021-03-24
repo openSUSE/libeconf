@@ -76,7 +76,7 @@ econf_getExtValue(econf_file *kf, const char *group,
 
   char buf[BUFSIZ];
   char *line;
-  int n_del = 0;
+  size_t n_del = 0;
   strncpy(buf,value_string,BUFSIZ-1);
   free(value_string);
   value_string = trim(buf);

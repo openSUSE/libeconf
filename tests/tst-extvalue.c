@@ -23,7 +23,7 @@ print_error_get (const char *getgroup, const char *key, econf_err error)
 static bool
 check_StringArray (econf_file *key_file, const char *group,
 		   const char *key, const char *const *values,
-		   const int value_lines, const uint64_t line_nr,
+		   const size_t value_lines, const uint64_t line_nr,
 		   const char *filename)
 {
   econf_err error;
@@ -51,7 +51,7 @@ check_StringArray (econf_file *key_file, const char *group,
     return false;
   }
 
-  int i=0;
+  size_t i=0;
   while (ext_val->values[i] != 0)
   {
     if ((ext_val->values[i] == NULL && values[i] != NULL) ||
@@ -69,7 +69,7 @@ check_StringArray (econf_file *key_file, const char *group,
   if (i != value_lines)
   {
     fprintf (stderr,
-	     "ERROR: String array does not have expected length: %d exp.: %d\n",
+	     "ERROR: String array does not have expected length: %ld exp.: %ld\n",
 	     i, value_lines);
     econf_freeExtValue(ext_val);
     return false;    
@@ -89,7 +89,7 @@ main(void)
   static const struct {
     const char *const key;
     const char *const val[3];
-    const int lines;
+    const size_t lines;
     const uint64_t line_nr;
   } tests[] = {
     { "string_empty", {""}, 1, 4 },
@@ -101,7 +101,8 @@ main(void)
     { "string_with_quotes", {"\\\""}, 1, 14 },
     { "string_with_quotes_v2", {"\\\""}, 1, 15 }
   };
-  unsigned int i;  
+  
+  size_t i;  
 
   error = econf_readFile (&key_file, TESTSDIR"tst-arguments-string/etc/arguments.conf", "=", "#");
   if (error)
