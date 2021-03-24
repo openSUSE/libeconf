@@ -23,7 +23,7 @@ print_error_get (const char *getgroup, const char *key, econf_err error)
 static bool
 check_StringArray (econf_file *key_file, const char *group,
 		   const char *key, const char *const *values,
-		   const int value_lines, const int line_nr,
+		   const int value_lines, const uint64_t line_nr,
 		   const char *filename)
 {
   econf_err error;
@@ -37,7 +37,7 @@ check_StringArray (econf_file *key_file, const char *group,
 
   if(ext_val->line_number != line_nr)
   {
-    fprintf (stderr, "ERROR: %s:Expected line_nr:%d, got:%ld\n",
+    fprintf (stderr, "ERROR: %s:Expected line_nr:%ld, got:%ld\n",
 	     key, line_nr, ext_val->line_number);
     econf_freeExtValue(ext_val);
     return false;
@@ -90,7 +90,7 @@ main(void)
     const char *const key;
     const char *const val[3];
     const int lines;
-    const int line_nr;
+    const uint64_t line_nr;
   } tests[] = {
     { "string_empty", {""}, 1, 4 },
     { "string_with_spaces", {"string with spaces"}, 1, 5 },

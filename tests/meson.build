@@ -38,6 +38,10 @@ test('tst-arguments5', tst_arguments5_exe)
 
 tst_string_exe = executable('tst-string', 'tst-string.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-string', tst_string_exe)
+tst_extvalue_exe = executable('tst-extvalue', 'tst-extvalue.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-extvalue', tst_extvalue_exe)
+tst_comments_exe = executable('tst-comments', 'tst-comments.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-comments', tst_comments_exe)
 
 tst_getconfdirs1_exe = executable('tst-getconfdirs1', 'tst-getconfdirs1.c', c_args: ['-DSUFFIX=".conf"', test_args], dependencies : libeconf_dep)
 test('tst-getconfdirs1', tst_getconfdirs1_exe)
@@ -58,6 +62,8 @@ test('tst-getconfdirs7', tst_getconfdirs7_exe)
 tst_econf_errstring1_exe = executable('tst-econf_errstring1', 'tst-econf_errstring1.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-econf_errstring1', tst_econf_errstring1_exe)
 
+tst_without_suffix_exe = executable('tst-without-suffix', 'tst-without-suffix.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-without-suffix', tst_without_suffix_exe)
 
 tst_setgetvalues1_exe = executable('tst-setgetvalues1', 'tst-setgetvalues1.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-setgetvalues1', tst_setgetvalues1_exe)

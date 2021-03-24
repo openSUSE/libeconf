@@ -8,7 +8,7 @@
 #include "libeconf.h"
 
 /* Test case:
-   Read file /usr/lib and etc without a suffix
+   Read file /usr/lib and /etc without a suffix
 */
 
 static int
@@ -50,8 +50,8 @@ main(void)
   econf_err error;
 
   error = econf_readDirs (&key_file,
-				    TESTSDIR"tst-os-release-data/usr/lib",
-				    TESTSDIR"tst-os-release-data/etc",
+				    TESTSDIR"tst-without-suffix/usr/lib",
+				    TESTSDIR"tst-without-suffix/etc",
 				    "os-release", NULL, "=", "#");
   if (error)
     {
