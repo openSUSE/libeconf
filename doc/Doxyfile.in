@@ -76,7 +76,7 @@ INPUT                  = @doxy_main_page@ \
                          @PROJECT_SOURCE_DIR@/README.md \
                          @PROJECT_SOURCE_DIR@ \
                          @PROJECT_BINARY_DIR@
-FILE_PATTERNS          = *.h *.hh *.hxx *.hpp *.h++ *.c *.cc *.cxx *.cpp *.c++ *.tcc *.hcc *.doc
+FILE_PATTERNS          = libeconf*.h *.doc
 RECURSIVE              = YES
 EXCLUDE                =
 EXCLUDE_SYMLINKS       = NO
