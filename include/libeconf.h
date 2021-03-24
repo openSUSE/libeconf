@@ -155,7 +155,7 @@ extern econf_err econf_mergeFiles(econf_file **merged_file,
  * @param usr_conf_dir absolute path of the first directory (normally "/usr/etc")
  * @param etc_conf_dir absolute path of the second directory (normally "/etc")
  * @param project_name basename of the configuration file
- * @param config_suffix suffix of the configuration file
+ * @param config_suffix suffix of the configuration file. Can also be NULL.
  * @param delim delimiters of key/value e.g. "\t ="
  * @param comment array of characters which define the start of a comment
  * @return econf_err ECONF_SUCCESS or error code

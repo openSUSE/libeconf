@@ -45,6 +45,8 @@ void initialize(econf_file *key_file, size_t num) {
   key_file->file_entry[num].group = strdup(KEY_FILE_NULL_VALUE);
   key_file->file_entry[num].key = strdup(KEY_FILE_NULL_VALUE);
   key_file->file_entry[num].value = strdup(KEY_FILE_NULL_VALUE);
+  key_file->file_entry[num].comment_before_key = NULL;
+  key_file->file_entry[num].comment_after_value = NULL;
 }
 
 // Remove whitespace from beginning and end, append string terminator
@@ -214,5 +216,13 @@ struct file_entry cpy_file_entry(struct file_entry fe) {
     copied_fe.value = strdup(fe.value);
   else
     copied_fe.value = NULL;
+  if (fe.comment_before_key)
+    copied_fe.comment_before_key = strdup(fe.comment_before_key);
+  else
+    copied_fe.comment_before_key = NULL;
+  if (fe.comment_after_value)
+    copied_fe.comment_after_value = strdup(fe.comment_after_value);
+  else
+    copied_fe.comment_after_value = NULL;  
   return copied_fe;
 }

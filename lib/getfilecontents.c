@@ -34,8 +34,53 @@
 
 static econf_err
 store (econf_file *ef, const char *group, const char *key,
-       const char *value, uint64_t line_number)
+       const char *value, const uint64_t line_number,
+       const char *comment_before_key, const char *comment_after_value,
+       const bool append_entry)
 {
+  if (append_entry)
+  {
+    /* Appending next line to the last entry. */
+    if (ef->length<=0)
+    {
+      return ECONF_PARSE_ERROR;
+    }
+    char *content = ef->file_entry[ef->length-1].value;
+    int ret = asprintf(&(ef->file_entry[ef->length-1].value), "%s\n%s", content,
+	     value);
+    if(ret<0)
+      return ECONF_NOMEM;
+    free(content);
+    /* Points to the end of the array. This is needed for the next entry. */
+    ef->file_entry[ef->length-1].line_number = line_number;
+
+    if (ef->file_entry[ef->length-1].comment_after_value &&
+	!comment_after_value)
+    { /* multiline entry. This line has no comment. So we have to add an empty entry. */
+      comment_after_value = "";
+    }
+
+    if (comment_after_value)
+    {
+      ret = -1;
+      if (ef->file_entry[ef->length-1].comment_after_value)
+      {
+	content = ef->file_entry[ef->length-1].comment_after_value;
+	ret = asprintf(&(ef->file_entry[ef->length-1].comment_after_value), "%s\n%s", content,
+		       comment_after_value);
+	free(content);
+      } else {
+	ret = asprintf(&(ef->file_entry[ef->length-1].comment_after_value), "\n%s",
+		       comment_after_value);
+      }
+      if(ret<0)
+	return ECONF_NOMEM;      
+    }      
+    
+    return ECONF_SUCCESS;    
+  }
+
+  /* not appending -> new entry */
   if (ef->alloc_length == ef->length) {
     struct file_entry *tmp;
 
@@ -64,6 +109,15 @@ store (econf_file *ef, const char *group, const char *key,
   else
     ef->file_entry[ef->length-1].value = NULL;
 
+  if (comment_before_key)
+    ef->file_entry[ef->length-1].comment_before_key = strdup(comment_before_key);
+  else
+    ef->file_entry[ef->length-1].comment_before_key = NULL;
+  if (comment_after_value)
+    ef->file_entry[ef->length-1].comment_after_value = strdup(comment_after_value);
+  else
+    ef->file_entry[ef->length-1].comment_after_value = NULL;
+
   return ECONF_SUCCESS;
 }
 
@@ -83,6 +137,11 @@ check_delim(const char *str, bool *has_wsp, bool *has_nonwsp)
   }
 }
 
+static void free_buffer(char **buffer)
+{
+    free(*buffer);
+}
+
 /* Read the file line by line and parse for comments, keys and values */
 econf_err
 read_file(econf_file *ef, const char *file,
@@ -90,6 +149,8 @@ read_file(econf_file *ef, const char *file,
 {
   char buf[BUFSIZ];
   char *current_group = NULL;
+  char *current_comment_before_key = NULL;
+  char *current_comment_after_value = NULL;
   econf_err retval = ECONF_SUCCESS;
   uint64_t line = 0;
   bool has_wsp, has_nonwsp;
@@ -110,18 +171,9 @@ read_file(econf_file *ef, const char *file,
   while (fgets(buf, sizeof(buf), kf)) {
     char *p, *name, *data = NULL;
     bool quote_seen = false, delim_seen = false;
+    char *org_buf __attribute__ ((__cleanup__(free_buffer))) = strdup(buf);
 
     line++;
-
-    if (*buf == '\n')
-      continue; /* ignore empty lines */
-
-    /* go throug all comment characters and check, if one of could be found */
-    for (size_t i = 0; i < strlen(comment); i++) {
-      p = strchr(buf, comment[i]);
-      if (p)
-	*p = '\0';
-    }
 
     /* Remove trailing newline character */
     size_t n = strlen(buf);
@@ -129,12 +181,54 @@ read_file(econf_file *ef, const char *file,
       *(buf + n - 1) = '\0';
 
     if (!*buf)
-      continue;       /* empty line */
+      continue; /* empty line */
 
     /* ignore space at begin of the line */
     name = buf;
     while (*name && isspace((unsigned)*name))
       name++;
+
+    /* go through all comment characters and check, if one of could be found */
+    for (size_t i = 0; i < strlen(comment); i++) {
+      p = strchr(name, comment[i]);
+      if (p)
+      {
+	if(p==name)
+	{
+	  /* Comment is defined in the line before the key/value line */
+	  if (current_comment_before_key)
+          {
+	    /* appending */
+	    char *content = current_comment_before_key;
+	    int ret = asprintf(&current_comment_before_key, "%s\n%s", content,
+			       p+1);
+	    if(ret<0)
+	      return ECONF_NOMEM;
+	    free(content);
+	  } else {
+	    current_comment_before_key = strdup(p+1);
+	  }
+	} else {
+	  /* Comment is defined after the key/value in the same line */
+	  if (current_comment_after_value)
+	  {
+	    /* appending */
+	    char *content = current_comment_after_value;
+	    int ret = asprintf(&current_comment_after_value, "%s\n%s", content,
+			       p+1);
+	    if(ret<0)
+	      return ECONF_NOMEM;
+	    free(content);
+	  } else {
+	    current_comment_after_value = strdup(p+1);
+	  }
+	}
+	*p = '\0';
+      }
+    }
+
+    if (!*buf)
+      continue; /* result is empty line */
 
     /* check for groups */
     if (name[0] == '[') {
@@ -160,6 +254,7 @@ read_file(econf_file *ef, const char *file,
       data++;
     if (data > name && *data) {
       if (has_wsp && has_nonwsp)
+      {
 	/*
 	 * delim contains both whitespace and non-whitespace characters.
 	 * In this case delim_seen has the special meaning "non-whitespace
@@ -167,11 +262,50 @@ read_file(econf_file *ef, const char *file,
 	 */
 	delim_seen = !isspace((unsigned)*data) &&
 	  strchr(delim, *data) != NULL;
+      }
       else
+      {
 	delim_seen = strchr(delim, *data) != NULL;
+      }
       *data++ = '\0';
     }
 
+    /* Checking and adding multiline entries which are
+     * not defined by a beginning quote in the line before.
+     */
+    bool found_delim = delim_seen;
+    if (!found_delim)
+    {
+      /* searching the rest of the string for delimiters */
+      char *c = data;
+      while (*c && !(strchr(delim, *c) != NULL))
+	c++;
+      if (*c)
+	found_delim = true;
+    }
+    if (!found_delim &&
+        /* Entry has already been found */	
+	ef->length > 0 &&
+	/* The Entry must be the next line. Otherwise it is a new one */
+	ef->file_entry[ef->length-1].line_number+1 == line)
+    {
+      /* removing \n at the end of the line */
+      if( org_buf[strlen(org_buf)-1] == '\n' )
+        org_buf[strlen(org_buf)-1] = 0;
+      retval = store(ef, current_group, name, org_buf, line,
+		     current_comment_before_key, current_comment_after_value,
+		     true /* appending entry */);
+      free(current_comment_before_key);
+      current_comment_before_key = NULL;
+      free(current_comment_after_value);
+      current_comment_after_value = NULL;
+      if (retval)
+	goto out;
+      continue;
+    }
+    
+    /* Go on. It is not an multiline entry */
+    
     if (!*name || data == name)
       continue;
 
@@ -236,7 +370,13 @@ read_file(econf_file *ef, const char *file,
 	*(p + 1) = '\0';
     }
 
-    retval = store(ef, current_group, name, data, line);
+    retval = store(ef, current_group, name, data, line,
+		   current_comment_before_key, current_comment_after_value,
+		   false /* new entry */);
+    free(current_comment_before_key);
+    current_comment_before_key = NULL;
+    free(current_comment_after_value);
+    current_comment_after_value = NULL;    
     if (retval)
       goto out;
   }
@@ -245,6 +385,10 @@ read_file(econf_file *ef, const char *file,
   fclose (kf);
   if (current_group)
     free (current_group);
+  if (current_comment_before_key)
+    free(current_comment_before_key);
+  if (current_comment_after_value)
+    free(current_comment_after_value);
 
   return retval;
 }

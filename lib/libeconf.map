@@ -46,3 +46,8 @@ LIBECONF_0.3 {
     econf_getUInt64ValueDef;
     econf_getUIntValueDef;
 } LIBECONF_0.2;
+LIBECONF_0.4 {
+  global:
+    econf_getExtValue;
+    econf_freeExtValue;
+} LIBECONF_0.3;

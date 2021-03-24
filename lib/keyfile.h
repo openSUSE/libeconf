@@ -42,6 +42,7 @@ typedef struct econf_file {
      group is found or provided the group is set to KEY_FILE_NULL_VALUE.  */
   struct file_entry {
     char *group, *key, *value;
+    char *comment_before_key, *comment_after_value;
     uint64_t line_number;
   } * file_entry;
   /* length represents the current amount of key/value entries in econf_file and
@@ -79,6 +80,11 @@ econf_err getFloatValueNum(econf_file key_file, size_t num, float *result);
 econf_err getDoubleValueNum(econf_file key_file, size_t num, double *result);
 econf_err getStringValueNum(econf_file key_file, size_t num, char **result);
 econf_err getBoolValueNum(econf_file key_file, size_t num, bool *result);
+econf_err getCommentsNum(econf_file key_file, size_t num,
+		      char **comment_before_key,
+		      char **comment_after_value);
+econf_err getLineNrNum(econf_file key_file, size_t num, uint64_t *line_nr);
+econf_err getPath(econf_file key_file, char **path);
 
 /* SETTERS */
 
@@ -86,6 +92,10 @@ econf_err getBoolValueNum(econf_file key_file, size_t num, bool *result);
 econf_err setGroup(econf_file *key_file, size_t num, const char *value);
 /* Set the key of the file_entry element number num */
 econf_err setKey(econf_file *key_file, size_t num, const char *value);
+/* Set comments of the file_entry element number num */
+econf_err setComments(econf_file *key_file, size_t num,
+		      const char *comment_before_key,
+		      const char *comment_after_value);
 
 /* Functions used to set a value from key_file depending on num.
    Expects a void pointer to the value which is cast to the corresponding

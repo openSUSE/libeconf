@@ -156,21 +156,24 @@ econf_err econf_readDirs(econf_file **result,
   econf_file **key_files, *key_file;
   econf_err error;
 
-  /* config_suffix must be provided and should not be "" */
-  if (config_suffix == NULL || strlen (config_suffix) == 0 ||
-      project_name == NULL || strlen (project_name) == 0 || delim == NULL)
+  if (project_name == NULL || strlen (project_name) == 0 || delim == NULL)
     return ECONF_ERROR;
 
-  // Prepend a . to the config suffix if not provided
-  if (config_suffix[0] == '.')
-    suffix = config_suffix;
-  else
-    {
-      cp = alloca (strlen(config_suffix) + 2);
-      cp[0] = '.';
-      strcpy(cp+1, config_suffix);
-      suffix = cp;
-    }
+  if (config_suffix != NULL && strlen (config_suffix) > 0)
+  {
+    // Prepend a . to the config suffix if not provided
+    if (config_suffix[0] == '.')
+      suffix = config_suffix;
+    else
+      {
+	cp = alloca (strlen(config_suffix) + 2);
+	cp[0] = '.';
+	strcpy(cp+1, config_suffix);
+	suffix = cp;
+      }
+  } else {
+    suffix = "";
+  }
 
   /* create file names for etc and distribution config */
   if (dist_conf_dir != NULL)
@@ -472,17 +475,23 @@ void econf_freeFile(econf_file *key_file) {
   if (!key_file)
     return;
 
-  for (size_t i = 0; i < key_file->alloc_length; i++) {
-    if (key_file->file_entry[i].group)
-      free(key_file->file_entry[i].group);
-    if (key_file->file_entry[i].key)
-      free(key_file->file_entry[i].key);
-    if (key_file->file_entry[i].value)
-      free(key_file->file_entry[i].value);
+  if (key_file->file_entry)
+  {
+    for (size_t i = 0; i < key_file->alloc_length; i++) {
+      if (key_file->file_entry[i].group)
+	free(key_file->file_entry[i].group);
+      if (key_file->file_entry[i].key)
+	free(key_file->file_entry[i].key);
+      if (key_file->file_entry[i].value)
+	free(key_file->file_entry[i].value);
+      if (key_file->file_entry[i].comment_before_key)
+	free(key_file->file_entry[i].comment_before_key);
+      if (key_file->file_entry[i].comment_after_value)
+	free(key_file->file_entry[i].comment_after_value);
+    }
+    free(key_file->file_entry);
   }
 
-  if (key_file->file_entry)
-    free(key_file->file_entry);
   if (key_file->path)
     free(key_file->path);
 

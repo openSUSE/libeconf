@@ -33,6 +33,9 @@ set(TESTS tst-filedoesnotexit1
           tst-arguments3
           tst-arguments4
           tst-arguments5
+	  tst-string
+	  tst-extvalue
+	  tst-comments
           tst-getconfdirs1
           tst-getconfdirs2
           tst-getconfdirs3
@@ -40,6 +43,7 @@ set(TESTS tst-filedoesnotexit1
           tst-getconfdirs5
           tst-getconfdirs6
           tst-getconfdirs7
+	  tst-without-suffix
           tst-econf_errstring1
           tst-setgetvalues1
           tst-groups1

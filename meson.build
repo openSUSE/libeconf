@@ -7,7 +7,7 @@ project(
 		  'b_pie=true',
 		  'warning_level=3',],
   license : 'MIT',
-  version : '0.3.8',
+  version : '0.4.0',
 )
 
 cc = meson.get_compiler('c')
@@ -46,6 +46,7 @@ libeconf_src = files(
   'lib/helpers.c',
   'lib/keyfile.c',
   'lib/libeconf.c',
+  'lib/libeconf_ext.c',  
   'lib/mergefiles.c',
 )
 example_src = ['example/example.c']
