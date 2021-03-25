@@ -102,8 +102,6 @@ main(void)
     { "string_with_quotes_v2", {"\\\""}, 1, 15 }
   };
   
-  size_t i;  
-
   error = econf_readFile (&key_file, TESTSDIR"tst-arguments-string/etc/arguments.conf", "=", "#");
   if (error)
   {
@@ -111,7 +109,7 @@ main(void)
     return 1;
   }
 
-  for (i = 0; i < sizeof(tests)/sizeof(*tests); i++)
+  for (size_t i = 0; i < sizeof(tests)/sizeof(*tests); i++)
   {
     if (!check_StringArray(key_file, "main", tests[i].key, tests[i].val, tests[i].lines,
 			   tests[i].line_nr, TESTSDIR"tst-arguments-string/etc/arguments.conf"))

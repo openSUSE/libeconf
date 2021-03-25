@@ -33,6 +33,86 @@
 #include <ctype.h>
 
 static econf_err
+join_same_entries(econf_file *ef)
+{
+  for(size_t i = 0; i < ef->length; i++)
+  {
+    for(size_t j = i+1; j < ef->length; j++)
+    {
+      if (strcmp(ef->file_entry[i].group, ef->file_entry[j].group) == 0 &&
+	  strcmp(ef->file_entry[i].key, ef->file_entry[j].key) == 0)
+      {
+	char *post, *pre;
+	if (ef->file_entry[j].value == NULL ||
+	    strlen(ef->file_entry[j].value) == 0)
+	{
+	  /* reset entry */
+	  free(ef->file_entry[i].value);
+	  ef->file_entry[i].value = strdup("");
+	} else {
+	  /* appending value */
+	  post = ef->file_entry[j].value;
+	  pre = ef->file_entry[i].value;
+	  int ret = 0;
+	  if (post != NULL && strlen(post) > 0)
+	  {
+	    /* removing leading spaces */
+	    while(isspace(*post)) post++;
+	    ret = asprintf(&(ef->file_entry[i].value), "%s\n%s", pre,
+			   post);
+	    if(ret<0)
+	      return ECONF_NOMEM;
+	    free(pre);
+	  }
+	}
+
+	/* appending before key comment */
+	if (ef->file_entry[j].comment_before_key != NULL &&
+	    strlen(ef->file_entry[j].comment_before_key) > 0)
+	{
+	  post = ef->file_entry[j].comment_before_key;
+          pre = ef->file_entry[i].comment_before_key;
+	  int ret = asprintf(&(ef->file_entry[i].comment_before_key),
+			     "%s\n%s", pre, post);
+	  if(ret<0)
+	    return ECONF_NOMEM;
+	  free(pre);
+	}
+
+	if (ef->file_entry[j].value == NULL ||
+	    strlen(ef->file_entry[j].value) == 0)
+	{
+	  /* reset after value comment */
+	  free(ef->file_entry[i].comment_after_value);
+	  ef->file_entry[i].comment_after_value = NULL;
+	} else {
+	  /* appending after value comment */
+	  if (ef->file_entry[j].comment_after_value != NULL &&
+	      strlen(ef->file_entry[j].comment_after_value) > 0)
+	  {
+	    post = ef->file_entry[j].comment_after_value;
+	    pre = ef->file_entry[i].comment_after_value;
+	    /* removing leading spaces */
+            while(isspace(*post)) post++;
+            if (pre == NULL)
+	    {
+	      ef->file_entry[i].comment_after_value = strdup(post);
+	    } else {
+	      int ret = asprintf(&(ef->file_entry[i].comment_after_value),
+				 "%s\n%s", pre, post);
+	      if(ret<0)
+		return ECONF_NOMEM;
+	      free(pre);
+	    }
+	  }
+	}
+      }
+    }
+  }
+  return ECONF_SUCCESS;
+}
+
+static econf_err
 store (econf_file *ef, const char *group, const char *key,
        const char *value, const uint64_t line_number,
        const char *comment_before_key, const char *comment_after_value,
@@ -74,10 +154,10 @@ store (econf_file *ef, const char *group, const char *key,
 		       comment_after_value);
       }
       if(ret<0)
-	return ECONF_NOMEM;      
+	return ECONF_NOMEM;
     }      
-    
-    return ECONF_SUCCESS;    
+
+    return ECONF_SUCCESS;
   }
 
   /* not appending -> new entry */
@@ -289,6 +369,12 @@ read_file(econf_file *ef, const char *file,
 	/* The Entry must be the next line. Otherwise it is a new one */
 	ef->file_entry[ef->length-1].line_number+1 == line)
     {
+      /* removing comments */
+      for (size_t i = 0; i < strlen(comment); i++) {
+	char *pt = strchr(org_buf, comment[i]);
+	if (pt)
+	  *pt = '\0';
+      }
       /* removing \n at the end of the line */
       if( org_buf[strlen(org_buf)-1] == '\n' )
         org_buf[strlen(org_buf)-1] = 0;
@@ -389,6 +475,11 @@ read_file(econf_file *ef, const char *file,
     free(current_comment_before_key);
   if (current_comment_after_value)
     free(current_comment_after_value);
+
+  if(getenv("ECONF_JOIN_SAME_ENTRIES"))
+  {
+    join_same_entries(ef);
+  }
 
   return retval;
 }

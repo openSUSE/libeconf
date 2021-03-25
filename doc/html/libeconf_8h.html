@@ -431,7 +431,8 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>econf_err ECONF_SUCCESS or error code</dd></dl>
-<p>Usage: </p><div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="libeconf_8h.html">libeconf.h</a>&quot;</span></div><div class="line"></div><div class="line"><a class="code" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *key_file = NULL;</div><div class="line"><a class="code" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a> error;</div><div class="line"></div><div class="line">error = <a class="code" href="libeconf_8h.html#aa03377bd02882239b3342c095f916561">econf_readFile</a> (&amp;key_file, <span class="stringliteral">&quot;/etc/test.conf&quot;</span>, <span class="stringliteral">&quot;=&quot;</span>, <span class="stringliteral">&quot;#&quot;</span>);</div><div class="line"></div><div class="line"><a class="code" href="libeconf_8h.html#a27a9d78ae827ef885a4373fa591ded73">econf_free</a> (key_file);</div></div><!-- fragment --> 
+<p>Usage: </p><div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="libeconf_8h.html">libeconf.h</a>&quot;</span></div><div class="line"></div><div class="line"><a class="code" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *key_file = NULL;</div><div class="line"><a class="code" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a> error;</div><div class="line"></div><div class="line">error = <a class="code" href="libeconf_8h.html#aa03377bd02882239b3342c095f916561">econf_readFile</a> (&amp;key_file, <span class="stringliteral">&quot;/etc/test.conf&quot;</span>, <span class="stringliteral">&quot;=&quot;</span>, <span class="stringliteral">&quot;#&quot;</span>);</div><div class="line"></div><div class="line"><a class="code" href="libeconf_8h.html#a27a9d78ae827ef885a4373fa591ded73">econf_free</a> (key_file);</div></div><!-- fragment --><p>Default behaviour if entries have the same name in one file: The first hit will be returned. Further entries will be ignored. This can be changed by setting the environment variable ECONF_JOIN_SAME_ENTRIES. In that case entries with the same name will be joined to one single entry. </p>
+
 </div>
 </div>
 <a id="a2aba75b3474b33173edbc0f80b2e8a79"></a>
@@ -594,7 +595,8 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>econf_err ECONF_SUCCESS or error code </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>econf_err ECONF_SUCCESS or error code</dd></dl>
+<p>Default behaviour if entries have the same name in one file: The first hit will be returned. Further entries will be ignored. This can be changed by setting the environment variable ECONF_JOIN_SAME_ENTRIES. In that case entries with the same name will be joined to one single entry. </p>
 
 </div>
 </div>

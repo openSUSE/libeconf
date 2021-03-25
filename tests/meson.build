@@ -38,6 +38,8 @@ test('tst-arguments5', tst_arguments5_exe)
 
 tst_string_exe = executable('tst-string', 'tst-string.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-string', tst_string_exe)
+tst_string_append_exe = executable('tst-string-append', 'tst-string-append.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-string-append', tst_string_append_exe)
 tst_extvalue_exe = executable('tst-extvalue', 'tst-extvalue.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-extvalue', tst_extvalue_exe)
 tst_comments_exe = executable('tst-comments', 'tst-comments.c', c_args: test_args, dependencies : libeconf_dep)
