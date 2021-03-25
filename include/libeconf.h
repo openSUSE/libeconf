@@ -115,6 +115,11 @@ typedef struct econf_file econf_file;
  *   econf_free (key_file);
  * @endcode
  *
+ * Default behaviour if entries have the same name in one file: The
+ * first hit will be returned. Further entries will be ignored.
+ * This can be changed by setting the environment variable 
+ * ECONF_JOIN_SAME_ENTRIES. In that case entries with the same name
+ * will be joined to one single entry.
  */
 extern econf_err econf_readFile(econf_file **result, const char *file_name,
 				    const char *delim, const char *comment);
@@ -196,6 +201,11 @@ extern econf_err econf_readDirs(econf_file **key_file,
  * @param comment Character which defines the start of a comment.
  * @return econf_err ECONF_SUCCESS or error code
  *
+ * Default behaviour if entries have the same name in one file: The
+ * first hit will be returned. Further entries will be ignored.
+ * This can be changed by setting the environment variable 
+ * ECONF_JOIN_SAME_ENTRIES. In that case entries with the same name
+ * will be joined to one single entry. 
  */
 extern econf_err econf_newKeyFile(econf_file **result, char delimiter, char comment);
 

@@ -34,6 +34,7 @@ set(TESTS tst-filedoesnotexit1
           tst-arguments4
           tst-arguments5
 	  tst-string
+	  tst-string-append
 	  tst-extvalue
 	  tst-comments
           tst-getconfdirs1
