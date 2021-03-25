@@ -76,7 +76,7 @@ join_same_entries(econf_file *ef)
 			     "%s\n%s", pre, post);
 	  if(ret<0)
 	    return ECONF_NOMEM;
-	  free(pre);	  
+	  free(pre);
 	}
 
 	if (ef->file_entry[j].value == NULL ||
@@ -93,7 +93,7 @@ join_same_entries(econf_file *ef)
 	    post = ef->file_entry[j].comment_after_value;
 	    pre = ef->file_entry[i].comment_after_value;
 	    /* removing leading spaces */
-	    while(isspace(*post)) post++;	  	    
+            while(isspace(*post)) post++;
             if (pre == NULL)
 	    {
 	      ef->file_entry[i].comment_after_value = strdup(post);
@@ -102,14 +102,14 @@ join_same_entries(econf_file *ef)
 				 "%s\n%s", pre, post);
 	      if(ret<0)
 		return ECONF_NOMEM;
-	      free(pre);	  
+	      free(pre);
 	    }
 	  }
 	}
       }
     }
   }
-  return ECONF_SUCCESS;      
+  return ECONF_SUCCESS;
 }
 
 static econf_err
