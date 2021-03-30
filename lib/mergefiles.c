@@ -153,7 +153,7 @@ char **get_default_dirs(const char *usr_conf_dir, const char *etc_conf_dir) {
 
 // Check if the given directory exists. If so look for config files
 // with the given suffix
-static econf_file **
+static econf_err
 check_conf_dir(econf_file **key_files, size_t *size, const char *path,
 	       const char *config_suffix, const char *delim, const char *comment)
 {
@@ -173,40 +173,43 @@ check_conf_dir(econf_file **key_files, size_t *size, const char *path,
           key_file->on_merge_delete = 1;
           key_files[(*size) - 1] = key_file;
           key_files = realloc(key_files, ++(*size) * sizeof(econf_file *));
-        }
+        } else {
+	  return error;
+	}
       }
       free(de[i]);
     }
     free(de);
   }
-  return key_files;
+  return ECONF_SUCCESS;
 }
 
-/* XXX Convert to return econf_err */
-econf_file **traverse_conf_dirs(econf_file **key_files,
-				const char *config_dirs[],
-				size_t *size, const char *path,
-				const char *config_suffix,
-				const char *delim, const char *comment) {
+econf_err traverse_conf_dirs(econf_file **key_files,
+			     const char *config_dirs[],
+			     size_t *size, const char *path,
+			     const char *config_suffix,
+			     const char *delim, const char *comment) {
   int i;
 
   if (config_dirs == NULL)
-    return NULL; /* XXX ECONF_ERROR */
+    return ECONF_NOFILE;
 
   i = 0;
   while (config_dirs[i] != NULL) {
     char *fulldir, *cp;
 
     if ((fulldir = malloc (strlen(path) + strlen (config_dirs[i]) + 1)) == NULL)
-      return NULL;
+      return ECONF_NOMEM;
 
     cp = stpcpy (fulldir, path);
     stpcpy (cp, config_dirs[i++]);
-    key_files = check_conf_dir(key_files, size,
-        fulldir, config_suffix, delim, comment);
+    econf_err error = check_conf_dir(key_files, size,
+				     fulldir, config_suffix, delim, comment);
     free (fulldir);
+    if (error)
+      return error;
   }
-  return key_files;
+  return ECONF_SUCCESS;
 }
 
 econf_err merge_econf_files(econf_file **key_files, econf_file **merged_files) {

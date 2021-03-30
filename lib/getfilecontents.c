@@ -32,6 +32,10 @@
 #include <string.h>
 #include <ctype.h>
 
+/*info for reporting scan errors (line Nr, filename) */
+uint64_t last_scanned_line_nr = 0;
+char *last_scanned_filename = NULL;
+
 static econf_err
 join_same_entries(econf_file *ef)
 {
@@ -123,7 +127,7 @@ store (econf_file *ef, const char *group, const char *key,
     /* Appending next line to the last entry. */
     if (ef->length<=0)
     {
-      return ECONF_PARSE_ERROR;
+      return ECONF_MISSING_DELIMITER;
     }
     char *content = ef->file_entry[ef->length-1].value;
     int ret = asprintf(&(ef->file_entry[ef->length-1].value), "%s\n%s", content,
@@ -239,6 +243,14 @@ read_file(econf_file *ef, const char *file,
   if (kf == NULL)
     return ECONF_NOFILE;
 
+  if (last_scanned_filename != NULL)
+    free(last_scanned_filename);
+  last_scanned_filename = strdup(file);
+  if (last_scanned_filename == NULL) {
+    fclose (kf);
+    return ECONF_NOMEM;
+  }
+
   check_delim(delim, &has_wsp, &has_nonwsp);
 
   ef->path = strdup (file);
@@ -254,6 +266,7 @@ read_file(econf_file *ef, const char *file,
     char *org_buf __attribute__ ((__cleanup__(free_buffer))) = strdup(buf);
 
     line++;
+    last_scanned_line_nr = line;
 
     /* Remove trailing newline character */
     size_t n = strlen(buf);
@@ -316,7 +329,7 @@ read_file(econf_file *ef, const char *file,
       /* XXX Remove [] around group name */
       while (isspace (*p)) p--;
       if (*p != ']') {
-	retval = ECONF_PARSE_ERROR;
+	retval = ECONF_MISSING_BRACKET;
 	goto out;
       }
       p++;
@@ -410,7 +423,7 @@ read_file(econf_file *ef, const char *file,
 	 * after it.
 	 */
 	if (!*data || strchr(delim, *data) == NULL) {
-	  retval = ECONF_PARSE_ERROR;
+	  retval = ECONF_MISSING_DELIMITER;
 	  goto out;
 	}
 	data++;
@@ -482,4 +495,10 @@ read_file(econf_file *ef, const char *file,
   }
 
   return retval;
+}
+
+void last_scanned_file(char *filename, uint64_t *line_nr)
+{
+  *line_nr = last_scanned_line_nr;
+  filename = last_scanned_filename ? strdup(last_scanned_filename) : NULL;
 }

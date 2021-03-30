@@ -16,7 +16,7 @@ main(void)
 {
   int i;
 
-  for (i = 0; i < 10; i++)
+  for (i = 0; i < 20; i++)
     printf ("%.3i: %s\n", i, econf_errString(i));
 
   printf ("MAX: %s\n", econf_errString(INT_MAX));

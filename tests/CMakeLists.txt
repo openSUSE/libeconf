@@ -53,6 +53,7 @@ set(TESTS tst-filedoesnotexit1
           tst-groups4
           tst-parseconfig1
           tst-quote1
+	  tst-parse-error
           )
 
 foreach (TESTCASE ${TESTS})

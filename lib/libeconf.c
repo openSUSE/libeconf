@@ -93,6 +93,7 @@ econf_err econf_readFile(econf_file **key_file, const char *file_name,
     (*key_file)->comment = '#';
 
   t_err = read_file(*key_file, absolute_path, delim, comment);
+  
   free (absolute_path);
 
   if(t_err) {
@@ -143,12 +144,12 @@ econf_err econf_mergeFiles(econf_file **merged_file, econf_file *usr_file, econf
 }
 
 econf_err econf_readDirs(econf_file **result,
-				   const char *dist_conf_dir,
-                                   const char *etc_conf_dir,
-                                   const char *project_name,
-                                   const char *config_suffix,
-                                   const char *delim,
-				   const char *comment)
+			 const char *dist_conf_dir,
+			 const char *etc_conf_dir,
+			 const char *project_name,
+			 const char *config_suffix,
+			 const char *delim,
+			 const char *comment)
 {
   size_t size = 0;
   const char *suffix, *default_dirs[3] = {NULL, NULL, NULL};
@@ -258,13 +259,15 @@ econf_err econf_readDirs(econf_file **result,
     const char *conf_dirs[] = {  NULL, /* "/conf.d/", ".d/", "/", */ NULL};
     char *project_path = combine_strings(default_dirs[i], project_name, '/');
     char *suffix_d = malloc (strlen(suffix) + 4); /* + strlen(".d/") */
-    /* XXX ENOMEM/NULL pointer check */
+    if (suffix_d == NULL)
+      return ECONF_NOMEM;
     cp = stpcpy(suffix_d, suffix);
     stpcpy(cp, ".d/");
     conf_dirs[0] = suffix_d;
-    key_files = traverse_conf_dirs(key_files, conf_dirs, &size, project_path,
-                                   suffix, delim, comment);
-    /* XXX ENOMEM/NULL pointer check */
+    error = traverse_conf_dirs(key_files, conf_dirs, &size, project_path,
+			       suffix, delim, comment);
+    if (error != ECONF_SUCCESS)
+      return error;
     free(suffix_d);
     free(project_path);
     i++;

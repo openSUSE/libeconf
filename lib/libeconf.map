@@ -50,4 +50,5 @@ LIBECONF_0.4 {
   global:
     econf_getExtValue;
     econf_freeExtValue;
+    econf_errLocation;
 } LIBECONF_0.3;
