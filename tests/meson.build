@@ -60,6 +60,8 @@ test('tst-getconfdirs6', tst_getconfdirs6_exe)
 tst_getconfdirs7_exe = executable('tst-getconfdirs7', 'tst-getconfdirs7.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-getconfdirs7', tst_getconfdirs7_exe)
 
+tst_parse_error_exe = executable('tst-parse-error', 'tst-parse-error.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-parse-error', tst_parse_error_exe)
 
 tst_econf_errstring1_exe = executable('tst-econf_errstring1', 'tst-econf_errstring1.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-econf_errstring1', tst_econf_errstring1_exe)

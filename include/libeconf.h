@@ -54,8 +54,16 @@ enum econf_err {
   ECONF_EMPTYKEY = 6,
   /** Error creating or writing to a file */
   ECONF_WRITEERROR = 7,
-  /** Syntax error in input file */
-  ECONF_PARSE_ERROR = 8
+  /** General syntax error in input file */
+  ECONF_PARSE_ERROR = 8,
+  /** Missing closing section bracket */
+  ECONF_MISSING_BRACKET = 9,
+  /** Missing delimiter */
+  ECONF_MISSING_DELIMITER = 10,
+  /** Empty section name */
+  ECONF_EMPTY_SECTION_NAME = 11,
+  /** Text after section */
+  ECONF_TEXT_AFTER_SECTION = 12
 };
 
 typedef enum econf_err econf_err;
@@ -551,6 +559,14 @@ extern econf_err econf_setBoolValue(econf_file *kf, const char *group, const cha
  *
  */
 extern const char *econf_errString (const econf_err error);
+
+/** @brief Info about where the error has happened.
+ *
+ * @param filename Path of the last scanned file.
+ * @param line_nr Number of the last handled line.
+ *
+ */
+extern void econf_errLocation (char **filename, uint64_t *line_nr);
 
 /** @brief Free an array of type char** created by econf_getGroups() or econf_getKeys().
  *

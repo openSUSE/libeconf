@@ -5,7 +5,7 @@ set(econf_SRCS libeconf.c
                mergefiles.c
                helpers.c
                keyfile.c
-               econf_errString.c
+               econf_error.c
                get_value_def.c
                )
 

@@ -27,6 +27,7 @@
 
 #include <stdio.h>
 #include "libeconf.h"
+#include "getfilecontents.h"
 
 static const char *messages[] = {
   "Success", /* ECONF_SUCCESS */
@@ -37,7 +38,11 @@ static const char *messages[] = {
   "Key not found", /* ECONF_NOKEY */
   "Key has empty value", /* ECONF_EMPTYKEY */
   "Error creating or writing to a file", /* ECONF_WRITEERROR */
-  "Parse error" /* ECONF_PARSE_ERROR */
+  "Parse error", /* ECONF_PARSE_ERROR */
+  "Missing bracket", /* ECONF_MISSING_BRACKET */
+  "Missing delimiter", /* ECONF_MISSING_DELIMITER */
+  "Empty section name", /* ECONF_EMPTY_SECTION_NAME */
+  "Text after section" /* ECONF_TEXT_AFTER_SECTION */
 };
 
 const char *
@@ -55,4 +60,9 @@ econf_errString (const econf_err error)
     }
   else
     return messages[error];
+}
+
+extern void econf_errLocation (char **filename, uint64_t *line_nr)
+{
+  last_scanned_file( filename, line_nr );
 }
