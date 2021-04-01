@@ -109,3 +109,7 @@ econf_err setFloatValueNum(econf_file *key_file, size_t num, const void *value);
 econf_err setDoubleValueNum(econf_file *key_file, size_t num, const void *value);
 econf_err setStringValueNum(econf_file *key_file, size_t num, const void *value);
 econf_err setBoolValueNum(econf_file *key_file, size_t num, const void *value);
+
+/* helper functions */
+
+void print_key_file(const econf_file key_file);

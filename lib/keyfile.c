@@ -33,6 +33,23 @@
 #include <stdio.h>
 #include <string.h>
 
+void print_key_file(const econf_file key_file)
+{
+  printf("----------------------------------\n");
+  printf("path: %s\n", key_file.path);
+  printf("delimiter: %c, comment: %c\n", key_file.delimiter, key_file.comment);
+  printf("values:\n");
+  for(size_t i = 0; i < key_file.length; i++)
+  {
+    printf("  group: %s ; key: %s ; value: %s\n",
+	   key_file.file_entry[i].group,
+	   key_file.file_entry[i].key,
+	   key_file.file_entry[i].value);
+  }
+  printf("----------------------------------\n");
+}
+
+
 econf_err key_file_append(econf_file *kf) {
   /* XXX check return values and for NULL pointers */
   if(kf->length++ >= kf->alloc_length) {

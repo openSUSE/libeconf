@@ -154,7 +154,7 @@ char **get_default_dirs(const char *usr_conf_dir, const char *etc_conf_dir) {
 // Check if the given directory exists. If so look for config files
 // with the given suffix
 static econf_err
-check_conf_dir(econf_file **key_files, size_t *size, const char *path,
+check_conf_dir(econf_file ***key_files, size_t *size, const char *path,
 	       const char *config_suffix, const char *delim, const char *comment)
 {
   struct dirent **de;
@@ -171,9 +171,12 @@ check_conf_dir(econf_file **key_files, size_t *size, const char *path,
         free(file_path);
         if(!error && key_file) {
           key_file->on_merge_delete = 1;
-          key_files[(*size) - 1] = key_file;
-          key_files = realloc(key_files, ++(*size) * sizeof(econf_file *));
+          (*key_files)[(*size) - 1] = key_file;
+          *key_files = realloc(*key_files, ++(*size) * sizeof(econf_file *));
         } else {
+	  for (int k = i; k < num_dirs; k++)
+	    free(de[k]);
+	  free(de);
 	  return error;
 	}
       }
@@ -184,7 +187,7 @@ check_conf_dir(econf_file **key_files, size_t *size, const char *path,
   return ECONF_SUCCESS;
 }
 
-econf_err traverse_conf_dirs(econf_file **key_files,
+econf_err traverse_conf_dirs(econf_file ***key_files,
 			     const char *config_dirs[],
 			     size_t *size, const char *path,
 			     const char *config_suffix,
@@ -213,7 +216,7 @@ econf_err traverse_conf_dirs(econf_file **key_files,
 }
 
 econf_err merge_econf_files(econf_file **key_files, econf_file **merged_files) {
-  if (key_files == NULL || merged_files == NULL)
+  if (*key_files == NULL || merged_files == NULL)
     return ECONF_ERROR;
 
   *merged_files = *key_files++;
@@ -234,5 +237,6 @@ econf_err merge_econf_files(econf_file **key_files, econf_file **merged_files) {
 
     key_files++;
   }
+
   return ECONF_SUCCESS;
 }

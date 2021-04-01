@@ -264,18 +264,27 @@ econf_err econf_readDirs(econf_file **result,
     cp = stpcpy(suffix_d, suffix);
     stpcpy(cp, ".d/");
     conf_dirs[0] = suffix_d;
-    error = traverse_conf_dirs(key_files, conf_dirs, &size, project_path,
+
+    error = traverse_conf_dirs(&key_files, conf_dirs, &size, project_path,
 			       suffix, delim, comment);
-    if (error != ECONF_SUCCESS)
-      return error;
     free(suffix_d);
     free(project_path);
+    if (error != ECONF_SUCCESS)
+    {
+      for(size_t k = 0; k < size-1; k++)
+      {
+	econf_freeFile(key_files[k]);
+      }
+      free(key_files);
+      return error;
+    }
     i++;
   }
   key_files[size - 1] = NULL;
 
   // Merge the list of acquired key_files into merged_file
   error = merge_econf_files(key_files, result);
+
   free(key_files);
 
   if (size == 1)
