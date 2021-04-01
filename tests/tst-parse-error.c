@@ -47,5 +47,14 @@ main(void)
     return 1;
   }
 
+  error = econf_readFile(&key_file, TESTSDIR"tst-parse-error/text_after_section.conf", "=", "#");
+  econf_free (key_file);
+  if (error != ECONF_TEXT_AFTER_SECTION)
+  {
+    fprintf (stderr, "wrong return value for parsing a text after a section: %s\n",
+	     econf_errString(error));
+    return 1;
+  }
+
   return 0;
 }

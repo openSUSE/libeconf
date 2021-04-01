@@ -329,11 +329,19 @@ read_file(econf_file *ef, const char *file,
       /* XXX Remove [] around group name */
       while (isspace (*p)) p--;
       if (*p != ']') {
-	retval = ECONF_MISSING_BRACKET;
+	if (strchr(name,']') == NULL)
+	  retval = ECONF_MISSING_BRACKET;
+	else
+	  retval = ECONF_TEXT_AFTER_SECTION;
 	goto out;
       }
       p++;
       *p = '\0';
+      if(strlen(name) <= 2) /* empty string = "[]" */
+      {
+	retval = ECONF_EMPTY_SECTION_NAME;
+	goto out;
+      }
       if (current_group)
 	free (current_group);
       current_group = strdup (name);
