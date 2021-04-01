@@ -505,8 +505,8 @@ read_file(econf_file *ef, const char *file,
   return retval;
 }
 
-void last_scanned_file(char *filename, uint64_t *line_nr)
+void last_scanned_file(char **filename, uint64_t *line_nr)
 {
   *line_nr = last_scanned_line_nr;
-  filename = last_scanned_filename ? strdup(last_scanned_filename) : NULL;
+  *filename = last_scanned_filename ? strdup(last_scanned_filename) : NULL;
 }

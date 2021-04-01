@@ -262,7 +262,7 @@ econf_err econf_readDirs(econf_file **result,
     if (suffix_d == NULL)
       return ECONF_NOMEM;
     cp = stpcpy(suffix_d, suffix);
-    stpcpy(cp, ".d/");
+    stpcpy(cp, ".d");
     conf_dirs[0] = suffix_d;
 
     error = traverse_conf_dirs(&key_files, conf_dirs, &size, project_path,

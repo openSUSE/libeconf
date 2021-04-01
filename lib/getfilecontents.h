@@ -30,4 +30,4 @@
 extern econf_err read_file(econf_file *read_file, const char *file,
 			   const char *delim, const char *comment);
 
-extern void last_scanned_file(char *filename, uint64_t *line_nr);
+extern void last_scanned_file(char **filename, uint64_t *line_nr);

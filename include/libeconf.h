@@ -560,13 +560,13 @@ extern econf_err econf_setBoolValue(econf_file *kf, const char *group, const cha
  */
 extern const char *econf_errString (const econf_err error);
 
-/** @brief Info about where the error has happended.
+/** @brief Info about where the error has happened.
  *
  * @param filename Path of the last scanned file.
  * @param line_nr Number of the last handled line.
  *
  */
-extern void econf_errLocation (char *filename, uint64_t *line_nr);
+extern void econf_errLocation (char **filename, uint64_t *line_nr);
 
 /** @brief Free an array of type char** created by econf_getGroups() or econf_getKeys().
  *

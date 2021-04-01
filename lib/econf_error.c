@@ -62,7 +62,7 @@ econf_errString (const econf_err error)
     return messages[error];
 }
 
-extern void econf_errLocation (char *filename, uint64_t *line_nr)
+extern void econf_errLocation (char **filename, uint64_t *line_nr)
 {
   last_scanned_file( filename, line_nr );
 }
