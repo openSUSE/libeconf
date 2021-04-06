@@ -45,5 +45,6 @@ exists:
 * /etc/_example_._suffix_.d/*._suffix_
 
 **API**
-The API is written in plain C. The description can be found here :[https://opensuse.github.io/libeconf/]
-[https://opensuse.github.io/libeconf/]
+
+The API is written in plain C. The description can be found here :https://opensuse.github.io/libeconf/
+
