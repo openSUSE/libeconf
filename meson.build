@@ -66,7 +66,7 @@ lib = library(
   soversion : '0',
 )
 
-install_headers('include/libeconf.h')
+install_headers('include/libeconf.h', 'include/libeconf_ext.h')
 
 pkg.generate(
   lib,
