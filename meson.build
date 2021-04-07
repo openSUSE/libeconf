@@ -83,7 +83,7 @@ libeconf_dep = declare_dependency(
 # Example
 
 executable('example', example_src, dependencies : libeconf_dep)
-executable('econftool', econftool_src, dependencies : libeconf_dep)
+executable('econftool', econftool_src, dependencies : libeconf_dep, install : true, )
 
 # Unit tests
 subdir('tests')
