@@ -17,7 +17,7 @@ if doxygen.found()
 
   custom_target('doc',
     build_by_default: true,
-    command: [doxygen, 'doc/Doxyfile'],
+    command: [doxygen, meson.current_build_dir()+'/Doxyfile'],
     output: ['html']
   )
 endif
