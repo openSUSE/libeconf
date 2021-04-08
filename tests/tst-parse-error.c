@@ -33,7 +33,7 @@ main(void)
   econf_errLocation( &filename, &line_nr);
   if (strcmp(filename,TESTSDIR"tst-parse-error/etc/missing_bracket.conf.d/missing_bracket.conf")!=0 || line_nr != 4)
   {
-    fprintf (stderr, "wrong error info for parsing a text with missing bracket: %s: %ld\n", filename, line_nr);
+    fprintf (stderr, "wrong error info for parsing a text with missing bracket: %s: %d\n", filename, (int) line_nr);
     free(filename);
     return 1;
   }
@@ -50,7 +50,7 @@ main(void)
   econf_errLocation( &filename, &line_nr);
   if (strcmp(filename,TESTSDIR"tst-parse-error/missing_delim.conf")!=0 || line_nr != 3)
   {
-    fprintf (stderr, "wrong error info for parsing a text with missing delimiters: %s: %ld\n", filename, line_nr);
+    fprintf (stderr, "wrong error info for parsing a text with missing delimiters: %s: %d\n", filename, (int) line_nr);
     free(filename);
     return 1;
   }
@@ -67,7 +67,7 @@ main(void)
   econf_errLocation( &filename, &line_nr);
   if (strcmp(filename,TESTSDIR"tst-parse-error/empty_section.conf")!=0 || line_nr != 4)
   {
-    fprintf (stderr, "wrong error info for parsing a text after an empty section: %s: %ld\n", filename, line_nr);
+    fprintf (stderr, "wrong error info for parsing a text after an empty section: %s: %d\n", filename, (int) line_nr);
     free(filename);
     return 1;
   }
@@ -84,7 +84,7 @@ main(void)
   econf_errLocation( &filename, &line_nr);
   if (strcmp(filename,TESTSDIR"tst-parse-error/text_after_section.conf")!=0 || line_nr != 4)
   {
-    fprintf (stderr, "wrong error info for parsing a text after a section: %s: %ld\n", filename, line_nr);
+    fprintf (stderr, "wrong error info for parsing a text after a section: %s: %d\n", filename, (int) line_nr);
     free(filename);
     return 1;
   }
