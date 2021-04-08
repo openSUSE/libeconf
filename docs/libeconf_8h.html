@@ -110,7 +110,12 @@ Enumerations</h2></td></tr>
 <a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aaf3119f73c97a08fd08e2dfbc3d42493c">ECONF_EMPTYKEY</a> = 6, 
 <a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aaa0542bb798322dd272fe66411b0ede6c">ECONF_WRITEERROR</a> = 7, 
 <br />
-&#160;&#160;<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa6df088da6aad41d83acc2b6060acb7fe">ECONF_PARSE_ERROR</a> = 8
+&#160;&#160;<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa6df088da6aad41d83acc2b6060acb7fe">ECONF_PARSE_ERROR</a> = 8, 
+<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aaaf3716ec7b6faf6a0183007060c2ac16">ECONF_MISSING_BRACKET</a> = 9, 
+<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aacd662d9a8a5249d344bc716517a5506f">ECONF_MISSING_DELIMITER</a> = 10, 
+<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa8bffb248bd0e7fbfe09f404ec73ffeb6">ECONF_EMPTY_SECTION_NAME</a> = 11, 
+<br />
+&#160;&#160;<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa5af88d2cd68517701b2d8b9c34fbb4a0">ECONF_TEXT_AFTER_SECTION</a> = 12
 <br />
  }</td></tr>
 <tr class="memdesc:a30cb4e6c5ce4daa333646b23b20caa0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">libeconf error codes  <a href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">More...</a><br /></td></tr>
@@ -217,6 +222,9 @@ Functions</h2></td></tr>
 <tr class="memitem:aad9997fe22b287d5b943e2846abe9e32"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#aad9997fe22b287d5b943e2846abe9e32">econf_errString</a> (const <a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a> error)</td></tr>
 <tr class="memdesc:aad9997fe22b287d5b943e2846abe9e32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert an econf_err type to a string.  <a href="#aad9997fe22b287d5b943e2846abe9e32">More...</a><br /></td></tr>
 <tr class="separator:aad9997fe22b287d5b943e2846abe9e32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc459d1dfa9096425d4f248b04669761"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#adc459d1dfa9096425d4f248b04669761">econf_errLocation</a> (char **filename, uint64_t *line_nr)</td></tr>
+<tr class="memdesc:adc459d1dfa9096425d4f248b04669761"><td class="mdescLeft">&#160;</td><td class="mdescRight">Info about where the error has happened.  <a href="#adc459d1dfa9096425d4f248b04669761">More...</a><br /></td></tr>
+<tr class="separator:adc459d1dfa9096425d4f248b04669761"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6da8744e42ba1f4ddf5179a79fde50e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#ad6da8744e42ba1f4ddf5179a79fde50e">econf_freeArray</a> (char **array)</td></tr>
 <tr class="memdesc:ad6da8744e42ba1f4ddf5179a79fde50e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Free an array of type char** created by <a class="el" href="libeconf_8h.html#aa9f93a7e119c37ee3a49d1ad11936533" title="Evaluating all group entries. ">econf_getGroups()</a> or <a class="el" href="libeconf_8h.html#afa58b02e97241c5e8d778f40b04731b7" title="Evaluating all keys. ">econf_getKeys()</a>.  <a href="#ad6da8744e42ba1f4ddf5179a79fde50e">More...</a><br /></td></tr>
 <tr class="separator:ad6da8744e42ba1f4ddf5179a79fde50e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -278,7 +286,7 @@ Functions</h2></td></tr>
 <p>Use: econf_setValue(econf_file *key_file, char *group, char *key, <em>generic</em> value);</p>
 <p>Replace <em>generic</em> with one of the supported value types. Supported Types: int, long, unsigned int, unsigned long, float, double, string (as *char). Note: Does not detect "yes", "no", 1 and 0 as boolean type. If you want to set a bool value use "true" or "false" or use setBoolValue() directly. </p>
 
-<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00073">73</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00081">81</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
 
 </div>
 </div>
@@ -297,7 +305,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">(( \</div><div class="line">  _Generic((value), \</div><div class="line">    <a class="code" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a>*: <a class="code" href="libeconf_8h.html#af5fe145fe20e3a39efa781756a1f2589">econf_freeFile</a> , \</div><div class="line">    <span class="keywordtype">char</span>**: <a class="code" href="libeconf_8h.html#ad6da8744e42ba1f4ddf5179a79fde50e">econf_freeArray</a>)) \</div><div class="line">(value))</div><div class="ttc" id="libeconf_8h_html_a0d29e6d5c6c6d151bb3edc54019c8735"><div class="ttname"><a href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a></div><div class="ttdeci">struct econf_file econf_file</div><div class="ttdef"><b>Definition:</b> <a href="libeconf_8h_source.html#l00096">libeconf.h:96</a></div></div>
+<b>Value:</b><div class="fragment"><div class="line">(( \</div><div class="line">  _Generic((value), \</div><div class="line">    <a class="code" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a>*: <a class="code" href="libeconf_8h.html#af5fe145fe20e3a39efa781756a1f2589">econf_freeFile</a> , \</div><div class="line">    <span class="keywordtype">char</span>**: <a class="code" href="libeconf_8h.html#ad6da8744e42ba1f4ddf5179a79fde50e">econf_freeArray</a>)) \</div><div class="line">(value))</div><div class="ttc" id="libeconf_8h_html_a0d29e6d5c6c6d151bb3edc54019c8735"><div class="ttname"><a href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a></div><div class="ttdeci">struct econf_file econf_file</div><div class="ttdef"><b>Definition:</b> <a href="libeconf_8h_source.html#l00104">libeconf.h:104</a></div></div>
 <div class="ttc" id="libeconf_8h_html_ad6da8744e42ba1f4ddf5179a79fde50e"><div class="ttname"><a href="libeconf_8h.html#ad6da8744e42ba1f4ddf5179a79fde50e">econf_freeArray</a></div><div class="ttdeci">void econf_freeArray(char **array)</div><div class="ttdoc">Free an array of type char** created by econf_getGroups() or econf_getKeys(). </div></div>
 <div class="ttc" id="libeconf_8h_html_af5fe145fe20e3a39efa781756a1f2589"><div class="ttname"><a href="libeconf_8h.html#af5fe145fe20e3a39efa781756a1f2589">econf_freeFile</a></div><div class="ttdeci">void econf_freeFile(econf_file *key_file)</div><div class="ttdoc">Free memory allocated by e.g. </div></div>
 </div><!-- fragment -->
@@ -305,7 +313,7 @@ Functions</h2></td></tr>
 <p>Use: econf_free(<em>generic</em> value);</p>
 <p>Replace <em>generic</em> with one of the supported value types. Supported Types: char** and econf_file*. </p>
 
-<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00090">90</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00098">98</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
 
 </div>
 </div>
@@ -322,7 +330,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00061">61</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00069">69</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
 
 </div>
 </div>
@@ -338,7 +346,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00096">96</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00104">104</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
 
 </div>
 </div>
@@ -373,7 +381,15 @@ Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aaa0542bb798322dd272fe66411b0ede6c"></a>ECONF_WRITEERROR&#160;</td><td class="fielddoc"><p>Error creating or writing to a file. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aa6df088da6aad41d83acc2b6060acb7fe"></a>ECONF_PARSE_ERROR&#160;</td><td class="fielddoc"><p>Syntax error in input file. </p>
+<tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aa6df088da6aad41d83acc2b6060acb7fe"></a>ECONF_PARSE_ERROR&#160;</td><td class="fielddoc"><p>General syntax error in input file. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aaaf3716ec7b6faf6a0183007060c2ac16"></a>ECONF_MISSING_BRACKET&#160;</td><td class="fielddoc"><p>Missing closing section bracket. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aacd662d9a8a5249d344bc716517a5506f"></a>ECONF_MISSING_DELIMITER&#160;</td><td class="fielddoc"><p>Missing delimiter. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aa8bffb248bd0e7fbfe09f404ec73ffeb6"></a>ECONF_EMPTY_SECTION_NAME&#160;</td><td class="fielddoc"><p>Empty section name. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aa5af88d2cd68517701b2d8b9c34fbb4a0"></a>ECONF_TEXT_AFTER_SECTION&#160;</td><td class="fielddoc"><p>Text after section. </p>
 </td></tr>
 </table>
 
@@ -2106,6 +2122,43 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>human readable string </dd></dl>
+
+</div>
+</div>
+<a id="adc459d1dfa9096425d4f248b04669761"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc459d1dfa9096425d4f248b04669761">&#9670;&nbsp;</a></span>econf_errLocation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void econf_errLocation </td>
+          <td>(</td>
+          <td class="paramtype">char **&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t *&#160;</td>
+          <td class="paramname"><em>line_nr</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Info about where the error has happened. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>Path of the last scanned file. </td></tr>
+    <tr><td class="paramname">line_nr</td><td>Number of the last handled line. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

@@ -13,7 +13,11 @@ var libeconf_8h =
       [ "ECONF_NOKEY", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aac3909d9fd9bdac53e1e8b2b80c470eb0", null ],
       [ "ECONF_EMPTYKEY", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aaf3119f73c97a08fd08e2dfbc3d42493c", null ],
       [ "ECONF_WRITEERROR", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aaa0542bb798322dd272fe66411b0ede6c", null ],
-      [ "ECONF_PARSE_ERROR", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa6df088da6aad41d83acc2b6060acb7fe", null ]
+      [ "ECONF_PARSE_ERROR", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa6df088da6aad41d83acc2b6060acb7fe", null ],
+      [ "ECONF_MISSING_BRACKET", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aaaf3716ec7b6faf6a0183007060c2ac16", null ],
+      [ "ECONF_MISSING_DELIMITER", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aacd662d9a8a5249d344bc716517a5506f", null ],
+      [ "ECONF_EMPTY_SECTION_NAME", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa8bffb248bd0e7fbfe09f404ec73ffeb6", null ],
+      [ "ECONF_TEXT_AFTER_SECTION", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa5af88d2cd68517701b2d8b9c34fbb4a0", null ]
     ] ],
     [ "econf_readFile", "libeconf_8h.html#aa03377bd02882239b3342c095f916561", null ],
     [ "econf_mergeFiles", "libeconf_8h.html#a2aba75b3474b33173edbc0f80b2e8a79", null ],
@@ -48,6 +52,7 @@ var libeconf_8h =
     [ "econf_setStringValue", "libeconf_8h.html#a808d966041916c3de263a79a6b4983c5", null ],
     [ "econf_setBoolValue", "libeconf_8h.html#a3f873713848631a5ded240479af96de4", null ],
     [ "econf_errString", "libeconf_8h.html#aad9997fe22b287d5b943e2846abe9e32", null ],
+    [ "econf_errLocation", "libeconf_8h.html#adc459d1dfa9096425d4f248b04669761", null ],
     [ "econf_freeArray", "libeconf_8h.html#ad6da8744e42ba1f4ddf5179a79fde50e", null ],
     [ "econf_freeFile", "libeconf_8h.html#af5fe145fe20e3a39efa781756a1f2589", null ]
 ];
