@@ -55,8 +55,8 @@ check_StringArray (econf_file *key_file, const char *group,
   if (i != value_lines)
   {
     fprintf (stderr,
-	     "ERROR: String array does not have expected length: %ld exp.: %ld\n",
-	     i, value_lines);
+	     "ERROR: String array does not have expected length: %d exp.: %d\n",
+	     (int) i, (int) value_lines);
     econf_freeExtValue(ext_val);
     return false;    
   }
