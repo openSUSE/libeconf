@@ -16,7 +16,6 @@ int
 main(void)
 {
   econf_file *key_file = NULL;
-  int retval = 0;
   econf_err error;
 
   error = econf_readDirs (&key_file,
