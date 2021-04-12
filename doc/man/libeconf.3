@@ -108,7 +108,11 @@ exists:
 .ti -1c
 .RI "\fBeconf_err\fP \fBeconf_readDirs\fP (\fBeconf_file\fP **key_file, const char *usr_conf_dir, const char *etc_conf_dir, const char *project_name, const char *config_suffix, const char *delim, const char *comment)"
 .br
-.RI "Evaluating the content of a given configuration file by reading all needed/available files in two different directories (normally in /usr/etc and /etc)\&. "
+.RI "Evaluating key/values of a given configuration by reading and merging all needed/available files in two different directories (normally in /usr/etc and /etc)\&. "
+.ti -1c
+.RI "\fBeconf_err\fP \fBeconf_readDirsHistory\fP (\fBeconf_file\fP ***key_files, size_t *size, const char *usr_conf_dir, const char *etc_conf_dir, const char *project_name, const char *config_suffix, const char *delim, const char *comment)"
+.br
+.RI "Evaluating key/values for every given configuration files in two different directories (normally in /usr/etc and /etc)\&. "
 .ti -1c
 .RI "\fBeconf_err\fP \fBeconf_newKeyFile\fP (\fBeconf_file\fP **result, char delimiter, char comment)"
 .br
@@ -121,6 +125,10 @@ exists:
 .RI "\fBeconf_err\fP \fBeconf_writeFile\fP (\fBeconf_file\fP *key_file, const char *save_to_dir, const char *file_name)"
 .br
 .RI "Write content of a econf_file struct to specified location\&. "
+.ti -1c
+.RI "char * \fBeconf_getPath\fP (\fBeconf_file\fP *kf)"
+.br
+.RI "Evaluating path name of the regarding configuration file\&. "
 .ti -1c
 .RI "\fBeconf_err\fP \fBeconf_getGroups\fP (\fBeconf_file\fP *kf, size_t *length, char ***groups)"
 .br
@@ -340,7 +348,7 @@ Empty section name\&.
 \fB\fIECONF_TEXT_AFTER_SECTION \fP\fP
 Text after section\&. 
 .PP
-Definition at line 40 of file libeconf\&.h\&.
+
 .SH "Function Documentation"
 .PP 
 .SS "\fBeconf_err\fP econf_readFile (\fBeconf_file\fP ** result, const char * file_name, const char * delim, const char * comment)"
@@ -379,7 +387,38 @@ econf_free (key_file);
 .fi
 .PP
 .PP
-Default behaviour if entries have the same name in one file: The first hit will be returned\&. Further entries will be ignored\&. This can be changed by setting the environment variable ECONF_JOIN_SAME_ENTRIES\&. In that case entries with the same name will be joined to one single entry\&. 
+Default behaviour if entries have the same name in one file: The first hit will be returned\&. Further entries will be ignored\&. This can be changed by setting the environment variable ECONF_JOIN_SAME_ENTRIES\&. In that case entries with the same name will be joined to one single entry\&.
+
+.SS "\fBeconf_err\fP econf_readDirsHistory (\fBeconf_file\fP *** key_files, size_t * size, const char * usr_conf_dir, const char * etc_conf_dir, const char * project_name, const char * config_suffix, const char * delim, const char * comment)"
+
+.PP
+Evaluating key/values for every given configuration files in two different directories (normally in /usr/etc and /etc)\&. Returns a list of read configuration files and their values\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIkey_files\fP list of parsed file(s)\&. Each entry includes all key/value, path, comments,\&.\&.\&. information of the regarding file\&. 
+.br
+\fIsize\fP Size of the evaluated key_files list\&. 
+.br
+\fIusr_conf_dir\fP absolute path of the first directory (normally '/usr/etc') 
+.br
+\fIetc_conf_dir\fP absolute path of the second directory (normally '/etc') 
+.br
+\fIproject_name\fP basename of the configuration file 
+.br
+\fIconfig_suffix\fP suffix of the configuration file\&. Can also be NULL\&. 
+.br
+\fIdelim\fP delimiters of key/value e\&.g\&. '\\t =' 
+.br
+\fIcomment\fP array of characters which define the start of a comment 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+econf_err ECONF_SUCCESS or error code 
+.RE
+.PP
+
 .SS "\fBeconf_err\fP econf_mergeFiles (\fBeconf_file\fP ** merged_file, \fBeconf_file\fP * usr_file, \fBeconf_file\fP * etc_file)"
 
 .PP
@@ -484,7 +523,7 @@ Create a new econf_file object\&.
 econf_err ECONF_SUCCESS or error code
 .RE
 .PP
-Default behaviour if entries have the same name in one file: The first hit will be returned\&. Further entries will be ignored\&. This can be changed by setting the environment variable ECONF_JOIN_SAME_ENTRIES\&. In that case entries with the same name will be joined to one single entry\&. 
+
 .SS "\fBeconf_err\fP econf_newIniFile (\fBeconf_file\fP ** result)"
 
 .PP
@@ -518,6 +557,22 @@ Write content of a econf_file struct to specified location\&.
 \fBReturns:\fP
 .RS 4
 econf_err ECONF_SUCCESS or error code 
+.RE
+.PP
+
+.SS "char* econf_getPath (\fBeconf_file\fP * kf)"
+
+.PP
+Evaluating path name\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIkf\fP given/parsed data 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Absolute path name or an empty string if kf is a result of already merged data (e\&.G\&. returned by econf_readDirs)\&. 
 .RE
 .PP
 

@@ -31,6 +31,7 @@
 #include <unistd.h>
 
 #include "libeconf.h"
+#include "libeconf_ext.h"
 
 #define UNUSED(x) (void)(x)
 
@@ -56,6 +57,8 @@ static void usage(void)
     fprintf(stderr, "         and prints all groups,keys and their values.\n");
     fprintf(stderr, "         The root directories is /. It can be set by the environment\n");
     fprintf(stderr, "         variable $ECONFTOOL_ROOT \n");
+    fprintf(stderr, "cat      prints the content of the files and the name of the file in the order\n");
+    fprintf(stderr, "         as it has been read.\n");
     fprintf(stderr, "edit     starts the editor $EDITOR (environment variable) where the\n");
     fprintf(stderr, "         groups, keys and values can be modified and saved afterwards.\n");
     fprintf(stderr, "  -f, --full:      copy the original configuration file to /etc instead of\n");
@@ -133,6 +136,79 @@ static void free_groups(char ***groups)
 }
 
 /**
+ * @brief printing header
+ */
+static void pr_header(void)
+{
+  printf ("Vendor config directory: %s\n",usr_root_dir);
+  printf ("Config directory for local changes:  %s\n",root_dir);
+  printf ("Basename: %s\n",conf_basename);
+  printf ("Suffix: %s\n",conf_suffix);
+}
+
+/**
+ * @brief printing one key_file entry
+ */
+static econf_err pr_key_file(struct econf_file *key_file)
+{
+    char **groups __attribute__ ((__cleanup__(free_groups))) = NULL;
+    econf_ext_value *value = NULL;
+    size_t groupCount = 0;
+    econf_err econf_error;
+
+    fprintf(stderr, "----------------------------------\n");
+
+    char *path = econf_getPath(key_file);
+    if (strlen(path) > 0) {
+      fprintf(stderr, "Path: %s\n\n", path);
+    }
+    free(path);
+
+    /* show groups, keys and their value */
+    econf_error = econf_getGroups(key_file, &groupCount, &groups);
+    if (econf_error) {
+        fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
+        return econf_error;
+    }
+    for (size_t g = 0; g < groupCount; g++) {
+        char **keys = NULL;
+        size_t key_count = 0;
+
+        econf_error = econf_getKeys(key_file, groups[g], &key_count, &keys);
+        if (econf_error) {
+            fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
+            econf_free(keys);
+            return econf_error;
+        }
+        printf("%s\n", groups[g]);
+        for (size_t k = 0; k < key_count; k++) {
+            econf_error = econf_getExtValue(key_file, groups[g], keys[k], &value);
+            if (econf_error) {
+                fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
+                econf_free(keys);
+                return econf_error;
+            }
+            if (value != NULL) {
+	      size_t v = 0;
+	      while (value->values[v] != 0) {
+		if (v==0) {
+		  printf("%s = %s\n", keys[k], value->values[v]);
+		} else {
+		  printf("     %s\n", value->values[v]);
+		}
+		v++;
+	      }
+	      econf_freeExtValue(value);
+	    }
+        }
+        printf("\n");
+        econf_free(keys);
+    }
+    return ECONF_SUCCESS;
+}
+
+
+/**
  * @brief This command will read all snippets for filename.conf
  *        (econf_readDirs) and print all groups, keys and their
  *        values as an application would see them.
@@ -140,54 +216,44 @@ static void free_groups(char ***groups)
 static int econf_show(struct econf_file **key_file)
 {
     econf_err econf_error;
-    printf ("Vendor config directory: %s\n",usr_root_dir);
-    printf ("Config directory for local changes:  %s\n",root_dir);
-    printf ("Basename: %s\n",conf_basename);
-    printf ("Suffix: %s\n",conf_suffix);
     econf_error = econf_readDirs(key_file, usr_root_dir, root_dir, conf_basename,
                                  conf_suffix, "=", "#");
     if (econf_error) {
         fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
         return -1;
     }
-
-    char **groups __attribute__ ((__cleanup__(free_groups))) = NULL;
-    char *value = NULL;
-    size_t groupCount = 0;
-
-    /* show groups, keys and their value */
-    econf_error = econf_getGroups(*key_file, &groupCount, &groups);
-    if (econf_error) {
-        fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
-        return -1;
-    }
-    for (size_t g = 0; g < groupCount; g++) {
-        char **keys = NULL;
-        size_t key_count = 0;
-
-        econf_error = econf_getKeys(*key_file, groups[g], &key_count, &keys);
-        if (econf_error) {
-            fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
-            econf_free(keys);
-            return -1;
-        }
-        printf("%s\n", groups[g]);
-        for (size_t k = 0; k < key_count; k++) {
-            econf_error = econf_getStringValue(*key_file, groups[g], keys[k], &value);
-            if (econf_error) {
-                fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
-                econf_free(keys);
-                return -1;
-            }
-            if (value != NULL)
-                printf("%s = %s\n", keys[k], value);
-            free(value);
-        }
-        printf("\n");
-        econf_free(keys);
-    }
-
+    pr_header();
+    pr_key_file(*key_file);
     return 0;
+}
+
+/**
+ * @brief This command will read all snippets for filename.conf
+ *        (econf_readDirs) in hierarchical order and print all groups,
+ *        keys and their values.
+ */
+static int econf_cat(void)
+{
+  econf_file **key_files;
+  econf_err econf_error;
+  size_t size = 0;
+
+  econf_error =  econf_readDirsHistory(&key_files, &size,
+				       usr_root_dir, root_dir, conf_basename,
+				       conf_suffix, "=", "#");
+  if (econf_error) {
+    fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
+    return -1;
+  }
+
+  pr_header();
+  for (size_t i=0; i < size; i++) {
+    pr_key_file(key_files[i]);
+    econf_free(key_files[i]);
+  }
+
+  free(key_files);
+  return 0;
 }
 
 /**
@@ -573,6 +639,8 @@ int main (int argc, char *argv[])
         ret = econf_edit(&key_file);
     } else if (strcmp(argv[optind], "revert") == 0) {
         ret = econf_revert(is_root, use_homedir);
+    } else if (strcmp(argv[optind], "cat") == 0) {
+      ret = econf_cat();
     } else {
         fprintf(stderr, "Unknown command!\n\n");
         usage();

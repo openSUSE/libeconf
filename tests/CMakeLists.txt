@@ -54,6 +54,7 @@ set(TESTS tst-filedoesnotexit1
           tst-parseconfig1
           tst-quote1
 	  tst-parse-error
+	  tst-getpath
           )
 
 foreach (TESTCASE ${TESTS})
@@ -65,4 +66,5 @@ find_program (BASH_PROGRAM bash)
 if (BASH_PROGRAM)
     add_test (econftool1 ${BASH_PROGRAM} ${CMAKE_CURRENT_SOURCE_DIR}/tst-econftool1.sh)
     add_test (econftool_show1 ${BASH_PROGRAM} ${CMAKE_CURRENT_SOURCE_DIR}/tst-econftool_show1.sh)
+    add_test (econftool_cat ${BASH_PROGRAM} ${CMAKE_CURRENT_SOURCE_DIR}/tst-econftool_cat.sh)
 endif (BASH_PROGRAM)

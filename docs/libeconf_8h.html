@@ -130,8 +130,11 @@ Functions</h2></td></tr>
 <tr class="memdesc:a2aba75b3474b33173edbc0f80b2e8a79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merge the contents of two key_files objects.  <a href="#a2aba75b3474b33173edbc0f80b2e8a79">More...</a><br /></td></tr>
 <tr class="separator:a2aba75b3474b33173edbc0f80b2e8a79"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ff92b0fb657aa21220a89a0fcb59227"><td class="memItemLeft" align="right" valign="top"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a7ff92b0fb657aa21220a89a0fcb59227">econf_readDirs</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> **key_file, const char *usr_conf_dir, const char *etc_conf_dir, const char *project_name, const char *config_suffix, const char *delim, const char *comment)</td></tr>
-<tr class="memdesc:a7ff92b0fb657aa21220a89a0fcb59227"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluating the content of a given configuration file by reading all needed/available files in two different directories (normally in /usr/etc and /etc).  <a href="#a7ff92b0fb657aa21220a89a0fcb59227">More...</a><br /></td></tr>
+<tr class="memdesc:a7ff92b0fb657aa21220a89a0fcb59227"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluating key/values of a given configuration by reading and merging all needed/available files in two different directories (normally in /usr/etc and /etc).  <a href="#a7ff92b0fb657aa21220a89a0fcb59227">More...</a><br /></td></tr>
 <tr class="separator:a7ff92b0fb657aa21220a89a0fcb59227"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55faa39cd3887073d1aaba364bd09f94"><td class="memItemLeft" align="right" valign="top"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a55faa39cd3887073d1aaba364bd09f94">econf_readDirsHistory</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> ***key_files, size_t *size, const char *usr_conf_dir, const char *etc_conf_dir, const char *project_name, const char *config_suffix, const char *delim, const char *comment)</td></tr>
+<tr class="memdesc:a55faa39cd3887073d1aaba364bd09f94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluating key/values for every given configuration files in two different directories (normally in /usr/etc and /etc).  <a href="#a55faa39cd3887073d1aaba364bd09f94">More...</a><br /></td></tr>
+<tr class="separator:a55faa39cd3887073d1aaba364bd09f94"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94f42f580d8c9dff8cdb01a5c91bb5ec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a94f42f580d8c9dff8cdb01a5c91bb5ec">econf_newKeyFile</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> **result, char delimiter, char comment)</td></tr>
 <tr class="memdesc:a94f42f580d8c9dff8cdb01a5c91bb5ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new econf_file object.  <a href="#a94f42f580d8c9dff8cdb01a5c91bb5ec">More...</a><br /></td></tr>
 <tr class="separator:a94f42f580d8c9dff8cdb01a5c91bb5ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -141,6 +144,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a5f1e5a7c748ef9147fc7d16604904171"><td class="memItemLeft" align="right" valign="top"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a5f1e5a7c748ef9147fc7d16604904171">econf_writeFile</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *key_file, const char *save_to_dir, const char *file_name)</td></tr>
 <tr class="memdesc:a5f1e5a7c748ef9147fc7d16604904171"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write content of a econf_file struct to specified location.  <a href="#a5f1e5a7c748ef9147fc7d16604904171">More...</a><br /></td></tr>
 <tr class="separator:a5f1e5a7c748ef9147fc7d16604904171"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74c3b496fc241cc87bd8847716fee011"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a74c3b496fc241cc87bd8847716fee011">econf_getPath</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *kf)</td></tr>
+<tr class="memdesc:a74c3b496fc241cc87bd8847716fee011"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluating path name.  <a href="#a74c3b496fc241cc87bd8847716fee011">More...</a><br /></td></tr>
+<tr class="separator:a74c3b496fc241cc87bd8847716fee011"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa9f93a7e119c37ee3a49d1ad11936533"><td class="memItemLeft" align="right" valign="top"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#aa9f93a7e119c37ee3a49d1ad11936533">econf_getGroups</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *kf, size_t *length, char ***groups)</td></tr>
 <tr class="memdesc:aa9f93a7e119c37ee3a49d1ad11936533"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluating all group entries.  <a href="#aa9f93a7e119c37ee3a49d1ad11936533">More...</a><br /></td></tr>
 <tr class="separator:aa9f93a7e119c37ee3a49d1ad11936533"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -553,7 +559,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Evaluating the content of a given configuration file by reading all needed/available files in two different directories (normally in /usr/etc and /etc). </p>
+<p>Evaluating key/values of a given configuration by reading and merging all needed/available files in two different directories (normally in /usr/etc and /etc). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">key_file</td><td>content of parsed file(s) </td></tr>
@@ -568,6 +574,87 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>econf_err ECONF_SUCCESS or error code</dd></dl>
 <p>Example: Reading content of example.conf in /usr/etc and /etc directory. </p><div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="libeconf_8h.html">libeconf.h</a>&quot;</span></div><div class="line"></div><div class="line"><a class="code" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *key_file = NULL;</div><div class="line"><a class="code" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a> error;</div><div class="line"></div><div class="line">error = <a class="code" href="libeconf_8h.html#a7ff92b0fb657aa21220a89a0fcb59227">econf_readDirs</a> (&amp;key_file,</div><div class="line">                        <span class="stringliteral">&quot;/usr/etc&quot;</span>,</div><div class="line">                        <span class="stringliteral">&quot;/etc&quot;</span>,</div><div class="line">                        <span class="stringliteral">&quot;example&quot;</span>,</div><div class="line">                        <span class="stringliteral">&quot;conf&quot;</span>,</div><div class="line">                        <span class="stringliteral">&quot;=&quot;</span>, <span class="stringliteral">&quot;#&quot;</span>);</div><div class="line"></div><div class="line"><a class="code" href="libeconf_8h.html#a27a9d78ae827ef885a4373fa591ded73">econf_free</a> (key_file);</div></div><!-- fragment --> 
+</div>
+</div>
+<a id="a55faa39cd3887073d1aaba364bd09f94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55faa39cd3887073d1aaba364bd09f94">&#9670;&nbsp;</a></span>econf_readDirsHistory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a> econf_readDirsHistory </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> ***&#160;</td>
+          <td class="paramname"><em>key_files</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>usr_conf_dir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>etc_conf_dir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>project_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>config_suffix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>delim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>comment</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Evaluating key/values for every given configuration files in two different directories (normally in /usr/etc and /etc). </p>
+<p>Returns a list of read configuration files and their values.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key_files</td><td>list of parsed file(s). Each entry includes all key/value, path, comments,... information of the regarding file. </td></tr>
+    <tr><td class="paramname">size</td><td>Size of the evaluated key_files list. </td></tr>
+    <tr><td class="paramname">usr_conf_dir</td><td>absolute path of the first directory (normally "/usr/etc") </td></tr>
+    <tr><td class="paramname">etc_conf_dir</td><td>absolute path of the second directory (normally "/etc") </td></tr>
+    <tr><td class="paramname">project_name</td><td>basename of the configuration file </td></tr>
+    <tr><td class="paramname">config_suffix</td><td>suffix of the configuration file. Can also be NULL. </td></tr>
+    <tr><td class="paramname">delim</td><td>delimiters of key/value e.g. "\t =" </td></tr>
+    <tr><td class="paramname">comment</td><td>array of characters which define the start of a comment </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>econf_err ECONF_SUCCESS or error code </dd></dl>
+
 </div>
 </div>
 <a id="a94f42f580d8c9dff8cdb01a5c91bb5ec"></a>
@@ -686,6 +773,33 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>econf_err ECONF_SUCCESS or error code </dd></dl>
+
+</div>
+</div>
+<a id="a74c3b496fc241cc87bd8847716fee011"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74c3b496fc241cc87bd8847716fee011">&#9670;&nbsp;</a></span>econf_getPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char* econf_getPath </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *&#160;</td>
+          <td class="paramname"><em>kf</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Evaluating path name. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">kf</td><td>given/parsed data </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Absolute path name or an empty string if kf is a result of already merged data (e.G. returned by econf_readDirs). </dd></dl>
 
 </div>
 </div>
@@ -2206,7 +2320,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Free memory allocated by e.g. </p>
-<p><a class="el" href="libeconf_8h.html#aa03377bd02882239b3342c095f916561" title="Process the file of the given file_name and save its contents into key_file object. ">econf_readFile()</a>, <a class="el" href="libeconf_8h.html#a7ff92b0fb657aa21220a89a0fcb59227" title="Evaluating the content of a given configuration file by reading all needed/available files in two dif...">econf_readDirs()</a>,...</p>
+<p><a class="el" href="libeconf_8h.html#aa03377bd02882239b3342c095f916561" title="Process the file of the given file_name and save its contents into key_file object. ">econf_readFile()</a>, <a class="el" href="libeconf_8h.html#a7ff92b0fb657aa21220a89a0fcb59227" title="Evaluating key/values of a given configuration by reading and merging all needed/available files in t...">econf_readDirs()</a>,...</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">key_file</td><td>allocated data </td></tr>

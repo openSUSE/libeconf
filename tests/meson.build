@@ -66,6 +66,9 @@ test('tst-parse-error', tst_parse_error_exe)
 tst_econf_errstring1_exe = executable('tst-econf_errstring1', 'tst-econf_errstring1.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-econf_errstring1', tst_econf_errstring1_exe)
 
+tst_getpath_exe = executable('tst-getpath', 'tst-getpath.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-getpath', tst_getpath_exe)
+
 tst_without_suffix_exe = executable('tst-without-suffix', 'tst-without-suffix.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-without-suffix', tst_without_suffix_exe)
 
@@ -92,3 +95,4 @@ test('tst-quote1', tst_quote1_exe)
 
 test('tst_econftool1', find_program('tst-econftool1.sh'))
 test('tst_econftool_show1', find_program('tst-econftool_show1.sh'))
+test('tst_econftool_cat', find_program('tst-econftool_cat.sh'))
