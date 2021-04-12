@@ -143,18 +143,19 @@ econf_err econf_mergeFiles(econf_file **merged_file, econf_file *usr_file, econf
   return ECONF_SUCCESS;
 }
 
-econf_err econf_readDirs(econf_file **result,
-			 const char *dist_conf_dir,
-			 const char *etc_conf_dir,
-			 const char *project_name,
-			 const char *config_suffix,
-			 const char *delim,
-			 const char *comment)
+
+econf_err econf_readDirsHistory(econf_file ***key_files,
+				size_t *size,
+				const char *dist_conf_dir,
+				const char *etc_conf_dir,
+				const char *project_name,
+				const char *config_suffix,
+				const char *delim,
+				const char *comment)
 {
-  size_t size = 0;
   const char *suffix, *default_dirs[3] = {NULL, NULL, NULL};
   char *distfile, *etcfile, *cp;
-  econf_file **key_files, *key_file;
+  econf_file *key_file;
   econf_err error;
 
   if (project_name == NULL || strlen (project_name) == 0 || delim == NULL)
@@ -213,7 +214,7 @@ econf_err econf_readDirs(econf_file **result,
   if (etcfile && !error) {
     /* /etc/<project_name>.<suffix> does exist, ignore /usr */
     default_dirs[0] = etc_conf_dir;
-    size = 1;
+    *size = 1;
   } else {
     /* /etc/<project_name>.<suffix> does not exist, so read /usr/etc
        and merge all *.d files. */
@@ -225,7 +226,7 @@ econf_err econf_readDirs(econf_file **result,
       }
 
     if (distfile && !error) /* /usr/etc/<project_name>.<suffix> does exist */
-      size = 1;
+      *size = 1;
 
     default_dirs[0] = dist_conf_dir;
     default_dirs[1] = etc_conf_dir;
@@ -235,14 +236,15 @@ econf_err econf_readDirs(econf_file **result,
      adds additional directories to look at, e.g. XDG or home directory */
 
   /* create space to store the econf_files for merging */
-  key_files = calloc((++size), sizeof(econf_file*));
-  if (key_files == NULL)
+  *size = *size+1;
+  *key_files = calloc(*size, sizeof(econf_file*));
+  if (*key_files == NULL)
     return ECONF_NOMEM;
 
-  if (size == 2)
+  if (*size == 2)
     {
       key_file->on_merge_delete = 1;
-      key_files[0] = key_file;
+      (*key_files)[0] = key_file;
     }
 
   int i = 0;
@@ -265,26 +267,51 @@ econf_err econf_readDirs(econf_file **result,
     stpcpy(cp, ".d");
     conf_dirs[0] = suffix_d;
 
-    error = traverse_conf_dirs(&key_files, conf_dirs, &size, project_path,
+    error = traverse_conf_dirs(key_files, conf_dirs, size, project_path,
 			       suffix, delim, comment);
     free(suffix_d);
     free(project_path);
     if (error != ECONF_SUCCESS)
     {
-      for(size_t k = 0; k < size-1; k++)
+      for(size_t k = 0; k < *size-1; k++)
       {
-	econf_freeFile(key_files[k]);
+	econf_freeFile((*key_files)[k]);
       }
-      free(key_files);
+      free(*key_files);
       return error;
     }
     i++;
   }
-  key_files[size - 1] = NULL;
+  (*key_files)[*size - 1] = NULL;
+
+  return ECONF_SUCCESS;
+}
+
+econf_err econf_readDirs(econf_file **result,
+			 const char *dist_conf_dir,
+			 const char *etc_conf_dir,
+			 const char *project_name,
+			 const char *config_suffix,
+			 const char *delim,
+			 const char *comment)
+{
+  size_t size = 0;
+  econf_file **key_files;
+  econf_err error;
+
+  error = econf_readDirsHistory(&key_files,
+				&size,
+				dist_conf_dir,
+				etc_conf_dir,
+				project_name,
+				config_suffix,
+				delim,
+				comment);
+  if (error != ECONF_SUCCESS)
+    return error;
 
   // Merge the list of acquired key_files into merged_file
   error = merge_econf_files(key_files, result);
-
   free(key_files);
 
   if (size == 1)

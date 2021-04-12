@@ -161,8 +161,8 @@ extern econf_err econf_readFile(econf_file **result, const char *file_name,
 extern econf_err econf_mergeFiles(econf_file **merged_file,
 				       econf_file *usr_file, econf_file *etc_file);
 
-/** @brief Evaluating the content of a given configuration file by reading all needed/available
- *         files in two different directories (normally in /usr/etc and /etc).
+/** @brief Evaluating key/values of a given configuration by reading and merging all
+ *         needed/available files in two different directories (normally in /usr/etc and /etc).
  *
  * @param key_file content of parsed file(s)
  * @param usr_conf_dir absolute path of the first directory (normally "/usr/etc")
@@ -198,6 +198,31 @@ extern econf_err econf_readDirs(econf_file **key_file,
 					  const char *config_suffix,
 					  const char *delim,
 					  const char *comment);
+
+/** @brief Evaluating key/values for every given configuration files in two different
+ *  directories (normally in /usr/etc and /etc). Returns a list of read configuration
+ *  files and their values.
+ *
+ * @param key_files list of parsed file(s).
+ *        Each entry includes all key/value, path, comments,... information of the regarding file.
+ * @param size Size of the evaluated key_files list.
+ * @param usr_conf_dir absolute path of the first directory (normally "/usr/etc")
+ * @param etc_conf_dir absolute path of the second directory (normally "/etc")
+ * @param project_name basename of the configuration file
+ * @param config_suffix suffix of the configuration file. Can also be NULL.
+ * @param delim delimiters of key/value e.g. "\t ="
+ * @param comment array of characters which define the start of a comment
+ * @return econf_err ECONF_SUCCESS or error code
+ *
+ */
+extern econf_err econf_readDirsHistory(econf_file ***key_files,
+				       size_t *size,
+				       const char *usr_conf_dir,
+				       const char *etc_conf_dir,
+				       const char *project_name,
+				       const char *config_suffix,
+				       const char *delim,
+				       const char *comment);
 
 /* The API/ABI of the following three functions (econf_newKeyFile,
    econf_newIniFile and econf_writeFile) are not stable and will change */
