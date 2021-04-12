@@ -69,7 +69,7 @@ test('tst-econf_errstring1', tst_econf_errstring1_exe)
 tst_getpath_exe = executable('tst-getpath', 'tst-getpath.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-getpath', tst_getpath_exe)
 
-tst_getpath_exe = executable('tst-without-suffix', 'tst-without-suffix.c', c_args: test_args, dependencies : libeconf_dep)
+tst_without_suffix_exe = executable('tst-without-suffix', 'tst-without-suffix.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-without-suffix', tst_without_suffix_exe)
 
 tst_setgetvalues1_exe = executable('tst-setgetvalues1', 'tst-setgetvalues1.c', c_args: test_args, dependencies : libeconf_dep)
