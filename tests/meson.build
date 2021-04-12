@@ -92,3 +92,4 @@ test('tst-quote1', tst_quote1_exe)
 
 test('tst_econftool1', find_program('tst-econftool1.sh'))
 test('tst_econftool_show1', find_program('tst-econftool_show1.sh'))
+test('tst_econftool_cat', find_program('tst-econftool_cat.sh'))
