@@ -17,6 +17,7 @@ main(void)
 {
   econf_file *key_file = NULL;
   econf_err error;
+  char *path;
 
   error = econf_readDirs (&key_file,
 			  TESTSDIR"tst-getconfdirs1-data/usr/etc",
@@ -27,14 +28,17 @@ main(void)
 	       econf_errString(error));
       return 1;
   }
-  if (strlen(econf_getPath(key_file)) > 0) {
+  path = econf_getPath(key_file);
+  if (strlen(path) > 0) {
     fprintf (stderr,
 	     "ERROR: path has to be an empty string:%s\n",
-	     econf_getPath(key_file));
-    econf_free (key_file);    
+	     path);
+    econf_free (key_file);
+    free(path);
     return 1;    
   }
 
+  free(path);  
   econf_free (key_file);
   
   error = econf_readFile (&key_file,
@@ -45,15 +49,18 @@ main(void)
     return 1;
   }
 
-  if (strcmp(econf_getPath(key_file),
+  path = econf_getPath(key_file);  
+  if (strcmp(path,
 	     TESTSDIR"tst-merge1-data/usr/etc/tst-merge1.conf") != 0) {
     fprintf (stderr,
 	     "ERROR: wrong path has be returned:%s\n",
-	     econf_getPath(key_file));
+	     path);
+    free(path);    
     econf_free (key_file);    
     return 1;    
   }  
 
+  free(path);  
   econf_free (key_file);
 
   return 0;
