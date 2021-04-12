@@ -287,7 +287,10 @@ econf_err econf_readDirsHistory(econf_file ***key_files,
   (*size)--;
   (*key_files)[*size] = NULL;
 
-  return ECONF_SUCCESS;
+  if (*size <= 0)
+    return ECONF_NOFILE;
+  else
+    return ECONF_SUCCESS;
 }
 
 econf_err econf_readDirs(econf_file **result,
@@ -317,10 +320,7 @@ econf_err econf_readDirs(econf_file **result,
   error = merge_econf_files(key_files, result);
   free(key_files);
 
-  if (size == 0)
-    return ECONF_NOFILE;
-  else
-    return error;
+  return error;
 }
 
 // Write content of a econf_file struct to specified location
