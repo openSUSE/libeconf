@@ -117,6 +117,7 @@ econf_err econf_mergeFiles(econf_file **merged_file, econf_file *usr_file, econf
 
   (*merged_file)->delimiter = usr_file->delimiter;
   (*merged_file)->comment = usr_file->comment;
+  (*merged_file)->path = NULL;
   struct file_entry *fe =
       malloc((etc_file->length + usr_file->length) * sizeof(struct file_entry));
   if (fe == NULL)
@@ -157,6 +158,8 @@ econf_err econf_readDirsHistory(econf_file ***key_files,
   char *distfile, *etcfile, *cp;
   econf_file *key_file;
   econf_err error;
+
+  *size = 0;
 
   if (project_name == NULL || strlen (project_name) == 0 || delim == NULL)
     return ECONF_ERROR;
@@ -241,11 +244,10 @@ econf_err econf_readDirsHistory(econf_file ***key_files,
   if (*key_files == NULL)
     return ECONF_NOMEM;
 
-  if (*size == 2)
-    {
-      key_file->on_merge_delete = 1;
-      (*key_files)[0] = key_file;
-    }
+  if (*size == 2) {
+    key_file->on_merge_delete = 1;
+    (*key_files)[0] = key_file;
+  }
 
   int i = 0;
   while (default_dirs[i]) {
@@ -282,7 +284,8 @@ econf_err econf_readDirsHistory(econf_file ***key_files,
     }
     i++;
   }
-  (*key_files)[*size - 1] = NULL;
+  (*size)--;
+  (*key_files)[*size] = NULL;
 
   return ECONF_SUCCESS;
 }
@@ -314,7 +317,7 @@ econf_err econf_readDirs(econf_file **result,
   error = merge_econf_files(key_files, result);
   free(key_files);
 
-  if (size == 1)
+  if (size == 0)
     return ECONF_NOFILE;
   else
     return error;
@@ -360,6 +363,13 @@ econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
   free(save_to);
   fclose(kf);
   return ECONF_SUCCESS;
+}
+
+extern char *econf_getPath(econf_file *kf)
+{
+  if (kf->path == NULL)
+    return strdup("");
+  return strdup(kf->path);
 }
 
 /* GETTER FUNCTIONS */

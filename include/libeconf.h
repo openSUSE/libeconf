@@ -267,6 +267,15 @@ extern econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
 /* --- GETTERS --- */
 /* --------------- */
 
+/** @brief Evaluating path name.
+ *
+ * @param kf given/parsed data
+ * @return Absolute path name or an empty string if kf is a result of
+ *         already merged data (e.G. returned by econf_readDirs).
+ *
+ */
+extern char *econf_getPath(econf_file *kf);
+
 /** @brief Evaluating all group entries.
  *
  * @param kf given/parsed data

@@ -51,4 +51,6 @@ LIBECONF_0.4 {
     econf_getExtValue;
     econf_freeExtValue;
     econf_errLocation;
+    econf_readDirsHistory;
+    econf_getPath;
 } LIBECONF_0.3;

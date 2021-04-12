@@ -152,14 +152,17 @@ static void pr_header()
 static econf_err pr_key_file(struct econf_file *key_file)
 {
     char **groups __attribute__ ((__cleanup__(free_groups))) = NULL;
-    char *value = NULL;
+    econf_ext_value *value = NULL;
     size_t groupCount = 0;
     econf_err econf_error;
-    //    bool path_printed = false;
 
-    fprintf(stderr, "----------------------------------\n");    
-    //    if (key_file->path != NULL && strlen(key_file->path) > 0)
-    //      fprintf(stderr, "Path: %s\n\n", key_file->path);    
+    fprintf(stderr, "----------------------------------\n");
+
+    char *path = econf_getPath(key_file);
+    if (strlen(path) > 0) {
+      fprintf(stderr, "Path: %s\n\n", path);
+    }
+    free(path);
 
     /* show groups, keys and their value */
     econf_error = econf_getGroups(key_file, &groupCount, &groups);
@@ -179,15 +182,24 @@ static econf_err pr_key_file(struct econf_file *key_file)
         }
         printf("%s\n", groups[g]);
         for (size_t k = 0; k < key_count; k++) {
-            econf_error = econf_getStringValue(key_file, groups[g], keys[k], &value);
+            econf_error = econf_getExtValue(key_file, groups[g], keys[k], &value);
             if (econf_error) {
                 fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
                 econf_free(keys);
                 return econf_error;
             }
-            if (value != NULL)
-                printf("%s = %s\n", keys[k], value);
-            free(value);
+            if (value != NULL) {
+	      size_t v = 0;
+	      while (value->values[v] != 0) {
+		if (v==0) {
+		  printf("%s = %s\n", keys[k], value->values[v]);
+		} else {
+		  printf("     %s\n", value->values[v]);
+		}
+		v++;
+	      }
+	      econf_freeExtValue(value);
+	    }
         }
         printf("\n");
         econf_free(keys);
@@ -215,8 +227,34 @@ static int econf_show(struct econf_file **key_file)
     return 0;
 }
 
+/**
+ * @brief This command will read all snippets for filename.conf
+ *        (econf_readDirs) in hierarchical order and print all groups,
+ *        keys and their values.
+ */
+static int econf_cat()
+{
+  econf_file **key_files;
+  econf_err econf_error;
+  size_t size = 0;
 
-//econf_cat();
+  econf_error =  econf_readDirsHistory(&key_files, &size,
+				       usr_root_dir, root_dir, conf_basename,
+				       conf_suffix, "=", "#");
+  if (econf_error) {
+    fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
+    return -1;
+  }
+
+  pr_header();
+  for (size_t i=0; i < size; i++) {
+    pr_key_file(key_files[i]);
+    econf_free(key_files[i]);
+  }
+
+  free(key_files);
+  return 0;
+}
 
 /**
  * @brief Generates a tmpfiles from key_file and opens editor to allow user editing.
@@ -602,7 +640,7 @@ int main (int argc, char *argv[])
     } else if (strcmp(argv[optind], "revert") == 0) {
         ret = econf_revert(is_root, use_homedir);
     } else if (strcmp(argv[optind], "cat") == 0) {
-      //      ret = econf_cat();
+      ret = econf_cat();
     } else {
         fprintf(stderr, "Unknown command!\n\n");
         usage();
