@@ -138,7 +138,7 @@ static void free_groups(char ***groups)
 /**
  * @brief printing header
  */
-static void pr_header()
+static void pr_header(void)
 {
   printf ("Vendor config directory: %s\n",usr_root_dir);
   printf ("Config directory for local changes:  %s\n",root_dir);
@@ -232,7 +232,7 @@ static int econf_show(struct econf_file **key_file)
  *        (econf_readDirs) in hierarchical order and print all groups,
  *        keys and their values.
  */
-static int econf_cat()
+static int econf_cat(void)
 {
   econf_file **key_files;
   econf_err econf_error;
