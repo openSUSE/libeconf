@@ -21,3 +21,5 @@ if doxygen.found()
     output: ['html']
   )
 endif
+
+install_man('man/econftool.8', 'man/libeconf.3')
