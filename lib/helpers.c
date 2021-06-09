@@ -226,5 +226,6 @@ struct file_entry cpy_file_entry(struct file_entry fe) {
     copied_fe.comment_after_value = strdup(fe.comment_after_value);
   else
     copied_fe.comment_after_value = NULL;  
+  copied_fe.line_number = 0;
   return copied_fe;
 }
