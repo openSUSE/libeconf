@@ -106,6 +106,8 @@ char *addbrackets(const char *string) {
   size_t length = strlen(string);
   if (!(*string == '[' && string[length - 1] == ']')) {
     char *buffer = malloc(length + 3);
+    if (buffer == NULL)
+      return NULL;
     char *cp = buffer;
     *cp++ = '[';
     cp = stpcpy (cp, string);
