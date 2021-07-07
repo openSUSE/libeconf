@@ -241,8 +241,10 @@ econf_err econf_readDirsHistory(econf_file ***key_files,
   /* create space to store the econf_files for merging */
   *size = *size+1;
   *key_files = calloc(*size, sizeof(econf_file*));
-  if (*key_files == NULL)
+  if (*key_files == NULL) {
+    econf_freeFile(key_file);
     return ECONF_NOMEM;
+  }
 
   if (*size == 2) {
     key_file->on_merge_delete = 1;
@@ -343,8 +345,10 @@ econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
     return ECONF_NOMEM;
 
   FILE *kf = fopen(save_to, "w");
-  if (kf == NULL)
+  if (kf == NULL) {
+    free(save_to);
     return ECONF_WRITEERROR;
+  }
 
   // Write to file
   for (size_t i = 0; i < key_file->length; i++) {
@@ -401,8 +405,10 @@ econf_getGroups(econf_file *kf, size_t *length, char ***groups)
     return ECONF_NOGROUP;
   }
   *groups = calloc(tmp + 1, sizeof(char*));
-  if (*groups == NULL)
+  if (*groups == NULL) {
+    free(uniques);
     return ECONF_NOMEM;
+  }
 
   tmp = 0;
   for (size_t i = 0; i < kf->length; i++)
