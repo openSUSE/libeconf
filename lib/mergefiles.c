@@ -35,10 +35,12 @@
 // group specified
 size_t insert_nogroup(struct file_entry **fe, econf_file *ef) {
   size_t etc_start = 0;
-  while (etc_start < ef->length &&
-         !strcmp(ef->file_entry[etc_start].group, KEY_FILE_NULL_VALUE)) {
-    (*fe)[etc_start] = cpy_file_entry(ef->file_entry[etc_start]);
-    etc_start++;
+  if (ef) {
+    while (etc_start < ef->length &&
+	   !strcmp(ef->file_entry[etc_start].group, KEY_FILE_NULL_VALUE)) {
+      (*fe)[etc_start] = cpy_file_entry(ef->file_entry[etc_start]);
+      etc_start++;
+    }
   }
   return etc_start;
 }
@@ -49,34 +51,36 @@ size_t merge_existing_groups(struct file_entry **fe, econf_file *uf, econf_file 
                              const size_t etc_start) {
   char new_key;
   size_t merge_length = etc_start, tmp = etc_start, added_keys = etc_start;
-  for (size_t i = 0; i <= uf->length; i++) {
-    // Check if the group has changed in the last iteration
-    if (i == uf->length ||
-        (i && strcmp(uf->file_entry[i].group, uf->file_entry[i - 1].group))) {
-      for (size_t j = etc_start; j < ef->length; j++) {
-        // Check for matching groups
-        if (!strcmp(uf->file_entry[i - 1].group, ef->file_entry[j].group)) {
-          new_key = 1;
-          for (size_t k = merge_length; k < i + tmp; k++) {
-            // If an existing key is found in ef take the value from ef
-            if (!strcmp((*fe)[k].key, ef->file_entry[j].key)) {
-              free((*fe)[k].value);
-              (*fe)[k].value = strdup(ef->file_entry[j].value);
-              new_key = 0;
-              break;
-            }
-          }
-          // If a new key is found for an existing group append it to the group
-          if (new_key)
-            (*fe)[i + added_keys++] = cpy_file_entry(ef->file_entry[j]);
-        }
+  if (uf && ef) {
+    for (size_t i = 0; i <= uf->length; i++) {
+      // Check if the group has changed in the last iteration
+      if (i == uf->length ||
+	  (i && strcmp(uf->file_entry[i].group, uf->file_entry[i - 1].group))) {
+	for (size_t j = etc_start; j < ef->length; j++) {
+	  // Check for matching groups
+	  if (!strcmp(uf->file_entry[i - 1].group, ef->file_entry[j].group)) {
+	    new_key = 1;
+	    for (size_t k = merge_length; k < i + tmp; k++) {
+	      // If an existing key is found in ef take the value from ef
+	      if (!strcmp((*fe)[k].key, ef->file_entry[j].key)) {
+		free((*fe)[k].value);
+		(*fe)[k].value = strdup(ef->file_entry[j].value);
+		new_key = 0;
+		break;
+	      }
+	    }
+	    // If a new key is found for an existing group append it to the group
+	    if (new_key)
+	      (*fe)[i + added_keys++] = cpy_file_entry(ef->file_entry[j]);
+	  }
+	}
+	merge_length = i + added_keys;
+	// Temporary value to reduce amount of iterations in inner for loop
+	tmp = added_keys;
       }
-      merge_length = i + added_keys;
-      // Temporary value to reduce amount of iterations in inner for loop
-      tmp = added_keys;
+      if (i != uf->length)
+	(*fe)[i + added_keys] = cpy_file_entry(uf->file_entry[i]);
     }
-    if (i != uf->length)
-      (*fe)[i + added_keys] = cpy_file_entry(uf->file_entry[i]);
   }
   return merge_length;
 }
@@ -86,20 +90,22 @@ size_t add_new_groups(struct file_entry **fe, econf_file *uf, econf_file *ef,
                       const size_t merge_length) {
   size_t added_keys = merge_length;
   char new_key;
-  for (size_t i = 0; i < ef->length; i++) {
-    if (!strcmp(ef->file_entry[i].group, KEY_FILE_NULL_VALUE))
-      continue;
-    new_key = 1;
-    for (size_t j = 0; j < uf->length; j++) {
-      if (!strcmp(uf->file_entry[j].group, ef->file_entry[i].group)) {
-        new_key = 0;
-        break;
+  if (uf && ef) {
+    for (size_t i = 0; i < ef->length; i++) {
+      if (!strcmp(ef->file_entry[i].group, KEY_FILE_NULL_VALUE))
+	continue;
+      new_key = 1;
+      for (size_t j = 0; j < uf->length; j++) {
+	if (!strcmp(uf->file_entry[j].group, ef->file_entry[i].group)) {
+	  new_key = 0;
+	  break;
+	}
       }
+      if (new_key)
+	(*fe)[added_keys++] = cpy_file_entry(ef->file_entry[i]);
     }
-    if (new_key)
-      (*fe)[added_keys++] = cpy_file_entry(ef->file_entry[i]);
+    *fe = realloc(*fe, added_keys * sizeof(struct file_entry));
   }
-  *fe = realloc(*fe, added_keys * sizeof(struct file_entry));
   return added_keys;
 }
 

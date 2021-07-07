@@ -87,10 +87,12 @@ econf_err econf_readFile(econf_file **key_file, const char *file_name,
     return ECONF_NOMEM;
   }
 
-  if (comment && *comment)
+  if (*comment)
     (*key_file)->comment = comment[0];
-  else
+  else {
     (*key_file)->comment = '#';
+    comment = "#";
+  }
 
   t_err = read_file(*key_file, absolute_path, delim, comment);
   
