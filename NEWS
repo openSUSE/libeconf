@@ -1,16 +1,16 @@
 Version 0.4.0
-  * Man pages libeconf.3 and econftool.8.
-  * Handling multiline strings.
-  * Added libeconf_ext which returns more information like
-    line_nr, comments, path of the configuration file,...
-  * Econftool, an command line interface for handling configuration
-    files.
-  * Generating HTML API documentation with doxygen.
-  * Improving error handling and semantic file check.
-  * Joining entries with the same key to one single entry if
-    env variable ECONF_JOIN_SAME_ENTRIES has been set.
-  * new API call: econf_readDirsHistory (showing ALL locations)
-  * new API call: econf_getPath (absolute path of the configuration file)
+* Man pages libeconf.3 and econftool.8.
+* Handling multiline strings.
+* Added libeconf_ext which returns more information like
+  line_nr, comments, path of the configuration file,...
+* Econftool, an command line interface for handling configuration
+  files.
+* Generating HTML API documentation with doxygen.
+* Improving error handling and semantic file check.
+* Joining entries with the same key to one single entry if
+  env variable ECONF_JOIN_SAME_ENTRIES has been set.
+* new API call: econf_readDirsHistory (showing ALL locations)
+* new API call: econf_getPath (absolute path of the configuration file)
 
 Version 0.3.8
 * Convert the build to include CMake as an option, remove autotools
