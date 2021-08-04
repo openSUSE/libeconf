@@ -27,14 +27,15 @@
 #include "helpers.h"
 
 #include <errno.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
 /*info for reporting scan errors (line Nr, filename) */
-uint64_t last_scanned_line_nr = 0;
-char *last_scanned_filename = NULL;
+static uint64_t last_scanned_line_nr = 0;
+static char last_scanned_filename[PATH_MAX];
 
 static econf_err
 join_same_entries(econf_file *ef)
@@ -243,13 +244,7 @@ read_file(econf_file *ef, const char *file,
   if (kf == NULL)
     return ECONF_NOFILE;
 
-  if (last_scanned_filename != NULL)
-    free(last_scanned_filename);
-  last_scanned_filename = strdup(file);
-  if (last_scanned_filename == NULL) {
-    fclose (kf);
-    return ECONF_NOMEM;
-  }
+  snprintf(last_scanned_filename, sizeof(last_scanned_filename), "%s", file);
 
   check_delim(delim, &has_wsp, &has_nonwsp);
 
@@ -508,5 +503,5 @@ read_file(econf_file *ef, const char *file,
 void last_scanned_file(char **filename, uint64_t *line_nr)
 {
   *line_nr = last_scanned_line_nr;
-  *filename = last_scanned_filename ? strdup(last_scanned_filename) : NULL;
+  *filename = strdup(last_scanned_filename);
 }
