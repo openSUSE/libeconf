@@ -121,6 +121,7 @@ static econf_err
 store (econf_file *ef, const char *group, const char *key,
        const char *value, const uint64_t line_number,
        const char *comment_before_key, const char *comment_after_value,
+       const bool quotes,
        const bool append_entry)
 {
   if (append_entry)
@@ -178,6 +179,8 @@ store (econf_file *ef, const char *group, const char *key,
   }
 
   ef->file_entry[ef->length-1].line_number = line_number;
+
+  ef->file_entry[ef->length-1].quotes |= quotes;
 
   if (group)
     ef->file_entry[ef->length-1].group = strdup(group);
@@ -396,6 +399,7 @@ read_file(econf_file *ef, const char *file,
         org_buf[strlen(org_buf)-1] = 0;
       retval = store(ef, current_group, name, org_buf, line,
 		     current_comment_before_key, current_comment_after_value,
+		     false, /* Quotes does not matter in the following lines */
 		     true /* appending entry */);
       free(current_comment_before_key);
       current_comment_before_key = NULL;
@@ -462,7 +466,7 @@ read_file(econf_file *ef, const char *file,
       while (p > data && (isspace((unsigned)*p)))
 	p--;
       /* Strip double quotes only if both leading and trainling quote exist. */
-      if (p > data && quote_seen) {
+      if (p >= data && quote_seen) {
 	if (*p == '"')
 	  p--;
 	else
@@ -474,6 +478,7 @@ read_file(econf_file *ef, const char *file,
 
     retval = store(ef, current_group, name, data, line,
 		   current_comment_before_key, current_comment_after_value,
+		   quote_seen,
 		   false /* new entry */);
     free(current_comment_before_key);
     current_comment_before_key = NULL;

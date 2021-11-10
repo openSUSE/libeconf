@@ -55,6 +55,7 @@ set(TESTS tst-filedoesnotexit1
           tst-quote1
 	  tst-parse-error
 	  tst-getpath
+	  tst-write-string-data
           )
 
 foreach (TESTCASE ${TESTS})

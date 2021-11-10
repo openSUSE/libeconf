@@ -361,8 +361,14 @@ econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
       if (strcmp(key_file->file_entry[i].group, KEY_FILE_NULL_VALUE))
         fprintf(kf, "%s\n", key_file->file_entry[i].group);
     }
-    fprintf(kf, "%s%c%s\n", key_file->file_entry[i].key, key_file->delimiter,
-            key_file->file_entry[i].value);
+    fprintf(kf, "%s%c", key_file->file_entry[i].key, key_file->delimiter);
+    if (key_file->file_entry[i].value == NULL)
+      fprintf(kf, "\n");
+    else
+      if (key_file->file_entry[i].quotes)
+	fprintf(kf, "\"%s\"\n", key_file->file_entry[i].value);
+      else
+	fprintf(kf, "%s\n", key_file->file_entry[i].value);
   }
 
   // Clean up

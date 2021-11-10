@@ -18,6 +18,8 @@ test('tst-merge4', tst_merge4_exe)
 tst_merge5_exe = executable('tst-merge5', 'tst-merge5.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-merge5', tst_merge5_exe)
 
+tst__exe = executable('tst-write-string-data', 'tst-write-string-data.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-write-string-data', tst-write-string-data_exe)
 
 tst_logindefs1_exe = executable('tst-logindefs1', 'tst-logindefs1.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-logindefs1', tst_logindefs1_exe)

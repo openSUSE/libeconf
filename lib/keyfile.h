@@ -44,6 +44,7 @@ typedef struct econf_file {
     char *group, *key, *value;
     char *comment_before_key, *comment_after_value;
     uint64_t line_number;
+    bool quotes; /*Value is enclosed by quotes*/
   } * file_entry;
   /* length represents the current amount of key/value entries in econf_file and
      alloc_length the the amount of currently allocated file_entry elements
