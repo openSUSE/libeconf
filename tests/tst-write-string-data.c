@@ -56,6 +56,8 @@ main(void)
 	       val_fromfile, val_compare);
       return 1;
     }
+    free(val_fromfile);
+    free(val_compare);
   }
 
   // Merge two econf_files. One value is a NULL value.
@@ -65,5 +67,9 @@ main(void)
   econf_file *kf_merged;
   econf_mergeFiles(&kf_merged, kf_freshini, kf_fromfile);
 
+  econf_free(kf_freshini);
+  econf_free(kf_merged);
+  econf_free(kf_compare);
+  econf_free(kf_fromfile);
   return 0;
 }
