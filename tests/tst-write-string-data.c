@@ -27,7 +27,7 @@ main(void)
   }
 
   // Rewrite file to disk
-  econf_writeFile(kf_fromfile, TESTSDIR"tst-write-string-data/", "out.ini");  
+  econf_writeFile(kf_fromfile, TESTSDIR"tst-write-string-data/", "out.ini");
 
   // And reading it again
   econf_file *kf_compare;
@@ -37,6 +37,7 @@ main(void)
     fprintf (stderr, "ERROR: couldn't read written /usr/etc configuration file: %s\n", econf_errString(error));
     return 1;
   }
+  remove(TESTSDIR"tst-write-string-data/out.ini");
 
   // Comparing the data
   const char *compare[] = {"test", "test2", "test3", "test4", "test5", "test6"};
@@ -48,17 +49,14 @@ main(void)
       continue;
     if (val_fromfile == NULL || val_compare == NULL) {
       fprintf (stderr, "ERROR: saved values are different\n");
-      remove(TESTSDIR"tst-write-string-data/out.ini");
       return 1;
     }
     if(strcmp(val_fromfile, val_compare) != 0) {
       fprintf (stderr, "ERROR: saved values are different '%s' - '%s'\n",
 	       val_fromfile, val_compare);
-      remove(TESTSDIR"tst-write-string-data/out.ini");
       return 1;
     }
   }
-  remove(TESTSDIR"tst-write-string-data/out.ini");
 
   // Merge two econf_files. One value is a NULL value.
   econf_file *kf_freshini;

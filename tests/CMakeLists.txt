@@ -56,7 +56,7 @@ set(TESTS tst-filedoesnotexit1
 	  tst-parse-error
 	  tst-getpath
 	  tst-write-string-data
-          )
+	  tst-write-comments )
 
 foreach (TESTCASE ${TESTS})
   BuildAndAddTest(${TESTCASE})

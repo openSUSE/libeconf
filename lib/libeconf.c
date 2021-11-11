@@ -354,6 +354,7 @@ econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
 
   // Write to file
   for (size_t i = 0; i < key_file->length; i++) {
+    // Writing group
     if (!i || strcmp(key_file->file_entry[i - 1].group,
                      key_file->file_entry[i].group)) {
       if (i)
@@ -361,14 +362,45 @@ econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
       if (strcmp(key_file->file_entry[i].group, KEY_FILE_NULL_VALUE))
         fprintf(kf, "%s\n", key_file->file_entry[i].group);
     }
+
+    // Writing heading comments
+    if (key_file->file_entry[i].comment_before_key &&
+	strlen(key_file->file_entry[i].comment_before_key) > 0) {
+      char buf[BUFSIZ];
+      char *line;
+      char *value_string = buf;
+
+      strncpy(buf,key_file->file_entry[i].comment_before_key,BUFSIZ-1);
+      while ((line = strsep(&value_string, "\n")) != NULL) {
+	fprintf(kf, "%c%s\n",
+		key_file->comment,
+		line);
+      }
+    }
+
+    // Writing values
     fprintf(kf, "%s%c", key_file->file_entry[i].key, key_file->delimiter);
-    if (key_file->file_entry[i].value == NULL)
-      fprintf(kf, "\n");
-    else
+    if (key_file->file_entry[i].value != NULL)
       if (key_file->file_entry[i].quotes)
-	fprintf(kf, "\"%s\"\n", key_file->file_entry[i].value);
+	fprintf(kf, "\"%s\"", key_file->file_entry[i].value);
       else
-	fprintf(kf, "%s\n", key_file->file_entry[i].value);
+	fprintf(kf, "%s", key_file->file_entry[i].value);
+
+    // Writing rest of comments
+    if (key_file->file_entry[i].comment_after_value &&
+	strlen(key_file->file_entry[i].comment_after_value) > 0) {
+      char buf[BUFSIZ];
+      char *line;
+      char *value_string = buf;
+
+      strncpy(buf,key_file->file_entry[i].comment_after_value,BUFSIZ-1);
+      while ((line = strsep(&value_string, "\n")) != NULL) {
+	fprintf(kf, " %c%s\n",
+		key_file->comment,
+		line);
+      }
+    }
+    fprintf(kf, "\n");
   }
 
   // Clean up
