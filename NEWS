@@ -1,3 +1,10 @@
+Version 0.4.2
+* CMake fixes regarding document installation.
+* Fixed different issues while writing string values to file.
+* Writing comments to file too.
+* Fixed memory leaks.
+* Fixed crash while merging values.
+
 Version 0.4.1
 * CMake fixes regarding installation of econftool and man pages.
 
