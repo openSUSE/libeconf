@@ -18,7 +18,7 @@ if(BUILD_DOCUMENTATION)
         COMMENT "Generating API documentation with Doxygen"
         VERBATIM)
 
-    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html DESTINATION share/doc)
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../html DESTINATION share/doc)
 endif()
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/man/libeconf.3 DESTINATION ${CMAKE_INSTALL_MANDIR}/man3)

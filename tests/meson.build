@@ -18,16 +18,15 @@ test('tst-merge4', tst_merge4_exe)
 tst_merge5_exe = executable('tst-merge5', 'tst-merge5.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-merge5', tst_merge5_exe)
 
-tst__exe = executable('tst-write-string-data', 'tst-write-string-data.c', c_args: test_args, dependencies : libeconf_dep)
-test('tst-write-string-data', tst-write-string-data_exe)
-tst__exe = executable('tst-write-comments', 'tst-write-comments.c', c_args: test_args, dependencies : libeconf_dep)
-test('tst-write-comments', tst-write-comments_exe)
+tst_write_string_data_exe = executable('tst-write-string-data', 'tst-write-string-data.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-write-string-data', tst_write_string_data_exe)
+tst_write_comments_exe = executable('tst-write-comments', 'tst-write-comments.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-write-comments', tst_write_comments_exe)
 
 tst_logindefs1_exe = executable('tst-logindefs1', 'tst-logindefs1.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-logindefs1', tst_logindefs1_exe)
 tst_logindefs2_exe = executable('tst-logindefs2', 'tst-logindefs2.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-logindefs2', tst_logindefs2_exe)
-
 
 tst_arguments1_exe = executable('tst-arguments1', 'tst-arguments1.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-arguments1', tst_arguments1_exe)

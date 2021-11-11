@@ -12,6 +12,7 @@ Building with Meson is quite simple:
 $ meson build
 $ ninja -C build
 $ ninja -C build test
+$ sudo ninja -C build install
 ```
 
 If you want to build with the address sanitizer enabled, add
@@ -28,6 +29,7 @@ $ cmake -B build
 $ make -C build
 $ make -C build check
 $ make -C build doc
+$ sudo make -C build install
 ```
 
 If you want to build with the address sanitizer enabled, add

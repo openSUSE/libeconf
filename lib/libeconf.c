@@ -380,11 +380,12 @@ econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
 
     // Writing values
     fprintf(kf, "%s%c", key_file->file_entry[i].key, key_file->delimiter);
-    if (key_file->file_entry[i].value != NULL)
+    if (key_file->file_entry[i].value != NULL) {
       if (key_file->file_entry[i].quotes)
 	fprintf(kf, "\"%s\"", key_file->file_entry[i].value);
       else
 	fprintf(kf, "%s", key_file->file_entry[i].value);
+    }
 
     // Writing rest of comments
     if (key_file->file_entry[i].comment_after_value &&
