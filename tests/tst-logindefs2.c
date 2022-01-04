@@ -69,6 +69,15 @@ main(void)
       retval = 1;
     }
 
+  uint64_t uintval = 0;
+  econf_getUInt64Value(key_file, NULL, "OKTAL", &uintval);
+  if (uintval == 0 || uintval != 400)
+    {
+      fprintf (stderr, "ERROR: %s, expected: %i, got: %ld\n",
+	       "NUMBER", 400, uintval);
+      retval = 1;
+    }
+
   bool boolval = false;
   econf_getBoolValue (key_file, NULL, "BOOLEAN", &boolval);
   if (boolval != true)

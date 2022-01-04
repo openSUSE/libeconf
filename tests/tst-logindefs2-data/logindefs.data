@@ -5,6 +5,7 @@
 HELLO_WORLD	"hello world!"
 STRING		this_is_string		# another comment
 NUMBER		123456
+OKTAL		0620
 BOOLEAN		yEs
 
 CRAZY1 = "this is crazy format"

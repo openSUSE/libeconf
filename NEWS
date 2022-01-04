@@ -1,3 +1,5 @@
+Version 0.4.3
+* Reading numbers with different bases (e.g. oktal) (bsc#1193632).
 Version 0.4.2
 * CMake fixes regarding document installation.
 * Fixed different issues while writing string values to file.
