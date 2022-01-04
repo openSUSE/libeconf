@@ -1,3 +1,5 @@
+Version 0.4.4
+* Fixed i586 build
 Version 0.4.3
 * Reading numbers with different bases (e.g. oktal) (bsc#1193632).
 Version 0.4.2
