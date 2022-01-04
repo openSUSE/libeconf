@@ -73,7 +73,7 @@ main(void)
   econf_getUInt64Value(key_file, NULL, "OKTAL", &uintval);
   if (uintval == 0 || uintval != 400)
     {
-      fprintf (stderr, "ERROR: %s, expected: %i, got: %u\n",
+      fprintf (stderr, "ERROR: %s, expected: %i, got: %ld\n",
 	       "NUMBER", 400, uintval);
       retval = 1;
     }
