@@ -68,6 +68,9 @@ static void usage(void)
     fprintf(stderr, "revert   reverts all changes to the vendor versions. Basically deletes\n");
     fprintf(stderr, "         the config file and snippet directory in /etc.\n");
     fprintf(stderr, "  -y, --yes:       assumes yes for all prompts and runs non-interactively.\n\n");
+    fprintf(stderr, "\ngeneral Options:\n");
+    fprintf(stderr, "--comment <character>: Character which starts a comment. ('#' default).\n");
+    fprintf(stderr, "--delimeters <string>: Characters which separates key/value entries. (\"=\" default).\n");
 }
 
 /**
@@ -213,11 +216,11 @@ static econf_err pr_key_file(struct econf_file *key_file)
  *        (econf_readDirs) and print all groups, keys and their
  *        values as an application would see them.
  */
-static int econf_show(struct econf_file **key_file)
+static int econf_show(struct econf_file **key_file, const char *delimeters, const char *comment)
 {
     econf_err econf_error;
     econf_error = econf_readDirs(key_file, usr_root_dir, root_dir, conf_basename,
-                                 conf_suffix, "=", "#");
+                                 conf_suffix, delimeters, comment);
     if (econf_error) {
         fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
         return -1;
@@ -232,7 +235,7 @@ static int econf_show(struct econf_file **key_file)
  *        (econf_readDirs) in hierarchical order and print all groups,
  *        keys and their values.
  */
-static int econf_cat(void)
+static int econf_cat(const char *delimeters, const char *comment)
 {
   econf_file **key_files;
   econf_err econf_error;
@@ -240,7 +243,7 @@ static int econf_cat(void)
 
   econf_error =  econf_readDirsHistory(&key_files, &size,
 				       usr_root_dir, root_dir, conf_basename,
-				       conf_suffix, "=", "#");
+				       conf_suffix, delimeters, comment);
   if (econf_error) {
     fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
     return -1;
@@ -260,7 +263,8 @@ static int econf_cat(void)
  * @brief Generates a tmpfiles from key_file and opens editor to allow user editing.
  *        It then saves the edited in key_file_edit and deletes the tmpfile
  */
-static int econf_edit_editor(struct econf_file **key_file_edit, struct econf_file **key_file)
+static int econf_edit_editor(struct econf_file **key_file_edit, struct econf_file **key_file,
+			     const char *delimeters, const char *comment)
 {
     econf_err econf_error;
     int wstatus;
@@ -317,7 +321,7 @@ static int econf_edit_editor(struct econf_file **key_file_edit, struct econf_fil
     } while (!WIFEXITED(wstatus));
 
     /* save edits from tmpfile_edit in key_file_edit */
-    econf_error = econf_readFile(key_file_edit, path_tmpfile_edit, "=", "#");
+    econf_error = econf_readFile(key_file_edit, path_tmpfile_edit, delimeters, comment);
     if (econf_error) {
         fprintf(stderr, "%s\n", econf_errString(econf_error));
         ret = -1;
@@ -343,12 +347,12 @@ static int econf_edit_editor(struct econf_file **key_file_edit, struct econf_fil
  *  TODO:
  *      - Replace static values of the path with future libeconf API calls
  */
-static int econf_edit(struct econf_file **key_file)
+static int econf_edit(struct econf_file **key_file, const char *delimeters, const char *comment)
 {
     econf_err econf_error;
     econf_file *key_file_edit = NULL;
 
-    econf_error = econf_readDirs(key_file, usr_root_dir, root_dir, conf_basename, conf_suffix, "=", "#");
+    econf_error = econf_readDirs(key_file, usr_root_dir, root_dir, conf_basename, conf_suffix, delimeters, comment);
 
     if (econf_error == ECONF_NOFILE) {
     /* the file does not exist */
@@ -364,7 +368,7 @@ static int econf_edit(struct econf_file **key_file)
         return -1;
     }
 
-    if (econf_edit_editor(&key_file_edit, key_file)) {
+    if (econf_edit_editor(&key_file_edit, key_file, delimeters, comment)) {
         econf_free(key_file_edit);
         return -1;
     }
@@ -519,6 +523,8 @@ int main (int argc, char *argv[])
     bool is_dropin_file = true;
     bool is_root = false;
     bool use_homedir = false;
+    char *comment = "#";
+    char *delimeters = "=";
 
     /* parse command line arguments. See getopt_long(3) */
     int opt, nonopts;
@@ -530,10 +536,12 @@ int main (int argc, char *argv[])
         {"help",        no_argument,       0, 'h'},
         {"yes",         no_argument,       0, 'y'},
         {"use-home",    no_argument,       0, 'u'},
+	{"comment",     required_argument, 0, 'c'},
+	{"delimeters",  required_argument, 0, 'd'},
         {0,             0,                 0,  0 }
     };
 
-    while ((opt = getopt_long(argc, argv, "hfy", longopts, &index)) != -1) {
+    while ((opt = getopt_long(argc, argv, "hfyuc:d:", longopts, &index)) != -1) {
         switch(opt) {
         case 'f':
             /* overwrite path */
@@ -550,6 +558,12 @@ int main (int argc, char *argv[])
         case 'u':
             use_homedir = true;
             break;
+	case 'c':
+	    comment = optarg;
+	    break;
+	case 'd':
+	    delimeters = optarg;
+	    break;
         case '?':
         default:
             fprintf(stderr, "Try '%s --help' for more information.\n", utilname);
@@ -622,7 +636,7 @@ int main (int argc, char *argv[])
     int ret = 0;
 
     if (strcmp(argv[optind], "show") == 0) {
-        ret = econf_show(&key_file);
+	ret = econf_show(&key_file, delimeters, comment);
     } else if (strcmp(argv[optind], "edit") == 0) {
         if (!is_root || use_homedir) {
             /* adjust path to home directory of the user.*/
@@ -636,11 +650,11 @@ int main (int argc, char *argv[])
                     conf_filename);
         }
 
-        ret = econf_edit(&key_file);
+        ret = econf_edit(&key_file, delimeters, comment);
     } else if (strcmp(argv[optind], "revert") == 0) {
-        ret = econf_revert(is_root, use_homedir);
+      ret = econf_revert(is_root, use_homedir);
     } else if (strcmp(argv[optind], "cat") == 0) {
-      ret = econf_cat();
+	ret = econf_cat(delimeters, comment);
     } else {
         fprintf(stderr, "Unknown command!\n\n");
         usage();
