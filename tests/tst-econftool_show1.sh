@@ -8,7 +8,7 @@ declare -a teststrings=("example.conf"
 declare -a experr=("variable = 301"
                    "variable = 301"
                    "Configuration file not found"
-                   "Currently only works with a dot in the filename!")
+                   "Currently only works with a dot in the filename and a suffix!")
 
 
 teststringslength=${#teststrings[@]}
