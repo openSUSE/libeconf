@@ -77,25 +77,29 @@ econf_getExtValue(econf_file *kf, const char *group,
   char buf[BUFSIZ];
   char *line;
   size_t n_del = 0;
-  strncpy(buf,value_string,BUFSIZ-1);
-  free(value_string);
-  value_string = trim(buf);
+
   (*result)->values = NULL;
 
-  if (value_string[0] == '\"')
-  {
-    /* one quoted string only */
-    (*result)->values = realloc ((*result)->values, sizeof (char*) * ++n_del);
-    if ((*result)->values == NULL)
-      return ECONF_NOMEM; /* memory allocation failed */
-    (*result)->values[n_del-1] = strdup(value_string);
-  } else {
-    /* splitting into a character array */
-    while ((line = strsep(&value_string, "\n")) != NULL) {
+  if (value_string!=NULL) {
+    strncpy(buf,value_string,BUFSIZ-1);
+    free(value_string);
+    value_string = trim(buf);
+
+    if (value_string[0] == '\"')
+    {
+      /* one quoted string only */
       (*result)->values = realloc ((*result)->values, sizeof (char*) * ++n_del);
       if ((*result)->values == NULL)
-	return ECONF_NOMEM; /* memory allocation failed */
-      (*result)->values[n_del-1] = strdup(trim(line));
+        return ECONF_NOMEM; /* memory allocation failed */
+      (*result)->values[n_del-1] = strdup(value_string);
+    } else {
+      /* splitting into a character array */
+      while ((line = strsep(&value_string, "\n")) != NULL) {
+        (*result)->values = realloc ((*result)->values, sizeof (char*) * ++n_del);
+        if ((*result)->values == NULL)
+          return ECONF_NOMEM; /* memory allocation failed */
+        (*result)->values[n_del-1] = strdup(trim(line));
+      }
     }
   }
 

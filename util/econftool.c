@@ -59,6 +59,9 @@ static void usage(void)
     fprintf(stderr, "         variable $ECONFTOOL_ROOT \n");
     fprintf(stderr, "cat      prints the content of the files and the name of the file in the order\n");
     fprintf(stderr, "         as it has been read.\n");
+    fprintf(stderr, "syntax   checks the syntax, prints parsing errors and returns 1 if an error\n");
+    fprintf(stderr, "         has been found (otherwise 0).\n");
+    fprintf(stderr, "         as it has been read.\n");
     fprintf(stderr, "edit     starts the editor $EDITOR (environment variable) where the\n");
     fprintf(stderr, "         groups, keys and values can be modified and saved afterwards.\n");
     fprintf(stderr, "  -f, --full:      copy the original configuration file to /etc instead of\n");
@@ -193,9 +196,10 @@ static econf_err pr_key_file(struct econf_file *key_file)
             }
             if (value != NULL) {
 	      size_t v = 0;
+	      printf("%s = ", keys[k]);
 	      while (value->values[v] != 0) {
 		if (v==0) {
-		  printf("%s = %s\n", keys[k], value->values[v]);
+		  printf("%s\n", value->values[v]);
 		} else {
 		  printf("     %s\n", value->values[v]);
 		}
@@ -213,10 +217,10 @@ static econf_err pr_key_file(struct econf_file *key_file)
 
 /**
  * @brief This command will read all snippets for filename.conf
- *        (econf_readDirs) and print all groups, keys and their
+ *        (econf_readDirs) and evtl. will print all groups, keys and their
  *        values as an application would see them.
  */
-static int econf_show(struct econf_file **key_file, const char *delimeters, const char *comment)
+static int econf_read(struct econf_file **key_file, const char *delimeters, const char *comment, const bool show)
 {
     econf_err econf_error;
     econf_error = econf_readDirs(key_file, usr_root_dir, root_dir, conf_basename,
@@ -225,8 +229,12 @@ static int econf_show(struct econf_file **key_file, const char *delimeters, cons
         fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
         return -1;
     }
-    pr_header();
-    pr_key_file(*key_file);
+    if (show) {
+        pr_header();
+        pr_key_file(*key_file);
+    } else {
+	fprintf(stderr, "Syntax is OK\n");
+    }
     return 0;
 }
 
@@ -636,7 +644,9 @@ int main (int argc, char *argv[])
     int ret = 0;
 
     if (strcmp(argv[optind], "show") == 0) {
-	ret = econf_show(&key_file, delimeters, comment);
+      ret = econf_read(&key_file, delimeters, comment, true);
+    } else if (strcmp(argv[optind], "syntax") == 0) {
+      ret = econf_read(&key_file, delimeters, comment, false);
     } else if (strcmp(argv[optind], "edit") == 0) {
         if (!is_root || use_homedir) {
             /* adjust path to home directory of the user.*/
