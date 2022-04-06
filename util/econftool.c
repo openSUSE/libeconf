@@ -51,7 +51,11 @@ static char usr_root_dir[PATH_MAX] = "/usr/etc";
  */
 static void usage(void)
 {
-    fprintf(stderr, "Usage: %s COMMAND [OPTIONS] <filename>.conf\n\n", utilname);
+    fprintf(stderr, "Usage: %s COMMAND [OPTIONS] <<filename>.<suffix> | <absolute_filename_path>>\n\n", utilname);
+    fprintf(stderr, "If <absolute_filename_path> (begins with \"/\") is given, only this\n");
+    fprintf(stderr, "file will be parsed.\n");
+    fprintf(stderr, "Otherwise different files in /etc /usr/vendor and */<filename>.suffix.d/\n");
+    fprintf(stderr, "directories will be parsed.\n\n");
     fprintf(stderr, "COMMANDS:\n");
     fprintf(stderr, "show     reads all snippets for <filename>.conf (in /usr/etc and /etc),\n");
     fprintf(stderr, "         and prints all groups,keys and their values.\n");
@@ -217,14 +221,21 @@ static econf_err pr_key_file(struct econf_file *key_file)
 
 /**
  * @brief This command will read all snippets for filename.conf
- *        (econf_readDirs) and evtl. will print all groups, keys and their
- *        values as an application would see them.
+ *        (econf_readDirs) OR a single file only. After that it
+ *        will evtl. print all groups, keys and their values as
+ *        an application would see them.
  */
 static int econf_read(struct econf_file **key_file, const char *delimeters, const char *comment, const bool show)
 {
     econf_err econf_error;
-    econf_error = econf_readDirs(key_file, usr_root_dir, root_dir, conf_basename,
-                                 conf_suffix, delimeters, comment);
+    if (conf_filename[0] == '/') {
+        /* reading one file only */
+        econf_error = econf_readFile(key_file, conf_filename,
+				     delimeters, comment);
+    } else {
+        econf_error = econf_readDirs(key_file, usr_root_dir, root_dir, conf_basename,
+				     conf_suffix, delimeters, comment);
+    }
     if (econf_error) {
         fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
         return -1;
@@ -248,6 +259,12 @@ static int econf_cat(const char *delimeters, const char *comment)
   econf_file **key_files;
   econf_err econf_error;
   size_t size = 0;
+
+  if (conf_filename[0] == '/') {
+     fprintf(stderr,
+	     "The cat command does not makes sense for parsing a single file. Please use the show command instead.\n");
+     return -1;
+  }
 
   econf_error =  econf_readDirsHistory(&key_files, &size,
 				       usr_root_dir, root_dir, conf_basename,
@@ -360,11 +377,16 @@ static int econf_edit(struct econf_file **key_file, const char *delimeters, cons
     econf_err econf_error;
     econf_file *key_file_edit = NULL;
 
-    econf_error = econf_readDirs(key_file, usr_root_dir, root_dir, conf_basename, conf_suffix, delimeters, comment);
+    if (conf_filename[0] == '/') {
+        /* reading one file only */
+        econf_error = econf_readFile(key_file, conf_filename,
+				     delimeters, comment);
+    } else {
+        econf_error = econf_readDirs(key_file, usr_root_dir, root_dir, conf_basename, conf_suffix, delimeters, comment);
+    }
 
     if (econf_error == ECONF_NOFILE) {
-    /* the file does not exist */
-
+        /* the file does not exist */
         /* create empty key file */
         if ((econf_error = econf_newIniFile(key_file))) {
             fprintf(stderr, "%s\n", econf_errString(econf_error));
@@ -595,23 +617,27 @@ int main (int argc, char *argv[])
     /* basic write permission check */
     is_root = getuid() == 0;
 
-    /* get the position of the last dot in the filename to extract
-     * the suffix from it.
-     */
-    conf_suffix = strrchr(argv[optind + 1], '.');
+    if ( argv[optind + 1][0] != '/') {
+	/* it is not a single file only */
 
-    if (conf_suffix == NULL) {
-        fprintf(stderr, "Currently only works with a dot in the filename and a suffix.!\n\n");
-        usage();
-	exit(1);
+        /* get the position of the last dot in the filename to extract
+         * the suffix from it.
+         */
+        conf_suffix = strrchr(argv[optind + 1], '.');
+        if (conf_suffix == NULL) {
+            fprintf(stderr, "Currently only works with a dot in the filename and a suffix!\n\n");
+	    usage();
+	    exit(1);
+	} else {
+            /* set filename to the proper argv argument */
+	    if (strlen(argv[optind + 1]) > sizeof(conf_basename)) {
+	        fprintf(stderr, "Filename too long\n");
+		return EXIT_FAILURE;
+	    }
+	    snprintf(conf_basename, strlen(argv[optind + 1]) - strlen(conf_suffix) + 1, "%s", argv[optind + 1]);
+	}
     }
 
-    /* set filename to the proper argv argument */
-    if (strlen(argv[optind + 1]) > sizeof(conf_basename)) {
-        fprintf(stderr, "Filename too long\n");
-        return EXIT_FAILURE;
-    }
-    snprintf(conf_basename, strlen(argv[optind + 1]) - strlen(conf_suffix) + 1, "%s", argv[optind + 1]);
     snprintf(conf_filename, sizeof(conf_filename), "%s" , argv[optind + 1]);
 
     if (is_dropin_file) {
