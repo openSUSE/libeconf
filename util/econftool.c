@@ -601,8 +601,9 @@ int main (int argc, char *argv[])
     conf_suffix = strrchr(argv[optind + 1], '.');
 
     if (conf_suffix == NULL) {
-        fprintf(stderr, "Currently only works with a dot in the filename!\n\n");
+        fprintf(stderr, "Currently only works with a dot in the filename and a suffix.!\n\n");
         usage();
+	exit(1);
     }
 
     /* set filename to the proper argv argument */
