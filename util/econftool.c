@@ -51,13 +51,20 @@ static char usr_root_dir[PATH_MAX] = "/usr/etc";
  */
 static void usage(void)
 {
-    fprintf(stderr, "Usage: %s COMMAND [OPTIONS] <filename>.conf\n\n", utilname);
+    fprintf(stderr, "Usage: %s COMMAND [OPTIONS] <<filename>.<suffix> | <absolute_filename_path>>\n\n", utilname);
+    fprintf(stderr, "If <absolute_filename_path> (begins with \"/\") is given, only this\n");
+    fprintf(stderr, "file will be parsed.\n");
+    fprintf(stderr, "Otherwise different files in /etc /usr/vendor and */<filename>.suffix.d/\n");
+    fprintf(stderr, "directories will be parsed.\n\n");
     fprintf(stderr, "COMMANDS:\n");
     fprintf(stderr, "show     reads all snippets for <filename>.conf (in /usr/etc and /etc),\n");
     fprintf(stderr, "         and prints all groups,keys and their values.\n");
     fprintf(stderr, "         The root directories is /. It can be set by the environment\n");
     fprintf(stderr, "         variable $ECONFTOOL_ROOT \n");
     fprintf(stderr, "cat      prints the content of the files and the name of the file in the order\n");
+    fprintf(stderr, "         as it has been read.\n");
+    fprintf(stderr, "syntax   checks the syntax, prints parsing errors and returns 1 if an error\n");
+    fprintf(stderr, "         has been found (otherwise 0).\n");
     fprintf(stderr, "         as it has been read.\n");
     fprintf(stderr, "edit     starts the editor $EDITOR (environment variable) where the\n");
     fprintf(stderr, "         groups, keys and values can be modified and saved afterwards.\n");
@@ -68,6 +75,9 @@ static void usage(void)
     fprintf(stderr, "revert   reverts all changes to the vendor versions. Basically deletes\n");
     fprintf(stderr, "         the config file and snippet directory in /etc.\n");
     fprintf(stderr, "  -y, --yes:       assumes yes for all prompts and runs non-interactively.\n\n");
+    fprintf(stderr, "\ngeneral Options:\n");
+    fprintf(stderr, "--comment <character>: Character which starts a comment. ('#' default).\n");
+    fprintf(stderr, "--delimeters <string>: Characters which separates key/value entries. (\"=\" default).\n");
 }
 
 /**
@@ -190,9 +200,10 @@ static econf_err pr_key_file(struct econf_file *key_file)
             }
             if (value != NULL) {
 	      size_t v = 0;
+	      printf("%s = ", keys[k]);
 	      while (value->values[v] != 0) {
 		if (v==0) {
-		  printf("%s = %s\n", keys[k], value->values[v]);
+		  printf("%s\n", value->values[v]);
 		} else {
 		  printf("     %s\n", value->values[v]);
 		}
@@ -210,20 +221,31 @@ static econf_err pr_key_file(struct econf_file *key_file)
 
 /**
  * @brief This command will read all snippets for filename.conf
- *        (econf_readDirs) and print all groups, keys and their
- *        values as an application would see them.
+ *        (econf_readDirs) OR a single file only. After that it
+ *        will evtl. print all groups, keys and their values as
+ *        an application would see them.
  */
-static int econf_show(struct econf_file **key_file)
+static int econf_read(struct econf_file **key_file, const char *delimeters, const char *comment, const bool show)
 {
     econf_err econf_error;
-    econf_error = econf_readDirs(key_file, usr_root_dir, root_dir, conf_basename,
-                                 conf_suffix, "=", "#");
+    if (conf_filename[0] == '/') {
+        /* reading one file only */
+        econf_error = econf_readFile(key_file, conf_filename,
+				     delimeters, comment);
+    } else {
+        econf_error = econf_readDirs(key_file, usr_root_dir, root_dir, conf_basename,
+				     conf_suffix, delimeters, comment);
+    }
     if (econf_error) {
         fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
         return -1;
     }
-    pr_header();
-    pr_key_file(*key_file);
+    if (show) {
+        pr_header();
+        pr_key_file(*key_file);
+    } else {
+	fprintf(stderr, "Syntax is OK\n");
+    }
     return 0;
 }
 
@@ -232,15 +254,21 @@ static int econf_show(struct econf_file **key_file)
  *        (econf_readDirs) in hierarchical order and print all groups,
  *        keys and their values.
  */
-static int econf_cat(void)
+static int econf_cat(const char *delimeters, const char *comment)
 {
   econf_file **key_files;
   econf_err econf_error;
   size_t size = 0;
 
+  if (conf_filename[0] == '/') {
+     fprintf(stderr,
+	     "The cat command does not makes sense for parsing a single file. Please use the show command instead.\n");
+     return -1;
+  }
+
   econf_error =  econf_readDirsHistory(&key_files, &size,
 				       usr_root_dir, root_dir, conf_basename,
-				       conf_suffix, "=", "#");
+				       conf_suffix, delimeters, comment);
   if (econf_error) {
     fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
     return -1;
@@ -260,7 +288,8 @@ static int econf_cat(void)
  * @brief Generates a tmpfiles from key_file and opens editor to allow user editing.
  *        It then saves the edited in key_file_edit and deletes the tmpfile
  */
-static int econf_edit_editor(struct econf_file **key_file_edit, struct econf_file **key_file)
+static int econf_edit_editor(struct econf_file **key_file_edit, struct econf_file **key_file,
+			     const char *delimeters, const char *comment)
 {
     econf_err econf_error;
     int wstatus;
@@ -317,7 +346,7 @@ static int econf_edit_editor(struct econf_file **key_file_edit, struct econf_fil
     } while (!WIFEXITED(wstatus));
 
     /* save edits from tmpfile_edit in key_file_edit */
-    econf_error = econf_readFile(key_file_edit, path_tmpfile_edit, "=", "#");
+    econf_error = econf_readFile(key_file_edit, path_tmpfile_edit, delimeters, comment);
     if (econf_error) {
         fprintf(stderr, "%s\n", econf_errString(econf_error));
         ret = -1;
@@ -343,16 +372,21 @@ static int econf_edit_editor(struct econf_file **key_file_edit, struct econf_fil
  *  TODO:
  *      - Replace static values of the path with future libeconf API calls
  */
-static int econf_edit(struct econf_file **key_file)
+static int econf_edit(struct econf_file **key_file, const char *delimeters, const char *comment)
 {
     econf_err econf_error;
     econf_file *key_file_edit = NULL;
 
-    econf_error = econf_readDirs(key_file, usr_root_dir, root_dir, conf_basename, conf_suffix, "=", "#");
+    if (conf_filename[0] == '/') {
+        /* reading one file only */
+        econf_error = econf_readFile(key_file, conf_filename,
+				     delimeters, comment);
+    } else {
+        econf_error = econf_readDirs(key_file, usr_root_dir, root_dir, conf_basename, conf_suffix, delimeters, comment);
+    }
 
     if (econf_error == ECONF_NOFILE) {
-    /* the file does not exist */
-
+        /* the file does not exist */
         /* create empty key file */
         if ((econf_error = econf_newIniFile(key_file))) {
             fprintf(stderr, "%s\n", econf_errString(econf_error));
@@ -364,7 +398,7 @@ static int econf_edit(struct econf_file **key_file)
         return -1;
     }
 
-    if (econf_edit_editor(&key_file_edit, key_file)) {
+    if (econf_edit_editor(&key_file_edit, key_file, delimeters, comment)) {
         econf_free(key_file_edit);
         return -1;
     }
@@ -519,6 +553,8 @@ int main (int argc, char *argv[])
     bool is_dropin_file = true;
     bool is_root = false;
     bool use_homedir = false;
+    char *comment = "#";
+    char *delimeters = "=";
 
     /* parse command line arguments. See getopt_long(3) */
     int opt, nonopts;
@@ -530,10 +566,12 @@ int main (int argc, char *argv[])
         {"help",        no_argument,       0, 'h'},
         {"yes",         no_argument,       0, 'y'},
         {"use-home",    no_argument,       0, 'u'},
+	{"comment",     required_argument, 0, 'c'},
+	{"delimeters",  required_argument, 0, 'd'},
         {0,             0,                 0,  0 }
     };
 
-    while ((opt = getopt_long(argc, argv, "hfy", longopts, &index)) != -1) {
+    while ((opt = getopt_long(argc, argv, "hfyuc:d:", longopts, &index)) != -1) {
         switch(opt) {
         case 'f':
             /* overwrite path */
@@ -550,6 +588,12 @@ int main (int argc, char *argv[])
         case 'u':
             use_homedir = true;
             break;
+	case 'c':
+	    comment = optarg;
+	    break;
+	case 'd':
+	    delimeters = optarg;
+	    break;
         case '?':
         default:
             fprintf(stderr, "Try '%s --help' for more information.\n", utilname);
@@ -573,22 +617,27 @@ int main (int argc, char *argv[])
     /* basic write permission check */
     is_root = getuid() == 0;
 
-    /* get the position of the last dot in the filename to extract
-     * the suffix from it.
-     */
-    conf_suffix = strrchr(argv[optind + 1], '.');
+    if ( argv[optind + 1][0] != '/') {
+	/* it is not a single file only */
 
-    if (conf_suffix == NULL) {
-        fprintf(stderr, "Currently only works with a dot in the filename!\n\n");
-        usage();
+        /* get the position of the last dot in the filename to extract
+         * the suffix from it.
+         */
+        conf_suffix = strrchr(argv[optind + 1], '.');
+        if (conf_suffix == NULL) {
+            fprintf(stderr, "Currently only works with a dot in the filename and a suffix!\n\n");
+	    usage();
+	    exit(1);
+	} else {
+            /* set filename to the proper argv argument */
+	    if (strlen(argv[optind + 1]) > sizeof(conf_basename)) {
+	        fprintf(stderr, "Filename too long\n");
+		return EXIT_FAILURE;
+	    }
+	    snprintf(conf_basename, strlen(argv[optind + 1]) - strlen(conf_suffix) + 1, "%s", argv[optind + 1]);
+	}
     }
 
-    /* set filename to the proper argv argument */
-    if (strlen(argv[optind + 1]) > sizeof(conf_basename)) {
-        fprintf(stderr, "Filename too long\n");
-        return EXIT_FAILURE;
-    }
-    snprintf(conf_basename, strlen(argv[optind + 1]) - strlen(conf_suffix) + 1, "%s", argv[optind + 1]);
     snprintf(conf_filename, sizeof(conf_filename), "%s" , argv[optind + 1]);
 
     if (is_dropin_file) {
@@ -622,7 +671,9 @@ int main (int argc, char *argv[])
     int ret = 0;
 
     if (strcmp(argv[optind], "show") == 0) {
-        ret = econf_show(&key_file);
+      ret = econf_read(&key_file, delimeters, comment, true);
+    } else if (strcmp(argv[optind], "syntax") == 0) {
+      ret = econf_read(&key_file, delimeters, comment, false);
     } else if (strcmp(argv[optind], "edit") == 0) {
         if (!is_root || use_homedir) {
             /* adjust path to home directory of the user.*/
@@ -636,11 +687,11 @@ int main (int argc, char *argv[])
                     conf_filename);
         }
 
-        ret = econf_edit(&key_file);
+        ret = econf_edit(&key_file, delimeters, comment);
     } else if (strcmp(argv[optind], "revert") == 0) {
-        ret = econf_revert(is_root, use_homedir);
+      ret = econf_revert(is_root, use_homedir);
     } else if (strcmp(argv[optind], "cat") == 0) {
-      ret = econf_cat();
+	ret = econf_cat(delimeters, comment);
     } else {
         fprintf(stderr, "Unknown command!\n\n");
         usage();
