@@ -78,6 +78,7 @@ static void usage(void)
     fprintf(stderr, "\ngeneral Options:\n");
     fprintf(stderr, "--comment <character>: Character which starts a comment. ('#' default).\n");
     fprintf(stderr, "--delimiters <string>: Characters which separates key/value entries. (\"=\" default).\n");
+    fprintf(stderr, "                       For tabs you should use: --delimiters=$\'\\t\'\n");
 }
 
 /**
@@ -177,8 +178,15 @@ static econf_err pr_key_file(struct econf_file *key_file)
     /* show groups, keys and their value */
     econf_error = econf_getGroups(key_file, &groupCount, &groups);
     if (econf_error) {
-        fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
-        return econf_error;
+        if (econf_error != ECONF_NOGROUP) {
+	    fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
+            return econf_error;
+	} else {
+	    /* no groups defined; generating an root entry */
+	    groups = calloc(1, sizeof(char*));
+	    groups[0] = NULL;
+	    groupCount = 1;
+	}
     }
     for (size_t g = 0; g < groupCount; g++) {
         char **keys = NULL;
@@ -190,7 +198,10 @@ static econf_err pr_key_file(struct econf_file *key_file)
             econf_free(keys);
             return econf_error;
         }
-        printf("%s\n", groups[g]);
+
+	if (groups[g] != NULL)
+            printf("%s\n", groups[g]);
+
         for (size_t k = 0; k < key_count; k++) {
             econf_error = econf_getExtValue(key_file, groups[g], keys[k], &value);
             if (econf_error) {
