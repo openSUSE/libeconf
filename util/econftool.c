@@ -147,6 +147,21 @@ static void free_groups(char ***groups)
 }
 
 /**
+ * @brief printing error with linenr and filename
+ */
+static void print_error(const econf_err error)
+{
+  char *filename = NULL;
+  uint64_t line_nr = 0;
+
+  econf_errLocation( &filename, &line_nr);
+  fprintf(stderr, "%s (line %d): %s\n", filename, (int) line_nr,
+	  econf_errString(error));
+  free(filename);
+}
+
+
+/**
  * @brief printing header
  */
 static void pr_header(void)
@@ -179,7 +194,7 @@ static econf_err pr_key_file(struct econf_file *key_file)
     econf_error = econf_getGroups(key_file, &groupCount, &groups);
     if (econf_error) {
         if (econf_error != ECONF_NOGROUP) {
-	    fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
+            print_error(econf_error);
             return econf_error;
 	} else {
 	    /* no groups defined; generating an root entry */
@@ -194,7 +209,7 @@ static econf_err pr_key_file(struct econf_file *key_file)
 
         econf_error = econf_getKeys(key_file, groups[g], &key_count, &keys);
         if (econf_error) {
-            fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
+	    print_error(econf_error);
             econf_free(keys);
             return econf_error;
         }
@@ -205,7 +220,7 @@ static econf_err pr_key_file(struct econf_file *key_file)
         for (size_t k = 0; k < key_count; k++) {
             econf_error = econf_getExtValue(key_file, groups[g], keys[k], &value);
             if (econf_error) {
-                fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
+		print_error(econf_error);
                 econf_free(keys);
                 return econf_error;
             }
@@ -248,7 +263,7 @@ static int econf_read(struct econf_file **key_file, const char *delimiters, cons
 				     conf_suffix, delimiters, comment);
     }
     if (econf_error) {
-        fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
+	print_error(econf_error);
         return -1;
     }
     if (show) {
@@ -281,7 +296,7 @@ static int econf_cat(const char *delimiters, const char *comment)
 				       usr_root_dir, root_dir, conf_basename,
 				       conf_suffix, delimiters, comment);
   if (econf_error) {
-    fprintf(stderr, "%d: %s\n", econf_error, econf_errString(econf_error));
+    print_error(econf_error);
     return -1;
   }
 
