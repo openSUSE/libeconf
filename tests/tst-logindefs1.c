@@ -20,7 +20,7 @@ main(void)
   char *val;
   econf_err error;
 
-  if ((error = econf_readFile (&key_file, TESTSDIR"tst-logindefs1-data/etc/login.defs", " \t", "#")))
+  if ((error = econf_readFile (&key_file, TESTSDIR"tst-logindefs1-data/etc/login.defs", "= \t", "#")))
     {
       fprintf (stderr, "ERROR: couldn't read configuration file: %s\n", econf_errString(error));
       return 1;
@@ -40,6 +40,24 @@ main(void)
   else if (strcmp (val, "yes") != 0)
     {
       fprintf (stderr, "USERGROUPS_ENAB returns wrong value: '%s'\n", val);
+      return 1;
+    }
+  free (val);
+
+  if ((error = econf_getStringValue (key_file, NULL, "ENV_SUPATH", &val)))
+    {
+      fprintf (stderr, "Error reading ENV_SUPATH: %s\n",
+	       econf_errString(error));
+      return 1;
+    }
+  else if (strlen(val) == 0)
+    {
+      fprintf (stderr, "ENV_SUPATH returns nothing!\n");
+      return 1;
+    }
+  else if (strcmp (val, "PATH=/sbin:/bin:/usr/sbin:/usr/bin") != 0)
+    {
+      fprintf (stderr, "ENV_SUPATH returns wrong value: '%s'\n", val);
       return 1;
     }
   free (val);

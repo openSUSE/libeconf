@@ -35,6 +35,18 @@ the config file and snippet directory in /etc.
 .B OPTIONS
   -y, --yes:       Assumes yes for all prompts and runs non-interactively.
 
+
+.SH general OPTIONS
+.TP
+.B --comment <character>
+  Character which starts a comment. ('#' default).
+
+.TP
+.B --delimiters <string>
+ Characters which separates key/value entries. ("=" default).
+ e.g. --delimiters="= \t"
+ e.g. --delimiters=spaces   regarding all spaces
+
 .SH "SEE ALSO"
 .PP 
 libeconf\&

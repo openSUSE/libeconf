@@ -78,7 +78,31 @@ static void usage(void)
     fprintf(stderr, "\ngeneral Options:\n");
     fprintf(stderr, "--comment <character>: Character which starts a comment. ('#' default).\n");
     fprintf(stderr, "--delimiters <string>: Characters which separates key/value entries. (\"=\" default).\n");
-    fprintf(stderr, "                       For tabs you should use: --delimiters=$\'\\t\'\n");
+    fprintf(stderr, "                       e.g. --delimiters=\"= \\t\"\n");
+    fprintf(stderr, "                       e.g. --delimiters=spaces   regarding all spaces\n");
+}
+
+/**
+ * @brief Replace a substring of a string by another
+ *
+ * @param str source string
+ * @param orig search string
+ * @param rep replace string
+ */
+static char *replace_str(char *str, char *orig, char *rep)
+{
+  static char buffer[1024];
+  char *p;
+
+  if(!(p = strstr(str, orig)))
+    return str;
+
+  strncpy(buffer, str, p-str);
+  buffer[p-str] = '\0';
+
+  sprintf(buffer+(p-str), "%s%s", rep, p+strlen(orig));
+
+  return buffer;
 }
 
 /**
@@ -638,8 +662,19 @@ int main (int argc, char *argv[])
         usage();
         return EXIT_FAILURE;
     }
-    /**** initialization ****/
 
+    /* translating delimiters */
+    if ( strcmp(delimiters, "spaces") == 0 ) {
+      delimiters = " \t\f\n\r\v";
+    } else {
+      delimiters = replace_str(delimiters, "\\t", "\t");
+      delimiters = replace_str(delimiters, "\\f", "\f");
+      delimiters = replace_str(delimiters, "\\n", "\n");
+      delimiters = replace_str(delimiters, "\\r", "\r");
+      delimiters = replace_str(delimiters, "\\v", "\v");
+    }
+
+    /**** initialization ****/
     /* basic write permission check */
     is_root = getuid() == 0;
 

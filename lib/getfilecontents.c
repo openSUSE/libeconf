@@ -369,45 +369,51 @@ read_file(econf_file *ef, const char *file,
       *data++ = '\0';
     }
 
-    /* Checking and adding multiline entries which are
-     * not defined by a beginning quote in the line before.
-     */
-    bool found_delim = delim_seen;
-    if (!found_delim)
-    {
-      /* searching the rest of the string for delimiters */
-      char *c = data;
-      while (*c && !(strchr(delim, *c) != NULL))
-	c++;
-      if (*c)
-	found_delim = true;
-    }
-    if (!found_delim &&
-        /* Entry has already been found */	
-	ef->length > 0 &&
-	/* The Entry must be the next line. Otherwise it is a new one */
-	ef->file_entry[ef->length-1].line_number+1 == line)
-    {
-      /* removing comments */
-      for (size_t i = 0; i < strlen(comment); i++) {
-	char *pt = strchr(org_buf, comment[i]);
-	if (pt)
-	  *pt = '\0';
+    if (!has_wsp || !has_nonwsp) {
+      /* Multiline entries make no sense if the delimiters are
+       * whitespaces AND none whitespaces.
+       */
+
+      /* Checking and adding multiline entries which are
+       * not defined by a beginning quote in the line before.
+       */
+      bool found_delim = delim_seen;
+      if (!found_delim)
+      {
+        /* searching the rest of the string for delimiters */
+	char *c = data;
+	while (*c && !(strchr(delim, *c) != NULL))
+	  c++;
+        if (*c)
+	  found_delim = true;
       }
-      /* removing \n at the end of the line */
-      if( org_buf[strlen(org_buf)-1] == '\n' )
-        org_buf[strlen(org_buf)-1] = 0;
-      retval = store(ef, current_group, name, org_buf, line,
-		     current_comment_before_key, current_comment_after_value,
-		     false, /* Quotes does not matter in the following lines */
-		     true /* appending entry */);
-      free(current_comment_before_key);
-      current_comment_before_key = NULL;
-      free(current_comment_after_value);
-      current_comment_after_value = NULL;
-      if (retval)
-	goto out;
-      continue;
+      if (!found_delim &&
+	  /* Entry has already been found */
+	  ef->length > 0 &&
+	  /* The Entry must be the next line. Otherwise it is a new one */
+	  ef->file_entry[ef->length-1].line_number+1 == line)
+      {
+        /* removing comments */
+        for (size_t i = 0; i < strlen(comment); i++) {
+	  char *pt = strchr(org_buf, comment[i]);
+	  if (pt)
+	    *pt = '\0';
+	}
+	/* removing \n at the end of the line */
+	if( org_buf[strlen(org_buf)-1] == '\n' )
+	  org_buf[strlen(org_buf)-1] = 0;
+	retval = store(ef, current_group, name, org_buf, line,
+		       current_comment_before_key, current_comment_after_value,
+		       false, /* Quotes does not matter in the following lines */
+		       true /* appending entry */);
+	free(current_comment_before_key);
+	current_comment_before_key = NULL;
+	free(current_comment_after_value);
+	current_comment_after_value = NULL;
+	if (retval)
+	  goto out;
+	continue;
+      }
     }
     
     /* Go on. It is not an multiline entry */
