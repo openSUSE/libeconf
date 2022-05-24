@@ -152,6 +152,26 @@ main(void)
   if (!check_Bool (key_file, "No", false)) retval=1;
   if (!check_Bool (key_file, "no", false)) retval=1;
   if (!check_Bool (key_file, "0", false)) retval=1;
+  /* setting and getting NULL values */
+  if ((error = econf_setBoolValue(key_file, NULL, "KEY", NULL) != ECONF_SUCCESS))
+    exit_with_error_set ("boolean", error);
+  bool val_Bool;
+  if ((error = econf_getBoolValue(key_file, NULL, "KEY", &val_Bool) != ECONF_KEY_HAS_NULL_VALUE))
+    exit_with_error_get ("boolean", error);
+  if ((error = econf_setBoolValue(key_file, NULL, "KEY", "") != ECONF_SUCCESS))
+    exit_with_error_set ("boolean", error);
+  if ((error = econf_getBoolValue(key_file, NULL, "KEY", &val_Bool) != ECONF_KEY_HAS_NULL_VALUE))
+    exit_with_error_get ("boolean", error);  
+
+  /* Error Handling */
+  if ((error = econf_setIntValue (NULL, NULL, "test", 8)) != ECONF_FILE_LIST_IS_NULL)
+    exit_with_error_set ("int", error);
+  if ((error = econf_setIntValue (key_file, NULL, NULL, 8)) != ECONF_EMPTYKEY)
+    exit_with_error_set ("int", error);
+  if ((error = econf_setIntValue (key_file, NULL, "", 8)) != ECONF_EMPTYKEY)
+    exit_with_error_set ("int", error);
+  if ((error = econf_setBoolValue(key_file, NULL, "KEY", "foo")) != ECONF_WRONG_BOOLEAN_VALUE)
+    exit_with_error_set ("Bool", error);
 
   econf_free (key_file);
 

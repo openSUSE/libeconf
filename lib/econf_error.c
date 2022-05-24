@@ -36,13 +36,16 @@ static const char *messages[] = {
   "Configuration file not found", /*ECONF_NOFILE */
   "Group not found", /* ECONF_NOGROUP */
   "Key not found", /* ECONF_NOKEY */
-  "Key has empty value", /* ECONF_EMPTYKEY */
+  "Key is NULL or has empty value", /* ECONF_EMPTYKEY */
   "Error creating or writing to a file", /* ECONF_WRITEERROR */
   "Parse error", /* ECONF_PARSE_ERROR */
   "Missing bracket", /* ECONF_MISSING_BRACKET */
   "Missing delimiter", /* ECONF_MISSING_DELIMITER */
   "Empty section name", /* ECONF_EMPTY_SECTION_NAME */
-  "Text after section" /* ECONF_TEXT_AFTER_SECTION */
+  "Text after section", /* ECONF_TEXT_AFTER_SECTION */
+  "Parsed file list is NULL", /* ECONF_FILE_LIST_IS_NULL */
+  "Wrong boolean value (1/0 true/false yes/no)", /* ECONF_WRONG_BOOLEAN_VALUE */
+  "Given key has NULL value" /* ECONF_KEY_HAS_NULL_VALUE */
 };
 
 const char *

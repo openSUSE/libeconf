@@ -115,6 +115,8 @@ econf_err getBoolValueNum(econf_file key_file, size_t num, bool *result) {
   else if ((*value == '0' && strlen(tmp) == 1) || !*value ||
 	   hash == NO || hash == FALSE)
     *result = false;
+  else if (hash == KEY_FILE_NULL_VALUE_HASH)
+    err = ECONF_KEY_HAS_NULL_VALUE;
   else
     err = ECONF_PARSE_ERROR;
 
@@ -255,7 +257,7 @@ econf_err setStringValueNum(econf_file *ef, size_t num, const void *v) {
 
 /* XXX This needs to be optimised and error checking added */
 econf_err setBoolValueNum(econf_file *kf, size_t num, const void *v) {
-  const char *value = (const char*) (v ? v : "");
+  const char *value = (const char*) (v ? v : KEY_FILE_NULL_VALUE);
   econf_err error = ECONF_SUCCESS;
   char *tmp = strdup(value);
   size_t hash = hashstring(toLowerCase(tmp));
@@ -263,14 +265,14 @@ econf_err setBoolValueNum(econf_file *kf, size_t num, const void *v) {
   if ((*value == '1' && strlen(tmp) == 1) || hash == YES || hash == TRUE) {
     free(kf->file_entry[num].value);
     kf->file_entry[num].value = strdup("true");
-  } else if ((*value == '0' && strlen(tmp) == 1) || !*value ||
+  } else if ((*value == '0' && strlen(tmp) == 1) ||
              hash == NO || hash == FALSE) {
     free(kf->file_entry[num].value);
     kf->file_entry[num].value = strdup("false");
-  } else if (hash == KEY_FILE_NULL_VALUE_HASH) {
+  } else if (hash == KEY_FILE_NULL_VALUE_HASH || strlen(value) == 0) {
     free(kf->file_entry[num].value);
     kf->file_entry[num].value = strdup(KEY_FILE_NULL_VALUE);
-  } else { error = ECONF_ERROR; }
+  } else { error = ECONF_WRONG_BOOLEAN_VALUE; }
 
   free(tmp);
   return error;
