@@ -255,7 +255,6 @@ econf_err setStringValueNum(econf_file *ef, size_t num, const void *v) {
   return ECONF_SUCCESS;
 }
 
-/* XXX This needs to be optimised and error checking added */
 econf_err setBoolValueNum(econf_file *kf, size_t num, const void *v) {
   const char *value = (const char*) (v ? v : KEY_FILE_NULL_VALUE);
   econf_err error = ECONF_SUCCESS;
