@@ -543,7 +543,9 @@ econf_getValue(Bool, bool)
 econf_err econf_set ## TYPE ## Value(econf_file *kf, const char *group,		\
   const char *key, VALTYPE value) {	\
   if (!kf) \
-    return ECONF_ERROR; \
+    return ECONF_FILE_LIST_IS_NULL; \
+  if (!key || strlen(key)<= 0)	    \
+    return ECONF_EMPTYKEY; \
   return setKeyValue(set ## TYPE ## ValueNum, kf, group, key, VALARG); \
 }
 

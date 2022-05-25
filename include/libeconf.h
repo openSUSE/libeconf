@@ -50,7 +50,7 @@ enum econf_err {
   ECONF_NOGROUP = 4,
   /** Key not found */
   ECONF_NOKEY = 5,
-  /** Key has empty value */
+  /** Key is NULL or has empty value */
   ECONF_EMPTYKEY = 6,
   /** Error creating or writing to a file */
   ECONF_WRITEERROR = 7,
@@ -63,7 +63,13 @@ enum econf_err {
   /** Empty section name */
   ECONF_EMPTY_SECTION_NAME = 11,
   /** Text after section */
-  ECONF_TEXT_AFTER_SECTION = 12
+  ECONF_TEXT_AFTER_SECTION = 12,
+  /** Parsed file list is NULL */
+  ECONF_FILE_LIST_IS_NULL = 13,
+  /** Wrong boolean value (1/0 true/false yes/no) */
+  ECONF_WRONG_BOOLEAN_VALUE = 14,
+  /** Given key has NULL value */
+  ECONF_KEY_HAS_NULL_VALUE = 15
 };
 
 typedef enum econf_err econf_err;
