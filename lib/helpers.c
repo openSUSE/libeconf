@@ -140,8 +140,7 @@ size_t hashstring(const char *string) {
 
 // Look for matching key
 econf_err find_key(econf_file key_file, const char *group, const char *key, size_t *num) {
-  char *grp = (!group || !*group) ? strdup(KEY_FILE_NULL_VALUE) :
-               addbrackets(group);
+	char *grp = (!group || !*group) ? strdup(KEY_FILE_NULL_VALUE) : strdup(group);
   if (grp == NULL)
     return  ECONF_NOMEM;
   if (!key || !*key) {
@@ -167,8 +166,7 @@ econf_err find_key(econf_file key_file, const char *group, const char *key, size
 static econf_err
 new_key (econf_file *key_file, const char *group, const char *key) {
   econf_err error;
-  char *grp = (!group || !*group) ? strdup(KEY_FILE_NULL_VALUE) :
-               addbrackets(group);
+  char *grp = (!group || !*group) ? strdup(KEY_FILE_NULL_VALUE) : strdup(group);
   if (grp == NULL)
     return ECONF_NOMEM;
   if (key_file == NULL || key == NULL)

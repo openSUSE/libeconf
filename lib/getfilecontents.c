@@ -323,8 +323,8 @@ read_file(econf_file *ef, const char *file,
 
     /* check for groups */
     if (name[0] == '[') {
-      p = name + strlen(name) - 1;
-      /* XXX Remove [] around group name */
+      name++; /* remove "[" */
+      p = name + strlen(name) -1;
       while (isspace (*p)) p--;
       if (*p != ']') {
 	if (strchr(name,']') == NULL)
@@ -333,9 +333,8 @@ read_file(econf_file *ef, const char *file,
 	  retval = ECONF_TEXT_AFTER_SECTION;
 	goto out;
       }
-      p++;
-      *p = '\0';
-      if(strlen(name) <= 2) /* empty string = "[]" */
+      *p = '\0'; /* remove "]" */
+      if(strlen(name) <= 0)
       {
 	retval = ECONF_EMPTY_SECTION_NAME;
 	goto out;

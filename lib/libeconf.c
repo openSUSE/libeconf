@@ -360,7 +360,7 @@ econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
       if (i)
         fprintf(kf, "\n");
       if (strcmp(key_file->file_entry[i].group, KEY_FILE_NULL_VALUE))
-        fprintf(kf, "%s\n", key_file->file_entry[i].group);
+	fprintf(kf, "%s\n", addbrackets(key_file->file_entry[i].group));
     }
 
     // Writing heading comments
@@ -471,8 +471,7 @@ econf_getKeys(econf_file *kf, const char *grp, size_t *length, char ***keys)
     return ECONF_ERROR;
 
   size_t tmp = 0;
-  char *group = ((!grp || !*grp) ? strdup(KEY_FILE_NULL_VALUE) :
-                 addbrackets(grp));
+  char *group = (!grp || !*grp) ? strdup(KEY_FILE_NULL_VALUE) : strdup(grp);
   if (group == NULL)
     return ECONF_NOMEM;
 
@@ -521,7 +520,9 @@ econf_err econf_get ## FCT_TYPE ## Value(econf_file *kf, const char *group, \
     return ECONF_ERROR; \
 \
   size_t num; \
-  econf_err error = find_key(*kf, group, key, &num);	\
+  char *grp = stripbrackets(strdup(group)); \
+  econf_err error = find_key(*kf, grp, key, &num); \
+  free(grp); \
   if (error) \
     return error; \
   return get ## FCT_TYPE ## ValueNum(*kf, num, result);	\
@@ -546,7 +547,10 @@ econf_err econf_set ## TYPE ## Value(econf_file *kf, const char *group,		\
     return ECONF_FILE_LIST_IS_NULL; \
   if (!key || strlen(key)<= 0)	    \
     return ECONF_EMPTYKEY; \
-  return setKeyValue(set ## TYPE ## ValueNum, kf, group, key, VALARG); \
+  char *grp = stripbrackets(strdup(group)); \
+  econf_err ret = setKeyValue(set ## TYPE ## ValueNum, kf, group, key, VALARG); \
+  free(grp); \
+  return ret; \
 }
 
 libeconf_setValue(Int, int32_t, &value)
