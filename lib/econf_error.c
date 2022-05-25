@@ -43,7 +43,7 @@ static const char *messages[] = {
   "Missing delimiter", /* ECONF_MISSING_DELIMITER */
   "Empty section name", /* ECONF_EMPTY_SECTION_NAME */
   "Text after section", /* ECONF_TEXT_AFTER_SECTION */
-  "Parsed file list is NULL", /* ECONF_FILE_LIST_IS_NULL */
+  "Conf file list is NULL", /* ECONF_FILE_LIST_IS_NULL */
   "Wrong boolean value (1/0 true/false yes/no)", /* ECONF_WRONG_BOOLEAN_VALUE */
   "Given key has NULL value" /* ECONF_KEY_HAS_NULL_VALUE */
 };
