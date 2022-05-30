@@ -520,8 +520,8 @@ econf_err econf_get ## FCT_TYPE ## Value(econf_file *kf, const char *group, \
     return ECONF_ERROR; \
 \
   size_t num; \
-  char *grp = stripbrackets(strdup(group)); \
-  econf_err error = find_key(*kf, grp, key, &num); \
+  char *grp = group ? strdup(group) : NULL; \
+  econf_err error = find_key(*kf, stripbrackets(grp), key, &num); \
   free(grp); \
   if (error) \
     return error; \
@@ -547,8 +547,8 @@ econf_err econf_set ## TYPE ## Value(econf_file *kf, const char *group,		\
     return ECONF_FILE_LIST_IS_NULL; \
   if (!key || strlen(key)<= 0)	    \
     return ECONF_EMPTYKEY; \
-  char *grp = stripbrackets(strdup(group)); \
-  econf_err ret = setKeyValue(set ## TYPE ## ValueNum, kf, group, key, VALARG); \
+  char *grp = group ? strdup(group) : NULL; \
+  econf_err ret = setKeyValue(set ## TYPE ## ValueNum, kf, stripbrackets(grp), key, VALARG); \
   free(grp); \
   return ret; \
 }

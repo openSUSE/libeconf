@@ -92,6 +92,8 @@ char *get_absolute_path(const char *path, econf_err *error) {
 
 // Remove '[' and ']' from beginning and end
 char *stripbrackets(char *string) {
+  if (!string)
+    return NULL;
   char *ptr = string, *buffer = string;
   size_t length = strlen(string) - 1;
   if (*string == '[' && string[length] == ']') {
@@ -103,6 +105,8 @@ char *stripbrackets(char *string) {
 
 // Add '[' and ']' to the given string
 char *addbrackets(const char *string) {
+  if (string == NULL)
+    return NULL;
   size_t length = strlen(string);
   if (!(*string == '[' && string[length - 1] == ']')) {
     char *buffer = malloc(length + 3);
