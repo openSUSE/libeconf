@@ -359,8 +359,11 @@ econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
                      key_file->file_entry[i].group)) {
       if (i)
         fprintf(kf, "\n");
-      if (strcmp(key_file->file_entry[i].group, KEY_FILE_NULL_VALUE))
-	fprintf(kf, "%s\n", addbrackets(key_file->file_entry[i].group));
+      if (strcmp(key_file->file_entry[i].group, KEY_FILE_NULL_VALUE)) {
+	char *group = addbrackets(key_file->file_entry[i].group);
+	fprintf(kf, "%s\n", group);
+        free(group);
+      }
     }
 
     // Writing heading comments
