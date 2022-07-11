@@ -29,6 +29,7 @@
 #include "keyfile.h"
 #include "mergefiles.h"
 
+#include <libgen.h>
 #include <dirent.h>
 #include <stdio.h>
 #include <string.h>
@@ -44,30 +45,37 @@ static mode_t file_perms_file;
 static mode_t file_perms_dir;
 bool allow_follow_symlinks = true;
 
-extern void econf_requireOwner(uid_t owner)
+void econf_requireOwner(uid_t owner)
 {
-  file_owner_set = false;
+  file_owner_set = true;
   file_owner = owner;
 }
 
-extern void econf_requireGroup(gid_t group)
+void econf_requireGroup(gid_t group)
 {
   file_group_set = true;
   file_group = group;
 }
 
-extern void econf_requirePermissions(mode_t file_perms, mode_t dir_perms)
+void econf_requirePermissions(mode_t file_perms, mode_t dir_perms)
 {
   file_permissions_set = true;
   file_perms_file = file_perms;
   file_perms_dir = dir_perms;
 }
 
-extern void econf_followSymlinks(bool allow)
+void econf_followSymlinks(bool allow)
 {
   allow_follow_symlinks = allow;
 }
 
+void econf_reset_security_settings(void)
+{
+  file_owner_set = false;
+  file_group_set = false;
+  file_permissions_set = false;
+  allow_follow_symlinks = true;
+}
 
 // Create a new econf_file. Allocation is based on
 // KEY_FILE_DEFAULT_LENGTH defined in include/defines.h
@@ -126,7 +134,10 @@ econf_err econf_readFile(econf_file **key_file, const char *file_name,
     struct stat sb_dir;
     if (!(sb.st_mode&file_perms_file))
       return ECONF_WRONG_FILE_PERMISSION;
-    if (lstat(basename(file_name), &sb_dir) == -1)
+    char *cdirc = strdup(file_name);
+    int dir_stat = lstat(dirname(cdirc), &sb_dir);
+    free(cdirc);
+    if ( dir_stat == -1)
       return ECONF_NOFILE;
     if (!(sb_dir.st_mode&file_perms_dir))
       return ECONF_WRONG_DIR_PERMISSION;

@@ -673,6 +673,13 @@ extern void econf_requirePermissions(mode_t file_perms, mode_t dir_perms);
  */
 extern void econf_followSymlinks(bool allow);
 
+/** @brief Reset all UID, GID, permissions file/dir restrictions.
+ *
+ * @return void
+ *
+ */
+extern void econf_reset_security_settings(void);
+
 #ifdef __cplusplus
 }
 #endif
