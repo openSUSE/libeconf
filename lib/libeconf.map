@@ -53,4 +53,9 @@ LIBECONF_0.4 {
     econf_errLocation;
     econf_readDirsHistory;
     econf_getPath;
+    econf_requireOwner;
+    econf_requireGroup;
+    econf_requirePermissions;
+    econf_followSymlinks;
+    econf_reset_security_settings;
 } LIBECONF_0.3;

@@ -45,7 +45,12 @@ static const char *messages[] = {
   "Text after section", /* ECONF_TEXT_AFTER_SECTION */
   "Conf file list is NULL", /* ECONF_FILE_LIST_IS_NULL */
   "Wrong boolean value (1/0 true/false yes/no)", /* ECONF_WRONG_BOOLEAN_VALUE */
-  "Given key has NULL value" /* ECONF_KEY_HAS_NULL_VALUE */
+  "Given key has NULL value", /* ECONF_KEY_HAS_NULL_VALUE */
+  "File has wrong owner", /* ECONF_WRONG_OWNER */
+  "File has wrong group", /* ECONF_WRONG_GROUP */
+  "File has wrong file permission", /* ECONF_WRONG_FILE_PERMISSION */
+  "File has wrong dir permission", /* ECONF_WRONG_DIR_PERMISSION */
+  "File is a sym link which is not permitted"  /* ECONF_ERROR_FILE_IS_SYM_LINK */
 };
 
 const char *
