@@ -50,7 +50,7 @@ static const char *messages[] = {
   "File has wrong group", /* ECONF_WRONG_GROUP */
   "File has wrong file permission", /* ECONF_WRONG_FILE_PERMISSION */
   "File has wrong dir permission", /* ECONF_WRONG_DIR_PERMISSION */
-  "File is a sym link what is not permitted"  /* ECONF_ERROR_FILE_IS_SYM_LINK */
+  "File is a sym link which is not permitted"  /* ECONF_ERROR_FILE_IS_SYM_LINK */
 };
 
 const char *

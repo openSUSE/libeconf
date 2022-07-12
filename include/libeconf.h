@@ -78,7 +78,7 @@ enum econf_err {
   ECONF_WRONG_FILE_PERMISSION = 18,
   /** File has wrong dir permission */
   ECONF_WRONG_DIR_PERMISSION = 19,
-  /** File is a sym link what is not permitted */
+  /** File is a sym link which is not permitted */
   ECONF_ERROR_FILE_IS_SYM_LINK = 20
 };
 
@@ -665,7 +665,7 @@ extern void econf_requireGroup(gid_t group);
  */
 extern void econf_requirePermissions(mode_t file_perms, mode_t dir_perms);
 
-/** @brief Allowing the parser to follow sym links.
+/** @brief Allowing the parser to follow sym links (default: true).
  *
  * @param allow allow to follow sym links.
  * @return void
@@ -673,7 +673,7 @@ extern void econf_requirePermissions(mode_t file_perms, mode_t dir_perms);
  */
 extern void econf_followSymlinks(bool allow);
 
-/** @brief Reset all UID, GID, permissions file/dir restrictions.
+/** @brief Reset all UID, GID, permissions,... restrictions for parsed files/dirs.
  *
  * @return void
  *
