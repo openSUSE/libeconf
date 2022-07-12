@@ -650,7 +650,7 @@ extern void econf_requireOwner(uid_t owner);
 
 /** @brief All parsed files require this group permission.
  *
- * @param owner Group ID
+ * @param group Group ID
  * @return void
  *
  */
