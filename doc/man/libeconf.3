@@ -1,4 +1,4 @@
-.TH "libeconf" 3 "Thu Apr 8 2021" "Version 0.4.0" "libeconf" \" -*- nroff -*-
+.TH "libeconf" 3 "Thu Apr 8 2021" "Version 0.4.7" "libeconf" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -71,6 +71,10 @@ exists:
 .br
 \fC#include <stdlib\&.h>\fP
 .br
+\fC#include 'libeconf\&.h'\fP
+.br
+\fC#include 'libeconf_ext\&.h'\fP
+.br
 
 .in -1c
 .SS "Typedefs"
@@ -90,7 +94,7 @@ exists:
 
 .in +1c
 .ti -1c
-.RI "enum \fBeconf_err\fP { \fBECONF_SUCCESS\fP = 0, \fBECONF_ERROR\fP = 1, \fBECONF_NOMEM\fP = 2, \fBECONF_NOFILE\fP = 3, \fBECONF_NOGROUP\fP = 4, \fBECONF_NOKEY\fP = 5, \fBECONF_EMPTYKEY\fP = 6, \fBECONF_WRITEERROR\fP = 7, \fBECONF_PARSE_ERROR\fP = 8, \fBECONF_MISSING_BRACKET\fP = 9, \fBECONF_MISSING_DELIMITER\fP = 10, \fBECONF_EMPTY_SECTION_NAME\fP = 11, \fBECONF_TEXT_AFTER_SECTION\fP = 12 }"
+.RI "enum \fBeconf_err\fP { \fBECONF_SUCCESS\fP = 0, \fBECONF_ERROR\fP = 1, \fBECONF_NOMEM\fP = 2, \fBECONF_NOFILE\fP = 3, \fBECONF_NOGROUP\fP = 4, \fBECONF_NOKEY\fP = 5, \fBECONF_EMPTYKEY\fP = 6, \fBECONF_WRITEERROR\fP = 7, \fBECONF_PARSE_ERROR\fP = 8, \fBECONF_MISSING_BRACKET\fP = 9, \fBECONF_MISSING_DELIMITER\fP = 10, \fBECONF_EMPTY_SECTION_NAME\fP = 11, \fBECONF_TEXT_AFTER_SECTION\fP = 12, \fBECONF_FILE_LIST_IS_NULL\fP = 13, \fBECONF_WRONG_BOOLEAN_VALUE\fP = 14, \fBECONF_KEY_HAS_NULL_VALUE\fP = 15, \fBECONF_WRONG_OWNER\fP = 16, \fBECONF_WRONG_GROUP\fP = 17, \fBECONF_WRONG_FILE_PERMISSION\fP = 18, \fBECONF_WRONG_DIR_PERMISSION\fP = 19, \fBECONF_ERROR_FILE_IS_SYM_LINK\fP = 20 }"
 .br
 .RI "libeconf error codes "
 .in -1c
@@ -249,6 +253,26 @@ exists:
 .RI "void \fBeconf_freeFile\fP (\fBeconf_file\fP *key_file)"
 .br
 .RI "Free memory allocated by e\&.g\&. "
+.ti -1c
+.RI "void \fBeconf_requireOwner\fP (uid_t owner)"
+.br
+.RI "All parsed files require this user permission\&. "
+.ti -1c
+.RI "void \fBeconf_requireGroup\fP (gid_t group)"
+.br
+.RI "All parsed files require this group permission\&. "
+.ti -1c
+.RI "void \fBeconf_requirePermissions\fP (mode_t file_perms, mode_t dir_perms)"
+.br
+.RI "All parsed file have to have these file and directory permissions\&. "
+.ti -1c
+.RI "void \fBeconf_followSymlinks\fP (bool allow)"
+.br
+.RI "Allowing the parser to follow sym links (default: true)\&. "
+.ti -1c
+.RI "void \fBeconf_reset_security_settings\fP (void)"
+.br
+.RI "Reset all UID, GID, permissions,\&.\&.\&. "
 .in -1c
 .RI "\fBeconf_err\fP \fBeconf_getExtValue\fP (\fBeconf_file\fP *kf, const char *group, const char *key, \fBeconf_ext_value\fP **result)"
 .in +1c
@@ -346,7 +370,31 @@ Missing delimiter\&.
 Empty section name\&. 
 .TP
 \fB\fIECONF_TEXT_AFTER_SECTION \fP\fP
-Text after section\&. 
+Text after section\&.
+.TP
+\fB\fIECONF_FILE_LIST_IS_NULL \fP\fP
+Parsed file list is NULL\&.
+.TP
+\fB\fIECONF_WRONG_BOOLEAN_VALUE \fP\fP
+Wrong boolean value (1/0 true/false yes/no)
+.TP
+\fB\fIECONF_KEY_HAS_NULL_VALUE \fP\fP
+Given key has NULL value\&.
+.TP
+\fB\fIECONF_WRONG_OWNER \fP\fP
+File has wrong owner\&.
+.TP
+\fB\fIECONF_WRONG_GROUP \fP\fP
+File has wrong group\&.
+.TP
+\fB\fIECONF_WRONG_FILE_PERMISSION \fP\fP
+File has wrong file permission\&.
+.TP
+\fB\fIECONF_WRONG_DIR_PERMISSION \fP\fP
+File has wrong dir permission\&.
+.TP
+\fB\fIECONF_ERROR_FILE_IS_SYM_LINK \fP\fP
+File is a sym link which is not permitted\&.
 .PP
 
 .SH "Function Documentation"
@@ -1223,41 +1271,118 @@ void
 .RE
 .PP
 
-.SS "\fBeconf_err\fP econf_getExtValue (\fBeconf_file\fP * kf, const char * group, const char * key, \fBeconf_ext_value\fP ** result)"
+.SS "void econf_requireOwner (uid_t owner)"
 
 .PP
-Evaluating more information for given group/key\&. 
+All parsed files require this user permission\&.
 .PP
 \fBParameters:\fP
 .RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value is requested\&. 
-.br
-\fIresult\fP A newly allocated struct or NULL in error case\&. 
+\fIowner\fP User ID
 .RE
 .PP
 \fBReturns:\fP
 .RS 4
-econf_err ECONF_SUCCESS or error code 
+void
+.RE
+.PP
+
+.SS "void econf_requireGroup (gid_t group)"
+
+.PP
+All parsed files require this group permission\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIgroup\fP Group ID
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+void
+.RE
+.PP
+
+.SS "void econf_requirePermissions (mode_t file_perms, mode_t dir_perms)"
+
+.PP
+All parsed file have to have these file and directory permissions\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfile_perms\fP file permissions
+.br
+\fIdir_perms\fP dir permissions
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+void
+.RE
+.PP
+
+.SS "void econf_followSymlinks (bool allow)"
+
+.PP
+Allowing the parser to follow sym links (default: true)\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIallow\fP allow to follow sym links\&.
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+void
+.RE
+.PP
+
+.SS "void econf_reset_security_settings (void)"
+
+.PP
+Reset all UID, GID, permissions,\&.\&.\&. restrictions for parsed files/dirs\&.
+.PP
+\fBReturns:\fP
+.RS 4
+void
+.RE
+.PP
+
+.SS "\fBeconf_err\fP econf_getExtValue (\fBeconf_file\fP * kf, const char * group, const char * key, \fBeconf_ext_value\fP ** result)"
+
+.PP
+Evaluating more information for given group/key\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIkf\fP given/parsed data
+.br
+\fIgroup\fP Desired group or NULL if there is no group defined\&.
+.br
+\fIkey\fP Key for which the value is requested\&. 
+.br
+\fIresult\fP A newly allocated struct or NULL in error case\&.
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+econf_err ECONF_SUCCESS or error code
 .RE
 .PP
 
 .SS "void econf_freeExtValue (\fBeconf_ext_value\fP * to_free)"
 
 .PP
-Free an complete \fBeconf_ext_value\fP struct\&. 
+Free an complete \fBeconf_ext_value\fP struct\&.
 .PP
 \fBParameters:\fP
 .RS 4
-\fIto_free\fP struct which has to be freed 
+\fIto_free\fP struct which has to be freed
 .RE
 .PP
 \fBReturns:\fP
 .RS 4
-void 
+void
 .RE
 .PP
 
