@@ -58,4 +58,8 @@ LIBECONF_0.4 {
     econf_requirePermissions;
     econf_followSymlinks;
     econf_reset_security_settings;
+    econf_comment_tag;
+    econf_delimiter_tag;
+    econf_set_comment_tag;
+    econf_set_delimiter_tag;
 } LIBECONF_0.3;

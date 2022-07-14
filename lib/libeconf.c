@@ -111,6 +111,30 @@ econf_err econf_newIniFile(econf_file **result) {
   return econf_newKeyFile(result, '=', '#');
 }
 
+char econf_comment_tag(econf_file *key_file) {
+  if (key_file == NULL)
+    return '\0';
+  return key_file->comment;
+}
+
+char econf_delimiter_tag(econf_file *key_file) {
+  if (key_file == NULL)
+    return '\0';
+  return key_file->delimiter;
+}
+
+void econf_set_comment_tag(econf_file *key_file, const char comment) {
+  if (key_file == NULL)
+    return;
+  key_file->comment = comment;
+}
+
+void econf_set_delimiter_tag(econf_file *key_file, const char delimiter) {
+  if (key_file == NULL)
+    return;
+  key_file->delimiter = delimiter;
+}
+
 // Process the file of the given file_name and save its contents into key_file
 econf_err econf_readFile(econf_file **key_file, const char *file_name,
 			     const char *delim, const char *comment)
