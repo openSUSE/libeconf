@@ -273,6 +273,22 @@ exists:
 .RI "void \fBeconf_reset_security_settings\fP (void)"
 .br
 .RI "Reset all UID, GID, permissions,\&.\&.\&. "
+.ti -1c
+.RI "char \fBeconf_comment_tag\fP (\fBeconf_file\fP *key_file)"
+.br
+.RI "Returns the comment character tag of the given econf_file object\&. "
+.ti -1c
+.RI "char \fBeconf_delimiter_tag\fP (\fBeconf_file\fP *key_file)"
+.br
+.RI "Returns the delimiter character of the given econf_file object\&. "
+.ti -1c
+.RI "void \fBeconf_set_comment_tag\fP (\fBeconf_file\fP *key_file, const char comment)"
+.br
+.RI "Set the comment character tag of the given econf_file object\&. "
+.ti -1c
+.RI "void \fBeconf_set_delimiter_tag\fP (\fBeconf_file\fP *key_file, const char delimiter)"
+.br
+.RI "Set the delimiter character of the given econf_file object\&. "
 .in -1c
 .RI "\fBeconf_err\fP \fBeconf_getExtValue\fP (\fBeconf_file\fP *kf, const char *group, const char *key, \fBeconf_ext_value\fP **result)"
 .in +1c
@@ -470,7 +486,7 @@ econf_err ECONF_SUCCESS or error code
 .SS "\fBeconf_err\fP econf_mergeFiles (\fBeconf_file\fP ** merged_file, \fBeconf_file\fP * usr_file, \fBeconf_file\fP * etc_file)"
 
 .PP
-Merge the contents of two key_files objects\&. Entries in etc_file will be prefered\&.
+Merge the contents of two key_files objects\&. Entries in etc_file will be prefered\&. Comment and delimiter tag will be taken from usr_file\&. This can be changed by calling the functions econf_set_comment_tag and econf_set_delimiter_tag\&.
 .PP
 \fBParameters:\fP
 .RS 4
@@ -1347,6 +1363,65 @@ Reset all UID, GID, permissions,\&.\&.\&. restrictions for parsed files/dirs\&.
 void
 .RE
 .PP
+
+.SS "char econf_comment_tag (\fBeconf_file\fP * key_file)"
+
+.PP
+Returns the comment character tag of the given econf_file object\&. This tag will be taken while writing comments to file\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIkey_file\fP econf_file object\&.
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+char comment character tag
+.RE
+.PP
+
+.SS "char econf_delimiter_tag (\fBeconf_file\fP * key_file)"
+
+.PP
+Returns the delimiter character of the given econf_file object\&. This delimiter will be taken while writing the data to file\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIkey_file\fP econf_file object\&.
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+char delimiter of key/value
+.RE
+.PP
+
+.SS "void econf_set_comment_tag (\fBeconf_file\fP * key_file, const char comment)"
+
+.PP
+Set the comment character tag of the given econf_file object\&. This tag will be taken while writing comments to file\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIkey_file\fP econf_file object\&.
+.br
+\fIcomment\fP comment tag
+.RE
+.PP
+
+.SS "void econf_set_delimiter_tag (\fBeconf_file\fP * key_file, const char delimiter)"
+
+.PP
+Set the delimiter character of the given econf_file object\&. This delimiter will be taken while writing the data to file\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIkey_file\fP econf_file object\&.
+.br
+\fIdelimiter\fP delimiter of key/value
+.RE
+.PP
+
 
 .SS "\fBeconf_err\fP econf_getExtValue (\fBeconf_file\fP * kf, const char * group, const char * key, \fBeconf_ext_value\fP ** result)"
 

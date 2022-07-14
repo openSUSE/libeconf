@@ -152,6 +152,8 @@ extern econf_err econf_readFile(econf_file **result, const char *file_name,
 
 /** @brief Merge the contents of two key_files objects. Entries in etc_file will be
  *         prefered.
+ *         Comment and delimiter tag will be taken from usr_file. This can be changed
+ *         by calling the functions econf_set_comment_tag and econf_set_delimiter_tag.
  *
  * @param merged_file merged data
  * @param usr_file First data block which has to be merged.
@@ -273,6 +275,41 @@ extern econf_err econf_newKeyFile(econf_file **result, char delimiter, char comm
  */
 extern econf_err econf_newIniFile(econf_file **result);
 
+/** @brief Returns the comment character tag of the given econf_file object.
+ *         This tag will be taken while writing comments to file.
+ *
+ * @param key_file econf_file object.
+ * @return char comment character tag
+ *
+ */
+extern char econf_comment_tag(econf_file *key_file);
+
+/** @brief Returns the delimiter character of the given econf_file object.
+ *         This delimiter will be taken while writing the data to file.
+ *
+ * @param key_file econf_file object.
+ * @return char delimiter of key/value
+ *
+ */
+extern char econf_delimiter_tag(econf_file *key_file);
+
+/** @brief Set the comment character tag of the given econf_file object.
+ *         This tag will be taken while writing comments to file.
+ *
+ * @param key_file econf_file object.
+ * @param comment comment tag
+ *
+ */
+extern void econf_set_comment_tag(econf_file *key_file, const char comment);
+
+/** @brief Set the delimiter character of the given econf_file object.
+ *         This delimiter will be taken while writing the data to file.
+ *
+ * @param key_file econf_file object.
+ * @param delimiter delimiter of key/value
+ *
+ */
+extern void econf_set_delimiter_tag(econf_file *key_file, const char delimiter);
 
 /** @brief Write content of a econf_file struct to specified location.
  *

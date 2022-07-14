@@ -45,6 +45,8 @@ tst_string_append_exe = executable('tst-string-append', 'tst-string-append.c', c
 test('tst-string-append', tst_string_append_exe)
 tst_security_exe = executable('tst-security', 'tst-security.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-security', tst_security_exe)
+tst_delimiter_comment_exe = executable('tst-delimiter-comment', 'tst-delimiter-comment.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-delimiter-comment', tst_delimiter_comment_exe)
 tst_extvalue_exe = executable('tst-extvalue', 'tst-extvalue.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-extvalue', tst_extvalue_exe)
 tst_comments_exe = executable('tst-comments', 'tst-comments.c', c_args: test_args, dependencies : libeconf_dep)
