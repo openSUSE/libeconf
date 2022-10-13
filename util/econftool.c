@@ -537,13 +537,13 @@ static int econf_revert(bool is_root, bool use_homedir)
 
     if (!is_root || use_homedir) {
         int ret = snprintf(conf_path, sizeof(conf_path), "%s/%s", xdg_config_dir, conf_filename);
-	if (ret < 0 || ret >= (int)(sizeof(conf_path))) {
+	if (ret < 0 || ret >= (int)(sizeof(conf_path))) { /* check truncation */
 	  fprintf(stderr, "Filename too long\n");
 	  return -1;
 	}
     } else {
         int ret = snprintf(conf_path, sizeof(conf_path), "/etc/%s", conf_filename);
-	if (ret < 0 || ret >= (int)(sizeof(conf_path))) {
+	if (ret < 0 || ret >= (int)(sizeof(conf_path))) { /* check truncation */
 	  fprintf(stderr, "Filename too long\n");
 	  return -1;
 	}
@@ -700,9 +700,9 @@ int main (int argc, char *argv[])
 	} else {
             /* set filename to the proper argv argument */
 	    int ret = snprintf(conf_basename, strlen(argv[optind + 1]) - strlen(conf_suffix) + 1, "%s", argv[optind + 1]);
-	    if (ret < 0 || ret >= (int)(strlen(argv[optind + 1]) - strlen(conf_suffix) + 1)) {
-	      fprintf(stderr, "Filename too long\n");
-	      return EXIT_FAILURE;
+	    if (ret < 0) { /* Do not check truncation because it is intent */
+	        fprintf(stderr, "snprintf general error\n");
+		return EXIT_FAILURE;
 	    }
 	}
     }
@@ -711,14 +711,14 @@ int main (int argc, char *argv[])
 
     if (is_dropin_file) {
         int ret = snprintf(conf_dir, sizeof(conf_dir), "/etc/%s.d", conf_filename);
-	if (ret < 0 || ret >= (int)(sizeof(conf_dir))) {
+	if (ret < 0 || ret >= (int)(sizeof(conf_dir))) { /* check truncation */
 	  fprintf(stderr, "Filename too long\n");
 	  return EXIT_FAILURE;
 	}
         change_root_dir(conf_dir);
     }
     int ret_snprintf = snprintf(conf_path, sizeof(conf_path), "%s/%s", conf_dir, conf_filename);
-    if (ret_snprintf < 0 || ret_snprintf >= (int)(sizeof(conf_path))) {
+    if (ret_snprintf < 0 || ret_snprintf >= (int)(sizeof(conf_path))) { /* check truncation */
       fprintf(stderr, "Filename too long\n");
       return EXIT_FAILURE;
     }
@@ -758,7 +758,7 @@ int main (int argc, char *argv[])
             change_root_dir(conf_dir);
             ret_snprintf = snprintf(conf_path, sizeof(conf_path), "%s/%s", conf_dir,
 				    conf_filename);
-	    if (ret_snprintf < 0 || ret_snprintf >= (int)(sizeof(conf_path))) {
+	    if (ret_snprintf < 0 || ret_snprintf >= (int)(sizeof(conf_path))) { /* check truncation */
 	      fprintf(stderr, "Filename too long\n");
 	      return EXIT_FAILURE;
 	    }
@@ -766,7 +766,7 @@ int main (int argc, char *argv[])
             snprintf(conf_filename, sizeof(conf_filename), "%s", dropin_filename);
             ret_snprintf = snprintf(conf_path, sizeof(conf_path), "%s/%s", conf_dir,
 				    conf_filename);
-	    if (ret_snprintf < 0 || ret_snprintf >= (int)(sizeof(conf_path))) {
+	    if (ret_snprintf < 0 || ret_snprintf >= (int)(sizeof(conf_path))) { /* check truncation */
 	      fprintf(stderr, "Filename too long\n");
 	      return EXIT_FAILURE;
 	    }
