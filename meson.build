@@ -19,13 +19,14 @@ add_project_arguments(['-D_GNU_SOURCE=1',
 		       '-D_FORTIFY_SOURCE=2'], language : 'c')
 
 possible_cc_flags = [
-		  '-Werror',
+		  '-Dwerror=true',
+                  '-flto=auto',
+                  '-ffat-lto-objects',
 		  '-fstack-protector-strong',
 		  '-funwind-tables',
 		  '-fasynchronous-unwind-tables',
 		  '-fstack-clash-protection',
 		  '-Werror=return-type',
-		  '-flto=8',
 		  '-Wbad-function-cast',
 		  '-Wcast-align',
 		  '-Wcast-qual',
