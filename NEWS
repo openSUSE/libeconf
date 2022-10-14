@@ -1,3 +1,7 @@
+Version 0.4.7
+* econftool:
+  Adapted compile options regarding LTO (Link Time Optimization).
+
 Version 0.4.6
 * econftool:
   ** Parsing error: Reporting file and line nr.
