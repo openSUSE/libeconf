@@ -41,10 +41,13 @@ void print_key_file(const econf_file key_file)
   printf("values:\n");
   for(size_t i = 0; i < key_file.length; i++)
   {
-    printf("  group: %s ; key: %s ; value: %s\n",
+    printf("  group: %s ; key: %s ; value: %s ; pre_comment %s ; added_comment: %s\n",
 	   key_file.file_entry[i].group,
 	   key_file.file_entry[i].key,
-	   key_file.file_entry[i].value);
+	   key_file.file_entry[i].value,
+	   key_file.file_entry[i].comment_before_key,
+	   key_file.file_entry[i].comment_after_value
+	   );
   }
   printf("----------------------------------\n");
 }

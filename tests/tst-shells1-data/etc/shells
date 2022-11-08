@@ -1,6 +1,7 @@
 /bin/ash
+# comment line 2
 /bin/bash
-/bin/csh
+/bin/csh # comment for /bin/csh
 /bin/dash
 /bin/false
 /bin/ksh

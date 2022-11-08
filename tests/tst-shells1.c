@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "libeconf.h"
+#include "libeconf_ext.h"
 
 /* Test case:
    Open default /etc/shells and try out if we can parse entries
@@ -52,6 +53,7 @@ main(void)
       fprintf (stderr, "Error getting all keys: %s\n", econf_errString(error));
       return 1;
     }
+
   if (key_number == 0)
     {
       fprintf (stderr, "No keys found?\n");
@@ -59,8 +61,59 @@ main(void)
     }
   for (size_t i = 0; i < key_number; i++)
     {
-      printf ("%zu: %s\n", i, keys[i]);
+      printf ("%zu: --%s--\n", i, keys[i]);
     }
+
+  econf_ext_value *ext_val;
+
+  if ((error = econf_getExtValue(key_file, NULL, "/bin/bash", &ext_val)))
+    {
+      fprintf (stderr, "Error ext-reading /bin/bash: %s\n",
+	       econf_errString(error));
+      return 1;
+    }
+
+  const char *comment_before_key = " comment line 2";
+  if (ext_val->comment_before_key == NULL ||
+      strcmp(ext_val->comment_before_key, comment_before_key) != 0)
+  {
+    fprintf (stderr, "ERROR: %s\nExpected String:\n'%s'\nGot:\n'%s'\n",
+	     "/usr/bin/bash", comment_before_key, ext_val->comment_before_key);
+    econf_freeExtValue(ext_val);
+    return false;
+  }
+
+  econf_freeExtValue(ext_val);
+  if ((error = econf_getExtValue(key_file, NULL, "/bin/csh", &ext_val)))
+    {
+      fprintf (stderr, "Error ext-reading /bin/csh: %s\n",
+	       econf_errString(error));
+      return 1;
+    }
+
+  const char *comment_after_value = " comment for /bin/csh";
+  if (ext_val->comment_after_value == NULL ||
+      strcmp(ext_val->comment_after_value, comment_after_value) != 0)
+  {
+    fprintf (stderr, "ERROR: %s\nExpected String:\n'%s'\nGot:\n'%s'\n",
+	     "/usr/bin/csh", comment_after_value, ext_val->comment_after_value);
+    econf_freeExtValue(ext_val);
+    return false;
+  }
+  econf_freeExtValue(ext_val);
+
+  // Rewrite file to disk
+  econf_writeFile(key_file, TESTSDIR"tst-shells1-data/", "out.ini");
+
+  // And reading it again
+  econf_file *key_compare;
+  error = econf_readFile(&key_compare,
+			 TESTSDIR"tst-shells1-data/out.ini", "", "#");
+  if (error || key_compare == NULL) {
+    fprintf (stderr, "ERROR: couldn't read written configuration file: %s\n", econf_errString(error));
+    return 1;
+  }
+  remove(TESTSDIR"tst-shells1-data/out.ini");
 
   econf_free (keys);
   econf_free (key_file);
