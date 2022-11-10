@@ -27,6 +27,25 @@ main(void)
       return 1;
     }
 
+  error = econf_getKeys(key_file, NULL, &key_number, &keys);
+  if (error)
+    {
+      fprintf (stderr, "Error getting all keys: %s\n", econf_errString(error));
+      return 1;
+    }
+
+  if (key_number == 0)
+    {
+      fprintf (stderr, "No keys found?\n");
+      return 1;
+    } else {
+      fprintf (stderr, "%ld keys found\n", key_number);
+    }
+  for (size_t i = 0; i < key_number; i++)
+    {
+      printf ("%zu: --%s--\n", i, keys[i]);
+    }
+
   if ((error = econf_getStringValue (key_file, NULL, "/usr/bin/bash", &val)))
     {
       fprintf (stderr, "Error reading /usr/bin/bash: %s\n",
@@ -46,23 +65,6 @@ main(void)
       return 1;
     }
   free (val);
-
-  error = econf_getKeys(key_file, NULL, &key_number, &keys);
-  if (error)
-    {
-      fprintf (stderr, "Error getting all keys: %s\n", econf_errString(error));
-      return 1;
-    }
-
-  if (key_number == 0)
-    {
-      fprintf (stderr, "No keys found?\n");
-      return 1;
-    }
-  for (size_t i = 0; i < key_number; i++)
-    {
-      printf ("%zu: --%s--\n", i, keys[i]);
-    }
 
   econf_ext_value *ext_val;
 

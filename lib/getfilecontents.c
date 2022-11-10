@@ -250,7 +250,7 @@ read_file(econf_file *ef, const char *file,
   uint64_t line = 0;
   bool has_wsp, has_nonwsp;
   FILE *kf = fopen(file, "rbe");
-
+fprintf (stderr,"read file %s\n", file);
   if (kf == NULL)
     return ECONF_NOFILE;
 
@@ -410,6 +410,8 @@ read_file(econf_file *ef, const char *file,
       if (!found_delim &&
 	  /* Entry has already been found */
 	  ef->length > 0 &&
+	  /* Value of previous entry is not Null. So delimiter has been found in the previous line */
+	  ef->file_entry[ef->length-1].value != NULL &&
 	  /* The Entry must be the next line. Otherwise it is a new one */
 	  ef->file_entry[ef->length-1].line_number+1 == line)
       {
