@@ -26,6 +26,13 @@ The other method will continue to use /usr/_vendor_/_example_._suffix_ as base
 configuration file and merge all changes from /etc/_example_._suffix_.d/*._suffix_.
 So the user will automatically get improvements of the vendor, with the drawback,
 that they could be incompatible with the user made changes.
+If there is a file with the same name in /usr/_vendor_/_example_._suffix_.d/ and
+in /etc/_example_._suffix_.d/*._suffix_., the file in /usr/_vendor_/_example_._suffix_.d/
+will completely ignored.
+
+To disable a configuration file supplied by the vendor, the recommended way is to place
+a symlink to /dev/null in the configuration directory in /etc/, with the same filename
+as the vendor configuration file.
 
 **Example 1**
 

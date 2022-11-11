@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libgen.h>
 
 // Insert the content of "etc_file.file_entry" into "fe" if there is no
 // group specified
@@ -232,13 +233,30 @@ econf_err merge_econf_files(econf_file **key_files, econf_file **merged_files) {
   while(*key_files) {
     econf_err error;
     econf_file *tmp = *merged_files;
+    econf_file **double_key_files = key_files+1;
+    char * current_file = basename((*key_files)->path);
 
-    error = econf_mergeFiles(merged_files, *merged_files, *key_files);
-    if (error || *merged_files == NULL)
-      return error;
-    (*merged_files)->on_merge_delete = 1;
+    /* key_files are already sorted. If there is a file with the same name with
+       a higher priority, the current file will be ignored. 
+       e.g. /usr/etc/shells.d/tcsh will not be merged if /etc/shells.d/tcsh exists.
+    */
+    while (*double_key_files) {
+      char * compare_file = basename((*double_key_files)->path);
+      if (strcmp(current_file, ".") != 0 && strcmp(current_file, "..") &&
+	  strcmp(current_file, compare_file) == 0) {
+	break;
+      }
+      double_key_files++;	    
+    }
+    
+    if (*double_key_files == NULL) {
+      error = econf_mergeFiles(merged_files, *merged_files, *key_files);
+      if (error || *merged_files == NULL)
+        return error;
+      (*merged_files)->on_merge_delete = 1;
+      if(tmp->on_merge_delete) { econf_free(tmp); }      
+    }
 
-    if(tmp->on_merge_delete) { econf_free(tmp); }
     if((*key_files)->on_merge_delete) { econf_free(*key_files); }
 
     key_files++;

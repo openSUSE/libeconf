@@ -51,6 +51,8 @@ main(void)
   econf_file *key_file = NULL;
   int retval = 0;
   econf_err error;
+  char **keys;
+  size_t key_number;
 
   error = econf_readDirs (&key_file,
 				    TESTSDIR"tst-shells2-data/usr/etc",
@@ -63,11 +65,33 @@ main(void)
       return 1;
     }
 
+  error = econf_getKeys(key_file, NULL, &key_number, &keys);
+  if (error)
+    {
+      fprintf (stderr, "Error getting all keys: %s\n", econf_errString(error));
+      return 1;
+    }
+
+  if (key_number == 0)
+    {
+      fprintf (stderr, "No keys found?\n");
+      return 1;
+    } else {
+      fprintf (stderr, "%ld keys found\n", key_number);
+    }
+  for (size_t i = 0; i < key_number; i++)
+    {
+      printf ("%zu: --%s--\n", i, keys[i]);
+    }
+
   if (check_shell(key_file, "/bin/csh", 0) != 0)
     retval = 1;
   if (check_shell(key_file, "/bin/tcsh", 1) != 0)
     retval = 1;
+  if (check_shell(key_file, "/bin/foo", 0) != 0)
+    retval = 1;
 
+  econf_free (keys);
   econf_free (key_file);
 
   return retval;

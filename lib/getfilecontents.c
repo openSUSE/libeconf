@@ -250,7 +250,7 @@ read_file(econf_file *ef, const char *file,
   uint64_t line = 0;
   bool has_wsp, has_nonwsp;
   FILE *kf = fopen(file, "rbe");
-fprintf (stderr,"read file %s\n", file);
+
   if (kf == NULL)
     return ECONF_NOFILE;
 
@@ -449,7 +449,7 @@ fprintf (stderr,"read file %s\n", file);
       data = NULL;
     else {
       /* go to the begin of the value */
-      while (*data &&  isspace((unsigned)*data))
+      while (*data && isspace((unsigned)*data))
 	data++;
       if (!has_wsp && !delim_seen) {
 	/*
