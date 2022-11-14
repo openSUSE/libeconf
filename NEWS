@@ -1,3 +1,10 @@
+Version 0.4.8
+* Parsing files which are containing keys only.
+  All delimiters are allowed now : "", " =", " ", "=".
+  But the user should use "" in order to be distinct.
+* /usr/etc/shells.d/<file_name> will not be parsed if
+  /etc/shells.d/<file_name> is defined too.
+
 Version 0.4.7
 * econftool:
   Adapted compile options regarding LTO (Link Time Optimization).
