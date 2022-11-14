@@ -1,0 +1,3 @@
+# Allow tcsh, but no csh
+/bin/tcsh
+/usr/bin/tcsh

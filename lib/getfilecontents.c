@@ -187,8 +187,15 @@ store (econf_file *ef, const char *group, const char *key,
   else
     ef->file_entry[ef->length-1].group = strdup(KEY_FILE_NULL_VALUE);
 
-  if (key)
-    ef->file_entry[ef->length-1].key = strdup(key);
+  if (key) {
+    /* remove space at the end of the key */
+    const char *p = key + strlen(key);
+    if (p > key)
+      p--;
+    while (p > key && (isspace((unsigned)*p)))
+      p--;
+    ef->file_entry[ef->length-1].key = strndup(key, (size_t)(p+1-key));
+  }
   else
     ef->file_entry[ef->length-1].key = strdup(KEY_FILE_NULL_VALUE);
 
@@ -345,6 +352,20 @@ read_file(econf_file *ef, const char *file,
       continue;
     }
 
+    if (delim == NULL || strlen(delim) == 0 || strcmp(delim, "\n") == 0) {
+      /* No delimiter is defined. Key without a value will be stored. */
+      retval = store(ef, current_group, name, data, line,
+		     current_comment_before_key, current_comment_after_value,
+		     false, /* no quote */
+		     false /* new entry */);
+      free(current_comment_before_key);
+      current_comment_before_key = NULL;
+      free(current_comment_after_value);
+      current_comment_after_value = NULL;
+      continue;
+    }
+
+    /* Valid delimters are defined */
     /* go to the end of the name */
     data = name;
     while (*data && !(isspace((unsigned)*data) ||
@@ -389,6 +410,8 @@ read_file(econf_file *ef, const char *file,
       if (!found_delim &&
 	  /* Entry has already been found */
 	  ef->length > 0 &&
+	  /* Value of previous entry is not Null. So delimiter has been found in the previous line */
+	  ef->file_entry[ef->length-1].value != NULL &&
 	  /* The Entry must be the next line. Otherwise it is a new one */
 	  ef->file_entry[ef->length-1].line_number+1 == line)
       {

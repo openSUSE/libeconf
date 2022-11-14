@@ -42,6 +42,15 @@ configuration file and merge all changes from /etc/_example_._suffix_.d/*._suffi
 .br
 So the user will automatically get improvements of the vendor, with the drawback,
 that they could be incompatible with the user made changes.
+.br
+If there is a file with the same name in /usr/_vendor_/_example_._suffix_.d/ and
+in /etc/_example_._suffix_.d/*._suffix_., the file in /usr/_vendor_/_example_._suffix_.d/
+will completely ignored.
+.br
+To disable a configuration file supplied by the vendor, the recommended way is to place
+a symlink to /dev/null in the configuration directory in /etc/, with the same filename
+as the vendor configuration file.
+
 
 .SS "Example 1"
 .sp
