@@ -142,7 +142,7 @@ econf_err econf_readFile(econf_file **key_file, const char *file_name,
   econf_err t_err;
   struct stat sb;
 
-  if (key_file == NULL || file_name == NULL || delim == NULL)
+  if (key_file == NULL || file_name == NULL || delim == NULL || comment == NULL)
     return ECONF_ERROR;
 
   // Checking file permissions, uid, group,...
