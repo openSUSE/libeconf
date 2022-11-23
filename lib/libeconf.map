@@ -62,4 +62,7 @@ LIBECONF_0.4 {
     econf_delimiter_tag;
     econf_set_comment_tag;
     econf_set_delimiter_tag;
+    econf_readFileWithCallback;
+    econf_readDirsWithCallback;
+    econf_readDirsHistoryWithCallback;
 } LIBECONF_0.3;
