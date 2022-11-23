@@ -7,7 +7,7 @@ project(
 		  'b_pie=true',
 		  'warning_level=3',],
   license : 'MIT',
-  version : '0.4.8',
+  version : '0.4.9',
 )
 
 cc = meson.get_compiler('c')

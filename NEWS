@@ -1,3 +1,16 @@
+Version 0.4.9
+* new API calls:
+  ** econf_readFileWithCallback
+     Has the same functionality like econf_readFile. The user
+     can additionally define a callback in order to check the parsed file.
+  ** econf_readDirsWithCallback
+     Has the same functionality like econf_readDirs. The user
+     can additionally define a callback in order e.g. to check all parsed file.
+  ** econf_readDirsHistoryWithCallback
+     Has the same functionality like econf_readDirsHistory.
+     The user can additionally define a callback in order e.g. to check
+     all parsed file.
+
 Version 0.4.8
 * Parsing files which are containing keys only.
   All delimiters are allowed now : "", " =", " ", "=".
