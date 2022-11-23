@@ -74,12 +74,14 @@ enum econf_err {
   ECONF_WRONG_OWNER = 16,
   /** File has wrong group */
   ECONF_WRONG_GROUP = 17,
-  /** File has wrong file permission */
+  /** File has wrong file permissions */
   ECONF_WRONG_FILE_PERMISSION = 18,
   /** File has wrong dir permission */
   ECONF_WRONG_DIR_PERMISSION = 19,
   /** File is a sym link which is not permitted */
-  ECONF_ERROR_FILE_IS_SYM_LINK = 20
+  ECONF_ERROR_FILE_IS_SYM_LINK = 20,
+  /** User defined parsing callback has failed **/
+  ECONF_PARSING_CALLBACK_FAILED = 21
 };
 
 typedef enum econf_err econf_err;
@@ -150,6 +152,48 @@ typedef struct econf_file econf_file;
 extern econf_err econf_readFile(econf_file **result, const char *file_name,
 				    const char *delim, const char *comment);
 
+
+/** @brief Process the file of the given file_name and save its contents into key_file object.
+ *  The user defined function will be called in order e.g. to check the correct file permissions.
+ *
+ * @param result content of parsed file
+ * @param file_name absolute path of parsed file
+ * @param delim delimiters of key/value e.g. "\t =".
+ *        If delim contains space characters AND none space characters,
+ *        multiline values are not parseable.
+ * @param comment array of characters which define the start of a comment
+ * @param callback function which will be called for the given filename. This user defined function has
+ *        the pathname as paramter and returns true if this file can be parsed. If not, the
+ *        parsing will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned.
+ * @return econf_err ECONF_SUCCESS or error code
+ *
+ * Usage:
+ * @code
+ *   #include "libeconf.h"
+ *
+ *   bool checkFile(const char *filename) {
+ *      - checking code which returns true or false -
+ *	return true;
+ *   }
+ *
+ *   econf_file *key_file = NULL;
+ *   econf_err error;
+ *
+ *   error = econf_readFileWithCallback (&key_file, "/etc/test.conf", "=", "#", checkFile);
+ *
+ *   econf_free (key_file);
+ * @endcode
+ *
+ * Default behaviour if entries have the same name in one file: The
+ * first hit will be returned. Further entries will be ignored.
+ * This can be changed by setting the environment variable
+ * ECONF_JOIN_SAME_ENTRIES. In that case entries with the same name
+ * will be joined to one single entry.
+ */
+extern econf_err econf_readFileWithCallback(econf_file **result, const char *file_name,
+					    const char *delim, const char *comment,
+					    bool (*callback)(const char *filename));
+
 /** @brief Merge the contents of two key_files objects. Entries in etc_file will be
  *         prefered.
  *         Comment and delimiter tag will be taken from usr_file. This can be changed
@@ -179,7 +223,7 @@ extern econf_err econf_readFile(econf_file **result, const char *file_name,
  *
  */
 extern econf_err econf_mergeFiles(econf_file **merged_file,
-				       econf_file *usr_file, econf_file *etc_file);
+				  econf_file *usr_file, econf_file *etc_file);
 
 /** @brief Evaluating key/values of a given configuration by reading and merging all
  *         needed/available files in two different directories (normally in /usr/etc and /etc).
@@ -214,12 +258,65 @@ extern econf_err econf_mergeFiles(econf_file **merged_file,
  *
  */
 extern econf_err econf_readDirs(econf_file **key_file,
-					  const char *usr_conf_dir,
-					  const char *etc_conf_dir,
-					  const char *project_name,
-					  const char *config_suffix,
-					  const char *delim,
-					  const char *comment);
+				const char *usr_conf_dir,
+				const char *etc_conf_dir,
+				const char *project_name,
+				const char *config_suffix,
+				const char *delim,
+				const char *comment);
+
+/** @brief Evaluating key/values for every given configuration files in two different
+ *  directories (normally in /usr/etc and /etc). For each parsed file the user defined function
+ *  will be called in order e.g. to check the correct file permissions.
+ *
+ * @param key_files list of parsed file(s).
+ *        Each entry includes all key/value, path, comments,... information of the regarding file.
+ * @param size Size of the evaluated key_files list.
+ * @param usr_conf_dir absolute path of the first directory (normally "/usr/etc")
+ * @param etc_conf_dir absolute path of the second directory (normally "/etc")
+ * @param project_name basename of the configuration file
+ * @param config_suffix suffix of the configuration file. Can also be NULL.
+ * @param delim delimiters of key/value e.g. "\t ="
+ *        If delim contains space characters AND none space characters,
+ *        multiline values are not parseable.
+ * @param comment array of characters which define the start of a comment
+ * @param callback function which will be called for each file. This user defined function has the
+ *        pathname as paramter and returns true if this file can be parsed. If not, the parsing of
+ *        all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned.
+ * @return econf_err ECONF_SUCCESS or error code
+ *
+ * Example: Reading content of example.conf in /usr/etc and /etc directory.
+ * @code
+ *   #include "libeconf.h"
+ *
+ *   bool checkFile(const char *filename) {
+ *      - checking code which returns true or false -
+ *	return true;
+ *   }
+ *
+ *   econf_file *key_file = NULL;
+ *   econf_err error;
+ *
+ *   error = econf_readDirsWithCallback (&key_file,
+ *                                       "/usr/etc",
+ *                                       "/etc",
+ *                                       "example",
+ *                                       "conf",
+ *                                       "=", "#",
+ *                                       checkFile);
+ *
+ *   econf_free (key_file);
+ * @endcode
+ *
+ */
+ extern econf_err econf_readDirsWithCallback(econf_file **key_file,
+					     const char *usr_conf_dir,
+					     const char *etc_conf_dir,
+					     const char *project_name,
+					     const char *config_suffix,
+					     const char *delim,
+					     const char *comment,
+					     bool (*callback)(const char *filename));
 
 /** @brief Evaluating key/values for every given configuration files in two different
  *  directories (normally in /usr/etc and /etc). Returns a list of read configuration
@@ -247,6 +344,38 @@ extern econf_err econf_readDirsHistory(econf_file ***key_files,
 				       const char *config_suffix,
 				       const char *delim,
 				       const char *comment);
+
+/** @brief Evaluating key/values for every given configuration files in two different
+ *  directories (normally in /usr/etc and /etc). For each parsed file the user defined function
+ *  will be called in order e.g. to check the correct file permissions.
+ *  Returns a list of read configuration files and their values.
+ *
+ * @param key_files list of parsed file(s).
+ *        Each entry includes all key/value, path, comments,... information of the regarding file.
+ * @param size Size of the evaluated key_files list.
+ * @param usr_conf_dir absolute path of the first directory (normally "/usr/etc")
+ * @param etc_conf_dir absolute path of the second directory (normally "/etc")
+ * @param project_name basename of the configuration file
+ * @param config_suffix suffix of the configuration file. Can also be NULL.
+ * @param delim delimiters of key/value e.g. "\t ="
+ *        If delim contains space characters AND none space characters,
+ *        multiline values are not parseable.
+ * @param comment array of characters which define the start of a comment
+ * @param callback function which will be called for each file. This user defined function has the
+ *        pathname as paramter and returns true if this file can be parsed. If not, the parsing of
+ *        all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned.
+ * @return econf_err ECONF_SUCCESS or error code
+ *
+ */
+extern econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
+						   size_t *size,
+						   const char *usr_conf_dir,
+						   const char *etc_conf_dir,
+						   const char *project_name,
+						   const char *config_suffix,
+						   const char *delim,
+						   const char *comment,
+						   bool (*callback)(const char *filename));
 
 /* The API/ABI of the following three functions (econf_newKeyFile,
    econf_newIniFile and econf_writeFile) are not stable and will change */

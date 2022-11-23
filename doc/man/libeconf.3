@@ -103,7 +103,7 @@ exists:
 
 .in +1c
 .ti -1c
-.RI "enum \fBeconf_err\fP { \fBECONF_SUCCESS\fP = 0, \fBECONF_ERROR\fP = 1, \fBECONF_NOMEM\fP = 2, \fBECONF_NOFILE\fP = 3, \fBECONF_NOGROUP\fP = 4, \fBECONF_NOKEY\fP = 5, \fBECONF_EMPTYKEY\fP = 6, \fBECONF_WRITEERROR\fP = 7, \fBECONF_PARSE_ERROR\fP = 8, \fBECONF_MISSING_BRACKET\fP = 9, \fBECONF_MISSING_DELIMITER\fP = 10, \fBECONF_EMPTY_SECTION_NAME\fP = 11, \fBECONF_TEXT_AFTER_SECTION\fP = 12, \fBECONF_FILE_LIST_IS_NULL\fP = 13, \fBECONF_WRONG_BOOLEAN_VALUE\fP = 14, \fBECONF_KEY_HAS_NULL_VALUE\fP = 15, \fBECONF_WRONG_OWNER\fP = 16, \fBECONF_WRONG_GROUP\fP = 17, \fBECONF_WRONG_FILE_PERMISSION\fP = 18, \fBECONF_WRONG_DIR_PERMISSION\fP = 19, \fBECONF_ERROR_FILE_IS_SYM_LINK\fP = 20 }"
+.RI "enum \fBeconf_err\fP { \fBECONF_SUCCESS\fP = 0, \fBECONF_ERROR\fP = 1, \fBECONF_NOMEM\fP = 2, \fBECONF_NOFILE\fP = 3, \fBECONF_NOGROUP\fP = 4, \fBECONF_NOKEY\fP = 5, \fBECONF_EMPTYKEY\fP = 6, \fBECONF_WRITEERROR\fP = 7, \fBECONF_PARSE_ERROR\fP = 8, \fBECONF_MISSING_BRACKET\fP = 9, \fBECONF_MISSING_DELIMITER\fP = 10, \fBECONF_EMPTY_SECTION_NAME\fP = 11, \fBECONF_TEXT_AFTER_SECTION\fP = 12, \fBECONF_FILE_LIST_IS_NULL\fP = 13, \fBECONF_WRONG_BOOLEAN_VALUE\fP = 14, \fBECONF_KEY_HAS_NULL_VALUE\fP = 15, \fBECONF_WRONG_OWNER\fP = 16, \fBECONF_WRONG_GROUP\fP = 17, \fBECONF_WRONG_FILE_PERMISSION\fP = 18, \fBECONF_WRONG_DIR_PERMISSION\fP = 19, \fBECONF_ERROR_FILE_IS_SYM_LINK\fP = 20, \fBECONF_PARSING_CALLBACK_FAILED\fP = 21 }"
 .br
 .RI "libeconf error codes "
 .in -1c
@@ -115,6 +115,10 @@ exists:
 .br
 .RI "Process the file of the given file_name and save its contents into key_file object\&. "
 .ti -1c
+.RI "\fBeconf_err\fP \fBeconf_readFileWithCallback\fP (\fBeconf_file\fP **result, const char *file_name, const char *delim, const char *comment, bool (*callback)(const char *filename))"
+.br
+.RI "Has the same functionality like \fBeconf_readFile\fP. The user can additionally define a callback in order to check the parsed file\&. "
+.ti -1c
 .RI "\fBeconf_err\fP \fBeconf_mergeFiles\fP (\fBeconf_file\fP **merged_file, \fBeconf_file\fP *usr_file, \fBeconf_file\fP *etc_file)"
 .br
 .RI "Merge the contents of two key_files objects\&. "
@@ -123,9 +127,17 @@ exists:
 .br
 .RI "Evaluating key/values of a given configuration by reading and merging all needed/available files in two different directories (normally in /usr/etc and /etc)\&. "
 .ti -1c
+.RI "\fBeconf_err\fP \fBeconf_readDirsWithCallback\fP (\fBeconf_file\fP **key_file, const char *usr_conf_dir, const char *etc_conf_dir, const char *project_name, const char *config_suffix, const char *delim, const char *comment, bool (*callback)(const char *filename))"
+.br
+.RI "Has the same functionality like \fBeconf_readDirs\fP. The user can additionally define a callback in order e.g. to check all parsed file\&. "
+.ti -1c
 .RI "\fBeconf_err\fP \fBeconf_readDirsHistory\fP (\fBeconf_file\fP ***key_files, size_t *size, const char *usr_conf_dir, const char *etc_conf_dir, const char *project_name, const char *config_suffix, const char *delim, const char *comment)"
 .br
 .RI "Evaluating key/values for every given configuration files in two different directories (normally in /usr/etc and /etc)\&. "
+.ti -1c
+.RI "\fBeconf_err\fP \fBeconf_readDirsHistoryWithCallback\fP (\fBeconf_file\fP ***key_files, size_t *size, const char *usr_conf_dir, const char *etc_conf_dir, const char *project_name, const char *config_suffix, const char *delim, const char *comment, bool (*callback)(const char *filename))"
+.br
+.RI "Has the same functionality like \fBeconf_readDirsHistory\fP. The user can additionally define a callback in order e.g. to check all parsed file\&. "
 .ti -1c
 .RI "\fBeconf_err\fP \fBeconf_newKeyFile\fP (\fBeconf_file\fP **result, char delimiter, char comment)"
 .br
@@ -413,13 +425,16 @@ File has wrong owner\&.
 File has wrong group\&.
 .TP
 \fB\fIECONF_WRONG_FILE_PERMISSION \fP\fP
-File has wrong file permission\&.
+File has wrong file permissions\&.
 .TP
 \fB\fIECONF_WRONG_DIR_PERMISSION \fP\fP
-File has wrong dir permission\&.
+File has wrong dir permissions\&.
 .TP
 \fB\fIECONF_ERROR_FILE_IS_SYM_LINK \fP\fP
 File is a sym link which is not permitted\&.
+.TP
+\fB\fIECONF_PARSING_CALLBACK_FAILED \fP\fP
+User defined parsing callback has failed\&.
 .PP
 
 .SH "Function Documentation"
@@ -462,35 +477,47 @@ econf_free (key_file);
 .PP
 Default behaviour if entries have the same name in one file: The first hit will be returned\&. Further entries will be ignored\&. This can be changed by setting the environment variable ECONF_JOIN_SAME_ENTRIES\&. In that case entries with the same name will be joined to one single entry\&.
 
-.SS "\fBeconf_err\fP econf_readDirsHistory (\fBeconf_file\fP *** key_files, size_t * size, const char * usr_conf_dir, const char * etc_conf_dir, const char * project_name, const char * config_suffix, const char * delim, const char * comment)"
+.SS "\fBeconf_err\fP econf_readFileWithCallback (\fBeconf_file\fP ** result, const char * file_name, const char * delim, const char * comment, bool (*callback)(const char *filename))"
 
 .PP
-Evaluating key/values for every given configuration files in two different directories (normally in /usr/etc and /etc)\&. Returns a list of read configuration files and their values\&.
+Process the file of the given file_name and save its contents into key_file object\&. The user defined function will be called in order e.g. to check the correct file permissions\&.
 .PP
 \fBParameters:\fP
 .RS 4
-\fIkey_files\fP list of parsed file(s)\&. Each entry includes all key/value, path, comments,\&.\&.\&. information of the regarding file\&. 
+\fIresult\fP content of parsed file
 .br
-\fIsize\fP Size of the evaluated key_files list\&. 
+\fIfile_name\fP absolute path of parsed file
 .br
-\fIusr_conf_dir\fP absolute path of the first directory (normally '/usr/etc') 
+\fIdelim\fP delimiters of key/value e\&.g\&. '\\t ='
 .br
-\fIetc_conf_dir\fP absolute path of the second directory (normally '/etc') 
+\fIcomment\fP array of characters which define the start of a comment
 .br
-\fIproject_name\fP basename of the configuration file 
-.br
-\fIconfig_suffix\fP suffix of the configuration file\&. Can also be NULL\&. 
-.br
-\fIdelim\fP delimiters of key/value e\&.g\&. '\\t =' 
-.br
-\fIcomment\fP array of characters which define the start of a comment 
+\fIcallback\fP function which will be called for the given filename\&. This user defined function has the pathname as paramter and returns true if this file can be parsed\&. If not, the parsing will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned\&.
 .RE
 .PP
 \fBReturns:\fP
 .RS 4
-econf_err ECONF_SUCCESS or error code 
+econf_err ECONF_SUCCESS or error code
 .RE
 .PP
+Usage:
+.PP
+.nf
+#include "libeconf.h"
+bool checkFile(const char *filename) {
+  /* checking code which returns true or false */
+  return true;
+}
+
+econf_file *key_file = NULL;
+econf_err error;
+
+error = econf_readFileWithCallback (&key_file, "/etc/test.conf", "=", "#", checkFile);
+econf_free (key_file);
+.fi
+.PP
+.PP
+Default behaviour if entries have the same name in one file: The first hit will be returned\&. Further entries will be ignored\&. This can be changed by setting the environment variable ECONF_JOIN_SAME_ENTRIES\&. In that case entries with the same name will be joined to one single entry\&.
 
 .SS "\fBeconf_err\fP econf_mergeFiles (\fBeconf_file\fP ** merged_file, \fBeconf_file\fP * usr_file, \fBeconf_file\fP * etc_file)"
 
@@ -541,7 +568,7 @@ Evaluating the content of a given configuration file by reading all needed/avail
 .br
 \fIusr_conf_dir\fP absolute path of the first directory (normally '/usr/etc') 
 .br
-\fIetc_conf_dir\fP absolute path of the second directory (normally '/etc') 
+\fIetc_conf_dir\fP absolute path of the second directory (normally '/etc')
 .br
 \fIproject_name\fP basename of the configuration file 
 .br
@@ -575,6 +602,122 @@ error = econf_readDirs (&key_file,
 econf_free (key_file);
 
 .fi
+.PP
+
+.SS "\fBeconf_err\fP econf_readDirsWithCallback (\fBeconf_file\fP ** key_file, const char * usr_conf_dir, const char * etc_conf_dir, const char * project_name, const char * config_suffix, const char * delim, const char * comment, bool (*callback)(const char *filename))"
+
+.PP
+Evaluating the content of a given configuration file by reading all needed/available files in two different directories (normally in /usr/etc and /etc)\&. For each parsed file the user defined function will be called in order e.g. to check the correct file permissions\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIkey_file\fP content of parsed file(s)
+.br
+\fIusr_conf_dir\fP absolute path of the first directory (normally '/usr/etc')
+.br
+\fIetc_conf_dir\fP absolute path of the second directory (normally '/etc')
+.br
+\fIproject_name\fP basename of the configuration file
+.br
+\fIconfig_suffix\fP suffix of the configuration file\&. Can also be NULL\&.
+.br
+\fIdelim\fP delimiters of key/value e\&.g\&. '\\t ='
+.br
+\fIcomment\fP array of characters which define the start of a comment
+.br
+\fIcallback\fP function which will be called for each file\&. This user defined function has the pathname as paramter and returns true if this file can be parsed\&. If not, the parsing of all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned\&.
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+econf_err ECONF_SUCCESS or error code
+.RE
+.PP
+Example: Reading content of example\&.conf in /usr/etc and /etc directory\&.
+.PP
+.nf
+#include "libeconf.h"
+
+bool checkFile(const char *filename) {
+  /* checking code which returns true or false */
+  return true;
+}
+
+econf_file *key_file = NULL;
+econf_err error;
+
+error = econf_readDirsWithCallback (&key_file,
+                                  "/usr/etc",
+                                  "/etc",
+                                  "example",
+                                  "conf",
+                                  "=", "#",
+                                  checkFile);
+
+econf_free (key_file);
+.fi
+.PP
+
+.SS "\fBeconf_err\fP econf_readDirsHistory (\fBeconf_file\fP *** key_files, size_t * size, const char * usr_conf_dir, const char * etc_conf_dir, const char * project_name, const char * config_suffix, const char * delim, const char * comment)"
+
+.PP
+Evaluating key/values for every given configuration files in two different directories (normally in /usr/etc and /etc)\&. Returns a list of read configuration files and their values\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIkey_files\fP list of parsed file(s)\&. Each entry includes all key/value, path, comments,\&.\&.\&. information of the regarding file\&.
+.br
+\fIsize\fP Size of the evaluated key_files list\&.
+.br
+\fIusr_conf_dir\fP absolute path of the first directory (normally '/usr/etc')
+.br
+\fIetc_conf_dir\fP absolute path of the second directory (normally '/etc')
+.br
+\fIproject_name\fP basename of the configuration file
+.br
+\fIconfig_suffix\fP suffix of the configuration file\&. Can also be NULL\&.
+.br
+\fIdelim\fP delimiters of key/value e\&.g\&. '\\t ='
+.br
+\fIcomment\fP array of characters which define the start of a comment
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+econf_err ECONF_SUCCESS or error code
+.RE
+.PP
+
+.SS "\fBeconf_err\fP econf_readDirsHistoryWithCallback (\fBeconf_file\fP *** key_files, size_t * size, const char * usr_conf_dir, const char * etc_conf_dir, const char * project_name, const char * config_suffix, const char * delim, const char * comment, bool (*callback)(const char *filename))"
+
+.PP
+Evaluating key/values for every given configuration files in two different directories (normally in /usr/etc and /etc)\&. For each parsed file the user defined function will be called in order e.g. to check the correct file permissions\&. Returns a list of read configuration files and their values\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIkey_files\fP list of parsed file(s)\&. Each entry includes all key/value, path, comments,\&.\&.\&. information of the regarding file\&.
+.br
+\fIsize\fP Size of the evaluated key_files list\&.
+.br
+\fIusr_conf_dir\fP absolute path of the first directory (normally '/usr/etc')
+.br
+\fIetc_conf_dir\fP absolute path of the second directory (normally '/etc')
+.br
+\fIproject_name\fP basename of the configuration file
+.br
+\fIconfig_suffix\fP suffix of the configuration file\&. Can also be NULL\&.
+.br
+\fIdelim\fP delimiters of key/value e\&.g\&. '\\t ='
+.br
+\fIcomment\fP array of characters which define the start of a comment
+.br
+\fIcallback\fP function which will be called for each file\&. This user defined function has the pathname as paramter and returns true if this file can be parsed\&. If not, the parsing of all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned\&.
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+econf_err ECONF_SUCCESS or error code
+.RE
 .PP
  
 .SS "\fBeconf_err\fP econf_newKeyFile (\fBeconf_file\fP ** result, char delimiter, char comment)"

@@ -48,9 +48,10 @@ static const char *messages[] = {
   "Given key has NULL value", /* ECONF_KEY_HAS_NULL_VALUE */
   "File has wrong owner", /* ECONF_WRONG_OWNER */
   "File has wrong group", /* ECONF_WRONG_GROUP */
-  "File has wrong file permission", /* ECONF_WRONG_FILE_PERMISSION */
-  "File has wrong dir permission", /* ECONF_WRONG_DIR_PERMISSION */
-  "File is a sym link which is not permitted"  /* ECONF_ERROR_FILE_IS_SYM_LINK */
+  "File has wrong file permissions", /* ECONF_WRONG_FILE_PERMISSION */
+  "File has wrong dir permissions", /* ECONF_WRONG_DIR_PERMISSION */
+  "File is a sym link which is not permitted", /* ECONF_ERROR_FILE_IS_SYM_LINK */
+  "User defined parsing callback has failed" /* ECONF_PARSING_CALLBACK_FAILED */
 };
 
 const char *
