@@ -165,13 +165,14 @@ extern econf_err econf_readFile(econf_file **result, const char *file_name,
  * @param callback function which will be called for the given filename. This user defined function has
  *        the pathname as paramter and returns true if this file can be parsed. If not, the
  *        parsing will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned.
+ * @param callback_data pointer which will be given to the callback function.
  * @return econf_err ECONF_SUCCESS or error code
  *
  * Usage:
  * @code
  *   #include "libeconf.h"
  *
- *   bool checkFile(const char *filename) {
+ *   bool checkFile(const char *filename, const void *data) {
  *      - checking code which returns true or false -
  *	return true;
  *   }
@@ -179,7 +180,7 @@ extern econf_err econf_readFile(econf_file **result, const char *file_name,
  *   econf_file *key_file = NULL;
  *   econf_err error;
  *
- *   error = econf_readFileWithCallback (&key_file, "/etc/test.conf", "=", "#", checkFile);
+ *   error = econf_readFileWithCallback (&key_file, "/etc/test.conf", "=", "#", checkFile, NULL);
  *
  *   econf_free (key_file);
  * @endcode
@@ -192,7 +193,8 @@ extern econf_err econf_readFile(econf_file **result, const char *file_name,
  */
 extern econf_err econf_readFileWithCallback(econf_file **result, const char *file_name,
 					    const char *delim, const char *comment,
-					    bool (*callback)(const char *filename));
+					    bool (*callback)(const char *filename, const void *data),
+					    const void *callback_data);
 
 /** @brief Merge the contents of two key_files objects. Entries in etc_file will be
  *         prefered.
@@ -283,13 +285,14 @@ extern econf_err econf_readDirs(econf_file **key_file,
  * @param callback function which will be called for each file. This user defined function has the
  *        pathname as paramter and returns true if this file can be parsed. If not, the parsing of
  *        all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned.
+ * @param callback_data pointer which will be given to the callback function.
  * @return econf_err ECONF_SUCCESS or error code
  *
  * Example: Reading content of example.conf in /usr/etc and /etc directory.
  * @code
  *   #include "libeconf.h"
  *
- *   bool checkFile(const char *filename) {
+ *   bool checkFile(const char *filename, const void *data) {
  *      - checking code which returns true or false -
  *	return true;
  *   }
@@ -303,7 +306,8 @@ extern econf_err econf_readDirs(econf_file **key_file,
  *                                       "example",
  *                                       "conf",
  *                                       "=", "#",
- *                                       checkFile);
+ *                                       checkFile,
+ *                                       NULL);
  *
  *   econf_free (key_file);
  * @endcode
@@ -316,7 +320,8 @@ extern econf_err econf_readDirs(econf_file **key_file,
 					     const char *config_suffix,
 					     const char *delim,
 					     const char *comment,
-					     bool (*callback)(const char *filename));
+					     bool (*callback)(const char *filename, const void *data),
+					     const void *callback_data);
 
 /** @brief Evaluating key/values for every given configuration files in two different
  *  directories (normally in /usr/etc and /etc). Returns a list of read configuration
@@ -364,6 +369,7 @@ extern econf_err econf_readDirsHistory(econf_file ***key_files,
  * @param callback function which will be called for each file. This user defined function has the
  *        pathname as paramter and returns true if this file can be parsed. If not, the parsing of
  *        all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned.
+ * @param callback_data pointer which will be given to the callback function.
  * @return econf_err ECONF_SUCCESS or error code
  *
  */
@@ -375,7 +381,8 @@ extern econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
 						   const char *config_suffix,
 						   const char *delim,
 						   const char *comment,
-						   bool (*callback)(const char *filename));
+						   bool (*callback)(const char *filename, const void *data),
+						   const void *callback_data);
 
 /* The API/ABI of the following three functions (econf_newKeyFile,
    econf_newIniFile and econf_writeFile) are not stable and will change */
