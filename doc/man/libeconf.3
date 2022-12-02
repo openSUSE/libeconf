@@ -275,26 +275,6 @@ exists:
 .br
 .RI "Free memory allocated by e\&.g\&. "
 .ti -1c
-.RI "void \fBeconf_requireOwner\fP (uid_t owner)"
-.br
-.RI "All parsed files require this user permission\&. "
-.ti -1c
-.RI "void \fBeconf_requireGroup\fP (gid_t group)"
-.br
-.RI "All parsed files require this group permission\&. "
-.ti -1c
-.RI "void \fBeconf_requirePermissions\fP (mode_t file_perms, mode_t dir_perms)"
-.br
-.RI "All parsed file have to have these file and directory permissions\&. "
-.ti -1c
-.RI "void \fBeconf_followSymlinks\fP (bool allow)"
-.br
-.RI "Allowing the parser to follow sym links (default: true)\&. "
-.ti -1c
-.RI "void \fBeconf_reset_security_settings\fP (void)"
-.br
-.RI "Reset all UID, GID, permissions,\&.\&.\&. "
-.ti -1c
 .RI "char \fBeconf_comment_tag\fP (\fBeconf_file\fP *key_file)"
 .br
 .RI "Returns the comment character tag of the given econf_file object\&. "
@@ -1443,83 +1423,6 @@ Free memory allocated by e\&.g\&. \fBeconf_readFile()\fP, \fBeconf_readDirs()\fP
 \fBReturns:\fP
 .RS 4
 void 
-.RE
-.PP
-
-.SS "void econf_requireOwner (uid_t owner)"
-
-.PP
-All parsed files require this user permission\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIowner\fP User ID
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-void
-.RE
-.PP
-
-.SS "void econf_requireGroup (gid_t group)"
-
-.PP
-All parsed files require this group permission\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIgroup\fP Group ID
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-void
-.RE
-.PP
-
-.SS "void econf_requirePermissions (mode_t file_perms, mode_t dir_perms)"
-
-.PP
-All parsed file have to have these file and directory permissions\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIfile_perms\fP file permissions
-.br
-\fIdir_perms\fP dir permissions
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-void
-.RE
-.PP
-
-.SS "void econf_followSymlinks (bool allow)"
-
-.PP
-Allowing the parser to follow sym links (default: true)\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIallow\fP allow to follow sym links\&.
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-void
-.RE
-.PP
-
-.SS "void econf_reset_security_settings (void)"
-
-.PP
-Reset all UID, GID, permissions,\&.\&.\&. restrictions for parsed files/dirs\&.
-.PP
-\fBReturns:\fP
-.RS 4
-void
 .RE
 .PP
 

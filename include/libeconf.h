@@ -814,44 +814,64 @@ extern void econf_freeArray(char **array);
 extern void econf_freeFile(econf_file *key_file);
 
 /** @brief All parsed files require this user permission.
+ *         DEPRECATED: Use the callback in econf_readFileWithCallback,
+ *         econf_readDirsWithCallback or econf_readDirsHistoryWithCallback
+ *         instead.
  *
  * @param owner User ID
  * @return void
  *
  */
-extern void econf_requireOwner(uid_t owner);
+extern void __attribute__ ((deprecated("use one of econf_read*WithCallback instead")))
+econf_requireOwner(uid_t owner);
 
 /** @brief All parsed files require this group permission.
+ *         DEPRECATED: Use the callback in econf_readFileWithCallback,
+ *         econf_readDirsWithCallback or econf_readDirsHistoryWithCallback
+ *         instead.
  *
  * @param group Group ID
  * @return void
  *
  */
-extern void econf_requireGroup(gid_t group);
+extern void __attribute__ ((deprecated("use one of econf_read*WithCallback instead")))
+econf_requireGroup(gid_t group);
 
 /** @brief All parsed file have to have these file and directory permissions.
+ *         DEPRECATED: Use the callback in econf_readFileWithCallback,
+ *         econf_readDirsWithCallback or econf_readDirsHistoryWithCallback
+ *         instead.
  *
  * @param file_perms file permissions
  * @param dir_perms dir permissions
  * @return void
  *
  */
-extern void econf_requirePermissions(mode_t file_perms, mode_t dir_perms);
+extern void __attribute__ ((deprecated("use one of econf_read*WithCallback instead")))
+econf_requirePermissions(mode_t file_perms, mode_t dir_perms);
 
 /** @brief Allowing the parser to follow sym links (default: true).
+ *         DEPRECATED: Use the callback in econf_readFileWithCallback,
+ *         econf_readDirsWithCallback or econf_readDirsHistoryWithCallback
+ *         instead.
  *
  * @param allow allow to follow sym links.
  * @return void
  *
  */
-extern void econf_followSymlinks(bool allow);
+extern void __attribute__ ((deprecated("use one of econf_read*WithCallback instead")))
+econf_followSymlinks(bool allow);
 
 /** @brief Reset all UID, GID, permissions,... restrictions for parsed files/dirs.
+ *         DEPRECATED: Use the callback in econf_readFileWithCallback,
+ *         econf_readDirsWithCallback or econf_readDirsHistoryWithCallback
+ *         instead.
  *
  * @return void
  *
  */
-extern void econf_reset_security_settings(void);
+extern void __attribute__ ((deprecated("use one of econf_read*WithCallback instead")))
+econf_reset_security_settings(void);
 
 #ifdef __cplusplus
 }
