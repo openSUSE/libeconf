@@ -115,7 +115,7 @@ exists:
 .br
 .RI "Process the file of the given file_name and save its contents into key_file object\&. "
 .ti -1c
-.RI "\fBeconf_err\fP \fBeconf_readFileWithCallback\fP (\fBeconf_file\fP **result, const char *file_name, const char *delim, const char *comment, bool (*callback)(const char *filename))"
+.RI "\fBeconf_err\fP \fBeconf_readFileWithCallback\fP (\fBeconf_file\fP **result, const char *file_name, const char *delim, const char *comment, bool (*callback)(const char *filename, const void *data), const void *callback_data)"
 .br
 .RI "Has the same functionality like \fBeconf_readFile\fP. The user can additionally define a callback in order to check the parsed file\&. "
 .ti -1c
@@ -127,7 +127,7 @@ exists:
 .br
 .RI "Evaluating key/values of a given configuration by reading and merging all needed/available files in two different directories (normally in /usr/etc and /etc)\&. "
 .ti -1c
-.RI "\fBeconf_err\fP \fBeconf_readDirsWithCallback\fP (\fBeconf_file\fP **key_file, const char *usr_conf_dir, const char *etc_conf_dir, const char *project_name, const char *config_suffix, const char *delim, const char *comment, bool (*callback)(const char *filename))"
+.RI "\fBeconf_err\fP \fBeconf_readDirsWithCallback\fP (\fBeconf_file\fP **key_file, const char *usr_conf_dir, const char *etc_conf_dir, const char *project_name, const char *config_suffix, const char *delim, const char *comment, bool (*callback)(const char *filename, const void *data), const void *callback_data)"
 .br
 .RI "Has the same functionality like \fBeconf_readDirs\fP. The user can additionally define a callback in order e.g. to check all parsed file\&. "
 .ti -1c
@@ -135,7 +135,7 @@ exists:
 .br
 .RI "Evaluating key/values for every given configuration files in two different directories (normally in /usr/etc and /etc)\&. "
 .ti -1c
-.RI "\fBeconf_err\fP \fBeconf_readDirsHistoryWithCallback\fP (\fBeconf_file\fP ***key_files, size_t *size, const char *usr_conf_dir, const char *etc_conf_dir, const char *project_name, const char *config_suffix, const char *delim, const char *comment, bool (*callback)(const char *filename))"
+.RI "\fBeconf_err\fP \fBeconf_readDirsHistoryWithCallback\fP (\fBeconf_file\fP ***key_files, size_t *size, const char *usr_conf_dir, const char *etc_conf_dir, const char *project_name, const char *config_suffix, const char *delim, const char *comment, bool (*callback)(const char *filename, const void *data), const void *callback_data)"
 .br
 .RI "Has the same functionality like \fBeconf_readDirsHistory\fP. The user can additionally define a callback in order e.g. to check all parsed file\&. "
 .ti -1c
@@ -274,26 +274,6 @@ exists:
 .RI "void \fBeconf_freeFile\fP (\fBeconf_file\fP *key_file)"
 .br
 .RI "Free memory allocated by e\&.g\&. "
-.ti -1c
-.RI "void \fBeconf_requireOwner\fP (uid_t owner)"
-.br
-.RI "All parsed files require this user permission\&. "
-.ti -1c
-.RI "void \fBeconf_requireGroup\fP (gid_t group)"
-.br
-.RI "All parsed files require this group permission\&. "
-.ti -1c
-.RI "void \fBeconf_requirePermissions\fP (mode_t file_perms, mode_t dir_perms)"
-.br
-.RI "All parsed file have to have these file and directory permissions\&. "
-.ti -1c
-.RI "void \fBeconf_followSymlinks\fP (bool allow)"
-.br
-.RI "Allowing the parser to follow sym links (default: true)\&. "
-.ti -1c
-.RI "void \fBeconf_reset_security_settings\fP (void)"
-.br
-.RI "Reset all UID, GID, permissions,\&.\&.\&. "
 .ti -1c
 .RI "char \fBeconf_comment_tag\fP (\fBeconf_file\fP *key_file)"
 .br
@@ -477,7 +457,7 @@ econf_free (key_file);
 .PP
 Default behaviour if entries have the same name in one file: The first hit will be returned\&. Further entries will be ignored\&. This can be changed by setting the environment variable ECONF_JOIN_SAME_ENTRIES\&. In that case entries with the same name will be joined to one single entry\&.
 
-.SS "\fBeconf_err\fP econf_readFileWithCallback (\fBeconf_file\fP ** result, const char * file_name, const char * delim, const char * comment, bool (*callback)(const char *filename))"
+.SS "\fBeconf_err\fP econf_readFileWithCallback (\fBeconf_file\fP ** result, const char * file_name, const char * delim, const char * comment, bool (*callback)(const char *filename, const void *data), const void *callback_data)"
 
 .PP
 Process the file of the given file_name and save its contents into key_file object\&. The user defined function will be called in order e.g. to check the correct file permissions\&.
@@ -493,6 +473,8 @@ Process the file of the given file_name and save its contents into key_file obje
 \fIcomment\fP array of characters which define the start of a comment
 .br
 \fIcallback\fP function which will be called for the given filename\&. This user defined function has the pathname as paramter and returns true if this file can be parsed\&. If not, the parsing will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned\&.
+.br
+\fIcallback_data\fP pointer which will be given to the callback function.
 .RE
 .PP
 \fBReturns:\fP
@@ -504,7 +486,7 @@ Usage:
 .PP
 .nf
 #include "libeconf.h"
-bool checkFile(const char *filename) {
+bool checkFile(const char *filename, const void *data) {
   /* checking code which returns true or false */
   return true;
 }
@@ -512,7 +494,7 @@ bool checkFile(const char *filename) {
 econf_file *key_file = NULL;
 econf_err error;
 
-error = econf_readFileWithCallback (&key_file, "/etc/test.conf", "=", "#", checkFile);
+error = econf_readFileWithCallback (&key_file, "/etc/test.conf", "=", "#", checkFile, NULL);
 econf_free (key_file);
 .fi
 .PP
@@ -604,7 +586,7 @@ econf_free (key_file);
 .fi
 .PP
 
-.SS "\fBeconf_err\fP econf_readDirsWithCallback (\fBeconf_file\fP ** key_file, const char * usr_conf_dir, const char * etc_conf_dir, const char * project_name, const char * config_suffix, const char * delim, const char * comment, bool (*callback)(const char *filename))"
+.SS "\fBeconf_err\fP econf_readDirsWithCallback (\fBeconf_file\fP ** key_file, const char * usr_conf_dir, const char * etc_conf_dir, const char * project_name, const char * config_suffix, const char * delim, const char * comment, bool (*callback)(const char *filename, const void *data), const void *callback_data)"
 
 .PP
 Evaluating the content of a given configuration file by reading all needed/available files in two different directories (normally in /usr/etc and /etc)\&. For each parsed file the user defined function will be called in order e.g. to check the correct file permissions\&.
@@ -626,6 +608,8 @@ Evaluating the content of a given configuration file by reading all needed/avail
 \fIcomment\fP array of characters which define the start of a comment
 .br
 \fIcallback\fP function which will be called for each file\&. This user defined function has the pathname as paramter and returns true if this file can be parsed\&. If not, the parsing of all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned\&.
+.br
+\fIcallback_data\fP pointer which will be given to the callback function.
 .RE
 .PP
 \fBReturns:\fP
@@ -638,7 +622,7 @@ Example: Reading content of example\&.conf in /usr/etc and /etc directory\&.
 .nf
 #include "libeconf.h"
 
-bool checkFile(const char *filename) {
+bool checkFile(const char *filename, const void *data) {
   /* checking code which returns true or false */
   return true;
 }
@@ -652,7 +636,8 @@ error = econf_readDirsWithCallback (&key_file,
                                   "example",
                                   "conf",
                                   "=", "#",
-                                  checkFile);
+                                  checkFile,
+                                  NULL);
 
 econf_free (key_file);
 .fi
@@ -688,7 +673,7 @@ econf_err ECONF_SUCCESS or error code
 .RE
 .PP
 
-.SS "\fBeconf_err\fP econf_readDirsHistoryWithCallback (\fBeconf_file\fP *** key_files, size_t * size, const char * usr_conf_dir, const char * etc_conf_dir, const char * project_name, const char * config_suffix, const char * delim, const char * comment, bool (*callback)(const char *filename))"
+.SS "\fBeconf_err\fP econf_readDirsHistoryWithCallback (\fBeconf_file\fP *** key_files, size_t * size, const char * usr_conf_dir, const char * etc_conf_dir, const char * project_name, const char * config_suffix, const char * delim, const char * comment, bool (*callback)(const char *filename, const void *data), const void *callback_data)"
 
 .PP
 Evaluating key/values for every given configuration files in two different directories (normally in /usr/etc and /etc)\&. For each parsed file the user defined function will be called in order e.g. to check the correct file permissions\&. Returns a list of read configuration files and their values\&.
@@ -712,6 +697,8 @@ Evaluating key/values for every given configuration files in two different direc
 \fIcomment\fP array of characters which define the start of a comment
 .br
 \fIcallback\fP function which will be called for each file\&. This user defined function has the pathname as paramter and returns true if this file can be parsed\&. If not, the parsing of all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned\&.
+.br
+\fIcallback_data\fP pointer which will be given to the callback function.
 .RE
 .PP
 \fBReturns:\fP
@@ -1436,83 +1423,6 @@ Free memory allocated by e\&.g\&. \fBeconf_readFile()\fP, \fBeconf_readDirs()\fP
 \fBReturns:\fP
 .RS 4
 void 
-.RE
-.PP
-
-.SS "void econf_requireOwner (uid_t owner)"
-
-.PP
-All parsed files require this user permission\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIowner\fP User ID
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-void
-.RE
-.PP
-
-.SS "void econf_requireGroup (gid_t group)"
-
-.PP
-All parsed files require this group permission\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIgroup\fP Group ID
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-void
-.RE
-.PP
-
-.SS "void econf_requirePermissions (mode_t file_perms, mode_t dir_perms)"
-
-.PP
-All parsed file have to have these file and directory permissions\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIfile_perms\fP file permissions
-.br
-\fIdir_perms\fP dir permissions
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-void
-.RE
-.PP
-
-.SS "void econf_followSymlinks (bool allow)"
-
-.PP
-Allowing the parser to follow sym links (default: true)\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIallow\fP allow to follow sym links\&.
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-void
-.RE
-.PP
-
-.SS "void econf_reset_security_settings (void)"
-
-.PP
-Reset all UID, GID, permissions,\&.\&.\&. restrictions for parsed files/dirs\&.
-.PP
-\fBReturns:\fP
-.RS 4
-void
 .RE
 .PP
 

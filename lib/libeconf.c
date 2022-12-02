@@ -138,7 +138,8 @@ void econf_set_delimiter_tag(econf_file *key_file, const char delimiter) {
 // Process the file of the given file_name and save its contents into key_file
 econf_err econf_readFileWithCallback(econf_file **key_file, const char *file_name,
 				     const char *delim, const char *comment,
-				     bool (*callback)(const char *filename))
+				     bool (*callback)(const char *filename, const void *data),
+				     const void *callback_data)
 {
   econf_err t_err;
   struct stat sb;
@@ -169,7 +170,7 @@ econf_err econf_readFileWithCallback(econf_file **key_file, const char *file_nam
   }
 
   // calling user defined checks
-  if (callback != NULL && !(*callback)(file_name))
+  if (callback != NULL && !(*callback)(file_name, callback_data))
     return ECONF_PARSING_CALLBACK_FAILED;
   
   // Get absolute path if not provided
@@ -206,7 +207,7 @@ econf_err econf_readFileWithCallback(econf_file **key_file, const char *file_nam
 econf_err econf_readFile(econf_file **key_file, const char *file_name,
 			 const char *delim, const char *comment)
 {
-  return econf_readFileWithCallback(key_file, file_name, delim, comment, NULL);
+   return econf_readFileWithCallback(key_file, file_name, delim, comment, NULL, NULL);
 }
 
 // Merge the contents of two key files
@@ -257,7 +258,8 @@ econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
 					    const char *config_suffix,
 					    const char *delim,
 					    const char *comment,
-					    bool (*callback)(const char *filename))
+					    bool (*callback)(const char *filename, const void *data),
+					    const void *callback_data)
 {
   const char *suffix, *default_dirs[3] = {NULL, NULL, NULL};
   char *distfile, *etcfile, *cp;
@@ -314,7 +316,8 @@ econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
 
   if (etcfile)
     {
-      error = econf_readFileWithCallback(&key_file, etcfile, delim, comment, callback);
+      error = econf_readFileWithCallback(&key_file, etcfile, delim, comment,
+					 callback, callback_data);
       if (error && error != ECONF_NOFILE)
 	return error;
     }
@@ -328,7 +331,8 @@ econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
        and merge all *.d files. */
     if (distfile)
       {
-        error = econf_readFileWithCallback(&key_file, distfile, delim, comment, callback);
+        error = econf_readFileWithCallback(&key_file, distfile, delim, comment,
+					   callback, callback_data);
 	if (error && error != ECONF_NOFILE)
 	  return error;
       }
@@ -410,7 +414,7 @@ econf_err econf_readDirsHistory(econf_file ***key_files,
 				const char *comment) {
   return econf_readDirsHistoryWithCallback(key_files, size, dist_conf_dir,
 					   etc_conf_dir, project_name,
-					   config_suffix, delim, comment, NULL);
+					   config_suffix, delim, comment, NULL, NULL);
 }
 
 econf_err econf_readDirsWithCallback(econf_file **result,
@@ -420,7 +424,8 @@ econf_err econf_readDirsWithCallback(econf_file **result,
 				     const char *config_suffix,
 				     const char *delim,
 				     const char *comment,
-				     bool (*callback)(const char *filename))
+				     bool (*callback)(const char *filename, const void *data),
+				     const void *callback_data)
 {
   size_t size = 0;
   econf_file **key_files;
@@ -434,7 +439,8 @@ econf_err econf_readDirsWithCallback(econf_file **result,
 					    config_suffix,
 					    delim,
 					    comment,
-					    callback);
+					    callback,
+					    callback_data);
   if (error != ECONF_SUCCESS)
     return error;
 
@@ -455,7 +461,7 @@ econf_err econf_readDirs(econf_file **result,
 {
   return econf_readDirsWithCallback(result, dist_conf_dir, etc_conf_dir,
 				    project_name, config_suffix, delim,
-				    comment, NULL);
+				    comment, NULL, NULL);
 }
 
 // Write content of a econf_file struct to specified location
