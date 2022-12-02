@@ -1,3 +1,12 @@
+Version 0.5.0
+* API calls econf_read*WithCallback supporting a general (void *)
+  argument for user defined data with which the callback function is
+  called.
+* Tagged following functions deprecated:
+  econf_requireOwner, econf_requireGroup, econf_requirePermissions,
+  econf_followSymlinks, econf_reset_security_settings
+  Use one of the econf_read*WithCallback functions instead.
+
 Version 0.4.9
 * new API calls:
   ** econf_readFileWithCallback
