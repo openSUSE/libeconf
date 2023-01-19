@@ -55,8 +55,9 @@ main(void)
   /* checking link */
   if (symlink(TESTSDIR"tst-arguments-string/etc/arguments.conf", TESTSDIR"tst-arguments-string/etc/link.conf") == -1)
   {
-    fprintf (stderr, "ERROR: cannot create sym link: %s\n", TESTSDIR"tst-arguments-string/etc/link.conf");
-    return 1;
+    fprintf (stderr, "WARNING: Cannot create sym link %s for testing.\n", TESTSDIR"tst-arguments-string/etc/link.conf");
+    fprintf (stderr, "Exit without reporting an error");
+    return 0;
   }
   econf_followSymlinks(false);
   error = econf_readFile (&key_file, TESTSDIR"tst-arguments-string/etc/link.conf", "=", "#");
