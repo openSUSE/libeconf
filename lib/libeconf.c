@@ -323,12 +323,10 @@ econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
     }
 
   if (etcfile && !error) {
-    /* /etc/<project_name>.<suffix> does exist, ignore /usr */
-    default_dirs[0] = etc_conf_dir;
+    /* /etc/<project_name>.<suffix> does exist, ignore /usr/etc/<project_name>.<suffix> */
     *size = 1;
   } else {
-    /* /etc/<project_name>.<suffix> does not exist, so read /usr/etc
-       and merge all *.d files. */
+    /* /etc/<project_name>.<suffix> does not exist, so read /usr/etc */
     if (distfile)
       {
         error = econf_readFileWithCallback(&key_file, distfile, delim, comment,
@@ -339,9 +337,6 @@ econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
 
     if (distfile && !error) /* /usr/etc/<project_name>.<suffix> does exist */
       *size = 1;
-
-    default_dirs[0] = dist_conf_dir;
-    default_dirs[1] = etc_conf_dir;
   }
 
   /* XXX Re-add get_default_dirs in a reworked version, which
@@ -361,6 +356,9 @@ econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
   }
 
   int i = 0;
+  /* merge all *.d files in e.g. /usr/etc and /etc */
+  default_dirs[0] = dist_conf_dir;
+  default_dirs[1] = etc_conf_dir;
   while (default_dirs[i]) {
     /*
       Indicate which directories to look for. The order is:
