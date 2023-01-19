@@ -13,6 +13,8 @@ macro(BuildAndAddTest TESTNAME)
     target_compile_options(${TESTNAME} PRIVATE -DTESTSDIR=\"${PROJECT_SOURCE_DIR}/tests/\" -DSUFFIX=\".conf\")
   elseif (${TESTNAME} STREQUAL "tst-getconfdirs2")
     target_compile_options(${TESTNAME} PRIVATE -DTESTSDIR=\"${PROJECT_SOURCE_DIR}/tests/\" -DSUFFIX=\"conf\")
+  elseif (${TESTNAME} STREQUAL "tst-getconfdirs8")
+    target_compile_options(${TESTNAME} PRIVATE -DTESTSDIR=\"${PROJECT_SOURCE_DIR}/tests/\" -DSUFFIX=\"conf\")
   else()
     target_compile_options(${TESTNAME} PRIVATE -DTESTSDIR=\"${PROJECT_SOURCE_DIR}/tests/\")
   endif()
@@ -47,6 +49,7 @@ set(TESTS tst-filedoesnotexit1
           tst-getconfdirs5
           tst-getconfdirs6
           tst-getconfdirs7
+          tst-getconfdirs8
 	  tst-without-suffix
           tst-econf_errstring1
           tst-setgetvalues1

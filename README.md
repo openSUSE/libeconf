@@ -17,8 +17,8 @@ lexicographic order of their filename.
 The first method is useful to override the complete configuration file with an
 own one, the vendor supplied configuration is ignored.
 
-So, if /etc/_example_._suffix_ exists, /usr/_vendor_/_example_._suffix_ and
-/usr/_vendor_/_example_._suffix_.d/*._suffix_ will not be read.
+So, if /etc/_example_._suffix_ exists, /usr/_vendor_/_example_._suffix_
+will not be read.
 The disadvantage is, that changes of the vendor configuration file, due e.g.
 an package update, are ignored and the user has to manually merge them.
 
@@ -39,6 +39,7 @@ as the vendor configuration file.
 If a /etc/_example_._suffix_ files exists:
 
 * /etc/_example_._suffix_
+* /usr/_vendor_/_example_._suffix_.d/*._suffix_
 * /etc/_example_._suffix_.d/*._suffix_
 
 
