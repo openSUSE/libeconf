@@ -1,3 +1,7 @@
+Version 0.5.1
+* Reading files in /usr/_vendor_/_example_._suffix_.d/* regardless
+  there is a /etc/example.suffix file.
+
 Version 0.5.0
 * API calls econf_read*WithCallback supporting a general (void *)
   argument for user defined data with which the callback function is
