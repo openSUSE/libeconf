@@ -71,4 +71,5 @@ LIBECONF_0.5 {
     econf_readFileWithCallback;
     econf_readDirsWithCallback;
     econf_readDirsHistoryWithCallback;
+    econf_set_conf_dirs;
 } LIBECONF_0.4;

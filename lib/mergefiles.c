@@ -195,7 +195,7 @@ check_conf_dir(econf_file ***key_files, size_t *size, const char *path,
 }
 
 econf_err traverse_conf_dirs(econf_file ***key_files,
-			     const char *config_dirs[],
+			     char *config_dirs[],
 			     size_t *size, const char *path,
 			     const char *config_suffix,
 			     const char *delim, const char *comment) {

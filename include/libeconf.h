@@ -874,6 +874,24 @@ econf_followSymlinks(bool allow);
 extern void __attribute__ ((deprecated("use one of econf_read*WithCallback instead")))
 econf_reset_security_settings(void);
 
+/** @brief Sets a list of directory structures (with order) which describes the directories
+ *         in which the files have to be parsed.
+ *
+ * @param dir_postfix_list list of directory structures.
+ *        E.G. with the given list: {"/conf.d/", ".d/", "/", NULL} files in following
+ *        directories will be parsed:
+ *           "<default_dirs>/<project_name>.<suffix>.d/"
+ *           "<default_dirs>/<project_name>/conf.d/"
+ *           "<default_dirs>/<project_name>.d/"
+ *           "<default_dirs>/<project_name>/"
+ *        The entry "<default_dirs>/<project_name>.<suffix>.d/" will be added
+ *        automatically.
+ *
+ * @return econf_err ECONF_SUCCESS or error code
+ *
+ */
+extern econf_err econf_set_conf_dirs(const char **dir_postfix_list);
+
 #ifdef __cplusplus
 }
 #endif
