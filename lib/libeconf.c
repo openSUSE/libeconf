@@ -44,6 +44,9 @@ static bool file_permissions_set = false;
 static mode_t file_perms_file;
 static mode_t file_perms_dir;
 bool allow_follow_symlinks = true;
+// configuration directories format
+char **conf_dirs = {NULL}; // see econf_set_conf_dirs
+int conf_count = 0;
 
 void econf_requireOwner(uid_t owner)
 {
@@ -75,6 +78,25 @@ void econf_reset_security_settings(void)
   file_group_set = false;
   file_permissions_set = false;
   allow_follow_symlinks = true;
+}
+
+econf_err econf_set_conf_dirs(const char **dir_postfix_list)
+{
+  // free old entry
+  if (conf_dirs) econf_freeArray(conf_dirs);
+  conf_count = 0;
+  const char **tmp = dir_postfix_list;
+  while (*tmp++)
+    conf_count++;
+  conf_dirs = malloc(sizeof(char *) * (conf_count+1));
+  if (!conf_dirs)
+    return ECONF_NOMEM;
+  conf_dirs[conf_count]=NULL;
+  for (int i = 0; i < conf_count; i++)
+  {
+    conf_dirs[i] = strdup(dir_postfix_list[i]);
+  }
+  return ECONF_SUCCESS;
 }
 
 // Create a new econf_file. Allocation is based on
@@ -355,32 +377,42 @@ econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
     (*key_files)[0] = key_file;
   }
 
-  int i = 0;
-  /* merge all *.d files in e.g. /usr/etc and /etc */
-  default_dirs[0] = dist_conf_dir;
-  default_dirs[1] = etc_conf_dir;
-  while (default_dirs[i]) {
-    /*
-      Indicate which directories to look for. The order is:
-       "default_dirs/project_name.suffix.d/"
-
-       XXX make this configureable:
+  /*
+    Indicate which directories to look for. The order is:
+    "default_dirs/project_name.suffix.d/"
+    AND all other directories which has been set by
+    econf_set_conf_dirs. E.G.:
        "default_dirs/project_name/conf.d/"
        "default_dirs/project_name.d/"
        "default_dirs/project_name/"
     */
-    const char *conf_dirs[] = {  NULL, /* "/conf.d/", ".d/", "/", */ NULL};
-    char *project_path = combine_strings(default_dirs[i], project_name, '/');
-    char *suffix_d = malloc (strlen(suffix) + 4); /* + strlen(".d/") */
-    if (suffix_d == NULL)
-      return ECONF_NOMEM;
-    cp = stpcpy(suffix_d, suffix);
-    stpcpy(cp, ".d");
-    conf_dirs[0] = suffix_d;
+  char *suffix_d = malloc (strlen(suffix) + 4); /* + strlen(".d/") */
+  if (suffix_d == NULL)
+    return ECONF_NOMEM;
+  cp = stpcpy(suffix_d, suffix);
+  stpcpy(cp, ".d");
 
-    error = traverse_conf_dirs(key_files, conf_dirs, size, project_path,
-			       suffix, delim, comment);
+  char **configure_dirs = malloc(sizeof(char *) * (conf_count + 2));
+  if (configure_dirs == NULL)
+  {
     free(suffix_d);
+    return ECONF_NOMEM;
+  }
+  configure_dirs[0] = suffix_d;
+  for (int i = 0; i < conf_count; i++)
+  {
+    configure_dirs[i+1] = strdup(conf_dirs[i]);
+  }
+  configure_dirs[conf_count+1] = NULL;
+
+  int i = 0;
+  /* merge all files in e.g. /usr/etc and /etc */
+  default_dirs[0] = dist_conf_dir;
+  default_dirs[1] = etc_conf_dir;
+  while (default_dirs[i]) {
+    char *project_path = combine_strings(default_dirs[i], project_name, '/');
+    error = traverse_conf_dirs(key_files, configure_dirs, size, project_path,
+			       suffix, delim, comment);
     free(project_path);
     if (error != ECONF_SUCCESS)
     {
@@ -389,13 +421,14 @@ econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
 	econf_freeFile((*key_files)[k]);
       }
       free(*key_files);
+      econf_freeArray(configure_dirs);
       return error;
     }
     i++;
   }
   (*size)--;
   (*key_files)[*size] = NULL;
-
+  econf_freeArray(configure_dirs);
   if (*size <= 0)
     return ECONF_NOFILE;
   else
