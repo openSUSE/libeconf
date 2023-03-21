@@ -9,9 +9,9 @@ jobs:
     
     steps:
     - uses: actions/checkout@v2
-    - name: cmake configure with asan checks
-      run: cmake -B build -DCMAKE_BUILD_TYPE=SanitizeAddress
-    - name: make with asan checks
+    - name: cmake configure with ASAN and UBSAN checks
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Sanitize
+    - name: make with ASAN and UBSAN checks
       run: make -C build
     - name: make check
       run: make -C build check
