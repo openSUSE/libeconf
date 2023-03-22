@@ -38,20 +38,20 @@ set(CMAKE_C_STANDARD 11)
 
 # Build Types
 set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE}
-    CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel SanitizeAddress RelWithDebInfoStrict"
+    CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel Sanitize RelWithDebInfoStrict"
     FORCE
     )
 
 # AddressSanitize
-set(CMAKE_C_FLAGS_SANITIZEADDRESS
-    "-O2 -g -Wall -fsanitize=address -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer"
-    CACHE STRING "Flags used by the C compiler during AddressSanitizer builds."
+set(CMAKE_C_FLAGS_SANITIZE
+    "-O2 -g -Wall -fsanitize=address,undefined"
+    CACHE STRING "Flags used by the C compiler during Sanitizer builds."
     FORCE
     )
 
-set(CMAKE_LINK_FLAGS_SANITIZEADDRESS
-    "-fsanitize=address"
-    CACHE STRING "Flags used by the linker during AddressSanitizer builds."
+set(CMAKE_LINK_FLAGS_SANITIZE
+    "-fsanitize=address,undefined"
+    CACHE STRING "Flags used by the linker during Sanitizer builds."
     FORCE
     )
 
