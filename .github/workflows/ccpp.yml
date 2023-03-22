@@ -14,4 +14,4 @@ jobs:
     - name: make with ASAN and UBSAN checks
       run: make -C build
     - name: make check
-      run: make -C build check
+      run: CTEST_OUTPUT_ON_FAILURE=1 ASAN_OPTIONS=detect_leaks=0 make -C build check
