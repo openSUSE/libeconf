@@ -82,6 +82,7 @@ econf_getExtValue(econf_file *kf, const char *group,
 
   if (value_string!=NULL) {
     strncpy(buf,value_string,BUFSIZ-1);
+    buf[BUFSIZ-1] = '\0';
     free(value_string);
     value_string = trim(buf);
 

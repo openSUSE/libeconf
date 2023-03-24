@@ -180,7 +180,7 @@ store (econf_file *ef, const char *group, const char *key,
 
   ef->file_entry[ef->length-1].line_number = line_number;
 
-  ef->file_entry[ef->length-1].quotes |= quotes;
+  ef->file_entry[ef->length-1].quotes = quotes;
 
   if (group)
     ef->file_entry[ef->length-1].group = strdup(group);
@@ -265,11 +265,12 @@ read_file(econf_file *ef, const char *file,
   }
   ef->delimiter = *delim;
 
-  while (fgets(buf, sizeof(buf), kf)) {
+  while (fgets(buf, BUFSIZ-1, kf)) {
     char *p, *name, *data = NULL;
     bool quote_seen = false, delim_seen = false;
     char *org_buf __attribute__ ((__cleanup__(free_buffer))) = strdup(buf);
 
+    buf[BUFSIZ-1] = '\0';
     line++;
     last_scanned_line_nr = line;
 
@@ -410,8 +411,6 @@ read_file(econf_file *ef, const char *file,
       if (!found_delim &&
 	  /* Entry has already been found */
 	  ef->length > 0 &&
-	  /* Value of previous entry is not Null. So delimiter has been found in the previous line */
-	  ef->file_entry[ef->length-1].value != NULL &&
 	  /* The Entry must be the next line. Otherwise it is a new one */
 	  ef->file_entry[ef->length-1].line_number+1 == line)
       {

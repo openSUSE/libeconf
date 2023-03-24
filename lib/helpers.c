@@ -47,6 +47,7 @@ void initialize(econf_file *key_file, size_t num) {
   key_file->file_entry[num].value = strdup(KEY_FILE_NULL_VALUE);
   key_file->file_entry[num].comment_before_key = NULL;
   key_file->file_entry[num].comment_after_value = NULL;
+  key_file->file_entry[num].quotes = false;
 }
 
 // Remove whitespace from beginning and end, append string terminator
