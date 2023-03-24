@@ -1,3 +1,9 @@
+Version 0.5.2
+* Fixed build for aarch64 and gcc13.
+* Making the output verbose when a test fails.
+* Fixed a stack-buffer-overflow vulnerability in "econf_writeFile" function.
+* Fixed a stack-buffer-overflow vulnerability in "read_file" function.
+
 Version 0.5.1
 * Reading files in /usr/_vendor_/_example_._suffix_.d/* regardless
   there is a /etc/_example_._suffix_ file.
