@@ -265,11 +265,12 @@ read_file(econf_file *ef, const char *file,
   }
   ef->delimiter = *delim;
 
-  while (fgets(buf, sizeof(buf), kf)) {
+  while (fgets(buf, BUFSIZ-1, kf)) {
     char *p, *name, *data = NULL;
     bool quote_seen = false, delim_seen = false;
     char *org_buf __attribute__ ((__cleanup__(free_buffer))) = strdup(buf);
 
+    buf[BUFSIZ-1] = '\0';
     line++;
     last_scanned_line_nr = line;
 
