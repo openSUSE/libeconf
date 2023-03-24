@@ -542,6 +542,7 @@ econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
       char *value_string = buf;
 
       strncpy(buf,key_file->file_entry[i].comment_before_key,BUFSIZ-1);
+      buf[BUFSIZ-1] = '\0';
       while ((line = strsep(&value_string, "\n")) != NULL) {
 	fprintf(kf, "%c%s\n",
 		key_file->comment,
@@ -566,6 +567,7 @@ econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
       char *value_string = buf;
 
       strncpy(buf,key_file->file_entry[i].comment_after_value,BUFSIZ-1);
+      buf[BUFSIZ-1] = '\0';
       while ((line = strsep(&value_string, "\n")) != NULL) {
 	fprintf(kf, " %c%s\n",
 		key_file->comment,
