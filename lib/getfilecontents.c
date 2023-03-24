@@ -180,7 +180,7 @@ store (econf_file *ef, const char *group, const char *key,
 
   ef->file_entry[ef->length-1].line_number = line_number;
 
-  ef->file_entry[ef->length-1].quotes |= quotes;
+  ef->file_entry[ef->length-1].quotes = quotes;
 
   if (group)
     ef->file_entry[ef->length-1].group = strdup(group);
@@ -410,8 +410,6 @@ read_file(econf_file *ef, const char *file,
       if (!found_delim &&
 	  /* Entry has already been found */
 	  ef->length > 0 &&
-	  /* Value of previous entry is not Null. So delimiter has been found in the previous line */
-	  ef->file_entry[ef->length-1].value != NULL &&
 	  /* The Entry must be the next line. Otherwise it is a new one */
 	  ef->file_entry[ef->length-1].line_number+1 == line)
       {
