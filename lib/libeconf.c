@@ -421,6 +421,7 @@ econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
 	econf_freeFile((*key_files)[k]);
       }
       free(*key_files);
+      *key_files = NULL;
       econf_freeArray(configure_dirs);
       return error;
     }
@@ -432,6 +433,7 @@ econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
   if (*size <= 0)
   {
     free(*key_files);
+    *key_files = NULL;
     return ECONF_NOFILE;
   }
   return ECONF_SUCCESS;
