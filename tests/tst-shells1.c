@@ -119,6 +119,7 @@ main(void)
 
   econf_free (keys);
   econf_free (key_file);
+  econf_free (key_compare);
 
   return 0;
 }
