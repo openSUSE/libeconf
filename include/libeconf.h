@@ -120,6 +120,9 @@ typedef enum econf_err econf_err;
     char**: econf_freeArray)) \
 (value))
 
+#define DEFAULT_RUN_SUBDIR "/run"
+#define DEFAULT_ETC_SUBDIR "/etc"	
+	
 typedef struct econf_file econf_file;
 
 /** @brief Process the file of the given file_name and save its contents into key_file object.
@@ -151,7 +154,7 @@ typedef struct econf_file econf_file;
  * will be joined to one single entry.
  */
 extern econf_err econf_readFile(econf_file **result, const char *file_name,
-				    const char *delim, const char *comment);
+				const char *delim, const char *comment);
 
 
 /** @brief Process the file of the given file_name and save its contents into key_file object.
@@ -228,13 +231,206 @@ extern econf_err econf_readFileWithCallback(econf_file **result, const char *fil
 extern econf_err econf_mergeFiles(econf_file **merged_file,
 				  econf_file *usr_file, econf_file *etc_file);
 
+
+/** @brief Evaluating key/values of a given configuration by reading and merging all
+ *         needed/available files from different directories. Order is:
+ *
+ *  /etc/$project/$config_name.$config_suffix does exist:
+ *
+ *  - /etc/$project/$config_name.$config_suffix
+ *  - /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *  - $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *  - /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *
+ *  /etc/$project/$config_name.$config_suffix does NOT exist:
+ *
+ *    /run/$project/$config_name.$config_suffix does exist:
+ *
+ *    - /run/$project/$config_name.$config_suffix
+ *    - /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *    - $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *    - /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *
+ *    /run/$project/$config_name.$config_suffix does NOT exist:
+ *
+ *    - $usr_subdir/$project/$config_name.$config_suffix
+ *    - /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *    - $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *    - /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *
+ *
+ * @param key_file content of parsed file(s)
+ * @param project name of the project used as subdirectory, can be NULL
+ * @param usr_subdir absolute path of the first directory (often "/usr/lib")
+ * @param config_name basename of the configuration file
+ * @param config_suffix suffix of the configuration file. Can also be NULL.
+ * @param delim delimiters of key/value e.g. "\t ="
+ *        If delim contains space characters AND none space characters,
+ *        multiline values are not parseable.
+ * @param comment array of characters which define the start of a comment
+ * @return econf_err ECONF_SUCCESS or error code
+ *
+ * Example: Reading content in different cases in following order:
+ *
+ *  /etc/foo/example.conf does exist:
+ *
+ *  - /etc/foo/example.conf
+ *  - /run/foo/example.conf.d/ *.conf
+ *  - /usr/lib/foo/example.conf.d/ *.conf
+ *  - /etc/foo/example.conf.d/ *.conf
+ *
+ *  /etc/foo/example.conf does NOT exist:
+ *
+ *    /run/foo/example.conf does exist:
+ *
+ *    - /run/foo/example.conf
+ *    - /run/foo/example.conf.d/ *.conf
+ *    - /usr/lib/foo/example.conf.d/ *.conf
+ *    - /etc/foo/example.conf.d/ *.conf
+ *
+ *    /run/foo/example.conf does NOT exist:
+ *
+ *    - /usr/lib/foo/example.conf
+ *    - /run/foo/example.conf.d/ *.conf
+ *    - /usr/lib/foo/example.conf.d/ *.conf
+ *    - /etc/foo/example.conf.d/ *.conf
+ *
+ * @code
+ *   #include "libeconf.h"
+ *
+ *   econf_file *key_file = NULL;
+ *   econf_err error;
+ *
+ *   error = econf_readConfig (&key_file,
+ *                             "foo",
+ *                             "/usr/lib",
+ *                             "example",
+ *                             "conf",
+ *                             "=", "#");
+ *
+ *   econf_free (key_file);
+ * @endcode
+ *
+ */
+extern econf_err econf_readConfig (econf_file **key_file,
+	                           const char *project,
+                                   const char *usr_subdir,
+				   const char *config_name,
+				   const char *config_suffix,
+				   const char *delim,
+				   const char *comment);
+
+/** @brief Evaluating key/values of a given configuration by reading and merging all
+ *         needed/available files from different directories. Order is:
+ *
+ *  /etc/$project/$config_name.$config_suffix does exist:
+ *
+ *  - /etc/$project/$config_name.$config_suffix
+ *  - /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *  - $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *  - /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *
+ *  /etc/$project/$config_name.$config_suffix does NOT exist:
+ *
+ *    /run/$project/$config_name.$config_suffix does exist:
+ *
+ *    - /run/$project/$config_name.$config_suffix
+ *    - /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *    - $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *    - /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *
+ *    /run/$project/$config_name.$config_suffix does NOT exist:
+ *
+ *    - $usr_subdir/$project/$config_name.$config_suffix
+ *    - /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *    - $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *    - /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *
+ * For each parsed file the user defined function will be called in order
+ * e.g. to check the correct file permissions.
+ *
+ * @param key_file content of parsed file(s)
+ * @param project name of the project used as subdirectory, can be NULL
+ * @param usr_subdir absolute path of the first directory (often "/usr/lib")
+ * @param config_name basename of the configuration file
+ * @param config_suffix suffix of the configuration file. Can also be NULL.
+ * @param delim delimiters of key/value e.g. "\t ="
+ *        If delim contains space characters AND none space characters,
+ *        multiline values are not parseable.
+ * @param comment array of characters which define the start of a comment
+ * @param callback function which will be called for each file. This user defined function has the
+ *        pathname as paramter and returns true if this file can be parsed. If not, the parsing of
+ *        all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned.
+ * @param callback_data pointer which will be given to the callback function.
+ * @return econf_err ECONF_SUCCESS or error code
+ *
+ * Example: Reading content in different cases in following order:
+ *
+ *  /etc/foo/example.conf does exist:
+ *
+ *  - /etc/foo/example.conf
+ *  - /run/foo/example.conf.d/ *.conf
+ *  - /usr/lib/foo/example.conf.d/ *.conf
+ *  - /etc/foo/example.conf.d/ *.conf
+ *
+ *  /etc/foo/example.conf does NOT exist:
+ *
+ *    /run/foo/example.conf does exist:
+ *
+ *    - /run/foo/example.conf
+ *    - /run/foo/example.conf.d/ *.conf
+ *    - /usr/lib/foo/example.conf.d/ *.conf
+ *    - /etc/foo/example.conf.d/ *.conf
+ *
+ *    /run/foo/example.conf does NOT exist:
+ *
+ *    - /usr/lib/foo/example.conf
+ *    - /run/foo/example.conf.d/ *.conf
+ *    - /usr/lib/foo/example.conf.d/ *.conf
+ *    - /etc/foo/example.conf.d/ *.conf
+ *
+ * @code
+ *   #include "libeconf.h"
+ *
+ *   bool checkFile(const char *filename, const void *data) {
+ *      - checking code which returns true or false -
+ *	return true;
+ *   }
+ *
+ *   econf_file *key_file = NULL;
+ *   econf_err error;
+ *
+ *   error = econf_readConfigWithCallback (&key_file,
+ *                                         "foo",
+ *                                         "/usr/lib",
+ *                                         "example",
+ *                                         "conf",
+ *                                         "=", "#",
+ *                                         checkFile,
+ *                                         NULL);
+ *
+ *   econf_free (key_file);
+ * @endcode
+ *
+ */
+extern econf_err econf_readConfigWithCallback(econf_file **key_file,
+					      const char *project,
+					      const char *usr_subdir,
+					      const char *config_name,
+					      const char *config_suffix,
+					      const char *delim,
+					      const char *comment,
+					      bool (*callback)(const char *filename, const void *data),
+					      const void *callback_data);
+
+
 /** @brief Evaluating key/values of a given configuration by reading and merging all
  *         needed/available files in two different directories (normally in /usr/etc and /etc).
  *
  * @param key_file content of parsed file(s)
  * @param usr_conf_dir absolute path of the first directory (normally "/usr/etc")
  * @param etc_conf_dir absolute path of the second directory (normally "/etc")
- * @param project_name basename of the configuration file
+ * @param config_name basename of the configuration file
  * @param config_suffix suffix of the configuration file. Can also be NULL.
  * @param delim delimiters of key/value e.g. "\t ="
  *        If delim contains space characters AND none space characters,
@@ -263,7 +459,7 @@ extern econf_err econf_mergeFiles(econf_file **merged_file,
 extern econf_err econf_readDirs(econf_file **key_file,
 				const char *usr_conf_dir,
 				const char *etc_conf_dir,
-				const char *project_name,
+				const char *config_name,
 				const char *config_suffix,
 				const char *delim,
 				const char *comment);
@@ -277,7 +473,7 @@ extern econf_err econf_readDirs(econf_file **key_file,
  * @param size Size of the evaluated key_files list.
  * @param usr_conf_dir absolute path of the first directory (normally "/usr/etc")
  * @param etc_conf_dir absolute path of the second directory (normally "/etc")
- * @param project_name basename of the configuration file
+ * @param config_name basename of the configuration file
  * @param config_suffix suffix of the configuration file. Can also be NULL.
  * @param delim delimiters of key/value e.g. "\t ="
  *        If delim contains space characters AND none space characters,
@@ -317,7 +513,7 @@ extern econf_err econf_readDirs(econf_file **key_file,
  extern econf_err econf_readDirsWithCallback(econf_file **key_file,
 					     const char *usr_conf_dir,
 					     const char *etc_conf_dir,
-					     const char *project_name,
+					     const char *config_name,
 					     const char *config_suffix,
 					     const char *delim,
 					     const char *comment,
@@ -333,7 +529,7 @@ extern econf_err econf_readDirs(econf_file **key_file,
  * @param size Size of the evaluated key_files list.
  * @param usr_conf_dir absolute path of the first directory (normally "/usr/etc")
  * @param etc_conf_dir absolute path of the second directory (normally "/etc")
- * @param project_name basename of the configuration file
+ * @param config_name basename of the configuration file
  * @param config_suffix suffix of the configuration file. Can also be NULL.
  * @param delim delimiters of key/value e.g. "\t ="
  *        If delim contains space characters AND none space characters,
@@ -346,7 +542,7 @@ extern econf_err econf_readDirsHistory(econf_file ***key_files,
 				       size_t *size,
 				       const char *usr_conf_dir,
 				       const char *etc_conf_dir,
-				       const char *project_name,
+				       const char *config_name,
 				       const char *config_suffix,
 				       const char *delim,
 				       const char *comment);
@@ -361,7 +557,7 @@ extern econf_err econf_readDirsHistory(econf_file ***key_files,
  * @param size Size of the evaluated key_files list.
  * @param usr_conf_dir absolute path of the first directory (normally "/usr/etc")
  * @param etc_conf_dir absolute path of the second directory (normally "/etc")
- * @param project_name basename of the configuration file
+ * @param config_name basename of the configuration file
  * @param config_suffix suffix of the configuration file. Can also be NULL.
  * @param delim delimiters of key/value e.g. "\t ="
  *        If delim contains space characters AND none space characters,
@@ -378,7 +574,7 @@ extern econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
 						   size_t *size,
 						   const char *usr_conf_dir,
 						   const char *etc_conf_dir,
-						   const char *project_name,
+						   const char *config_name,
 						   const char *config_suffix,
 						   const char *delim,
 						   const char *comment,
@@ -880,11 +1076,11 @@ econf_reset_security_settings(void);
  * @param dir_postfix_list list of directory structures.
  *        E.G. with the given list: {"/conf.d/", ".d/", "/", NULL} files in following
  *        directories will be parsed:
- *           "<default_dirs>/<project_name>.<suffix>.d/"
- *           "<default_dirs>/<project_name>/conf.d/"
- *           "<default_dirs>/<project_name>.d/"
- *           "<default_dirs>/<project_name>/"
- *        The entry "<default_dirs>/<project_name>.<suffix>.d/" will be added
+ *           "<default_dirs>/<config_name>.<suffix>.d/"
+ *           "<default_dirs>/<config_name>/conf.d/"
+ *           "<default_dirs>/<config_name>.d/"
+ *           "<default_dirs>/<config_name>/"
+ *        The entry "<default_dirs>/<config_name>.<suffix>.d/" will be added
  *        automatically.
  *
  * @return econf_err ECONF_SUCCESS or error code
