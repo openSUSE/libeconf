@@ -50,6 +50,7 @@ set(TESTS tst-filedoesnotexit1
           tst-getconfdirs6
           tst-getconfdirs7
           tst-getconfdirs8
+          tst-getconfdirs9	  
 	  tst-without-suffix
           tst-econf_errstring1
           tst-setgetvalues1

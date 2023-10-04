@@ -70,6 +70,8 @@ tst_getconfdirs7_exe = executable('tst-getconfdirs7', 'tst-getconfdirs7.c', c_ar
 test('tst-getconfdirs7', tst_getconfdirs7_exe)
 tst_getconfdirs8_exe = executable('tst-getconfdirs8', 'tst-getconfdirs8.c', c_args: ['-DSUFFIX="conf"', test_args], dependencies : libeconf_dep)
 test('tst-getconfdirs8', tst_getconfdirs8_exe)
+tst_getconfdirs9_exe = executable('tst-getconfdirs9', 'tst-getconfdirs9.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-getconfdirs9', tst_getconfdirs9_exe)
 
 tst_parse_error_exe = executable('tst-parse-error', 'tst-parse-error.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-parse-error', tst_parse_error_exe)
