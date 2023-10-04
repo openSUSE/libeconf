@@ -47,7 +47,8 @@ libeconf_src = files(
   'lib/helpers.c',
   'lib/keyfile.c',
   'lib/libeconf.c',
-  'lib/libeconf_ext.c',  
+  'lib/libeconf_ext.c',
+  'lib/readconfig.c',
   'lib/mergefiles.c',
 )
 example_src = ['example/example.c']

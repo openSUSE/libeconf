@@ -120,9 +120,6 @@ typedef enum econf_err econf_err;
     char**: econf_freeArray)) \
 (value))
 
-#define DEFAULT_RUN_SUBDIR "/run"
-#define DEFAULT_ETC_SUBDIR "/etc"	
-	
 typedef struct econf_file econf_file;
 
 /** @brief Process the file of the given file_name and save its contents into key_file object.
@@ -468,9 +465,7 @@ extern econf_err econf_readDirs(econf_file **key_file,
  *  directories (normally in /usr/etc and /etc). For each parsed file the user defined function
  *  will be called in order e.g. to check the correct file permissions.
  *
- * @param key_files list of parsed file(s).
- *        Each entry includes all key/value, path, comments,... information of the regarding file.
- * @param size Size of the evaluated key_files list.
+ * @param key_file content of parsed file(s)
  * @param usr_conf_dir absolute path of the first directory (normally "/usr/etc")
  * @param etc_conf_dir absolute path of the second directory (normally "/etc")
  * @param config_name basename of the configuration file
