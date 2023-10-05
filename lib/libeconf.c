@@ -282,20 +282,22 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
 				       bool (*callback)(const char *filename, const void *data),
 				       const void *callback_data)
 {
-  char *run_dir = DEFAULT_RUN_SUBDIR;
-  char *etc_dir = DEFAULT_ETC_SUBDIR;
+  char usr_dir[PATH_MAX];
+  char run_dir[PATH_MAX];
+  char etc_dir[PATH_MAX];
+
   if (project != NULL) {
-    if (asprintf(&run_dir, "%s/%s", DEFAULT_RUN_SUBDIR, project) < 0) {
-      return ECONF_NOMEM;
-    }
-    if (asprintf(&etc_dir, "%s/%s", DEFAULT_ETC_SUBDIR, project) < 0) {
-      free(run_dir);	    
-      return ECONF_NOMEM;
-    }
-  } 
+    snprintf(usr_dir, sizeof(usr_dir),"%s/%s", usr_subdir, project);
+    snprintf(run_dir, sizeof(run_dir), "%s/%s", DEFAULT_RUN_SUBDIR, project);
+    snprintf(etc_dir, sizeof(etc_dir), "%s/%s", DEFAULT_ETC_SUBDIR, project);
+  } else {
+    snprintf(usr_dir, sizeof(usr_dir),"%s", usr_subdir);
+    snprintf(run_dir, sizeof(run_dir), "%s", DEFAULT_RUN_SUBDIR);
+    snprintf(etc_dir, sizeof(etc_dir), "%s", DEFAULT_ETC_SUBDIR);
+  }
 	  
   econf_err ret = readConfigWithCallback(key_file,
-					 usr_subdir,
+					 usr_dir,
 					 run_dir,
 					 etc_dir,
 					 config_name,
@@ -306,8 +308,6 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
 					 conf_count,
 					 callback,
 					 callback_data);
-  free(run_dir);
-  free(etc_dir);
   return ret;
 }  
 

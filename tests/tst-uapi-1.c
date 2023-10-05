@@ -6,14 +6,17 @@
 #include <string.h>
 
 #include "libeconf.h"
+#include "../lib/helpers.h"
+#include "../lib/mergefiles.h"
+#include "../lib/readconfig.h"
 
 /* Test case:
    Test the systemd like behavior:
-   /usr/etc/getconfdir.conf exists
-   /run/getconfdir.conf exists
-   /etc/getconfidr.conf.d/<files>.conf exists
+   /usr/foo/etc/getconfdir.conf exists
+   /run/foo/getconfdir.conf exists
+   /etc/foo/getconfidr.conf.d/<files>.conf exists
 
-   libeconf should ignore /usr/etc/getconfdir.conf, as this contains
+   libeconf should ignore /usr/foo/etc/getconfdir.conf, as this contains
 */
 
 static int
@@ -53,13 +56,15 @@ main(void)
   int retval = 0;
   econf_err error;
 
-  error = econf_readDirs (&key_file,
-				    TESTSDIR"tst-getconfdirs1-data/usr/etc",
-				    TESTSDIR"tst-getconfdirs1-data/etc",
-				    "getconfdir", "conf", "=", "#");
+  error = readConfigWithCallback (&key_file,
+				  TESTSDIR"tst-uapi-1-data/usr/etc/foo",
+				  TESTSDIR"tst-uapi-1-data/run/foo",
+				  TESTSDIR"tst-uapi-1-data/etc/foo",   
+				  "getconfdir", "conf", "=", "#",
+				  NULL, 0, NULL, NULL);
   if (error)
     {
-      fprintf (stderr, "ERROR: econf_readDirs: %s\n",
+      fprintf (stderr, "ERROR: econf_readConfig: %s\n",
 	       econf_errString(error));
       return 1;
     }
