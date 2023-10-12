@@ -621,7 +621,7 @@ def set_int_value(ef: EconfFile, group: str, key: str, value: int) -> None:
         group = _encode_str(group)
     c_key = _encode_str(key)
     c_value = _ensure_valid_int(value)
-    err = LIBECONF.econf_setInt64Value(byref(ef._ptr), group, c_key, c_value)
+    err = LIBECONF.econf_setInt64Value(ef._ptr, group, c_key, c_value)
     if err:
         _exceptions(err, f"set_int64_value failed with error: {err_string(err)}")
     return
@@ -641,7 +641,7 @@ def set_uint_value(ef: EconfFile, group: str, key: str, value: int) -> None:
         group = _encode_str(group)
     c_key = _encode_str(key)
     c_value = _ensure_valid_uint(value)
-    err = LIBECONF.econf_setUInt64Value(byref(ef._ptr), group, c_key, c_value)
+    err = LIBECONF.econf_setUInt64Value(ef._ptr, group, c_key, c_value)
     if err:
         _exceptions(err, f"set_uint64_value failed with error: {err_string(err)}")
     return
@@ -663,7 +663,7 @@ def set_float_value(ef: EconfFile, group: str, key: str, value: float) -> None:
     if not isinstance(value, float):
         raise TypeError('"value" parameter must be of type float')
     c_value = c_double(value)
-    err = LIBECONF.econf_setDoubleValue(byref(ef._ptr), group, c_key, c_value)
+    err = LIBECONF.econf_setDoubleValue(ef._ptr, group, c_key, c_value)
     if err:
         _exceptions(err, f"set_double_value failed with error: {err_string(err)}")
     return
@@ -685,7 +685,7 @@ def set_string_value(
         group = _encode_str(group)
     c_key = _encode_str(key)
     c_value = _encode_str(value)
-    err = LIBECONF.econf_setStringValue(byref(ef._ptr), group, c_key, c_value)
+    err = LIBECONF.econf_setStringValue(ef._ptr, group, c_key, c_value)
     if err:
         _exceptions(err, f"set_string_value failed with error: {err_string(err)}")
     return
@@ -707,7 +707,7 @@ def set_bool_value(ef: EconfFile, group: str, key: str, value: bool) -> None:
     if not isinstance(value, bool):
         raise TypeError('"value" parameter must be of type bool')
     c_value = c_bool(value)
-    err = LIBECONF.econf_setBoolValue(byref(ef._ptr), group, c_key, c_value)
+    err = LIBECONF.econf_setBoolValue(ef._ptr, group, c_key, c_value)
     if err:
         _exceptions(err, f"set_bool_value failed with error: {err_string(err)}")
     return
