@@ -124,14 +124,14 @@ def _ensure_valid_uint(val: int) -> int:
             raise ValueError(
                 "Integer overflow found, only up to 64 bit unsigned integers are supported"
             )
-        return c_vala
+        return c_val
     else:
         raise TypeError(f"parameter {val} is not an unsigned integer")
 
 
 def set_value(
     ef: EconfFile, group: str | bytes, key: str | bytes, value: Any
-) -> Econf_err:
+) -> None:
     """
     Dynamically set a value in a keyfile and returns a status code
 
@@ -139,22 +139,22 @@ def set_value(
     :param group: group of the key to be changed
     :param key: key to be changed
     :param value: desired value
-    :return: Error code
+    :return: Nothing
     """
     if isinstance(value, int):
         if value >= 0:
-            res = set_uint_value(ef, group, key, value)
+            set_uint_value(ef, group, key, value)
         else:
-            res = set_int_value(ef, group, key, value)
+            set_int_value(ef, group, key, value)
     elif isinstance(value, float):
-        res = set_float_value(ef, group, key, value)
+        set_float_value(ef, group, key, value)
     elif isinstance(value, str) | isinstance(value, bytes):
-        res = set_string_value(ef, group, key, value)
+        set_string_value(ef, group, key, value)
     elif isinstance(value, bool):
-        res = set_bool_value(ef, group, key, value)
+        set_bool_value(ef, group, key, value)
     else:
         raise TypeError(f"parameter {val} is not one of the supported types")
-    return res
+    return
 
 
 def read_file(
@@ -317,19 +317,21 @@ def new_ini_file() -> EconfFile:
     return result
 
 
-def write_file(ef: EconfFile, save_to_dir: str, file_name: str) -> Econf_err:
+def write_file(ef: EconfFile, save_to_dir: str, file_name: str) -> None:
     """
     Write content of a keyfile to specified location
 
     :param ef: Key-Value storage object
     :param save_to_dir: directory into which the file has to be written
     :param file_name: filename with suffix of the to be written file
-    :return: Error code
+    :return: Nothing
     """
     c_save_to_dir = _encode_str(save_to_dir)
     c_file_name = _encode_str(file_name)
     err = LIBECONF.econf_writeFile(byref(ef._ptr), c_save_to_dir, c_file_name)
-    return Econf_err(err)
+    if err:
+        _exceptions(err, f"write_file failed with error: {err_string(err)}")
+    return
 
 
 def get_path(ef: EconfFile) -> str:
@@ -495,7 +497,7 @@ def get_int_value_def(ef: EconfFile, group: str, key: str, default: int) -> int:
         ef._ptr, group, c_key, byref(c_result), c_default
     )
     if err:
-        if err == Econf_err(NO_KEY):
+        if Econf_err(err) == Econf_err.ECONF_NOKEY:
             return c_default.value
         _exceptions(err, f"get_int64_value_def failed with error: {err_string(err)}")
     return c_result.value
@@ -520,7 +522,7 @@ def get_uint_value_def(ef: EconfFile, group: str, key: str, default: int) -> int
         ef._ptr, group, c_key, byref(c_result), c_default
     )
     if err:
-        if err == Econf_err(NO_KEY):
+        if Econf_err(err) == Econf_err.ECONF_NOKEY:
             return c_default.value
         _exceptions(err, f"get_uint64_value_def failed with error: {err_string(err)}")
     return c_result.value
@@ -547,7 +549,7 @@ def get_float_value_def(ef: EconfFile, group: str, key: str, default: float) -> 
         ef._ptr, group, c_key, byref(c_result), c_default
     )
     if err:
-        if err == Econf_err(NO_KEY):
+        if Econf_err(err) == Econf_err.ECONF_NOKEY:
             return c_default.value
         _exceptions(err, f"get_double_value_def failed with error: {err_string(err)}")
     return c_result.value
@@ -572,7 +574,7 @@ def get_string_value_def(ef: EconfFile, group: str, key: str, default: str) -> s
         ef._ptr, group, c_key, byref(c_result), c_default
     )
     if err:
-        if err == Econf_err(NO_KEY):
+        if Econf_err(err) == Econf_err.ECONF_NOKEY:
             return c_default.decode("utf-8")
         _exceptions(err, f"get_string_value_def failed with error: {err_string(err)}")
     return c_result.value.decode("utf-8")
@@ -599,13 +601,13 @@ def get_bool_value_def(ef: EconfFile, group: str, key: str, default: bool) -> bo
         ef._ptr, group, c_key, byref(c_result), c_default
     )
     if err:
-        if err == Econf_err(NO_KEY):
+        if Econf_err(err) == Econf_err.ECONF_NOKEY:
             return c_default.value
         _exceptions(err, f"get_bool_value_def failed with error: {err_string(err)}")
     return c_result.value
 
 
-def set_int_value(ef: EconfFile, group: str, key: str, value: int) -> Econf_err:
+def set_int_value(ef: EconfFile, group: str, key: str, value: int) -> None:
     """
     Setting an integer value for given group/key
 
@@ -613,7 +615,7 @@ def set_int_value(ef: EconfFile, group: str, key: str, value: int) -> Econf_err:
     :param group: desired group
     :param key: key of the value that is requested
     :param value: value to be set for given key
-    :return: Error code
+    :return: Nothing
     """
     if group:
         group = _encode_str(group)
@@ -622,10 +624,10 @@ def set_int_value(ef: EconfFile, group: str, key: str, value: int) -> Econf_err:
     err = LIBECONF.econf_setInt64Value(byref(ef._ptr), group, c_key, c_value)
     if err:
         _exceptions(err, f"set_int64_value failed with error: {err_string(err)}")
-    return Econf_err(err)
+    return
 
 
-def set_uint_value(ef: EconfFile, group: str, key: str, value: int) -> Econf_err:
+def set_uint_value(ef: EconfFile, group: str, key: str, value: int) -> None:
     """
     Setting an unsigned integer value for given group/key
 
@@ -633,7 +635,7 @@ def set_uint_value(ef: EconfFile, group: str, key: str, value: int) -> Econf_err
     :param group: desired group
     :param key: key of the value that is requested
     :param value: value to be set for given key
-    :return: Error code
+    :return: Nothing
     """
     if group:
         group = _encode_str(group)
@@ -642,10 +644,10 @@ def set_uint_value(ef: EconfFile, group: str, key: str, value: int) -> Econf_err
     err = LIBECONF.econf_setUInt64Value(byref(ef._ptr), group, c_key, c_value)
     if err:
         _exceptions(err, f"set_uint64_value failed with error: {err_string(err)}")
-    return Econf_err(err)
+    return
 
 
-def set_float_value(ef: EconfFile, group: str, key: str, value: float) -> Econf_err:
+def set_float_value(ef: EconfFile, group: str, key: str, value: float) -> None:
     """
     Setting a float value for given group/key
 
@@ -653,7 +655,7 @@ def set_float_value(ef: EconfFile, group: str, key: str, value: float) -> Econf_
     :param group: desired group
     :param key: key of the value that is requested
     :param value: value to be set for given key
-    :return: Error code
+    :return: Nothing
     """
     if group:
         group = _encode_str(group)
@@ -664,12 +666,12 @@ def set_float_value(ef: EconfFile, group: str, key: str, value: float) -> Econf_
     err = LIBECONF.econf_setDoubleValue(byref(ef._ptr), group, c_key, c_value)
     if err:
         _exceptions(err, f"set_double_value failed with error: {err_string(err)}")
-    return Econf_err(err)
+    return
 
 
 def set_string_value(
     ef: EconfFile, group: str, key: str, value: str | bytes
-) -> Econf_err:
+) -> None:
     """
     Setting a string value for given group/key
 
@@ -677,7 +679,7 @@ def set_string_value(
     :param group: desired group
     :param key: key of the value that is requested
     :param value: value to be set for given key
-    :return: Error code
+    :return: Nothing
     """
     if group:
         group = _encode_str(group)
@@ -686,10 +688,10 @@ def set_string_value(
     err = LIBECONF.econf_setStringValue(byref(ef._ptr), group, c_key, c_value)
     if err:
         _exceptions(err, f"set_string_value failed with error: {err_string(err)}")
-    return Econf_err(err)
+    return
 
 
-def set_bool_value(ef: EconfFile, group: str, key: str, value: bool) -> Econf_err:
+def set_bool_value(ef: EconfFile, group: str, key: str, value: bool) -> None:
     """
     Setting a boolean value for given group/key
 
@@ -697,7 +699,7 @@ def set_bool_value(ef: EconfFile, group: str, key: str, value: bool) -> Econf_er
     :param group: desired group
     :param key: key of the value that is requested
     :param value: value to be set for given key
-    :return: Error code
+    :return: Nothing
     """
     if group:
         group = _encode_str(group)
@@ -708,7 +710,7 @@ def set_bool_value(ef: EconfFile, group: str, key: str, value: bool) -> Econf_er
     err = LIBECONF.econf_setBoolValue(byref(ef._ptr), group, c_key, c_value)
     if err:
         _exceptions(err, f"set_bool_value failed with error: {err_string(err)}")
-    return Econf_err(err)
+    return
 
 
 def err_string(error: int):
@@ -725,7 +727,7 @@ def err_string(error: int):
     return LIBECONF.econf_errString(error).decode("utf-8")
 
 
-def err_location():
+def err_location() -> Tuple[str, int]:
     """
     Info about the line where an error happened
 
