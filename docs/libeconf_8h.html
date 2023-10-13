@@ -27,7 +27,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">libeconf
-   &#160;<span id="projectnumber">0.4.0</span>
+   &#160;<span id="projectnumber">0.5.2</span>
    </div>
   </td>
  </tr>
@@ -67,7 +67,8 @@ $(document).ready(function(){initNavTree('libeconf_8h.html','');});
 <a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">libeconf.h File Reference</div>  </div>
 </div><!--header-->
@@ -78,6 +79,7 @@ $(document).ready(function(){initNavTree('libeconf_8h.html','');});
 <div class="textblock"><code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
+<code>#include &lt;sys/types.h&gt;</code><br />
 </div>
 <p><a href="libeconf_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -115,7 +117,18 @@ Enumerations</h2></td></tr>
 <a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aacd662d9a8a5249d344bc716517a5506f">ECONF_MISSING_DELIMITER</a> = 10, 
 <a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa8bffb248bd0e7fbfe09f404ec73ffeb6">ECONF_EMPTY_SECTION_NAME</a> = 11, 
 <br />
-&#160;&#160;<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa5af88d2cd68517701b2d8b9c34fbb4a0">ECONF_TEXT_AFTER_SECTION</a> = 12
+&#160;&#160;<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa5af88d2cd68517701b2d8b9c34fbb4a0">ECONF_TEXT_AFTER_SECTION</a> = 12, 
+<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa1635184e73c0a6d522d82bba0abd0e4a">ECONF_FILE_LIST_IS_NULL</a> = 13, 
+<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa4725ff7773c2b5a9d703460f1ca070f4">ECONF_WRONG_BOOLEAN_VALUE</a> = 14, 
+<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aaa7f3b09e2b8a627f11f4df6e745103c9">ECONF_KEY_HAS_NULL_VALUE</a> = 15, 
+<br />
+&#160;&#160;<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aae8f9a6e81d529822968f1af70c9b1946">ECONF_WRONG_OWNER</a> = 16, 
+<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aab28f4a0d53a21a1f0ed21fe8601a6d14">ECONF_WRONG_GROUP</a> = 17, 
+<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa768ba4de0c5ba47154dba9dc4a26cb84">ECONF_WRONG_FILE_PERMISSION</a> = 18, 
+<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aac04246deccfe0075cc58956c543fa408">ECONF_WRONG_DIR_PERMISSION</a> = 19, 
+<br />
+&#160;&#160;<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aab09de6a0a65f054a6c542151a675e241">ECONF_ERROR_FILE_IS_SYM_LINK</a> = 20, 
+<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa6b9c2f2cdbbf94dbaabfa42e3425deb4">ECONF_PARSING_CALLBACK_FAILED</a> = 21
 <br />
  }</td></tr>
 <tr class="memdesc:a30cb4e6c5ce4daa333646b23b20caa0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">libeconf error codes  <a href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">More...</a><br /></td></tr>
@@ -126,21 +139,42 @@ Functions</h2></td></tr>
 <tr class="memitem:aa03377bd02882239b3342c095f916561"><td class="memItemLeft" align="right" valign="top"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#aa03377bd02882239b3342c095f916561">econf_readFile</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> **result, const char *file_name, const char *delim, const char *comment)</td></tr>
 <tr class="memdesc:aa03377bd02882239b3342c095f916561"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process the file of the given file_name and save its contents into key_file object.  <a href="#aa03377bd02882239b3342c095f916561">More...</a><br /></td></tr>
 <tr class="separator:aa03377bd02882239b3342c095f916561"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bf61969ee7ea191fdd28b0c8de5761d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a6bf61969ee7ea191fdd28b0c8de5761d">econf_readFileWithCallback</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> **result, const char *file_name, const char *delim, const char *comment, bool(*callback)(const char *filename, const void *data), const void *callback_data)</td></tr>
+<tr class="memdesc:a6bf61969ee7ea191fdd28b0c8de5761d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process the file of the given file_name and save its contents into key_file object.  <a href="#a6bf61969ee7ea191fdd28b0c8de5761d">More...</a><br /></td></tr>
+<tr class="separator:a6bf61969ee7ea191fdd28b0c8de5761d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2aba75b3474b33173edbc0f80b2e8a79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a2aba75b3474b33173edbc0f80b2e8a79">econf_mergeFiles</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> **merged_file, <a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *usr_file, <a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *etc_file)</td></tr>
 <tr class="memdesc:a2aba75b3474b33173edbc0f80b2e8a79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merge the contents of two key_files objects.  <a href="#a2aba75b3474b33173edbc0f80b2e8a79">More...</a><br /></td></tr>
 <tr class="separator:a2aba75b3474b33173edbc0f80b2e8a79"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ff92b0fb657aa21220a89a0fcb59227"><td class="memItemLeft" align="right" valign="top"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a7ff92b0fb657aa21220a89a0fcb59227">econf_readDirs</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> **key_file, const char *usr_conf_dir, const char *etc_conf_dir, const char *project_name, const char *config_suffix, const char *delim, const char *comment)</td></tr>
 <tr class="memdesc:a7ff92b0fb657aa21220a89a0fcb59227"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluating key/values of a given configuration by reading and merging all needed/available files in two different directories (normally in /usr/etc and /etc).  <a href="#a7ff92b0fb657aa21220a89a0fcb59227">More...</a><br /></td></tr>
 <tr class="separator:a7ff92b0fb657aa21220a89a0fcb59227"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa54f0d5e7d918e23ae53f66c48191811"><td class="memItemLeft" align="right" valign="top"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#aa54f0d5e7d918e23ae53f66c48191811">econf_readDirsWithCallback</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> **key_file, const char *usr_conf_dir, const char *etc_conf_dir, const char *project_name, const char *config_suffix, const char *delim, const char *comment, bool(*callback)(const char *filename, const void *data), const void *callback_data)</td></tr>
+<tr class="memdesc:aa54f0d5e7d918e23ae53f66c48191811"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluating key/values for every given configuration files in two different directories (normally in /usr/etc and /etc).  <a href="#aa54f0d5e7d918e23ae53f66c48191811">More...</a><br /></td></tr>
+<tr class="separator:aa54f0d5e7d918e23ae53f66c48191811"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a55faa39cd3887073d1aaba364bd09f94"><td class="memItemLeft" align="right" valign="top"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a55faa39cd3887073d1aaba364bd09f94">econf_readDirsHistory</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> ***key_files, size_t *size, const char *usr_conf_dir, const char *etc_conf_dir, const char *project_name, const char *config_suffix, const char *delim, const char *comment)</td></tr>
 <tr class="memdesc:a55faa39cd3887073d1aaba364bd09f94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluating key/values for every given configuration files in two different directories (normally in /usr/etc and /etc).  <a href="#a55faa39cd3887073d1aaba364bd09f94">More...</a><br /></td></tr>
 <tr class="separator:a55faa39cd3887073d1aaba364bd09f94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50cb704ad90f36ade8a619bfc986f89b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a50cb704ad90f36ade8a619bfc986f89b">econf_readDirsHistoryWithCallback</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> ***key_files, size_t *size, const char *usr_conf_dir, const char *etc_conf_dir, const char *project_name, const char *config_suffix, const char *delim, const char *comment, bool(*callback)(const char *filename, const void *data), const void *callback_data)</td></tr>
+<tr class="memdesc:a50cb704ad90f36ade8a619bfc986f89b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluating key/values for every given configuration files in two different directories (normally in /usr/etc and /etc).  <a href="#a50cb704ad90f36ade8a619bfc986f89b">More...</a><br /></td></tr>
+<tr class="separator:a50cb704ad90f36ade8a619bfc986f89b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94f42f580d8c9dff8cdb01a5c91bb5ec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a94f42f580d8c9dff8cdb01a5c91bb5ec">econf_newKeyFile</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> **result, char delimiter, char comment)</td></tr>
 <tr class="memdesc:a94f42f580d8c9dff8cdb01a5c91bb5ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new econf_file object.  <a href="#a94f42f580d8c9dff8cdb01a5c91bb5ec">More...</a><br /></td></tr>
 <tr class="separator:a94f42f580d8c9dff8cdb01a5c91bb5ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b7c823419269683749a7394e776b22c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a0b7c823419269683749a7394e776b22c">econf_newIniFile</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> **result)</td></tr>
 <tr class="memdesc:a0b7c823419269683749a7394e776b22c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new econf_file object in IniFile format.  <a href="#a0b7c823419269683749a7394e776b22c">More...</a><br /></td></tr>
 <tr class="separator:a0b7c823419269683749a7394e776b22c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d24ab3c1515a2a0cf4668221a0ee6f7"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a5d24ab3c1515a2a0cf4668221a0ee6f7">econf_comment_tag</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *key_file)</td></tr>
+<tr class="memdesc:a5d24ab3c1515a2a0cf4668221a0ee6f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the comment character tag of the given econf_file object.  <a href="#a5d24ab3c1515a2a0cf4668221a0ee6f7">More...</a><br /></td></tr>
+<tr class="separator:a5d24ab3c1515a2a0cf4668221a0ee6f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fa45814606cac4dc4abdfe462f8ee70"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a2fa45814606cac4dc4abdfe462f8ee70">econf_delimiter_tag</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *key_file)</td></tr>
+<tr class="memdesc:a2fa45814606cac4dc4abdfe462f8ee70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the delimiter character of the given econf_file object.  <a href="#a2fa45814606cac4dc4abdfe462f8ee70">More...</a><br /></td></tr>
+<tr class="separator:a2fa45814606cac4dc4abdfe462f8ee70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dc59b13a0293943b10dfc09e6daba09"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a1dc59b13a0293943b10dfc09e6daba09">econf_set_comment_tag</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *key_file, const char comment)</td></tr>
+<tr class="memdesc:a1dc59b13a0293943b10dfc09e6daba09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the comment character tag of the given econf_file object.  <a href="#a1dc59b13a0293943b10dfc09e6daba09">More...</a><br /></td></tr>
+<tr class="separator:a1dc59b13a0293943b10dfc09e6daba09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa14d17dc8e3ebc26e155ceb2d497ad14"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#aa14d17dc8e3ebc26e155ceb2d497ad14">econf_set_delimiter_tag</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *key_file, const char delimiter)</td></tr>
+<tr class="memdesc:aa14d17dc8e3ebc26e155ceb2d497ad14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the delimiter character of the given econf_file object.  <a href="#aa14d17dc8e3ebc26e155ceb2d497ad14">More...</a><br /></td></tr>
+<tr class="separator:aa14d17dc8e3ebc26e155ceb2d497ad14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f1e5a7c748ef9147fc7d16604904171"><td class="memItemLeft" align="right" valign="top"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a5f1e5a7c748ef9147fc7d16604904171">econf_writeFile</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *key_file, const char *save_to_dir, const char *file_name)</td></tr>
 <tr class="memdesc:a5f1e5a7c748ef9147fc7d16604904171"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write content of a econf_file struct to specified location.  <a href="#a5f1e5a7c748ef9147fc7d16604904171">More...</a><br /></td></tr>
 <tr class="separator:a5f1e5a7c748ef9147fc7d16604904171"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -237,6 +271,17 @@ Functions</h2></td></tr>
 <tr class="memitem:af5fe145fe20e3a39efa781756a1f2589"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#af5fe145fe20e3a39efa781756a1f2589">econf_freeFile</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *key_file)</td></tr>
 <tr class="memdesc:af5fe145fe20e3a39efa781756a1f2589"><td class="mdescLeft">&#160;</td><td class="mdescRight">Free memory allocated by e.g.  <a href="#af5fe145fe20e3a39efa781756a1f2589">More...</a><br /></td></tr>
 <tr class="separator:af5fe145fe20e3a39efa781756a1f2589"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75b8fd4dfcc61b88e96db56be871143a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a75b8fd4dfcc61b88e96db56be871143a">__attribute__</a> ((deprecated(&quot;use one of econf_read*WithCallback instead&quot;))) econf_requireOwner(uid_t owner)</td></tr>
+<tr class="memdesc:a75b8fd4dfcc61b88e96db56be871143a"><td class="mdescLeft">&#160;</td><td class="mdescRight">All parsed files require this user permission.  <a href="#a75b8fd4dfcc61b88e96db56be871143a">More...</a><br /></td></tr>
+<tr class="separator:a75b8fd4dfcc61b88e96db56be871143a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0466a16c30cfcd58ec6201d210c64731"><td class="memItemLeft" align="right" valign="top"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a0466a16c30cfcd58ec6201d210c64731">econf_set_conf_dirs</a> (const char **dir_postfix_list)</td></tr>
+<tr class="memdesc:a0466a16c30cfcd58ec6201d210c64731"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a list of directory structures (with order) which describes the directories in which the files have to be parsed.  <a href="#a0466a16c30cfcd58ec6201d210c64731">More...</a><br /></td></tr>
+<tr class="separator:a0466a16c30cfcd58ec6201d210c64731"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a8180855e033a12c0de69b680c99af657"><td class="memItemLeft" align="right" valign="top">void mode_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a8180855e033a12c0de69b680c99af657">dir_perms</a></td></tr>
+<tr class="separator:a8180855e033a12c0de69b680c99af657"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Public API for the econf library. </p>
@@ -292,7 +337,7 @@ Functions</h2></td></tr>
 <p>Use: econf_setValue(econf_file *key_file, char *group, char *key, <em>generic</em> value);</p>
 <p>Replace <em>generic</em> with one of the supported value types. Supported Types: int, long, unsigned int, unsigned long, float, double, string (as *char). Note: Does not detect "yes", "no", 1 and 0 as boolean type. If you want to set a bool value use "true" or "false" or use setBoolValue() directly. </p>
 
-<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00081">81</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00100">100</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
 
 </div>
 </div>
@@ -311,7 +356,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">(( \</div><div class="line">  _Generic((value), \</div><div class="line">    <a class="code" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a>*: <a class="code" href="libeconf_8h.html#af5fe145fe20e3a39efa781756a1f2589">econf_freeFile</a> , \</div><div class="line">    <span class="keywordtype">char</span>**: <a class="code" href="libeconf_8h.html#ad6da8744e42ba1f4ddf5179a79fde50e">econf_freeArray</a>)) \</div><div class="line">(value))</div><div class="ttc" id="libeconf_8h_html_a0d29e6d5c6c6d151bb3edc54019c8735"><div class="ttname"><a href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a></div><div class="ttdeci">struct econf_file econf_file</div><div class="ttdef"><b>Definition:</b> <a href="libeconf_8h_source.html#l00104">libeconf.h:104</a></div></div>
+<b>Value:</b><div class="fragment"><div class="line">(( \</div><div class="line">  _Generic((value), \</div><div class="line">    <a class="code" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a>*: <a class="code" href="libeconf_8h.html#af5fe145fe20e3a39efa781756a1f2589">econf_freeFile</a> , \</div><div class="line">    <span class="keywordtype">char</span>**: <a class="code" href="libeconf_8h.html#ad6da8744e42ba1f4ddf5179a79fde50e">econf_freeArray</a>)) \</div><div class="line">(value))</div><div class="ttc" id="libeconf_8h_html_a0d29e6d5c6c6d151bb3edc54019c8735"><div class="ttname"><a href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a></div><div class="ttdeci">struct econf_file econf_file</div><div class="ttdef"><b>Definition:</b> <a href="libeconf_8h_source.html#l00123">libeconf.h:123</a></div></div>
 <div class="ttc" id="libeconf_8h_html_ad6da8744e42ba1f4ddf5179a79fde50e"><div class="ttname"><a href="libeconf_8h.html#ad6da8744e42ba1f4ddf5179a79fde50e">econf_freeArray</a></div><div class="ttdeci">void econf_freeArray(char **array)</div><div class="ttdoc">Free an array of type char** created by econf_getGroups() or econf_getKeys(). </div></div>
 <div class="ttc" id="libeconf_8h_html_af5fe145fe20e3a39efa781756a1f2589"><div class="ttname"><a href="libeconf_8h.html#af5fe145fe20e3a39efa781756a1f2589">econf_freeFile</a></div><div class="ttdeci">void econf_freeFile(econf_file *key_file)</div><div class="ttdoc">Free memory allocated by e.g. </div></div>
 </div><!-- fragment -->
@@ -319,7 +364,7 @@ Functions</h2></td></tr>
 <p>Use: econf_free(<em>generic</em> value);</p>
 <p>Replace <em>generic</em> with one of the supported value types. Supported Types: char** and econf_file*. </p>
 
-<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00098">98</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00117">117</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
 
 </div>
 </div>
@@ -336,7 +381,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00069">69</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00088">88</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
 
 </div>
 </div>
@@ -352,7 +397,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00104">104</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00123">123</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
 
 </div>
 </div>
@@ -383,7 +428,7 @@ Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aac3909d9fd9bdac53e1e8b2b80c470eb0"></a>ECONF_NOKEY&#160;</td><td class="fielddoc"><p>Key not found. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aaf3119f73c97a08fd08e2dfbc3d42493c"></a>ECONF_EMPTYKEY&#160;</td><td class="fielddoc"><p>Key has empty value. </p>
+<tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aaf3119f73c97a08fd08e2dfbc3d42493c"></a>ECONF_EMPTYKEY&#160;</td><td class="fielddoc"><p>Key is NULL or has empty value. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aaa0542bb798322dd272fe66411b0ede6c"></a>ECONF_WRITEERROR&#160;</td><td class="fielddoc"><p>Error creating or writing to a file. </p>
 </td></tr>
@@ -397,9 +442,27 @@ Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aa5af88d2cd68517701b2d8b9c34fbb4a0"></a>ECONF_TEXT_AFTER_SECTION&#160;</td><td class="fielddoc"><p>Text after section. </p>
 </td></tr>
+<tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aa1635184e73c0a6d522d82bba0abd0e4a"></a>ECONF_FILE_LIST_IS_NULL&#160;</td><td class="fielddoc"><p>Parsed file list is NULL. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aa4725ff7773c2b5a9d703460f1ca070f4"></a>ECONF_WRONG_BOOLEAN_VALUE&#160;</td><td class="fielddoc"><p>Wrong boolean value (1/0 true/false yes/no) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aaa7f3b09e2b8a627f11f4df6e745103c9"></a>ECONF_KEY_HAS_NULL_VALUE&#160;</td><td class="fielddoc"><p>Given key has NULL value. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aae8f9a6e81d529822968f1af70c9b1946"></a>ECONF_WRONG_OWNER&#160;</td><td class="fielddoc"><p>File has wrong owner. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aab28f4a0d53a21a1f0ed21fe8601a6d14"></a>ECONF_WRONG_GROUP&#160;</td><td class="fielddoc"><p>File has wrong group. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aa768ba4de0c5ba47154dba9dc4a26cb84"></a>ECONF_WRONG_FILE_PERMISSION&#160;</td><td class="fielddoc"><p>File has wrong file permissions. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aac04246deccfe0075cc58956c543fa408"></a>ECONF_WRONG_DIR_PERMISSION&#160;</td><td class="fielddoc"><p>File has wrong dir permission. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aab09de6a0a65f054a6c542151a675e241"></a>ECONF_ERROR_FILE_IS_SYM_LINK&#160;</td><td class="fielddoc"><p>File is a sym link which is not permitted. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aa6b9c2f2cdbbf94dbaabfa42e3425deb4"></a>ECONF_PARSING_CALLBACK_FAILED&#160;</td><td class="fielddoc"><p>User defined parsing callback has failed. </p>
+</td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00040">40</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00041">41</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
 
 </div>
 </div>
@@ -447,13 +510,81 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">result</td><td>content of parsed file </td></tr>
     <tr><td class="paramname">file_name</td><td>absolute path of parsed file </td></tr>
-    <tr><td class="paramname">delim</td><td>delimiters of key/value e.g. "\t =" </td></tr>
+    <tr><td class="paramname">delim</td><td>delimiters of key/value e.g. "\t =". If delim contains space characters AND none space characters, multiline values are not parseable. </td></tr>
     <tr><td class="paramname">comment</td><td>array of characters which define the start of a comment </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>econf_err ECONF_SUCCESS or error code</dd></dl>
 <p>Usage: </p><div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="libeconf_8h.html">libeconf.h</a>&quot;</span></div><div class="line"></div><div class="line"><a class="code" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *key_file = NULL;</div><div class="line"><a class="code" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a> error;</div><div class="line"></div><div class="line">error = <a class="code" href="libeconf_8h.html#aa03377bd02882239b3342c095f916561">econf_readFile</a> (&amp;key_file, <span class="stringliteral">&quot;/etc/test.conf&quot;</span>, <span class="stringliteral">&quot;=&quot;</span>, <span class="stringliteral">&quot;#&quot;</span>);</div><div class="line"></div><div class="line"><a class="code" href="libeconf_8h.html#a27a9d78ae827ef885a4373fa591ded73">econf_free</a> (key_file);</div></div><!-- fragment --><p>Default behaviour if entries have the same name in one file: The first hit will be returned. Further entries will be ignored. This can be changed by setting the environment variable ECONF_JOIN_SAME_ENTRIES. In that case entries with the same name will be joined to one single entry. </p>
+
+</div>
+</div>
+<a id="a6bf61969ee7ea191fdd28b0c8de5761d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bf61969ee7ea191fdd28b0c8de5761d">&#9670;&nbsp;</a></span>econf_readFileWithCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a> econf_readFileWithCallback </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> **&#160;</td>
+          <td class="paramname"><em>result</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>file_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>delim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>comment</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool(*)(const char *filename, const void *data)&#160;</td>
+          <td class="paramname"><em>callback</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>callback_data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Process the file of the given file_name and save its contents into key_file object. </p>
+<p>The user defined function will be called in order e.g. to check the correct file permissions.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">result</td><td>content of parsed file </td></tr>
+    <tr><td class="paramname">file_name</td><td>absolute path of parsed file </td></tr>
+    <tr><td class="paramname">delim</td><td>delimiters of key/value e.g. "\t =". If delim contains space characters AND none space characters, multiline values are not parseable. </td></tr>
+    <tr><td class="paramname">comment</td><td>array of characters which define the start of a comment </td></tr>
+    <tr><td class="paramname">callback</td><td>function which will be called for the given filename. This user defined function has the pathname as paramter and returns true if this file can be parsed. If not, the parsing will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned. </td></tr>
+    <tr><td class="paramname">callback_data</td><td>pointer which will be given to the callback function. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>econf_err ECONF_SUCCESS or error code</dd></dl>
+<p>Usage: </p><div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="libeconf_8h.html">libeconf.h</a>&quot;</span></div><div class="line"></div><div class="line"><span class="keywordtype">bool</span> checkFile(<span class="keyword">const</span> <span class="keywordtype">char</span> *filename, <span class="keyword">const</span> <span class="keywordtype">void</span> *data) {</div><div class="line">   - checking code which returns <span class="keyword">true</span> or <span class="keyword">false</span> -</div><div class="line">   <span class="keywordflow">return</span> <span class="keyword">true</span>;</div><div class="line">}</div><div class="line"></div><div class="line"><a class="code" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *key_file = NULL;</div><div class="line"><a class="code" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a> error;</div><div class="line"></div><div class="line">error = <a class="code" href="libeconf_8h.html#a6bf61969ee7ea191fdd28b0c8de5761d">econf_readFileWithCallback</a> (&amp;key_file, <span class="stringliteral">&quot;/etc/test.conf&quot;</span>, <span class="stringliteral">&quot;=&quot;</span>, <span class="stringliteral">&quot;#&quot;</span>, checkFile, NULL);</div><div class="line"></div><div class="line"><a class="code" href="libeconf_8h.html#a27a9d78ae827ef885a4373fa591ded73">econf_free</a> (key_file);</div></div><!-- fragment --><p>Default behaviour if entries have the same name in one file: The first hit will be returned. Further entries will be ignored. This can be changed by setting the environment variable ECONF_JOIN_SAME_ENTRIES. In that case entries with the same name will be joined to one single entry. </p>
 
 </div>
 </div>
@@ -490,7 +621,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Merge the contents of two key_files objects. </p>
-<p>Entries in etc_file will be prefered.</p>
+<p>Entries in etc_file will be prefered. Comment and delimiter tag will be taken from usr_file. This can be changed by calling the functions econf_set_comment_tag and econf_set_delimiter_tag.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">merged_file</td><td>merged data </td></tr>
@@ -567,13 +698,102 @@ Functions</h2></td></tr>
     <tr><td class="paramname">etc_conf_dir</td><td>absolute path of the second directory (normally "/etc") </td></tr>
     <tr><td class="paramname">project_name</td><td>basename of the configuration file </td></tr>
     <tr><td class="paramname">config_suffix</td><td>suffix of the configuration file. Can also be NULL. </td></tr>
-    <tr><td class="paramname">delim</td><td>delimiters of key/value e.g. "\t =" </td></tr>
+    <tr><td class="paramname">delim</td><td>delimiters of key/value e.g. "\t =" If delim contains space characters AND none space characters, multiline values are not parseable. </td></tr>
     <tr><td class="paramname">comment</td><td>array of characters which define the start of a comment </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>econf_err ECONF_SUCCESS or error code</dd></dl>
 <p>Example: Reading content of example.conf in /usr/etc and /etc directory. </p><div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="libeconf_8h.html">libeconf.h</a>&quot;</span></div><div class="line"></div><div class="line"><a class="code" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *key_file = NULL;</div><div class="line"><a class="code" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a> error;</div><div class="line"></div><div class="line">error = <a class="code" href="libeconf_8h.html#a7ff92b0fb657aa21220a89a0fcb59227">econf_readDirs</a> (&amp;key_file,</div><div class="line">                        <span class="stringliteral">&quot;/usr/etc&quot;</span>,</div><div class="line">                        <span class="stringliteral">&quot;/etc&quot;</span>,</div><div class="line">                        <span class="stringliteral">&quot;example&quot;</span>,</div><div class="line">                        <span class="stringliteral">&quot;conf&quot;</span>,</div><div class="line">                        <span class="stringliteral">&quot;=&quot;</span>, <span class="stringliteral">&quot;#&quot;</span>);</div><div class="line"></div><div class="line"><a class="code" href="libeconf_8h.html#a27a9d78ae827ef885a4373fa591ded73">econf_free</a> (key_file);</div></div><!-- fragment --> 
+</div>
+</div>
+<a id="aa54f0d5e7d918e23ae53f66c48191811"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa54f0d5e7d918e23ae53f66c48191811">&#9670;&nbsp;</a></span>econf_readDirsWithCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a> econf_readDirsWithCallback </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> **&#160;</td>
+          <td class="paramname"><em>key_file</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>usr_conf_dir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>etc_conf_dir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>project_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>config_suffix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>delim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>comment</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool(*)(const char *filename, const void *data)&#160;</td>
+          <td class="paramname"><em>callback</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>callback_data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Evaluating key/values for every given configuration files in two different directories (normally in /usr/etc and /etc). </p>
+<p>For each parsed file the user defined function will be called in order e.g. to check the correct file permissions.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key_files</td><td>list of parsed file(s). Each entry includes all key/value, path, comments,... information of the regarding file. </td></tr>
+    <tr><td class="paramname">size</td><td>Size of the evaluated key_files list. </td></tr>
+    <tr><td class="paramname">usr_conf_dir</td><td>absolute path of the first directory (normally "/usr/etc") </td></tr>
+    <tr><td class="paramname">etc_conf_dir</td><td>absolute path of the second directory (normally "/etc") </td></tr>
+    <tr><td class="paramname">project_name</td><td>basename of the configuration file </td></tr>
+    <tr><td class="paramname">config_suffix</td><td>suffix of the configuration file. Can also be NULL. </td></tr>
+    <tr><td class="paramname">delim</td><td>delimiters of key/value e.g. "\t =" If delim contains space characters AND none space characters, multiline values are not parseable. </td></tr>
+    <tr><td class="paramname">comment</td><td>array of characters which define the start of a comment </td></tr>
+    <tr><td class="paramname">callback</td><td>function which will be called for each file. This user defined function has the pathname as paramter and returns true if this file can be parsed. If not, the parsing of all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned. </td></tr>
+    <tr><td class="paramname">callback_data</td><td>pointer which will be given to the callback function. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>econf_err ECONF_SUCCESS or error code</dd></dl>
+<p>Example: Reading content of example.conf in /usr/etc and /etc directory. </p><div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="libeconf_8h.html">libeconf.h</a>&quot;</span></div><div class="line"></div><div class="line"><span class="keywordtype">bool</span> checkFile(<span class="keyword">const</span> <span class="keywordtype">char</span> *filename, <span class="keyword">const</span> <span class="keywordtype">void</span> *data) {</div><div class="line">   - checking code which returns <span class="keyword">true</span> or <span class="keyword">false</span> -</div><div class="line">   <span class="keywordflow">return</span> <span class="keyword">true</span>;</div><div class="line">}</div><div class="line"></div><div class="line"><a class="code" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *key_file = NULL;</div><div class="line"><a class="code" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a> error;</div><div class="line"></div><div class="line">error = <a class="code" href="libeconf_8h.html#aa54f0d5e7d918e23ae53f66c48191811">econf_readDirsWithCallback</a> (&amp;key_file,</div><div class="line">                                    <span class="stringliteral">&quot;/usr/etc&quot;</span>,</div><div class="line">                                    <span class="stringliteral">&quot;/etc&quot;</span>,</div><div class="line">                                    <span class="stringliteral">&quot;example&quot;</span>,</div><div class="line">                                    <span class="stringliteral">&quot;conf&quot;</span>,</div><div class="line">                                    <span class="stringliteral">&quot;=&quot;</span>, <span class="stringliteral">&quot;#&quot;</span>,</div><div class="line">                                    checkFile,</div><div class="line">                                    NULL);</div><div class="line"></div><div class="line"><a class="code" href="libeconf_8h.html#a27a9d78ae827ef885a4373fa591ded73">econf_free</a> (key_file);</div></div><!-- fragment --> 
 </div>
 </div>
 <a id="a55faa39cd3887073d1aaba364bd09f94"></a>
@@ -648,8 +868,103 @@ Functions</h2></td></tr>
     <tr><td class="paramname">etc_conf_dir</td><td>absolute path of the second directory (normally "/etc") </td></tr>
     <tr><td class="paramname">project_name</td><td>basename of the configuration file </td></tr>
     <tr><td class="paramname">config_suffix</td><td>suffix of the configuration file. Can also be NULL. </td></tr>
-    <tr><td class="paramname">delim</td><td>delimiters of key/value e.g. "\t =" </td></tr>
+    <tr><td class="paramname">delim</td><td>delimiters of key/value e.g. "\t =" If delim contains space characters AND none space characters, multiline values are not parseable. </td></tr>
     <tr><td class="paramname">comment</td><td>array of characters which define the start of a comment </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>econf_err ECONF_SUCCESS or error code </dd></dl>
+
+</div>
+</div>
+<a id="a50cb704ad90f36ade8a619bfc986f89b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50cb704ad90f36ade8a619bfc986f89b">&#9670;&nbsp;</a></span>econf_readDirsHistoryWithCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a> econf_readDirsHistoryWithCallback </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> ***&#160;</td>
+          <td class="paramname"><em>key_files</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>usr_conf_dir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>etc_conf_dir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>project_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>config_suffix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>delim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>comment</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool(*)(const char *filename, const void *data)&#160;</td>
+          <td class="paramname"><em>callback</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>callback_data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Evaluating key/values for every given configuration files in two different directories (normally in /usr/etc and /etc). </p>
+<p>For each parsed file the user defined function will be called in order e.g. to check the correct file permissions. Returns a list of read configuration files and their values.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key_files</td><td>list of parsed file(s). Each entry includes all key/value, path, comments,... information of the regarding file. </td></tr>
+    <tr><td class="paramname">size</td><td>Size of the evaluated key_files list. </td></tr>
+    <tr><td class="paramname">usr_conf_dir</td><td>absolute path of the first directory (normally "/usr/etc") </td></tr>
+    <tr><td class="paramname">etc_conf_dir</td><td>absolute path of the second directory (normally "/etc") </td></tr>
+    <tr><td class="paramname">project_name</td><td>basename of the configuration file </td></tr>
+    <tr><td class="paramname">config_suffix</td><td>suffix of the configuration file. Can also be NULL. </td></tr>
+    <tr><td class="paramname">delim</td><td>delimiters of key/value e.g. "\t =" If delim contains space characters AND none space characters, multiline values are not parseable. </td></tr>
+    <tr><td class="paramname">comment</td><td>array of characters which define the start of a comment </td></tr>
+    <tr><td class="paramname">callback</td><td>function which will be called for each file. This user defined function has the pathname as paramter and returns true if this file can be parsed. If not, the parsing of all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned. </td></tr>
+    <tr><td class="paramname">callback_data</td><td>pointer which will be given to the callback function. </td></tr>
   </table>
   </dd>
 </dl>
@@ -728,6 +1043,138 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>econf_err ECONF_SUCCESS or error code </dd></dl>
+
+</div>
+</div>
+<a id="a5d24ab3c1515a2a0cf4668221a0ee6f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d24ab3c1515a2a0cf4668221a0ee6f7">&#9670;&nbsp;</a></span>econf_comment_tag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char econf_comment_tag </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *&#160;</td>
+          <td class="paramname"><em>key_file</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the comment character tag of the given econf_file object. </p>
+<p>This tag will be taken while writing comments to file.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key_file</td><td>econf_file object. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>char comment character tag </dd></dl>
+
+</div>
+</div>
+<a id="a2fa45814606cac4dc4abdfe462f8ee70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fa45814606cac4dc4abdfe462f8ee70">&#9670;&nbsp;</a></span>econf_delimiter_tag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char econf_delimiter_tag </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *&#160;</td>
+          <td class="paramname"><em>key_file</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the delimiter character of the given econf_file object. </p>
+<p>This delimiter will be taken while writing the data to file.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key_file</td><td>econf_file object. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>char delimiter of key/value </dd></dl>
+
+</div>
+</div>
+<a id="a1dc59b13a0293943b10dfc09e6daba09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dc59b13a0293943b10dfc09e6daba09">&#9670;&nbsp;</a></span>econf_set_comment_tag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void econf_set_comment_tag </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *&#160;</td>
+          <td class="paramname"><em>key_file</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char&#160;</td>
+          <td class="paramname"><em>comment</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the comment character tag of the given econf_file object. </p>
+<p>This tag will be taken while writing comments to file.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key_file</td><td>econf_file object. </td></tr>
+    <tr><td class="paramname">comment</td><td>comment tag </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa14d17dc8e3ebc26e155ceb2d497ad14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa14d17dc8e3ebc26e155ceb2d497ad14">&#9670;&nbsp;</a></span>econf_set_delimiter_tag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void econf_set_delimiter_tag </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *&#160;</td>
+          <td class="paramname"><em>key_file</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char&#160;</td>
+          <td class="paramname"><em>delimiter</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the delimiter character of the given econf_file object. </p>
+<p>This delimiter will be taken while writing the data to file.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key_file</td><td>econf_file object. </td></tr>
+    <tr><td class="paramname">delimiter</td><td>delimiter of key/value </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2328,6 +2775,109 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
+
+</div>
+</div>
+<a id="a75b8fd4dfcc61b88e96db56be871143a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75b8fd4dfcc61b88e96db56be871143a">&#9670;&nbsp;</a></span>__attribute__()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void __attribute__ </td>
+          <td>(</td>
+          <td class="paramtype">(deprecated(&quot;use one of econf_read*WithCallback instead&quot;))&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>All parsed files require this user permission. </p>
+<p>Reset all UID, GID, permissions,...</p>
+<p>Allowing the parser to follow sym links (default: true).</p>
+<p>All parsed file have to have these file and directory permissions.</p>
+<p>All parsed files require this group permission.</p>
+<p>DEPRECATED: Use the callback in econf_readFileWithCallback, econf_readDirsWithCallback or econf_readDirsHistoryWithCallback instead.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">owner</td><td>User ID </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void</dd></dl>
+<p>DEPRECATED: Use the callback in econf_readFileWithCallback, econf_readDirsWithCallback or econf_readDirsHistoryWithCallback instead.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">group</td><td>Group ID </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void</dd></dl>
+<p>DEPRECATED: Use the callback in econf_readFileWithCallback, econf_readDirsWithCallback or econf_readDirsHistoryWithCallback instead.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">file_perms</td><td>file permissions </td></tr>
+    <tr><td class="paramname">dir_perms</td><td>dir permissions </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void</dd></dl>
+<p>DEPRECATED: Use the callback in econf_readFileWithCallback, econf_readDirsWithCallback or econf_readDirsHistoryWithCallback instead.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">allow</td><td>allow to follow sym links. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void</dd></dl>
+<p>restrictions for parsed files/dirs. DEPRECATED: Use the callback in econf_readFileWithCallback, econf_readDirsWithCallback or econf_readDirsHistoryWithCallback instead.</p>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
+
+</div>
+</div>
+<a id="a0466a16c30cfcd58ec6201d210c64731"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0466a16c30cfcd58ec6201d210c64731">&#9670;&nbsp;</a></span>econf_set_conf_dirs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a> econf_set_conf_dirs </td>
+          <td>(</td>
+          <td class="paramtype">const char **&#160;</td>
+          <td class="paramname"><em>dir_postfix_list</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets a list of directory structures (with order) which describes the directories in which the files have to be parsed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dir_postfix_list</td><td>list of directory structures. E.G. with the given list: {"/conf.d/", ".d/", "/", NULL} files in following directories will be parsed: "&lt;default_dirs&gt;/&lt;project_name&gt;.&lt;suffix&gt;.d/" "&lt;default_dirs&gt;/&lt;project_name&gt;/conf.d/" "&lt;default_dirs&gt;/&lt;project_name&gt;.d/" "&lt;default_dirs&gt;/&lt;project_name&gt;/" The entry "&lt;default_dirs&gt;/&lt;project_name&gt;.&lt;suffix&gt;.d/" will be added automatically.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>econf_err ECONF_SUCCESS or error code </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="a8180855e033a12c0de69b680c99af657"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8180855e033a12c0de69b680c99af657">&#9670;&nbsp;</a></span>dir_perms</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mode_t dir_perms</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00852">852</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
 
 </div>
 </div>

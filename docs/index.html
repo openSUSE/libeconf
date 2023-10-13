@@ -27,7 +27,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">libeconf
-   &#160;<span id="projectnumber">0.4.0</span>
+   &#160;<span id="projectnumber">0.5.2</span>
    </div>
   </td>
  </tr>
@@ -70,12 +70,14 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div class="textblock"><p><b>libeconf</b> is a highly flexible and configurable library to parse and manage key=value configuration files. It reads configuration file snippets from different directories and builds the final configuration file for the application from it.</p>
 <p>The first file is the vendor provided configuration file. There are two methods of overriding this vendor settings: Copy the file from /usr/_vendordir_ to /etc and modify the settings (see <em>Example 1</em>). Alternatively, a directory named <em>file</em>._suffix_.d/ within /etc can be created, with drop-in files in the form <em>name</em>._suffix_ (see <em>Example 2</em>). These files contain only the changes of the specific settings the user is interested in. There can be several such drop-in files, they are processed in lexicographic order of their filename.</p>
 <p>The first method is useful to override the complete configuration file with an own one, the vendor supplied configuration is ignored.</p>
-<p>So, if /etc/_example_._suffix_ exists, /usr/_vendor_/_example_._suffix_ and /usr/_vendor_/_example_._suffix_.d/*._suffix_ will not be read. The disadvantage is, that changes of the vendor configuration file, due e.g. an package update, are ignored and the user has to manually merge them.</p>
-<p>The other method will continue to use /usr/_vendor_/_example_._suffix_ as base configuration file and merge all changes from /etc/_example_._suffix_.d/*._suffix_. So the user will automatically get improvements of the vendor, with the drawback, that they could be incompatible with the user made changes.</p>
+<p>So, if /etc/_example_._suffix_ exists, /usr/_vendor_/_example_._suffix_ will not be read. The disadvantage is, that changes of the vendor configuration file, due e.g. an package update, are ignored and the user has to manually merge them.</p>
+<p>The other method will continue to use /usr/_vendor_/_example_._suffix_ as base configuration file and merge all changes from /etc/_example_._suffix_.d/*._suffix_. So the user will automatically get improvements of the vendor, with the drawback, that they could be incompatible with the user made changes. If there is a file with the same name in /usr/_vendor_/_example_._suffix_.d/ and in /etc/_example_._suffix_.d/*._suffix_., the file in /usr/_vendor_/_example_._suffix_.d/ will completely ignored.</p>
+<p>To disable a configuration file supplied by the vendor, the recommended way is to place a symlink to /dev/null in the configuration directory in /etc/, with the same filename as the vendor configuration file.</p>
 <p><b>Example 1</b></p>
 <p>If a /etc/_example_._suffix_ files exists:</p>
 <ul>
 <li>/etc/_example_._suffix_</li>
+<li>/usr/_vendor_/_example_._suffix_.d/*._suffix_</li>
 <li>/etc/_example_._suffix_.d/*._suffix_</li>
 </ul>
 <p><b>Example 2</b></p>
