@@ -706,7 +706,7 @@ def set_bool_value(ef: EconfFile, group: str, key: str, value: bool) -> None:
     c_key = _encode_str(key)
     if not isinstance(value, bool):
         raise TypeError('"value" parameter must be of type bool')
-    c_value = c_bool(value)
+    c_value = _encode_str(str(value))
     err = LIBECONF.econf_setBoolValue(ef._ptr, group, c_key, c_value)
     if err:
         _exceptions(err, f"set_bool_value failed with error: {err_string(err)}")
