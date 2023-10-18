@@ -51,47 +51,47 @@ class Econf_err(Enum):
 
 
 def _exceptions(err: int, val: str):
-    if err == 1:
+    if Econf_err(err) == Econf_err.ECONF_ERROR:
         raise Exception(val)
-    elif err == 2:
+    elif Econf_err(err) == Econf_err.ECONF_NOMEM:
         raise MemoryError(val)
-    elif err == 3:
+    elif Econf_err(err) == Econf_err.ECONF_NOFILE:
         raise FileNotFoundError(val)
-    elif err == 4:
+    elif Econf_err(err) == Econf_err.ECONF_NOGROUP:
         raise KeyError(val)
-    elif err == 5:
+    elif Econf_err(err) == Econf_err.ECONF_NOKEY:
         raise KeyError(val)
-    elif err == 6:
+    elif Econf_err(err) == Econf_err.ECONF_EMPTYKEY:
         raise KeyError(val)
-    elif err == 7:
+    elif Econf_err(err) == Econf_err.ECONF_WRITEERROR:
         raise OSError(val)
-    elif err == 8:
+    elif Econf_err(err) == Econf_err.ECONF_PARSE_ERROR:
         raise Exception(val)
-    elif err == 9:
+    elif Econf_err(err) == Econf_err.ECONF_MISSING_BRACKET:
         raise SyntaxError(val)
-    elif err == 10:
+    elif Econf_err(err) == Econf_err.ECONF_MISSING_DELIMITER:
         raise SyntaxError(val)
-    elif err == 11:
+    elif Econf_err(err) == Econf_err.ECONF_EMPTY_SECTION_NAME:
         raise SyntaxError(val)
-    elif err == 12:
+    elif Econf_err(err) == Econf_err.ECONF_TEXT_AFTER_SECTION:
         raise SyntaxError(val)
-    elif err == 13:
+    elif Econf_err(err) == Econf_err.ECONF_FILE_LIST_IS_NULL:
         raise ValueError(val)
-    elif err == 14:
+    elif Econf_err(err) == Econf_err.ECONF_WRONG_BOOLEAN_VALUE:
         raise ValueError(val)
-    elif err == 15:
+    elif Econf_err(err) == Econf_err.ECONF_KEY_HAS_NULL_VALUE:
         raise ValueError(val)
-    elif err == 16:
+    elif Econf_err(err) == Econf_err.ECONF_WRONG_OWNER:
         raise PermissionError(val)
-    elif err == 17:
+    elif Econf_err(err) == Econf_err.ECONF_WRONG_GROUP:
         raise PermissionError(val)
-    elif err == 18:
+    elif Econf_err(err) == Econf_err.ECONF_WRONG_FILE_PERMISSION:
         raise PermissionError(val)
-    elif err == 19:
+    elif Econf_err(err) == Econf_err.ECONF_WRONG_DIR_PERMISSION:
         raise PermissionError(val)
-    elif err == 20:
+    elif Econf_err(err) == Econf_err.ECONF_ERROR_FILE_IS_SYM_LINK:
         raise FileNotFoundError(val)
-    elif err == 21:
+    elif Econf_err(err) == Econf_err.ECONF_PARSING_CALLBACK_FAILED:
         raise Exception(val)
     else:
         raise Exception(val)
@@ -130,7 +130,7 @@ def _ensure_valid_uint(val: int) -> int:
 
 
 def set_value(
-    ef: EconfFile, group: str | bytes, key: str | bytes, value: Any
+    ef: EconfFile, group: str | bytes, key: str | bytes, value: int | float | str | bool
 ) -> None:
     """
     Dynamically set a value in a keyfile and returns a status code
@@ -154,7 +154,6 @@ def set_value(
         set_bool_value(ef, group, key, value)
     else:
         raise TypeError(f"parameter {val} is not one of the supported types")
-    return
 
 
 def read_file(
@@ -197,7 +196,6 @@ def merge_files(usr_file: EconfFile, etc_file: EconfFile) -> EconfFile:
     return merged_file
 
 
-# this reads either the first OR the second file if the first one does not exist
 def read_dirs(
     usr_conf_dir: str | bytes,
     etc_conf_dir: str | bytes,
@@ -239,7 +237,6 @@ def read_dirs(
     return result
 
 
-# this reads either the first OR the second file if the first one does not exist
 def read_dirs_history(
     usr_conf_dir: str | bytes,
     etc_conf_dir: str | bytes,
@@ -317,6 +314,60 @@ def new_ini_file() -> EconfFile:
     return result
 
 
+def comment_tag(ef: EconfFile) -> str:
+    """
+    Get the comment tag of the specified EconfFile
+
+    :param ef: Key-Value storage object
+    :return: The comment tag of the EconfFile
+    """
+    LIBECONF.econf_comment_tag.restype = c_char
+    result = LIBECONF.econf_comment_tag(ef._ptr)
+    return result.decode("utf-8")
+
+
+def delimiter_tag(ef: EconfFile) -> str:
+    """
+    Get the delimiter tag of the specified EconfFile
+
+    :param ef: Key-Value storage object
+    :return: the delimiter tag of the EconfFile
+    """
+    LIBECONF.econf_delimiter_tag.restype = c_char
+    result = LIBECONF.econf_delimiter_tag(ef._ptr)
+    return result.decode("utf-8")
+
+
+def set_comment_tag(ef: EconfFile, comment: str | bytes) -> None:
+    """
+    Set the comment tag of the specified EconfFile
+
+    :param ef: Key-Value storage object
+    :param comment: The desired comment tag character
+    :return: Nothing
+    """
+    comment = _encode_str(comment)
+    if len(comment) > 1:
+        raise ValueError("Only single characters are allowed")
+    c_comment = c_char(comment)
+    LIBECONF.econf_set_comment_tag(ef._ptr, c_comment)
+
+
+def set_delimiter_tag(ef: EconfFile, delimiter: str | bytes) -> None:
+    """
+    Set the delimiter tag of the specified EconfFile
+
+    :param ef: Key-Value storage object
+    :param delimiter: The desired delimiter character
+    :return: Nothing
+    """
+    delimiter = _encode_str(delimiter)
+    if len(delimiter) > 1:
+        raise ValueError("Only single characters are allowed")
+    c_delimiter = c_char(delimiter)
+    LIBECONF.econf_set_delimiter_tag(ef._ptr, c_delimiter)
+
+
 def write_file(ef: EconfFile, save_to_dir: str, file_name: str) -> None:
     """
     Write content of a keyfile to specified location
@@ -331,7 +382,6 @@ def write_file(ef: EconfFile, save_to_dir: str, file_name: str) -> None:
     err = LIBECONF.econf_writeFile(byref(ef._ptr), c_save_to_dir, c_file_name)
     if err:
         _exceptions(err, f"write_file failed with error: {err_string(err)}")
-    return
 
 
 def get_path(ef: EconfFile) -> str:
@@ -624,7 +674,6 @@ def set_int_value(ef: EconfFile, group: str, key: str, value: int) -> None:
     err = LIBECONF.econf_setInt64Value(ef._ptr, group, c_key, c_value)
     if err:
         _exceptions(err, f"set_int64_value failed with error: {err_string(err)}")
-    return
 
 
 def set_uint_value(ef: EconfFile, group: str, key: str, value: int) -> None:
@@ -644,7 +693,6 @@ def set_uint_value(ef: EconfFile, group: str, key: str, value: int) -> None:
     err = LIBECONF.econf_setUInt64Value(ef._ptr, group, c_key, c_value)
     if err:
         _exceptions(err, f"set_uint64_value failed with error: {err_string(err)}")
-    return
 
 
 def set_float_value(ef: EconfFile, group: str, key: str, value: float) -> None:
@@ -666,12 +714,9 @@ def set_float_value(ef: EconfFile, group: str, key: str, value: float) -> None:
     err = LIBECONF.econf_setDoubleValue(ef._ptr, group, c_key, c_value)
     if err:
         _exceptions(err, f"set_double_value failed with error: {err_string(err)}")
-    return
 
 
-def set_string_value(
-    ef: EconfFile, group: str, key: str, value: str | bytes
-) -> None:
+def set_string_value(ef: EconfFile, group: str, key: str, value: str | bytes) -> None:
     """
     Setting a string value for given group/key
 
@@ -688,7 +733,6 @@ def set_string_value(
     err = LIBECONF.econf_setStringValue(ef._ptr, group, c_key, c_value)
     if err:
         _exceptions(err, f"set_string_value failed with error: {err_string(err)}")
-    return
 
 
 def set_bool_value(ef: EconfFile, group: str, key: str, value: bool) -> None:
@@ -710,10 +754,9 @@ def set_bool_value(ef: EconfFile, group: str, key: str, value: bool) -> None:
     err = LIBECONF.econf_setBoolValue(ef._ptr, group, c_key, c_value)
     if err:
         _exceptions(err, f"set_bool_value failed with error: {err_string(err)}")
-    return
 
 
-def err_string(error: int):
+def err_string(error: int) -> str:
     """
     Convert an error code into error message
 
@@ -746,5 +789,30 @@ def free_file(ef: EconfFile):
     :param ef: EconfFile to be freed
     :return: None
     """
+    if not ef._ptr:
+        return
     LIBECONF.econf_freeFile(ef._ptr)
-    return
+
+
+def set_conf_dirs(dir_postfix_list: list[str]) -> None:
+    """
+    Set a list of directories (with order) that describe the paths where files have to be parsed
+
+    E.G. with the given list: {"/conf.d/", ".d/", "/", NULL} files in following directories will be parsed:
+    "<default_dirs>/<project_name>.<suffix>.d/" "<default_dirs>/<project_name>/conf.d/" "<default_dirs>/<project_name>.d/" "<default_dirs>/<project_name>/"
+    The entry "<default_dirs>/<project_name>.<suffix>.d/" will be added automatically.
+
+    :param dir_postfix_list: List of directories
+    :return: None
+    """
+    if type(dir_postfix_list) != list:
+        raise TypeError("Directories must be passed as a list of strings")
+    if len(dir_postfix_list) == 0:
+        return
+    str_arr = c_char_p * len(dir_postfix_list)
+    dir_arr = str_arr()
+    for i in range(len(dir_postfix_list)):
+        dir_arr[i] = c_char_p(_encode_str(dir_postfix_list[i]))
+    err = LIBECONF.econf_set_conf_dirs(dir_arr)
+    if err:
+        _exceptions(err, f"set_conf_dirs failed with error: {err_string(err)}")

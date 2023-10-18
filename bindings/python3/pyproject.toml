@@ -7,13 +7,12 @@ name = "python-libeconf"
 version = "1.0.0"
 description = "Python bindings for libeconf"
 authors = [{name="nkrapp", email="nico.krapp@suse.com"}]
-readme = "README.md"
 
 [project.optional-dependencies]
 doc_requires = [
     "sphinx",
     "sphinx-rtd-theme"
 ]
-
-[tool.isort]
-profile = "black"
+test_requires = [
+    "pytest"
+]
