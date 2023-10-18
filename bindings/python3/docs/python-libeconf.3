@@ -27,9 +27,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "PYTHON-LIBECONF" "1" "Oct 18, 2023" "" "python-libeconf"
-.SH NAME
-python-libeconf \- python-libeconf 1.0.0
+.TH "PYTHON-LIBECONF" "3" "Oct 18, 2023" "" "python-libeconf"
 .sp
 \fBpython\-libeconf\fP is a Python Library which offers Python bindings for
 \fI\%libeconf\fP\&.
@@ -37,26 +35,16 @@ python-libeconf \- python-libeconf 1.0.0
 libeconf is a highly flexible and configurable library to parse and manage key=value configuration files.
 It reads configuration file snippets from different directories and builds the final configuration file for
 the application from it.
-.sp
-\fBNOTE:\fP
-.INDENT 0.0
-.INDENT 3.5
-This project is still under development
-.UNINDENT
-.UNINDENT
 .SH CONTENTS
-.SS econf
-.sp
-Econf provides functionality for interacting with Key\-Value config files, like getting and setting values for read config files.
-.sp
-For more information please have a look at the API
 .SS Usage
 .SS install
 .sp
 \fBWARNING:\fP
 .INDENT 0.0
 .INDENT 3.5
-Right now we do not provide libeconf included in the project. To use this project please make sure you have libeconf installed on your system!
+The recommended way to install this project is to get the rpm package.
+If you install this project from pypi libeconf will not be automatically installed.
+To use this project please make sure you have libeconf installed on your system!
 .UNINDENT
 .UNINDENT
 .sp
@@ -108,11 +96,11 @@ Read a config file and write the key\-value pairs into a keyfile object
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBfile_name\fP \-\- absolute path of file to be parsed
+\fBfile_name\fP – absolute path of file to be parsed
 .IP \(bu 2
-\fBdelim\fP \-\- delimiter of a key/value e.g. \(aq=\(aq
+\fBdelim\fP – delimiter of a key/value e.g. ‘=’
 .IP \(bu 2
-\fBcomment\fP \-\- string that defines the start of a comment e.g. \(aq#\(aq
+\fBcomment\fP – string that defines the start of a comment e.g. ‘#’
 .UNINDENT
 .TP
 .B Returns
@@ -128,9 +116,9 @@ Create a new empty keyfile
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBdelim\fP \-\- delimiter of a key/value e.g. \(aq=\(aq
+\fBdelim\fP – delimiter of a key/value e.g. ‘=’
 .IP \(bu 2
-\fBcomment\fP \-\- string that defines the start of a comment e.g. \(aq#\(aq
+\fBcomment\fP – string that defines the start of a comment e.g. ‘#’
 .UNINDENT
 .TP
 .B Returns
@@ -140,7 +128,7 @@ created EconfFile object
 .INDENT 0.0
 .TP
 .B econf.new_ini_file() -> EconfFile
-Create a new empty keyfile with delimiter \(aq=\(aq and comment \(aq#\(aq
+Create a new empty keyfile with delimiter ‘=’ and comment ‘#’
 .INDENT 7.0
 .TP
 .B Returns
@@ -156,9 +144,9 @@ Merge the content of 2 keyfile objects
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBusr_file\fP \-\- first EconfFile object
+\fBusr_file\fP – first EconfFile object
 .IP \(bu 2
-\fBetc_file\fP \-\- second EconfFile object
+\fBetc_file\fP – second EconfFile object
 .UNINDENT
 .TP
 .B Returns
@@ -177,17 +165,17 @@ e.g. searches /usr/etc/ and /etc/ for an example.conf file and merges it with th
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBusr_conf_dir\fP \-\- absolute path of the first directory to be searched
+\fBusr_conf_dir\fP – absolute path of the first directory to be searched
 .IP \(bu 2
-\fBetc_conf_dir\fP \-\- absolute path of the second directory to be searched
+\fBetc_conf_dir\fP – absolute path of the second directory to be searched
 .IP \(bu 2
-\fBproject_name\fP \-\- basename of the configuration file
+\fBproject_name\fP – basename of the configuration file
 .IP \(bu 2
-\fBconfig_suffix\fP \-\- suffix of the configuration file
+\fBconfig_suffix\fP – suffix of the configuration file
 .IP \(bu 2
-\fBdelim\fP \-\- delimiter of a key/value e.g. \(aq=\(aq
+\fBdelim\fP – delimiter of a key/value e.g. ‘=’
 .IP \(bu 2
-\fBcomment\fP \-\- string that defines the start of a comment e.g. \(aq#\(aq
+\fBcomment\fP – string that defines the start of a comment e.g. ‘#’
 .UNINDENT
 .TP
 .B Returns
@@ -206,17 +194,17 @@ e.g. searches /usr/etc/ and /etc/ for an example.conf file and the snippets in e
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBusr_conf_dir\fP \-\- absolute path of the first directory to be searched
+\fBusr_conf_dir\fP – absolute path of the first directory to be searched
 .IP \(bu 2
-\fBetc_conf_dir\fP \-\- absolute path of the second directory to be searched
+\fBetc_conf_dir\fP – absolute path of the second directory to be searched
 .IP \(bu 2
-\fBproject_name\fP \-\- basename of the configuration file
+\fBproject_name\fP – basename of the configuration file
 .IP \(bu 2
-\fBconfig_suffix\fP \-\- suffix of the configuration file
+\fBconfig_suffix\fP – suffix of the configuration file
 .IP \(bu 2
-\fBdelim\fP \-\- delimiter of a key/value e.g. \(aq=\(aq
+\fBdelim\fP – delimiter of a key/value e.g. ‘=’
 .IP \(bu 2
-\fBcomment\fP \-\- string that defines the start of a comment e.g. \(aq#\(aq
+\fBcomment\fP – string that defines the start of a comment e.g. ‘#’
 .UNINDENT
 .TP
 .B Returns
@@ -232,11 +220,11 @@ Write content of a keyfile to specified location
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBef\fP \-\- Key\-Value storage object
+\fBef\fP – Key\-Value storage object
 .IP \(bu 2
-\fBsave_to_dir\fP \-\- directory into which the file has to be written
+\fBsave_to_dir\fP – directory into which the file has to be written
 .IP \(bu 2
-\fBfile_name\fP \-\- filename with suffix of the to be written file
+\fBfile_name\fP – filename with suffix of the to be written file
 .UNINDENT
 .TP
 .B Returns
@@ -251,7 +239,7 @@ List all the groups of given keyfile
 .INDENT 7.0
 .TP
 .B Parameters
-\fBef\fP \-\- Key\-Value storage object
+\fBef\fP – Key\-Value storage object
 .TP
 .B Returns
 list of groups in the keyfile
@@ -266,9 +254,9 @@ List all the keys of a given group or all keys in a keyfile
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBef\fP \-\- Key\-Value storage object
+\fBef\fP – Key\-Value storage object
 .IP \(bu 2
-\fBgroup\fP \-\- group of the keys to be returned or None for keys without a group
+\fBgroup\fP – group of the keys to be returned or None for keys without a group
 .UNINDENT
 .TP
 .B Returns
@@ -284,11 +272,11 @@ Return an integer value for given group/key
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBef\fP \-\- Key\-Value storage object
+\fBef\fP – Key\-Value storage object
 .IP \(bu 2
-\fBgroup\fP \-\- desired group
+\fBgroup\fP – desired group
 .IP \(bu 2
-\fBkey\fP \-\- key of the value that is requested
+\fBkey\fP – key of the value that is requested
 .UNINDENT
 .TP
 .B Returns
@@ -304,11 +292,11 @@ Return an unsigned integer value for given group/key
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBef\fP \-\- Key\-Value storage object
+\fBef\fP – Key\-Value storage object
 .IP \(bu 2
-\fBgroup\fP \-\- desired group
+\fBgroup\fP – desired group
 .IP \(bu 2
-\fBkey\fP \-\- key of the value that is requested
+\fBkey\fP – key of the value that is requested
 .UNINDENT
 .TP
 .B Returns
@@ -324,11 +312,11 @@ Return a float value for given group/key
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBef\fP \-\- Key\-Value storage object
+\fBef\fP – Key\-Value storage object
 .IP \(bu 2
-\fBgroup\fP \-\- desired group
+\fBgroup\fP – desired group
 .IP \(bu 2
-\fBkey\fP \-\- key of the value that is requested
+\fBkey\fP – key of the value that is requested
 .UNINDENT
 .TP
 .B Returns
@@ -344,11 +332,11 @@ Return a string value for given group/key
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBef\fP \-\- Key\-Value storage object
+\fBef\fP – Key\-Value storage object
 .IP \(bu 2
-\fBgroup\fP \-\- desired group
+\fBgroup\fP – desired group
 .IP \(bu 2
-\fBkey\fP \-\- key of the value that is requested
+\fBkey\fP – key of the value that is requested
 .UNINDENT
 .TP
 .B Returns
@@ -364,11 +352,11 @@ Return a boolean value for given group/key
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBef\fP \-\- Key\-Value storage object
+\fBef\fP – Key\-Value storage object
 .IP \(bu 2
-\fBgroup\fP \-\- desired group
+\fBgroup\fP – desired group
 .IP \(bu 2
-\fBkey\fP \-\- key of the value that is requested
+\fBkey\fP – key of the value that is requested
 .UNINDENT
 .TP
 .B Returns
@@ -385,13 +373,13 @@ Return an integer value for given group/key or return a default value if key is 
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBef\fP \-\- Key\-Value storage object
+\fBef\fP – Key\-Value storage object
 .IP \(bu 2
-\fBgroup\fP \-\- desired group
+\fBgroup\fP – desired group
 .IP \(bu 2
-\fBkey\fP \-\- key of the value that is requested
+\fBkey\fP – key of the value that is requested
 .IP \(bu 2
-\fBdefault\fP \-\- value to be returned if no key is found
+\fBdefault\fP – value to be returned if no key is found
 .UNINDENT
 .TP
 .B Returns
@@ -407,13 +395,13 @@ Return an unsigned integer value for given group/key or return a default value i
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBef\fP \-\- Key\-Value storage object
+\fBef\fP – Key\-Value storage object
 .IP \(bu 2
-\fBgroup\fP \-\- desired group
+\fBgroup\fP – desired group
 .IP \(bu 2
-\fBkey\fP \-\- key of the value that is requested
+\fBkey\fP – key of the value that is requested
 .IP \(bu 2
-\fBdefault\fP \-\- value to be returned if no key is found
+\fBdefault\fP – value to be returned if no key is found
 .UNINDENT
 .TP
 .B Returns
@@ -429,13 +417,13 @@ Return a float value for given group/key or return a default value if key is not
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBef\fP \-\- Key\-Value storage object
+\fBef\fP – Key\-Value storage object
 .IP \(bu 2
-\fBgroup\fP \-\- desired group
+\fBgroup\fP – desired group
 .IP \(bu 2
-\fBkey\fP \-\- key of the value that is requested
+\fBkey\fP – key of the value that is requested
 .IP \(bu 2
-\fBdefault\fP \-\- value to be returned if no key is found
+\fBdefault\fP – value to be returned if no key is found
 .UNINDENT
 .TP
 .B Returns
@@ -451,13 +439,13 @@ Return a string value for given group/key or return a default value if key is no
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBef\fP \-\- Key\-Value storage object
+\fBef\fP – Key\-Value storage object
 .IP \(bu 2
-\fBgroup\fP \-\- desired group
+\fBgroup\fP – desired group
 .IP \(bu 2
-\fBkey\fP \-\- key of the value that is requested
+\fBkey\fP – key of the value that is requested
 .IP \(bu 2
-\fBdefault\fP \-\- value to be returned if no key is found
+\fBdefault\fP – value to be returned if no key is found
 .UNINDENT
 .TP
 .B Returns
@@ -473,13 +461,13 @@ Return a boolean value for given group/key or return a default value if key is n
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBef\fP \-\- Key\-Value storage object
+\fBef\fP – Key\-Value storage object
 .IP \(bu 2
-\fBgroup\fP \-\- desired group
+\fBgroup\fP – desired group
 .IP \(bu 2
-\fBkey\fP \-\- key of the value that is requested
+\fBkey\fP – key of the value that is requested
 .IP \(bu 2
-\fBdefault\fP \-\- value to be returned if no key is found
+\fBdefault\fP – value to be returned if no key is found
 .UNINDENT
 .TP
 .B Returns
@@ -496,13 +484,13 @@ Setting an integer value for given group/key
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBef\fP \-\- Key\-Value storage object
+\fBef\fP – Key\-Value storage object
 .IP \(bu 2
-\fBgroup\fP \-\- desired group
+\fBgroup\fP – desired group
 .IP \(bu 2
-\fBkey\fP \-\- key of the value that is requested
+\fBkey\fP – key of the value that is requested
 .IP \(bu 2
-\fBvalue\fP \-\- value to be set for given key
+\fBvalue\fP – value to be set for given key
 .UNINDENT
 .TP
 .B Returns
@@ -518,13 +506,13 @@ Setting an unsigned integer value for given group/key
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBef\fP \-\- Key\-Value storage object
+\fBef\fP – Key\-Value storage object
 .IP \(bu 2
-\fBgroup\fP \-\- desired group
+\fBgroup\fP – desired group
 .IP \(bu 2
-\fBkey\fP \-\- key of the value that is requested
+\fBkey\fP – key of the value that is requested
 .IP \(bu 2
-\fBvalue\fP \-\- value to be set for given key
+\fBvalue\fP – value to be set for given key
 .UNINDENT
 .TP
 .B Returns
@@ -540,13 +528,13 @@ Setting a float value for given group/key
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBef\fP \-\- Key\-Value storage object
+\fBef\fP – Key\-Value storage object
 .IP \(bu 2
-\fBgroup\fP \-\- desired group
+\fBgroup\fP – desired group
 .IP \(bu 2
-\fBkey\fP \-\- key of the value that is requested
+\fBkey\fP – key of the value that is requested
 .IP \(bu 2
-\fBvalue\fP \-\- value to be set for given key
+\fBvalue\fP – value to be set for given key
 .UNINDENT
 .TP
 .B Returns
@@ -562,13 +550,13 @@ Setting a string value for given group/key
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBef\fP \-\- Key\-Value storage object
+\fBef\fP – Key\-Value storage object
 .IP \(bu 2
-\fBgroup\fP \-\- desired group
+\fBgroup\fP – desired group
 .IP \(bu 2
-\fBkey\fP \-\- key of the value that is requested
+\fBkey\fP – key of the value that is requested
 .IP \(bu 2
-\fBvalue\fP \-\- value to be set for given key
+\fBvalue\fP – value to be set for given key
 .UNINDENT
 .TP
 .B Returns
@@ -584,13 +572,13 @@ Setting a boolean value for given group/key
 .B Parameters
 .INDENT 7.0
 .IP \(bu 2
-\fBef\fP \-\- Key\-Value storage object
+\fBef\fP – Key\-Value storage object
 .IP \(bu 2
-\fBgroup\fP \-\- desired group
+\fBgroup\fP – desired group
 .IP \(bu 2
-\fBkey\fP \-\- key of the value that is requested
+\fBkey\fP – key of the value that is requested
 .IP \(bu 2
-\fBvalue\fP \-\- value to be set for given key
+\fBvalue\fP – value to be set for given key
 .UNINDENT
 .TP
 .B Returns
@@ -605,7 +593,7 @@ Free the memory of a given keyfile
 .INDENT 7.0
 .TP
 .B Parameters
-\fBef\fP \-\- EconfFile to be freed
+\fBef\fP – EconfFile to be freed
 .TP
 .B Returns
 None
@@ -614,12 +602,12 @@ None
 .SS Functions for handling error codes
 .INDENT 0.0
 .TP
-.B econf.err_string(error: int)
+.B econf.err_string(error: int) -> str
 Convert an error code into error message
 .INDENT 7.0
 .TP
 .B Parameters
-\fBerror\fP \-\- error code as integer
+\fBerror\fP – error code as integer
 .TP
 .B Returns
 error string
@@ -634,15 +622,6 @@ Info about the line where an error happened
 .B Returns
 path to the last handled file and number of last handled line
 .UNINDENT
-.UNINDENT
-.SH INDICES AND TABLES
-.INDENT 0.0
-.IP \(bu 2
-\fI\%Index\fP
-.IP \(bu 2
-\fI\%Module Index\fP
-.IP \(bu 2
-\fI\%Search Page\fP
 .UNINDENT
 .SH AUTHOR
 Nico Krapp
