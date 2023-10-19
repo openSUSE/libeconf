@@ -105,6 +105,13 @@ def _encode_str(string: str | bytes) -> bytes:
     return string
 
 
+def _ensure_valid_char(char: str | bytes) -> bytes:
+    char = _encode_str(char)
+    if len(char) > 1:
+        raise ValueError("Only single characters are allowed as comment and delimiter")
+    return char
+
+
 def _ensure_valid_int(val: int) -> int:
     if isinstance(val, int):
         c_val = c_int64(val)
@@ -169,11 +176,52 @@ def read_file(
     """
     result = EconfFile(c_void_p(None))
     file_name = _encode_str(file_name)
-    delim = _encode_str(delim)
-    comment = _encode_str(comment)
+    delim = _ensure_valid_char(delim)
+    comment = _ensure_valid_char(comment)
     err = LIBECONF.econf_readFile(byref(result._ptr), file_name, delim, comment)
     if err:
-        raise _exceptions(err, f"read_file failed with error: {err_string(err)}")
+        _exceptions(err, f"read_file failed with error: {err_string(err)}")
+    return result
+
+
+def read_file_with_callback(
+    file_name: str | bytes,
+    delim: str | bytes,
+    comment: str | bytes,
+    callback: Callable[[any], bool],
+    callback_data: any,
+) -> EconfFile:
+    """
+    Read a config file and write the key-value pairs into a keyfile object
+
+    A user defined function will be called in order e.g. to check the correct file permissions.
+    If the function returns False the parsing will be aborted and an Exception will be raised
+
+    :param file_name: absolute path of file to be parsed
+    :param delim: delimiter of a key/value e.g. '='
+    :param comment: string that defines the start of a comment e.g. '#'
+    :param callback: User defined function which will be called and returns a boolean
+    :param callback_data: argument to be give to the callback function
+    :return: Key-Value storage object
+    """
+    result = EconfFile(c_void_p(None))
+    file_name = _encode_str(file_name)
+    delim = _ensure_valid_char(delim)
+    comment = _ensure_valid_char(comment)
+
+    def callback_proxy(fake_data: c_void_p) -> c_bool:
+        return callback(callback_data)
+
+    CBFUNC = CFUNCTYPE(c_bool, c_void_p)
+    cb_func = CBFUNC(callback_proxy)
+
+    err = LIBECONF.econf_readFileWithCallback(
+        byref(result._ptr), file_name, delim, comment, cb_func, c_void_p(None)
+    )
+    if err:
+        _exceptions(
+            err, f"read_file_with_callback failed with error: {err_string(err)}"
+        )
     return result
 
 
@@ -192,7 +240,7 @@ def merge_files(usr_file: EconfFile, etc_file: EconfFile) -> EconfFile:
         etc_file._ptr,
     )
     if err:
-        raise _exceptions(err, f"merge_files failed with error: {err_string(err)}")
+        _exceptions(err, f"merge_files failed with error: {err_string(err)}")
     return merged_file
 
 
@@ -219,21 +267,84 @@ def read_dirs(
     :return: merged EconfFile object
     """
     result = EconfFile(c_void_p())
-    c_usr_conf_dir = _encode_str(usr_conf_dir)
-    c_etc_conf_dir = _encode_str(etc_conf_dir)
-    c_project_name = _encode_str(project_name)
-    c_config_suffix = _encode_str(config_suffix)
+    usr_conf_dir = _encode_str(usr_conf_dir)
+    etc_conf_dir = _encode_str(etc_conf_dir)
+    project_name = _encode_str(project_name)
+    config_suffix = _encode_str(config_suffix)
+    delim = _ensure_valid_char(delim)
+    comment = _ensure_valid_char(comment)
     err = LIBECONF.econf_readDirs(
         byref(result._ptr),
-        c_usr_conf_dir,
-        c_etc_conf_dir,
-        c_project_name,
-        c_config_suffix,
+        usr_conf_dir,
+        etc_conf_dir,
+        project_name,
+        config_suffix,
         delim,
         comment,
     )
     if err:
-        raise _exceptions(err, f"read_dirs failed with error: {err_string(err)}")
+        _exceptions(err, f"read_dirs failed with error: {err_string(err)}")
+    return result
+
+
+def read_dirs_with_callback(
+    usr_conf_dir: str | bytes,
+    etc_conf_dir: str | bytes,
+    project_name: str | bytes,
+    config_suffix: str | bytes,
+    delim: str | bytes,
+    comment: str | bytes,
+    callback: Callable[[any], bool],
+    callback_data: any,
+) -> EconfFile:
+    """
+    Read configuration from the first found config file and merge with snippets from conf.d/ directory
+
+    For every file a user defined function will be called in order e.g. to check the correct file permissions.
+    If the function returns False the parsing will be aborted and an Exception will be raised
+
+    e.g. searches /usr/etc/ and /etc/ for an example.conf file and merges it with the snippets in either
+    /usr/etc/example.conf.d/ or /etc/example.conf.d
+
+    :param usr_conf_dir: absolute path of the first directory to be searched
+    :param etc_conf_dir: absolute path of the second directory to be searched
+    :param project_name: basename of the configuration file
+    :param config_suffix: suffix of the configuration file
+    :param delim: delimiter of a key/value e.g. '='
+    :param comment: string that defines the start of a comment e.g. '#'
+    :param callback: User defined function which will be called for each file and returns a boolean
+    :param callback_data: argument to be give to the callback function
+    :return: merged EconfFile object
+    """
+    result = EconfFile(c_void_p())
+    usr_conf_dir = _encode_str(usr_conf_dir)
+    etc_conf_dir = _encode_str(etc_conf_dir)
+    project_name = _encode_str(project_name)
+    config_suffix = _encode_str(config_suffix)
+    delim = _ensure_valid_char(delim)
+    comment = _ensure_valid_char(comment)
+
+    def callback_proxy(fake_data: c_void_p):
+        return callback(callback_data)
+
+    CBFUNC = CFUNCTYPE(c_bool, c_void_p)
+    cb_func = CBFUNC(callback_proxy)
+
+    err = LIBECONF.econf_readDirsWithCallback(
+        byref(result._ptr),
+        usr_conf_dir,
+        etc_conf_dir,
+        project_name,
+        config_suffix,
+        delim,
+        comment,
+        cb_func,
+        c_void_p(None),
+    )
+    if err:
+        _exceptions(
+            err, f"read_dirs_with_callback failed with error: {err_string(err)}"
+        )
     return result
 
 
@@ -260,26 +371,93 @@ def read_dirs_history(
     :return: list of EconfFile objects
     """
     key_files = c_void_p(None)
-    c_size = c_size_t()
-    c_usr_conf_dir = _encode_str(usr_conf_dir)
-    c_etc_conf_dir = _encode_str(etc_conf_dir)
-    c_project_name = _encode_str(project_name)
-    c_config_suffix = _encode_str(config_suffix)
+    size = c_size_t()
+    usr_conf_dir = _encode_str(usr_conf_dir)
+    etc_conf_dir = _encode_str(etc_conf_dir)
+    project_name = _encode_str(project_name)
+    config_suffix = _encode_str(config_suffix)
+    delim = _ensure_valid_char(delim)
+    comment = _ensure_valid_char(comment)
     err = LIBECONF.econf_readDirsHistory(
         byref(key_files),
-        byref(c_size),
-        c_usr_conf_dir,
-        c_etc_conf_dir,
-        c_project_name,
-        c_config_suffix,
+        byref(size),
+        usr_conf_dir,
+        etc_conf_dir,
+        project_name,
+        config_suffix,
         delim,
         comment,
     )
     if err:
-        raise _exceptions(
-            err, f"read_dirs_history failed with error: {err_string(err)}"
+        _exceptions(err, f"read_dirs_history failed with error: {err_string(err)}")
+
+    arr = cast(key_files, POINTER(c_void_p * size.value))
+    result = [EconfFile(c_void_p(i)) for i in arr.contents]
+    return result
+
+
+def read_dirs_history_with_callback(
+    usr_conf_dir: str | bytes,
+    etc_conf_dir: str | bytes,
+    project_name: str | bytes,
+    config_suffix: str | bytes,
+    delim: str | bytes,
+    comment: str | bytes,
+    callback: Callable[[any], bool],
+    callback_data: any,
+) -> EconfFile:
+    """
+    Read configuration from the first found config file and snippets from conf.d/ directory
+
+    For every file a user defined function will be called in order e.g. to check the correct file permissions.
+    If the function returns False the parsing will be aborted and an Exception will be raised
+
+    e.g. searches /usr/etc/ and /etc/ for an example.conf file and the snippets in either
+    /usr/etc/example.conf.d/ or /etc/example.conf.d
+
+    :param usr_conf_dir: absolute path of the first directory to be searched
+    :param etc_conf_dir: absolute path of the second directory to be searched
+    :param project_name: basename of the configuration file
+    :param config_suffix: suffix of the configuration file
+    :param delim: delimiter of a key/value e.g. '='
+    :param comment: string that defines the start of a comment e.g. '#'
+    :param callback: User defined function which will be called for each file and returns a boolean
+    :param callback_data: argument to be give to the callback function
+    :return: list of EconfFile objects
+    """
+    key_files = c_void_p(None)
+    size = c_size_t()
+    usr_conf_dir = _encode_str(usr_conf_dir)
+    etc_conf_dir = _encode_str(etc_conf_dir)
+    project_name = _encode_str(project_name)
+    config_suffix = _encode_str(config_suffix)
+    delim = _ensure_valid_char(delim)
+    comment = _ensure_valid_char(comment)
+
+    def callback_proxy(fake_data: c_void_p):
+        return callback(callback_data)
+
+    CBFUNC = CFUNCTYPE(c_bool, c_void_p)
+    cb_func = CBFUNC(callback_proxy)
+
+    err = LIBECONF.econf_readDirsHistoryWithCallback(
+        byref(key_files),
+        byref(size),
+        usr_conf_dir,
+        etc_conf_dir,
+        project_name,
+        config_suffix,
+        delim,
+        comment,
+        cb_func,
+        c_void_p(None),
+    )
+    if err:
+        _exceptions(
+            err, f"read_dirs_history_with_callback failed with error: {err_string(err)}"
         )
-    arr = cast(key_files, POINTER(c_void_p * c_size.value))
+
+    arr = cast(key_files, POINTER(c_void_p * size.value))
     result = [EconfFile(c_void_p(i)) for i in arr.contents]
     return result
 
@@ -293,11 +471,11 @@ def new_key_file(delim: str | bytes, comment: str | bytes) -> EconfFile:
     :return: created EconfFile object
     """
     result = EconfFile(c_void_p())
-    delim = _encode_str(delim)
-    comment = _encode_str(comment)
+    delim = c_char(_ensure_valid_char(delim))
+    comment = c_char(_ensure_valid_char(comment))
     err = LIBECONF.econf_newKeyFile(byref(result._ptr), delim, comment)
     if err:
-        raise _exceptions(err, f"new_key_file failed with error: {err_string(err)}")
+        _exceptions(err, f"new_key_file failed with error: {err_string(err)}")
     return result
 
 
@@ -310,7 +488,7 @@ def new_ini_file() -> EconfFile:
     result = EconfFile(c_void_p())
     err = LIBECONF.econf_newIniFile(byref(result._ptr))
     if err:
-        raise _exceptions(err, f"new_ini_file failed with error: {err_string(err)}")
+        _exceptions(err, f"new_ini_file failed with error: {err_string(err)}")
     return result
 
 
@@ -346,9 +524,7 @@ def set_comment_tag(ef: EconfFile, comment: str | bytes) -> None:
     :param comment: The desired comment tag character
     :return: Nothing
     """
-    comment = _encode_str(comment)
-    if len(comment) > 1:
-        raise ValueError("Only single characters are allowed")
+    comment = _ensure_valid_char(comment)
     c_comment = c_char(comment)
     LIBECONF.econf_set_comment_tag(ef._ptr, c_comment)
 
@@ -361,9 +537,7 @@ def set_delimiter_tag(ef: EconfFile, delimiter: str | bytes) -> None:
     :param delimiter: The desired delimiter character
     :return: Nothing
     """
-    delimiter = _encode_str(delimiter)
-    if len(delimiter) > 1:
-        raise ValueError("Only single characters are allowed")
+    delimiter = _ensure_valid_char(delimiter)
     c_delimiter = c_char(delimiter)
     LIBECONF.econf_set_delimiter_tag(ef._ptr, c_delimiter)
 

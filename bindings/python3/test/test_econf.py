@@ -7,12 +7,15 @@ from ctypes import *
 
 FILE = econf.read_file("test/testdata/examples/example.conf", "=", ";")
 FILE2 = econf.read_file("test/testdata/examples2/example.conf", "=", "#")
-INVALID_FILE = econf.read_file("test/testdata/examples/invalid.conf", ":", "#")
 
 
 @contextmanager
 def does_not_raise():
     yield
+
+
+def user_function(value: str) -> bool:
+    return value == "correct"
 
 
 @pytest.mark.parametrize(
@@ -26,6 +29,22 @@ def does_not_raise():
 def test_encode_str(value, expected, context):
     with context:
         assert econf._encode_str(value) == expected
+
+@pytest.mark.parametrize(
+    "context,value",
+    [
+        (does_not_raise(), "#"),
+        (does_not_raise(), b'+'),
+        (pytest.raises(TypeError), 3),
+        (pytest.raises(ValueError), "abc")
+    ]
+)
+def test_ensure_valid_char(context, value):
+    with context:
+        result = econf._ensure_valid_char(value)
+
+        assert len(result) == 1
+        assert isinstance(result, bytes)
 
 
 @pytest.mark.parametrize(
@@ -61,21 +80,60 @@ def test_ensure_valid_uint(value, context):
         assert result.value == value
 
 
-def test_read_file():
-    file = "test/testdata/examples/example.conf"
-    delim = "="
-    comment = "#"
+@pytest.mark.parametrize(
+    "file,context",
+    [
+        ("test/testdata/examples/example.conf", does_not_raise()),
+        ("test/testdata/examples/invalid.conf", pytest.raises(SyntaxError)),
+        ("test/testdata/examples/fakefile.conf", pytest.raises(FileNotFoundError))
+    ]
+)
+def test_read_file(file, context):
+    with context:
+        result = econf.read_file(file, "=", "#")
 
-    ef = econf.read_file(file, delim, comment)
+        assert result._ptr != None
+        assert econf.get_groups(result) != None
+        assert econf.get_keys(result, None) != None
+        assert econf.delimiter_tag(result) == "="
+        assert econf.comment_tag(result) == "#"
 
-    assert ef._ptr != None
 
+@pytest.mark.parametrize(
+    "file,context,data",
+    [
+        ("test/testdata/examples/example.conf", does_not_raise(), "correct"),
+        ("test/testdata/examples/example.conf", pytest.raises(Exception, match="parsing callback has failed"), "wrong"),
+        ("test/testdata/examples/fakefile.conf", pytest.raises(FileNotFoundError), "correct"),
+        ("test/testdata/examples/invalid.conf", pytest.raises(SyntaxError), "correct")
+    ]
+)
+def test_read_file_with_callback(file, context, data):
+    with context:
+        result = econf.read_file_with_callback(file, "=", "#", user_function, data)
 
-def test_new_key_file():
-    result = econf.new_key_file("=", "#")
+        assert result._ptr != None
+        assert econf.get_groups(result) != None
+        assert econf.get_keys(result, None) != None
+        assert econf.delimiter_tag(result) == "="
+        assert econf.comment_tag(result) == "#"
 
-    assert result
-    assert type(result) == econf.EconfFile
+@pytest.mark.parametrize(
+    "context,delim,comment",
+    [
+        (does_not_raise(), "=", "#"),
+        (pytest.raises(ValueError), "abc", "def"),
+        (pytest.raises(TypeError), 1, 2)
+    ]
+)
+def test_new_key_file(context, delim, comment):
+    with context:
+        result = econf.new_key_file(delim, comment)
+
+        assert result
+        assert type(result) == econf.EconfFile
+        assert econf.delimiter_tag(result) == delim
+        assert econf.comment_tag(result) == comment
 
 
 def test_new_ini_file():
@@ -83,6 +141,8 @@ def test_new_ini_file():
 
     assert result
     assert type(result) == econf.EconfFile
+    assert econf.delimiter_tag(result) == "="
+    assert econf.comment_tag(result) == "#"
 
 
 def test_merge_files():
@@ -107,6 +167,24 @@ def test_read_dirs():
     assert len(econf.get_keys(result, "Group")) == 4
     assert len(econf.get_groups(result)) == 3
 
+@pytest.mark.parametrize(
+    "context,data",
+    [
+        (does_not_raise(), "correct"),
+        (pytest.raises(Exception, match="parsing callback has failed"), "wrong")
+    ]
+)
+def test_read_dirs_with_callback(context, data):
+    with context:
+        usr_dir = "test/testdata/examples2/"
+        etc_dir = "test/testdata/examples"
+        name = "example"
+        result = econf.read_dirs_with_callback(usr_dir, etc_dir, name, "conf", "=", "#", user_function, data)
+
+        assert len(econf.get_keys(result, None)) == 3
+        assert len(econf.get_keys(result, "Group")) == 4
+        assert len(econf.get_groups(result)) == 3
+
 
 def test_read_dirs_history():
     result = econf.read_dirs_history(
@@ -123,13 +201,31 @@ def test_read_dirs_history():
     assert len(econf.get_keys(result[0], None)) == 2
     assert len(econf.get_groups(result[1])) == 1
 
+@pytest.mark.parametrize(
+    "context,data",
+    [
+        (does_not_raise(), "correct"),
+        (pytest.raises(Exception, match="parsing callback has failed"), "wrong")
+    ]
+)
+def test_read_dirs_history_with_callback(context, data):
+    with context:
+        usr_dir = "test/testdata/examples2/"
+        etc_dir = "test/testdata/examples"
+        name = "example"
+        result = econf.read_dirs_history_with_callback(usr_dir, etc_dir, name, "conf", "=", "#", user_function, data)
+
+        assert len(result) == 2
+        assert len(econf.get_groups(result[0])) == 3
+        assert len(econf.get_keys(result[0], None)) == 2
+        assert len(econf.get_groups(result[1])) == 1
+
 
 @pytest.mark.parametrize(
     "ef,context,expected",
     [
         (FILE, does_not_raise(), ";"),
         (FILE2, does_not_raise(), "#"),
-        (INVALID_FILE, does_not_raise(), "#"),
     ],
 )
 def test_comment_tag(ef, context, expected):
@@ -144,7 +240,6 @@ def test_comment_tag(ef, context, expected):
     [
         (FILE, does_not_raise(), "="),
         (FILE2, does_not_raise(), "="),
-        (INVALID_FILE, does_not_raise(), ":"),
     ],
 )
 def test_delimiter_tag(ef, context, expected):
