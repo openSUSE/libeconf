@@ -27,7 +27,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "PYTHON-LIBECONF" "3" "Oct 19, 2023" "" "python-libeconf"
+.TH "PYTHON-LIBECONF" "3" "Oct 20, 2023" "" "python-libeconf"
 .sp
 \fBpython\-libeconf\fP is a Python Library which offers Python bindings for
 \fI\%libeconf\fP\&.
@@ -779,6 +779,8 @@ Nothing
 .TP
 .B econf.free_file(ef: EconfFile)
 Free the memory of a given keyfile
+.sp
+This function is called automatically at the end of every objects lifetime and should not be used otherwise
 .INDENT 7.0
 .TP
 .B Parameters

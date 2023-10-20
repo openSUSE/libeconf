@@ -953,16 +953,20 @@ def err_location() -> Tuple[str, int]:
     c_filename = c_char_p()
     c_line_nr = c_uint64()
     LIBECONF.econf_errLocation(byref(c_filename), byref(c_line_nr))
-    return c_filename.value, c_line_nr.value
+    return c_filename.value.decode("utf-8"), c_line_nr.value
 
 
 def free_file(ef: EconfFile):
     """
     Free the memory of a given keyfile
 
+    This function is called automatically at the end of every objects lifetime and should not be used otherwise
+
     :param ef: EconfFile to be freed
     :return: None
     """
+    if not isinstance(ef, EconfFile):
+        raise TypeError("Parameter must be an EconfFile object")
     if not ef._ptr:
         return
     LIBECONF.econf_freeFile(ef._ptr)

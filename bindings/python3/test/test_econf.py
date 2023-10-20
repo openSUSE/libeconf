@@ -287,3 +287,51 @@ def test_write_file(tmp_path):
     result = econf.write_file(FILE, d, name)
 
     assert (tmp_path / "example.conf").exists()
+
+
+@pytest.mark.parametrize(
+    "context,value,expected",
+    [
+        (does_not_raise(), 0, "Success"),
+        (does_not_raise(), 5, "Key not found"),
+        (does_not_raise(), 23, "Unknown libeconf error 23"),
+        (pytest.raises(TypeError), "", "")
+    ]
+)
+def test_err_string(context, value, expected):
+    with context:
+        result = econf.err_string(value)
+
+        assert result == expected
+
+
+def test_err_location():
+    file, line = econf.err_location()
+
+    assert isinstance(file, str)
+    assert isinstance(line, int)
+
+
+@pytest.mark.parametrize(
+    "file,context",
+    [
+        #(FILE, does_not_raise()),
+        (econf.EconfFile(c_void_p(None)), does_not_raise()),
+        (5, pytest.raises(TypeError))
+    ]
+)
+def test_free_file(file, context):
+    with context:
+        econf.free_file(file)
+
+@pytest.mark.parametrize(
+    "context,list",
+    [
+        (does_not_raise(), ["/", "/conf.d/", None]),
+        (does_not_raise(), []),
+        (pytest.raises(TypeError), "")
+    ]
+)
+def test_set_conf_dirs(context, list):
+    with context:
+        econf.set_conf_dirs(list)
