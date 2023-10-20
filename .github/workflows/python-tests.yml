@@ -1,0 +1,30 @@
+name: Execute tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    paths:
+      - bindings/python3/*
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: registry.opensuse.org/opensuse/tumbleweed:latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Setup libeconf
+      run: |
+        zypper ref
+        zypper --non-interactive in libeconf0 python3 python3-pip python3-pytest
+
+    - name: Install econf
+      run: python3 -m pip install -e . --break-system-packages
+
+    - name: Run tests
+      run: pytest -v test/
