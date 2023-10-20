@@ -25,76 +25,54 @@ class EconfFile:
         free_file(self)
 
 
-class Econf_err(Enum):
-    ECONF_SUCCESS = 0
-    ECONF_ERROR = 1
-    ECONF_NOMEM = 2
-    ECONF_NOFILE = 3
-    ECONF_NOGROUP = 4
-    ECONF_NOKEY = 5
-    ECONF_EMPTYKEY = 6
-    ECONF_WRITEERROR = 7
-    ECONF_PARSE_ERROR = 8
-    ECONF_MISSING_BRACKET = 9
-    ECONF_MISSING_DELIMITER = 10
-    ECONF_EMPTY_SECTION_NAME = 11
-    ECONF_TEXT_AFTER_SECTION = 12
-    ECONF_FILE_LIST_IS_NULL = 13
-    ECONF_WRONG_BOOLEAN_VALUE = 14
-    ECONF_KEY_HAS_NULL_VALUE = 15
-    ECONF_WRONG_OWNER = 16
-    ECONF_WRONG_GROUP = 17
-    ECONF_WRONG_FILE_PERMISSION = 18
-    ECONF_WRONG_DIR_PERMISSION = 19
-    ECONF_ERROR_FILE_IS_SYM_LINK = 20
-    ECONF_PARSING_CALLBACK_FAILED = 21
+class EconfError(Enum):
+    SUCCESS = 0
+    ERROR = 1
+    NOMEM = 2
+    NOFILE = 3
+    NOGROUP = 4
+    NOKEY = 5
+    EMPTYKEY = 6
+    WRITEERROR = 7
+    PARSE_ERROR = 8
+    MISSING_BRACKET = 9
+    MISSING_DELIMITER = 10
+    EMPTY_SECTION_NAME = 11
+    TEXT_AFTER_SECTION = 12
+    FILE_LIST_IS_NULL = 13
+    WRONG_BOOLEAN_VALUE = 14
+    KEY_HAS_NULL_VALUE = 15
+    WRONG_OWNER = 16
+    WRONG_GROUP = 17
+    WRONG_FILE_PERMISSION = 18
+    WRONG_DIR_PERMISSION = 19
+    ERROR_FILE_IS_SYM_LINK = 20
+    PARSING_CALLBACK_FAILED = 21
 
 
-def _exceptions(err: int, val: str):
-    if Econf_err(err) == Econf_err.ECONF_ERROR:
-        raise Exception(val)
-    elif Econf_err(err) == Econf_err.ECONF_NOMEM:
-        raise MemoryError(val)
-    elif Econf_err(err) == Econf_err.ECONF_NOFILE:
-        raise FileNotFoundError(val)
-    elif Econf_err(err) == Econf_err.ECONF_NOGROUP:
-        raise KeyError(val)
-    elif Econf_err(err) == Econf_err.ECONF_NOKEY:
-        raise KeyError(val)
-    elif Econf_err(err) == Econf_err.ECONF_EMPTYKEY:
-        raise KeyError(val)
-    elif Econf_err(err) == Econf_err.ECONF_WRITEERROR:
-        raise OSError(val)
-    elif Econf_err(err) == Econf_err.ECONF_PARSE_ERROR:
-        raise Exception(val)
-    elif Econf_err(err) == Econf_err.ECONF_MISSING_BRACKET:
-        raise SyntaxError(val)
-    elif Econf_err(err) == Econf_err.ECONF_MISSING_DELIMITER:
-        raise SyntaxError(val)
-    elif Econf_err(err) == Econf_err.ECONF_EMPTY_SECTION_NAME:
-        raise SyntaxError(val)
-    elif Econf_err(err) == Econf_err.ECONF_TEXT_AFTER_SECTION:
-        raise SyntaxError(val)
-    elif Econf_err(err) == Econf_err.ECONF_FILE_LIST_IS_NULL:
-        raise ValueError(val)
-    elif Econf_err(err) == Econf_err.ECONF_WRONG_BOOLEAN_VALUE:
-        raise ValueError(val)
-    elif Econf_err(err) == Econf_err.ECONF_KEY_HAS_NULL_VALUE:
-        raise ValueError(val)
-    elif Econf_err(err) == Econf_err.ECONF_WRONG_OWNER:
-        raise PermissionError(val)
-    elif Econf_err(err) == Econf_err.ECONF_WRONG_GROUP:
-        raise PermissionError(val)
-    elif Econf_err(err) == Econf_err.ECONF_WRONG_FILE_PERMISSION:
-        raise PermissionError(val)
-    elif Econf_err(err) == Econf_err.ECONF_WRONG_DIR_PERMISSION:
-        raise PermissionError(val)
-    elif Econf_err(err) == Econf_err.ECONF_ERROR_FILE_IS_SYM_LINK:
-        raise FileNotFoundError(val)
-    elif Econf_err(err) == Econf_err.ECONF_PARSING_CALLBACK_FAILED:
-        raise Exception(val)
-    else:
-        raise Exception(val)
+ECONF_EXCEPTION = {
+    EconfError.ERROR: Exception,
+    EconfError.NOMEM: MemoryError,
+    EconfError.NOFILE: FileNotFoundError,
+    EconfError.NOGROUP: KeyError,
+    EconfError.NOKEY: KeyError,
+    EconfError.EMPTYKEY: KeyError,
+    EconfError.WRITEERROR: OSError,
+    EconfError.PARSE_ERROR: Exception,
+    EconfError.MISSING_BRACKET: SyntaxError,
+    EconfError.MISSING_DELIMITER: SyntaxError,
+    EconfError.EMPTY_SECTION_NAME: SyntaxError,
+    EconfError.TEXT_AFTER_SECTION: SyntaxError,
+    EconfError.FILE_LIST_IS_NULL: ValueError,
+    EconfError.WRONG_BOOLEAN_VALUE: ValueError,
+    EconfError.KEY_HAS_NULL_VALUE: ValueError,
+    EconfError.WRONG_OWNER: PermissionError,
+    EconfError.WRONG_GROUP: PermissionError,
+    EconfError.WRONG_FILE_PERMISSION: PermissionError,
+    EconfError.WRONG_DIR_PERMISSION: PermissionError,
+    EconfError.ERROR_FILE_IS_SYM_LINK: PermissionError,
+    EconfError.PARSING_CALLBACK_FAILED: Exception
+}
 
 
 def _encode_str(string: str | bytes) -> bytes:
@@ -180,7 +158,7 @@ def read_file(
     comment = _ensure_valid_char(comment)
     err = LIBECONF.econf_readFile(byref(result._ptr), file_name, delim, comment)
     if err:
-        _exceptions(err, f"read_file failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"read_file failed with error: {err_string(err)}")
     return result
 
 
@@ -219,8 +197,8 @@ def read_file_with_callback(
         byref(result._ptr), file_name, delim, comment, cb_func, c_void_p(None)
     )
     if err:
-        _exceptions(
-            err, f"read_file_with_callback failed with error: {err_string(err)}"
+        raise ECONF_EXCEPTION[EconfError(err)](
+            f"read_file_with_callback failed with error: {err_string(err)}"
         )
     return result
 
@@ -240,7 +218,7 @@ def merge_files(usr_file: EconfFile, etc_file: EconfFile) -> EconfFile:
         etc_file._ptr,
     )
     if err:
-        _exceptions(err, f"merge_files failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"merge_files failed with error: {err_string(err)}")
     return merged_file
 
 
@@ -283,7 +261,7 @@ def read_dirs(
         comment,
     )
     if err:
-        _exceptions(err, f"read_dirs failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"read_dirs failed with error: {err_string(err)}")
     return result
 
 
@@ -342,8 +320,8 @@ def read_dirs_with_callback(
         c_void_p(None),
     )
     if err:
-        _exceptions(
-            err, f"read_dirs_with_callback failed with error: {err_string(err)}"
+        raise ECONF_EXCEPTION[EconfError(err)](
+            f"read_dirs_with_callback failed with error: {err_string(err)}"
         )
     return result
 
@@ -389,7 +367,7 @@ def read_dirs_history(
         comment,
     )
     if err:
-        _exceptions(err, f"read_dirs_history failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"read_dirs_history failed with error: {err_string(err)}")
 
     arr = cast(key_files, POINTER(c_void_p * size.value))
     result = [EconfFile(c_void_p(i)) for i in arr.contents]
@@ -453,8 +431,8 @@ def read_dirs_history_with_callback(
         c_void_p(None),
     )
     if err:
-        _exceptions(
-            err, f"read_dirs_history_with_callback failed with error: {err_string(err)}"
+        raise ECONF_EXCEPTION[EconfError(err)](
+            f"read_dirs_history_with_callback failed with error: {err_string(err)}"
         )
 
     arr = cast(key_files, POINTER(c_void_p * size.value))
@@ -475,7 +453,7 @@ def new_key_file(delim: str | bytes, comment: str | bytes) -> EconfFile:
     comment = c_char(_ensure_valid_char(comment))
     err = LIBECONF.econf_newKeyFile(byref(result._ptr), delim, comment)
     if err:
-        _exceptions(err, f"new_key_file failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"new_key_file failed with error: {err_string(err)}")
     return result
 
 
@@ -488,7 +466,7 @@ def new_ini_file() -> EconfFile:
     result = EconfFile(c_void_p())
     err = LIBECONF.econf_newIniFile(byref(result._ptr))
     if err:
-        _exceptions(err, f"new_ini_file failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"new_ini_file failed with error: {err_string(err)}")
     return result
 
 
@@ -555,7 +533,7 @@ def write_file(ef: EconfFile, save_to_dir: str, file_name: str) -> None:
     c_file_name = _encode_str(file_name)
     err = LIBECONF.econf_writeFile(byref(ef._ptr), c_save_to_dir, c_file_name)
     if err:
-        _exceptions(err, f"write_file failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"write_file failed with error: {err_string(err)}")
 
 
 def get_path(ef: EconfFile) -> str:
@@ -581,7 +559,7 @@ def get_groups(ef: EconfFile) -> list[str]:
     c_groups = c_void_p(None)
     err = LIBECONF.econf_getGroups(ef._ptr, byref(c_length), byref(c_groups))
     if err:
-        _exceptions(err, f"get_groups failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"get_groups failed with error: {err_string(err)}")
     arr = cast(c_groups, POINTER(c_char_p * c_length.value))
     result = [i.decode("utf-8") for i in arr.contents]
     return result
@@ -601,7 +579,7 @@ def get_keys(ef: EconfFile, group: str) -> list[str]:
         group = _encode_str(group)
     err = LIBECONF.econf_getKeys(ef._ptr, group, byref(c_length), byref(c_keys))
     if err:
-        _exceptions(err, f"get_keys failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"get_keys failed with error: {err_string(err)}")
     arr = cast(c_keys, POINTER(c_char_p * c_length.value))
     result = [i.decode("utf-8") for i in arr.contents]
     return result
@@ -622,7 +600,7 @@ def get_int_value(ef: EconfFile, group: str, key: str) -> int:
     c_result = c_int64()
     err = LIBECONF.econf_getInt64Value(ef._ptr, group, c_key, byref(c_result))
     if err:
-        _exceptions(err, f"get_int64_value failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"get_int64_value failed with error: {err_string(err)}")
     return c_result.value
 
 
@@ -641,7 +619,7 @@ def get_uint_value(ef: EconfFile, group: str, key: str) -> int:
     c_result = c_uint64()
     err = LIBECONF.econf_getUInt64Value(ef._ptr, group, c_key, byref(c_result))
     if err:
-        _exceptions(err, f"get_uint64_value failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"get_uint64_value failed with error: {err_string(err)}")
     return c_result.value
 
 
@@ -660,7 +638,7 @@ def get_float_value(ef: EconfFile, group: str, key: str) -> float:
     c_result = c_double()
     err = LIBECONF.econf_getDoubleValue(ef._ptr, group, c_key, byref(c_result))
     if err:
-        _exceptions(err, f"get_double_value failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"get_double_value failed with error: {err_string(err)}")
     return c_result.value
 
 
@@ -679,7 +657,7 @@ def get_string_value(ef: EconfFile, group: str, key: str) -> str:
     c_result = c_char_p()
     err = LIBECONF.econf_getStringValue(ef._ptr, group, c_key, byref(c_result))
     if err:
-        _exceptions(err, f"get_string_value failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"get_string_value failed with error: {err_string(err)}")
     return c_result.value.decode("utf-8")
 
 
@@ -698,7 +676,7 @@ def get_bool_value(ef: EconfFile, group: str, key: str) -> bool:
     c_result = c_bool()
     err = LIBECONF.econf_getBoolValue(ef._ptr, group, c_key, byref(c_result))
     if err:
-        _exceptions(err, f"get_bool_value failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"get_bool_value failed with error: {err_string(err)}")
     return c_result.value
 
 
@@ -720,10 +698,8 @@ def get_int_value_def(ef: EconfFile, group: str, key: str, default: int) -> int:
     err = LIBECONF.econf_getInt64ValueDef(
         ef._ptr, group, c_key, byref(c_result), c_default
     )
-    if err:
-        if Econf_err(err) == Econf_err.ECONF_NOKEY:
-            return c_default.value
-        _exceptions(err, f"get_int64_value_def failed with error: {err_string(err)}")
+    if err and EconfError(err) != EconfError.NOKEY:
+        raise ECONF_EXCEPTION[EconfError(err)](f"get_int64_value_def failed with error: {err_string(err)}")
     return c_result.value
 
 
@@ -745,10 +721,8 @@ def get_uint_value_def(ef: EconfFile, group: str, key: str, default: int) -> int
     err = LIBECONF.econf_getUInt64ValueDef(
         ef._ptr, group, c_key, byref(c_result), c_default
     )
-    if err:
-        if Econf_err(err) == Econf_err.ECONF_NOKEY:
-            return c_default.value
-        _exceptions(err, f"get_uint64_value_def failed with error: {err_string(err)}")
+    if err and EconfError(err) != EconfError.NOKEY:
+        raise ECONF_EXCEPTION[EconfError(err)](f"get_uint64_value_def failed with error: {err_string(err)}")
     return c_result.value
 
 
@@ -772,10 +746,8 @@ def get_float_value_def(ef: EconfFile, group: str, key: str, default: float) -> 
     err = LIBECONF.econf_getDoubleValueDef(
         ef._ptr, group, c_key, byref(c_result), c_default
     )
-    if err:
-        if Econf_err(err) == Econf_err.ECONF_NOKEY:
-            return c_default.value
-        _exceptions(err, f"get_double_value_def failed with error: {err_string(err)}")
+    if err and EconfError(err) != EconfError.NOKEY:
+        raise ECONF_EXCEPTION[EconfError(err)](f"get_double_value_def failed with error: {err_string(err)}")
     return c_result.value
 
 
@@ -798,9 +770,9 @@ def get_string_value_def(ef: EconfFile, group: str, key: str, default: str) -> s
         ef._ptr, group, c_key, byref(c_result), c_default
     )
     if err:
-        if Econf_err(err) == Econf_err.ECONF_NOKEY:
+        if EconfError(err) == EconfError.NOKEY:
             return c_default.decode("utf-8")
-        _exceptions(err, f"get_string_value_def failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"get_string_value_def failed with error: {err_string(err)}")
     return c_result.value.decode("utf-8")
 
 
@@ -824,10 +796,8 @@ def get_bool_value_def(ef: EconfFile, group: str, key: str, default: bool) -> bo
     err = LIBECONF.econf_getBoolValueDef(
         ef._ptr, group, c_key, byref(c_result), c_default
     )
-    if err:
-        if Econf_err(err) == Econf_err.ECONF_NOKEY:
-            return c_default.value
-        _exceptions(err, f"get_bool_value_def failed with error: {err_string(err)}")
+    if err and EconfError(err) != EconfError.NOKEY:
+        raise ECONF_EXCEPTION[EconfError(err)](f"get_bool_value_def failed with error: {err_string(err)}")
     return c_result.value
 
 
@@ -847,7 +817,7 @@ def set_int_value(ef: EconfFile, group: str, key: str, value: int) -> None:
     c_value = _ensure_valid_int(value)
     err = LIBECONF.econf_setInt64Value(ef._ptr, group, c_key, c_value)
     if err:
-        _exceptions(err, f"set_int64_value failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"set_int64_value failed with error: {err_string(err)}")
 
 
 def set_uint_value(ef: EconfFile, group: str, key: str, value: int) -> None:
@@ -866,7 +836,7 @@ def set_uint_value(ef: EconfFile, group: str, key: str, value: int) -> None:
     c_value = _ensure_valid_uint(value)
     err = LIBECONF.econf_setUInt64Value(ef._ptr, group, c_key, c_value)
     if err:
-        _exceptions(err, f"set_uint64_value failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"set_uint64_value failed with error: {err_string(err)}")
 
 
 def set_float_value(ef: EconfFile, group: str, key: str, value: float) -> None:
@@ -887,7 +857,7 @@ def set_float_value(ef: EconfFile, group: str, key: str, value: float) -> None:
     c_value = c_double(value)
     err = LIBECONF.econf_setDoubleValue(ef._ptr, group, c_key, c_value)
     if err:
-        _exceptions(err, f"set_double_value failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"set_double_value failed with error: {err_string(err)}")
 
 
 def set_string_value(ef: EconfFile, group: str, key: str, value: str | bytes) -> None:
@@ -906,7 +876,7 @@ def set_string_value(ef: EconfFile, group: str, key: str, value: str | bytes) ->
     c_value = _encode_str(value)
     err = LIBECONF.econf_setStringValue(ef._ptr, group, c_key, c_value)
     if err:
-        _exceptions(err, f"set_string_value failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"set_string_value failed with error: {err_string(err)}")
 
 
 def set_bool_value(ef: EconfFile, group: str, key: str, value: bool) -> None:
@@ -927,7 +897,7 @@ def set_bool_value(ef: EconfFile, group: str, key: str, value: bool) -> None:
     c_value = _encode_str(str(value))
     err = LIBECONF.econf_setBoolValue(ef._ptr, group, c_key, c_value)
     if err:
-        _exceptions(err, f"set_bool_value failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"set_bool_value failed with error: {err_string(err)}")
 
 
 def err_string(error: int) -> str:
@@ -990,7 +960,9 @@ def set_conf_dirs(dir_postfix_list: list[str]) -> None:
     str_arr = c_char_p * len(dir_postfix_list)
     dir_arr = str_arr()
     for i in range(len(dir_postfix_list)):
-        dir_arr[i] = c_char_p(_encode_str(dir_postfix_list[i]))
+        if dir_postfix_list[i] is not None:
+            dir_postfix_list[i] = _encode_str(dir_postfix_list[i])
+        dir_arr[i] = c_char_p(dir_postfix_list[i])
     err = LIBECONF.econf_set_conf_dirs(dir_arr)
     if err:
-        _exceptions(err, f"set_conf_dirs failed with error: {err_string(err)}")
+        raise ECONF_EXCEPTION[EconfError(err)](f"set_conf_dirs failed with error: {err_string(err)}")
