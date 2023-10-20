@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "python-libeconf"
+version = "1.1.0"
+description = "Python bindings for libeconf"
+authors = [{name="nkrapp", email="nico.krapp@suse.com"}]
+readme = "README.md"
+
+[project.optional-dependencies]
+doc_requires = [
+    "sphinx",
+    "sphinx-rtd-theme"
+]
+test_requires = [
+    "pytest"
+]
+
+[tool.isort]
+profile = "black"

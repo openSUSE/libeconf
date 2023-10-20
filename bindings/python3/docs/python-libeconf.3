@@ -1,0 +1,822 @@
+.\" Man page generated from reStructuredText.
+.
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.TH "PYTHON-LIBECONF" "3" "Oct 20, 2023" "" "python-libeconf"
+.sp
+\fBpython\-libeconf\fP is a Python Library which offers Python bindings for
+\fI\%libeconf\fP\&.
+.sp
+libeconf is a highly flexible and configurable library to parse and manage key=value configuration files.
+It reads configuration file snippets from different directories and builds the final configuration file for
+the application from it.
+.SH CONTENTS
+.SS Usage
+.SS install
+.sp
+\fBWARNING:\fP
+.INDENT 0.0
+.INDENT 3.5
+The recommended way to install this project is to get the rpm package.
+If you install this project from pypi libeconf will not be automatically installed.
+To use this project please make sure you have libeconf installed on your system!
+.UNINDENT
+.UNINDENT
+.sp
+You can install this project from pypi with
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+pip install python\-libeconf
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+and then import it into your python project with
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+import econf
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+For information about the functions provided by this library, have a look at \fI\%API\fP
+.SS API
+.TS
+center;
+||.
+_
+.TE
+.SS Functions to interact with config files
+.INDENT 0.0
+.TP
+.B econf.read_file(file_name: str | bytes, delim: str | bytes, comment: str | bytes) -> EconfFile
+Read a config file and write the key\-value pairs into a keyfile object
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBfile_name\fP – absolute path of file to be parsed
+.IP \(bu 2
+\fBdelim\fP – delimiter of a key/value e.g. ‘=’
+.IP \(bu 2
+\fBcomment\fP – string that defines the start of a comment e.g. ‘#’
+.UNINDENT
+.TP
+.B Returns
+Key\-Value storage object
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.read_file_with_callback(file_name: str | bytes, delim: str | bytes, comment: str | bytes, callback: Callable[[any], bool], callback_data: any) -> EconfFile
+Read a config file and write the key\-value pairs into a keyfile object
+.sp
+A user defined function will be called in order e.g. to check the correct file permissions.
+If the function returns False the parsing will be aborted and an Exception will be raised
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBfile_name\fP – absolute path of file to be parsed
+.IP \(bu 2
+\fBdelim\fP – delimiter of a key/value e.g. ‘=’
+.IP \(bu 2
+\fBcomment\fP – string that defines the start of a comment e.g. ‘#’
+.IP \(bu 2
+\fBcallback\fP – User defined function which will be called and returns a boolean
+.IP \(bu 2
+\fBcallback_data\fP – argument to be give to the callback function
+.UNINDENT
+.TP
+.B Returns
+Key\-Value storage object
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.new_key_file(delim: str | bytes, comment: str | bytes) -> EconfFile
+Create a new empty keyfile
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBdelim\fP – delimiter of a key/value e.g. ‘=’
+.IP \(bu 2
+\fBcomment\fP – string that defines the start of a comment e.g. ‘#’
+.UNINDENT
+.TP
+.B Returns
+created EconfFile object
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.new_ini_file() -> EconfFile
+Create a new empty keyfile with delimiter ‘=’ and comment ‘#’
+.INDENT 7.0
+.TP
+.B Returns
+created EconfFile object
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.merge_files(usr_file: EconfFile, etc_file: EconfFile) -> EconfFile
+Merge the content of 2 keyfile objects
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBusr_file\fP – first EconfFile object
+.IP \(bu 2
+\fBetc_file\fP – second EconfFile object
+.UNINDENT
+.TP
+.B Returns
+merged EconfFile object
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.read_dirs(usr_conf_dir: str | bytes, etc_conf_dir: str | bytes, project_name: str | bytes, config_suffix: str | bytes, delim: str | bytes, comment: str | bytes) -> EconfFile
+Read configuration from the first found config file and merge with snippets from conf.d/ directory
+.sp
+e.g. searches /usr/etc/ and /etc/ for an example.conf file and merges it with the snippets in either
+/usr/etc/example.conf.d/ or /etc/example.conf.d
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBusr_conf_dir\fP – absolute path of the first directory to be searched
+.IP \(bu 2
+\fBetc_conf_dir\fP – absolute path of the second directory to be searched
+.IP \(bu 2
+\fBproject_name\fP – basename of the configuration file
+.IP \(bu 2
+\fBconfig_suffix\fP – suffix of the configuration file
+.IP \(bu 2
+\fBdelim\fP – delimiter of a key/value e.g. ‘=’
+.IP \(bu 2
+\fBcomment\fP – string that defines the start of a comment e.g. ‘#’
+.UNINDENT
+.TP
+.B Returns
+merged EconfFile object
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.read_dirs_with_callback(usr_conf_dir: str | bytes, etc_conf_dir: str | bytes, project_name: str | bytes, config_suffix: str | bytes, delim: str | bytes, comment: str | bytes, callback: Callable[[any], bool], callback_data: any) -> EconfFile
+Read configuration from the first found config file and merge with snippets from conf.d/ directory
+.sp
+For every file a user defined function will be called in order e.g. to check the correct file permissions.
+If the function returns False the parsing will be aborted and an Exception will be raised
+.sp
+e.g. searches /usr/etc/ and /etc/ for an example.conf file and merges it with the snippets in either
+/usr/etc/example.conf.d/ or /etc/example.conf.d
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBusr_conf_dir\fP – absolute path of the first directory to be searched
+.IP \(bu 2
+\fBetc_conf_dir\fP – absolute path of the second directory to be searched
+.IP \(bu 2
+\fBproject_name\fP – basename of the configuration file
+.IP \(bu 2
+\fBconfig_suffix\fP – suffix of the configuration file
+.IP \(bu 2
+\fBdelim\fP – delimiter of a key/value e.g. ‘=’
+.IP \(bu 2
+\fBcomment\fP – string that defines the start of a comment e.g. ‘#’
+.IP \(bu 2
+\fBcallback\fP – User defined function which will be called for each file and returns a boolean
+.IP \(bu 2
+\fBcallback_data\fP – argument to be give to the callback function
+.UNINDENT
+.TP
+.B Returns
+merged EconfFile object
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.read_dirs_history(usr_conf_dir: str | bytes, etc_conf_dir: str | bytes, project_name: str | bytes, config_suffix: str | bytes, delim: str | bytes, comment: str | bytes) -> list[EconfFile]
+Read configuration from the first found config file and snippets from conf.d/ directory
+.sp
+e.g. searches /usr/etc/ and /etc/ for an example.conf file and the snippets in either
+/usr/etc/example.conf.d/ or /etc/example.conf.d
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBusr_conf_dir\fP – absolute path of the first directory to be searched
+.IP \(bu 2
+\fBetc_conf_dir\fP – absolute path of the second directory to be searched
+.IP \(bu 2
+\fBproject_name\fP – basename of the configuration file
+.IP \(bu 2
+\fBconfig_suffix\fP – suffix of the configuration file
+.IP \(bu 2
+\fBdelim\fP – delimiter of a key/value e.g. ‘=’
+.IP \(bu 2
+\fBcomment\fP – string that defines the start of a comment e.g. ‘#’
+.UNINDENT
+.TP
+.B Returns
+list of EconfFile objects
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.read_dirs_history_with_callback(usr_conf_dir: str | bytes, etc_conf_dir: str | bytes, project_name: str | bytes, config_suffix: str | bytes, delim: str | bytes, comment: str | bytes, callback: Callable[[any], bool], callback_data: any) -> EconfFile
+Read configuration from the first found config file and snippets from conf.d/ directory
+.sp
+For every file a user defined function will be called in order e.g. to check the correct file permissions.
+If the function returns False the parsing will be aborted and an Exception will be raised
+.sp
+e.g. searches /usr/etc/ and /etc/ for an example.conf file and the snippets in either
+/usr/etc/example.conf.d/ or /etc/example.conf.d
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBusr_conf_dir\fP – absolute path of the first directory to be searched
+.IP \(bu 2
+\fBetc_conf_dir\fP – absolute path of the second directory to be searched
+.IP \(bu 2
+\fBproject_name\fP – basename of the configuration file
+.IP \(bu 2
+\fBconfig_suffix\fP – suffix of the configuration file
+.IP \(bu 2
+\fBdelim\fP – delimiter of a key/value e.g. ‘=’
+.IP \(bu 2
+\fBcomment\fP – string that defines the start of a comment e.g. ‘#’
+.IP \(bu 2
+\fBcallback\fP – User defined function which will be called for each file and returns a boolean
+.IP \(bu 2
+\fBcallback_data\fP – argument to be give to the callback function
+.UNINDENT
+.TP
+.B Returns
+list of EconfFile objects
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.comment_tag(ef: EconfFile) -> str
+Get the comment tag of the specified EconfFile
+.INDENT 7.0
+.TP
+.B Parameters
+\fBef\fP – Key\-Value storage object
+.TP
+.B Returns
+The comment tag of the EconfFile
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.set_comment_tag(ef: EconfFile, comment: str | bytes) -> None
+Set the comment tag of the specified EconfFile
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBef\fP – Key\-Value storage object
+.IP \(bu 2
+\fBcomment\fP – The desired comment tag character
+.UNINDENT
+.TP
+.B Returns
+Nothing
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.delimiter_tag(ef: EconfFile) -> str
+Get the delimiter tag of the specified EconfFile
+.INDENT 7.0
+.TP
+.B Parameters
+\fBef\fP – Key\-Value storage object
+.TP
+.B Returns
+the delimiter tag of the EconfFile
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.set_delimiter_tag(ef: EconfFile, delimiter: str | bytes) -> None
+Set the delimiter tag of the specified EconfFile
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBef\fP – Key\-Value storage object
+.IP \(bu 2
+\fBdelimiter\fP – The desired delimiter character
+.UNINDENT
+.TP
+.B Returns
+Nothing
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.write_file(ef: EconfFile, save_to_dir: str, file_name: str) -> None
+Write content of a keyfile to specified location
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBef\fP – Key\-Value storage object
+.IP \(bu 2
+\fBsave_to_dir\fP – directory into which the file has to be written
+.IP \(bu 2
+\fBfile_name\fP – filename with suffix of the to be written file
+.UNINDENT
+.TP
+.B Returns
+Nothing
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.get_path(ef: EconfFile) -> str
+Get the path of the source of the given key file
+.INDENT 7.0
+.TP
+.B Parameters
+\fBef\fP – Key\-Value storage object
+.TP
+.B Returns
+path of the config file as string
+.UNINDENT
+.UNINDENT
+.SS Functions for getting values
+.INDENT 0.0
+.TP
+.B econf.get_groups(ef: EconfFile) -> list[str]
+List all the groups of given keyfile
+.INDENT 7.0
+.TP
+.B Parameters
+\fBef\fP – Key\-Value storage object
+.TP
+.B Returns
+list of groups in the keyfile
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.get_keys(ef: EconfFile, group: str) -> list[str]
+List all the keys of a given group or all keys in a keyfile
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBef\fP – Key\-Value storage object
+.IP \(bu 2
+\fBgroup\fP – group of the keys to be returned or None for keys without a group
+.UNINDENT
+.TP
+.B Returns
+list of keys in the given group
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.get_int_value(ef: EconfFile, group: str, key: str) -> int
+Return an integer value for given group/key
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBef\fP – Key\-Value storage object
+.IP \(bu 2
+\fBgroup\fP – desired group
+.IP \(bu 2
+\fBkey\fP – key of the value that is requested
+.UNINDENT
+.TP
+.B Returns
+value of the key
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.get_uint_value(ef: EconfFile, group: str, key: str) -> int
+Return an unsigned integer value for given group/key
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBef\fP – Key\-Value storage object
+.IP \(bu 2
+\fBgroup\fP – desired group
+.IP \(bu 2
+\fBkey\fP – key of the value that is requested
+.UNINDENT
+.TP
+.B Returns
+value of the key
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.get_float_value(ef: EconfFile, group: str, key: str) -> float
+Return a float value for given group/key
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBef\fP – Key\-Value storage object
+.IP \(bu 2
+\fBgroup\fP – desired group
+.IP \(bu 2
+\fBkey\fP – key of the value that is requested
+.UNINDENT
+.TP
+.B Returns
+value of the key
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.get_string_value(ef: EconfFile, group: str, key: str) -> str
+Return a string value for given group/key
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBef\fP – Key\-Value storage object
+.IP \(bu 2
+\fBgroup\fP – desired group
+.IP \(bu 2
+\fBkey\fP – key of the value that is requested
+.UNINDENT
+.TP
+.B Returns
+value of the key
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.get_bool_value(ef: EconfFile, group: str, key: str) -> bool
+Return a boolean value for given group/key
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBef\fP – Key\-Value storage object
+.IP \(bu 2
+\fBgroup\fP – desired group
+.IP \(bu 2
+\fBkey\fP – key of the value that is requested
+.UNINDENT
+.TP
+.B Returns
+value of the key
+.UNINDENT
+.UNINDENT
+.SS Functions for getting values with defaults
+.INDENT 0.0
+.TP
+.B econf.get_int_value_def(ef: EconfFile, group: str, key: str, default: int) -> int
+Return an integer value for given group/key or return a default value if key is not found
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBef\fP – Key\-Value storage object
+.IP \(bu 2
+\fBgroup\fP – desired group
+.IP \(bu 2
+\fBkey\fP – key of the value that is requested
+.IP \(bu 2
+\fBdefault\fP – value to be returned if no key is found
+.UNINDENT
+.TP
+.B Returns
+value of the key
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.get_uint_value_def(ef: EconfFile, group: str, key: str, default: int) -> int
+Return an unsigned integer value for given group/key or return a default value if key is not found
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBef\fP – Key\-Value storage object
+.IP \(bu 2
+\fBgroup\fP – desired group
+.IP \(bu 2
+\fBkey\fP – key of the value that is requested
+.IP \(bu 2
+\fBdefault\fP – value to be returned if no key is found
+.UNINDENT
+.TP
+.B Returns
+value of the key
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.get_float_value_def(ef: EconfFile, group: str, key: str, default: float) -> float
+Return a float value for given group/key or return a default value if key is not found
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBef\fP – Key\-Value storage object
+.IP \(bu 2
+\fBgroup\fP – desired group
+.IP \(bu 2
+\fBkey\fP – key of the value that is requested
+.IP \(bu 2
+\fBdefault\fP – value to be returned if no key is found
+.UNINDENT
+.TP
+.B Returns
+value of the key
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.get_string_value_def(ef: EconfFile, group: str, key: str, default: str) -> str
+Return a string value for given group/key or return a default value if key is not found
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBef\fP – Key\-Value storage object
+.IP \(bu 2
+\fBgroup\fP – desired group
+.IP \(bu 2
+\fBkey\fP – key of the value that is requested
+.IP \(bu 2
+\fBdefault\fP – value to be returned if no key is found
+.UNINDENT
+.TP
+.B Returns
+value of the key
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.get_bool_value_def(ef: EconfFile, group: str, key: str, default: bool) -> bool
+Return a boolean value for given group/key or return a default value if key is not found
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBef\fP – Key\-Value storage object
+.IP \(bu 2
+\fBgroup\fP – desired group
+.IP \(bu 2
+\fBkey\fP – key of the value that is requested
+.IP \(bu 2
+\fBdefault\fP – value to be returned if no key is found
+.UNINDENT
+.TP
+.B Returns
+value of the key
+.UNINDENT
+.UNINDENT
+.SS Functions for setting values
+.INDENT 0.0
+.TP
+.B econf.set_value(ef: EconfFile, group: str | bytes, key: str | bytes, value: int | float | str | bool) -> None
+Dynamically set a value in a keyfile and returns a status code
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBef\fP – EconfFile object to set value in
+.IP \(bu 2
+\fBgroup\fP – group of the key to be changed
+.IP \(bu 2
+\fBkey\fP – key to be changed
+.IP \(bu 2
+\fBvalue\fP – desired value
+.UNINDENT
+.TP
+.B Returns
+Nothing
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.set_int_value(ef: EconfFile, group: str, key: str, value: int) -> None
+Setting an integer value for given group/key
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBef\fP – Key\-Value storage object
+.IP \(bu 2
+\fBgroup\fP – desired group
+.IP \(bu 2
+\fBkey\fP – key of the value that is requested
+.IP \(bu 2
+\fBvalue\fP – value to be set for given key
+.UNINDENT
+.TP
+.B Returns
+Nothing
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.set_uint_value(ef: EconfFile, group: str, key: str, value: int) -> None
+Setting an unsigned integer value for given group/key
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBef\fP – Key\-Value storage object
+.IP \(bu 2
+\fBgroup\fP – desired group
+.IP \(bu 2
+\fBkey\fP – key of the value that is requested
+.IP \(bu 2
+\fBvalue\fP – value to be set for given key
+.UNINDENT
+.TP
+.B Returns
+Nothing
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.set_float_value(ef: EconfFile, group: str, key: str, value: float) -> None
+Setting a float value for given group/key
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBef\fP – Key\-Value storage object
+.IP \(bu 2
+\fBgroup\fP – desired group
+.IP \(bu 2
+\fBkey\fP – key of the value that is requested
+.IP \(bu 2
+\fBvalue\fP – value to be set for given key
+.UNINDENT
+.TP
+.B Returns
+Nothing
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.set_string_value(ef: EconfFile, group: str, key: str, value: str | bytes) -> None
+Setting a string value for given group/key
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBef\fP – Key\-Value storage object
+.IP \(bu 2
+\fBgroup\fP – desired group
+.IP \(bu 2
+\fBkey\fP – key of the value that is requested
+.IP \(bu 2
+\fBvalue\fP – value to be set for given key
+.UNINDENT
+.TP
+.B Returns
+Nothing
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.set_bool_value(ef: EconfFile, group: str, key: str, value: bool) -> None
+Setting a boolean value for given group/key
+.INDENT 7.0
+.TP
+.B Parameters
+.INDENT 7.0
+.IP \(bu 2
+\fBef\fP – Key\-Value storage object
+.IP \(bu 2
+\fBgroup\fP – desired group
+.IP \(bu 2
+\fBkey\fP – key of the value that is requested
+.IP \(bu 2
+\fBvalue\fP – value to be set for given key
+.UNINDENT
+.TP
+.B Returns
+Nothing
+.UNINDENT
+.UNINDENT
+.SS Functions for memory management
+.INDENT 0.0
+.TP
+.B econf.free_file(ef: EconfFile)
+Free the memory of a given keyfile
+.sp
+This function is called automatically at the end of every objects lifetime and should not be used otherwise
+.INDENT 7.0
+.TP
+.B Parameters
+\fBef\fP – EconfFile to be freed
+.TP
+.B Returns
+None
+.UNINDENT
+.UNINDENT
+.SS Functions for handling error codes
+.INDENT 0.0
+.TP
+.B econf.err_string(error: int) -> str
+Convert an error code into error message
+.INDENT 7.0
+.TP
+.B Parameters
+\fBerror\fP – error code as integer
+.TP
+.B Returns
+error string
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B econf.err_location() -> Tuple[str, int]
+Info about the line where an error happened
+.INDENT 7.0
+.TP
+.B Returns
+path to the last handled file and number of last handled line
+.UNINDENT
+.UNINDENT
+.SH AUTHOR
+Nico Krapp
+.SH COPYRIGHT
+2023, Nico Krapp
+.\" Generated by docutils manpage writer.
+.
