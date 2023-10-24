@@ -33,21 +33,32 @@ public class EConfFile : IDisposable
 {
     internal nint Internal;
 
+    /// <summary>
+    /// Gets or sets the comment character for this file.
+    /// </summary>
     public char CommentTag
     {
         get => (char)EConf.econf_comment_tag(Internal);
         set => EConf.econf_set_comment_tag(Internal, (sbyte)value);
     }
+    
+    /// <summary>
+    /// Gets or sets the delimiter character for this file.
+    /// </summary>
     public char DelimiterTag
     {
         get => (char)EConf.econf_delimiter_tag(Internal);
         set => EConf.econf_set_delimiter_tag(Internal, (sbyte)value);
     }
+    
+    /// <summary>
+    /// Gets the path of this file.
+    /// </summary>
     public string? Path => Marshal.PtrToStringUTF8(EConf.econf_getPath(Internal));
 
     /// <summary>
-    /// Create a new econf_file object in IniFile format.
-    /// So the delimiter will be "=" and comments are beginning with "#".
+    /// Creates a new empty `.ini` file instance.
+    /// The delimiter will be "=" and comments are beginning with "#".
     /// </summary>
     public EConfFile()
     {
@@ -60,7 +71,7 @@ public class EConfFile : IDisposable
     }
     
     /// <summary>
-    /// Create a new econf_file object.
+    /// Creates a new empty file instance with the given delimiter and comment character.
     /// </summary>
     /// <param name="delimiter">Delimiter of key/value e.g. "=".</param>
     /// <param name="comment">Character which defines the start of a comment.</param>
@@ -79,6 +90,11 @@ public class EConfFile : IDisposable
         Internal = ptr;
     }
     
+    /// <summary>
+    /// Write content of a <see cref="EConfFile"/> class to the specified location.
+    /// </summary>
+    /// <param name="fileName">File path to save to.</param>
+    /// <returns><see cref="EConfErr.Success"/> or error code.</returns>
     public EConfErr WriteFile(string fileName)
     {
         var folderPtr = System.IO.Path.GetDirectoryName(fileName)!.ToHGlobalUni8();
@@ -88,6 +104,11 @@ public class EConfFile : IDisposable
         Marshal.FreeHGlobal(filePtr);
         return err;
     }
+    
+    /// <summary>
+    /// Gets all groups in this file.
+    /// </summary>
+    /// <returns>The names of all groups in this file.</returns>
     public string[] GetGroups()
     {
         EConfErr err;
@@ -104,12 +125,13 @@ public class EConfFile : IDisposable
             {
                 result[i] = new string(((sbyte**)groups)[i]);
             }
+            
         }
         return result;
     }
     
     /// <summary>
-    /// Gets all keys for a specified group.
+    /// Gets all keys for a specified group in this file.
     /// </summary>
     /// <param name="group">The group to get the keys from, an empty string for all anonymous keys, or null for all keys.</param>
     /// <returns>The keys in the specified group.</returns>
@@ -136,6 +158,13 @@ public class EConfFile : IDisposable
         return result;
     }
     
+    /// <summary>
+    /// Attempts to get a value from the specified key and attempts to store it in <paramref name="result"/>
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group.</param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <param name="result">If successful, the read value. Otherwise the default value.</param>
+    /// <returns><see cref="EConfErr.Success"/> or error code.</returns>
     public EConfErr TryGetValue(string? group, string key, out int result)
     {
         var groupPtr = group?.ToHGlobalUni8() ?? 0;
@@ -156,6 +185,13 @@ public class EConfFile : IDisposable
 
         return err;
     }
+    /// <summary>
+    /// Attempts to get a value from the specified key and attempts to store it in <paramref name="result"/>
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group.</param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <param name="result">If successful, the read value. Otherwise the default value.</param>
+    /// <returns><see cref="EConfErr.Success"/> or error code.</returns>
     public EConfErr TryGetValue(string? group, string key, out uint result)
     {
         var groupPtr = group?.ToHGlobalUni8() ?? 0;
@@ -176,6 +212,13 @@ public class EConfFile : IDisposable
 
         return err;
     }
+    /// <summary>
+    /// Attempts to get a value from the specified key and attempts to store it in <paramref name="result"/>
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group.</param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <param name="result">If successful, the read value. Otherwise the default value.</param>
+    /// <returns><see cref="EConfErr.Success"/> or error code.</returns>
     public EConfErr TryGetValue(string? group, string key, out long result)
     {
         var groupPtr = group?.ToHGlobalUni8() ?? 0;
@@ -196,6 +239,13 @@ public class EConfFile : IDisposable
 
         return err;
     }
+    /// <summary>
+    /// Attempts to get a value from the specified key and attempts to store it in <paramref name="result"/>
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group.</param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <param name="result">If successful, the read value. Otherwise the default value.</param>
+    /// <returns><see cref="EConfErr.Success"/> or error code.</returns>
     public EConfErr TryGetValue(string? group, string key, out ulong result)
     {
         var groupPtr = group?.ToHGlobalUni8() ?? 0;
@@ -216,6 +266,13 @@ public class EConfFile : IDisposable
 
         return err;
     }
+    /// <summary>
+    /// Attempts to get a value from the specified key and attempts to store it in <paramref name="result"/>
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group.</param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <param name="result">If successful, the read value. Otherwise the default value.</param>
+    /// <returns><see cref="EConfErr.Success"/> or error code.</returns>
     public EConfErr TryGetValue(string? group, string key, out float result)
     {
         var groupPtr = group?.ToHGlobalUni8() ?? 0;
@@ -236,6 +293,13 @@ public class EConfFile : IDisposable
 
         return err;
     }
+    /// <summary>
+    /// Attempts to get a value from the specified key and attempts to store it in <paramref name="result"/>
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group.</param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <param name="result">If successful, the read value. Otherwise the default value.</param>
+    /// <returns><see cref="EConfErr.Success"/> or error code.</returns>
     public EConfErr TryGetValue(string? group, string key, out double result)
     {
         var groupPtr = group?.ToHGlobalUni8() ?? 0;
@@ -256,6 +320,13 @@ public class EConfFile : IDisposable
 
         return err;
     }
+    /// <summary>
+    /// Attempts to get a value from the specified key and attempts to store it in <paramref name="result"/>
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group.</param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <param name="result">If successful, the read value. Otherwise an empty string.</param>
+    /// <returns><see cref="EConfErr.Success"/> or error code.</returns>
     public EConfErr TryGetValue(string? group, string key, out string result)
     {
         var groupPtr = group?.ToHGlobalUni8() ?? 0;
@@ -265,10 +336,8 @@ public class EConfFile : IDisposable
         unsafe
         {
             nint resultPtr = 0;
-            var defaultPtr = string.Empty.ToHGlobalUni8();
             err = EConf.econf_getStringValue(Internal, groupPtr, keyPtr, (nint)(&resultPtr));
-            result = Regex.Unescape(new string((sbyte*)resultPtr));
-            Marshal.FreeHGlobal(defaultPtr);
+            result = err == EConfErr.Success ? Regex.Unescape(new string((sbyte*)resultPtr)) : string.Empty;
         }
         
         Marshal.FreeHGlobal(groupPtr);
@@ -276,6 +345,13 @@ public class EConfFile : IDisposable
 
         return err;
     }
+    /// <summary>
+    /// Attempts to get a value from the specified key and attempts to store it in <paramref name="result"/>
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group.</param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <param name="result">If successful, the read value. Otherwise the default value.</param>
+    /// <returns><see cref="EConfErr.Success"/> or error code.</returns>
     public EConfErr TryGetValue(string? group, string key, out bool result)
     {
         var groupPtr = group?.ToHGlobalUni8() ?? 0;
@@ -297,133 +373,243 @@ public class EConfFile : IDisposable
         return err;
     }
 
+    /// <summary>
+    /// Gets the value for the specified key in the specified group.
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group.</param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <returns>The value of the specified key.</returns>
     public int GetValueInt(string? group, string key)
     {
         TryGetValue(group, key, out int result);
         return result;
     }
+    /// <summary>
+    /// Gets the value for the specified key in the specified group.
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group.</param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <returns>The value of the specified key.</returns>
     public uint GetValueUInt(string? group, string key)
     {
         TryGetValue(group, key, out uint result);
         return result;
     }
+    /// <summary>
+    /// Gets the value for the specified key in the specified group.
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group.</param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <returns>The value of the specified key.</returns>
     public long GetValueInt64(string? group, string key)
     {
         TryGetValue(group, key, out long result);
         return result;
     }
+    /// <summary>
+    /// Gets the value for the specified key in the specified group.
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group.</param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <returns>The value of the specified key.</returns>
     public ulong GetValueUInt64(string? group, string key)
     {
         TryGetValue(group, key, out ulong result);
         return result;
     }
+    /// <summary>
+    /// Gets the value for the specified key in the specified group.
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group.</param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <returns>The value of the specified key.</returns>
     public float GetValueFloat(string? group, string key)
     {
         TryGetValue(group, key, out float result);
         return result;
     }
+    /// <summary>
+    /// Gets the value for the specified key in the specified group.
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group.</param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <returns>The value of the specified key.</returns>
     public double GetValueDouble(string? group, string key)
     {
         TryGetValue(group, key, out double result);
         return result;
     }
+    /// <summary>
+    /// Gets the value for the specified key in the specified group.
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group.</param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <returns>The value of the specified key.</returns>
     public string GetValueString(string? group, string key)
     {
         TryGetValue(group, key, out string result);
         return result;
     }
+    /// <summary>
+    /// Gets the value for the specified key in the specified group.
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group.</param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <returns>The value of the specified key.</returns>
     public bool GetValueBool(string? group, string key)
     {
         TryGetValue(group, key, out bool result);
         return result;
     }
     
-    public void SetValue(string? group, string key, int value)
+    /// <summary>
+    /// Attempts to get a value from the specified key and attempts to store it in <paramref name="value"/>.
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group. </param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <param name="value">The value to set.</param>
+    /// <returns><see cref="EConfErr.Success"/> or error code.</returns>
+    public EConfErr SetValue(string? group, string key, int value)
     {
         var groupPtr = group?.ToHGlobalUni8() ?? 0;
         var keyPtr = key.ToHGlobalUni8();
         
-        EConf.econf_setIntValue(Internal, groupPtr, keyPtr, value);
+        var err = EConf.econf_setIntValue(Internal, groupPtr, keyPtr, value);
         
         Marshal.FreeHGlobal(groupPtr);
         Marshal.FreeHGlobal(keyPtr);
+        return err;
     }
-    public void SetValue(string? group, string key, uint value)
+    /// <summary>
+    /// Attempts to get a value from the specified key and attempts to store it in <paramref name="value"/>.
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group. </param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <param name="value">The value to set.</param>
+    /// <returns><see cref="EConfErr.Success"/> or error code.</returns>
+    public EConfErr SetValue(string? group, string key, uint value)
     {
         var groupPtr = group?.ToHGlobalUni8() ?? 0;
         var keyPtr = key.ToHGlobalUni8();
         
-        EConf.econf_setUIntValue(Internal, groupPtr, keyPtr, value);
+        var err = EConf.econf_setUIntValue(Internal, groupPtr, keyPtr, value);
         
         Marshal.FreeHGlobal(groupPtr);
         Marshal.FreeHGlobal(keyPtr);
+        return err;
     }
-    public void SetValue(string? group, string key, long value)
+    /// <summary>
+    /// Attempts to get a value from the specified key and attempts to store it in <paramref name="value"/>.
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group. </param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <param name="value">The value to set.</param>
+    /// <returns><see cref="EConfErr.Success"/> or error code.</returns>
+    public EConfErr SetValue(string? group, string key, long value)
     {
         var groupPtr = group?.ToHGlobalUni8() ?? 0;
         var keyPtr = key.ToHGlobalUni8();
         
-        EConf.econf_setInt64Value(Internal, groupPtr, keyPtr, value);
+        var err = EConf.econf_setInt64Value(Internal, groupPtr, keyPtr, value);
         
         Marshal.FreeHGlobal(groupPtr);
         Marshal.FreeHGlobal(keyPtr);
+        return err;
     }
-    public void SetValue(string? group, string key, ulong value)
+    /// <summary>
+    /// Attempts to get a value from the specified key and attempts to store it in <paramref name="value"/>.
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group. </param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <param name="value">The value to set.</param>
+    /// <returns><see cref="EConfErr.Success"/> or error code.</returns>
+    public EConfErr SetValue(string? group, string key, ulong value)
     {
         var groupPtr = group?.ToHGlobalUni8() ?? 0;
         var keyPtr = key.ToHGlobalUni8();
         
-        EConf.econf_setUInt64Value(Internal, groupPtr, keyPtr, value);
+        var err = EConf.econf_setUInt64Value(Internal, groupPtr, keyPtr, value);
         
         Marshal.FreeHGlobal(groupPtr);
         Marshal.FreeHGlobal(keyPtr);
+        return err;
     }
-    public void SetValue(string? group, string key, float value)
+    /// <summary>
+    /// Attempts to get a value from the specified key and attempts to store it in <paramref name="value"/>.
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group. </param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <param name="value">The value to set.</param>
+    /// <returns><see cref="EConfErr.Success"/> or error code.</returns>
+    public EConfErr SetValue(string? group, string key, float value)
     {
         var groupPtr = group?.ToHGlobalUni8() ?? 0;
         var keyPtr = key.ToHGlobalUni8();
         
-        EConf.econf_setFloatValue(Internal, groupPtr, keyPtr, value);
+        var err = EConf.econf_setFloatValue(Internal, groupPtr, keyPtr, value);
         
         Marshal.FreeHGlobal(groupPtr);
         Marshal.FreeHGlobal(keyPtr);
+        return err;
     }
-    public void SetValue(string? group, string key, double value)
+    /// <summary>
+    /// Attempts to get a value from the specified key and attempts to store it in <paramref name="value"/>.
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group. </param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <param name="value">The value to set.</param>
+    /// <returns><see cref="EConfErr.Success"/> or error code.</returns>
+    public EConfErr SetValue(string? group, string key, double value)
     {
         var groupPtr = group?.ToHGlobalUni8() ?? 0;
         var keyPtr = key.ToHGlobalUni8();
         
-        EConf.econf_setDoubleValue(Internal, groupPtr, keyPtr, value);
+        var err = EConf.econf_setDoubleValue(Internal, groupPtr, keyPtr, value);
         
         Marshal.FreeHGlobal(groupPtr);
         Marshal.FreeHGlobal(keyPtr);
+        return err;
     }
-    public void SetValue(string? group, string key, bool value)
+    /// <summary>
+    /// Attempts to get a value from the specified key and attempts to store it in <paramref name="value"/>.
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group. </param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <param name="value">The value to set.</param>
+    /// <returns><see cref="EConfErr.Success"/> or error code.</returns>
+    public EConfErr SetValue(string? group, string key, string value)
+    {
+        if (value is null) throw new ArgumentNullException(nameof(value));
+        // Escape the string if we have to.
+        value = value.Escape();
+        var groupPtr = group?.ToHGlobalUni8() ?? 0;
+        var keyPtr = key.ToHGlobalUni8();
+        var strPtr = value.ToHGlobalUni8();
+        var err = EConf.econf_setStringValue(Internal, groupPtr, keyPtr, strPtr);
+        Marshal.FreeHGlobal(strPtr);
+        Marshal.FreeHGlobal(groupPtr);
+        Marshal.FreeHGlobal(keyPtr);
+        return err;
+    }
+    /// <summary>
+    /// Attempts to get a value from the specified key and attempts to store it in <paramref name="value"/>.
+    /// </summary>
+    /// <param name="group">The group of the key, an empty string or null for an anonymous group. </param>
+    /// <param name="key">The name of the key. May not be null.</param>
+    /// <param name="value">The value to set.</param>
+    /// <returns><see cref="EConfErr.Success"/> or error code.</returns>
+    public EConfErr SetValue(string? group, string key, bool value)
     {
         var groupPtr = group?.ToHGlobalUni8() ?? 0;
         var keyPtr = key.ToHGlobalUni8();
         
         var strPtr = value.ToString().ToLower().ToHGlobalUni8();
-        EConf.econf_setBoolValue(Internal, groupPtr, keyPtr, strPtr);
+        var err = EConf.econf_setBoolValue(Internal, groupPtr, keyPtr, strPtr);
         Marshal.FreeHGlobal(strPtr);
         
         Marshal.FreeHGlobal(groupPtr);
         Marshal.FreeHGlobal(keyPtr);
-    }
-    public void SetValue(string? group, string key, string value)
-    {
-        if (value is null) throw new ArgumentNullException(nameof(value));
-        // Escape the string if we have to.
-        value = Regex.Escape(Regex.Unescape(value));
-        var groupPtr = group?.ToHGlobalUni8() ?? 0;
-        var keyPtr = key.ToHGlobalUni8();
-        
-        var strPtr = value.ToHGlobalUni8();
-        EConf.econf_setStringValue(Internal, groupPtr, keyPtr, strPtr);
-        Marshal.FreeHGlobal(strPtr);
-        
-        Marshal.FreeHGlobal(groupPtr);
-        Marshal.FreeHGlobal(keyPtr);
+        return err;
     }
 
     /// <summary>
@@ -474,7 +660,7 @@ public class EConfFile : IDisposable
     public void Dispose()
     {
         GC.SuppressFinalize(this);
-        if (Internal == 0) return;
+        if (Internal == 0) throw new ObjectDisposedException(nameof(EConfFile));
         EConf.econf_freeFile(Internal);
         Internal = 0;
     }
@@ -599,7 +785,22 @@ public static partial class EConf
         return err;
     }
 
-    public static EConfErr ReadDirsHistory(out EConfFile[] keyFiles, string userConfDir, string etcConfDir, string projectName, string configSuffix, string delim, string comment)
+    /// <summary>
+    /// Evaluating key/values for every given configuration files in two different
+    /// directories (normally in /usr/etc and /etc). Returns a list of read configuration
+    /// files and their values.
+    /// </summary>
+    /// <param name="keyFiles">Array of parsed file(s). Each entry includes all key/value, path, comments,...
+    /// information of the regarding file.</param>
+    /// <param name="userConfDir">Absolute path of the first directory (normally "/usr/etc").</param>
+    /// <param name="etcConfDir">Absolute path of the second directory (normally "/etc").</param>
+    /// <param name="projectName">Base name of the configuration file.</param>
+    /// <param name="configSuffix">Suffix of the configuration file. Can also be null.</param>
+    /// <param name="delim">Delimiters of key/value e.g. "\t ="
+    /// If delim contains space characters AND none space characters, multiline values are not parseable.</param>
+    /// <param name="comment">String which defines the start of a comment.</param>
+    /// <returns><see cref="EConfErr.Success"/> or error code.</returns>
+    public static EConfErr ReadDirsHistory(out EConfFile[] keyFiles, string userConfDir, string etcConfDir, string projectName, string? configSuffix, string delim, string comment)
     {
         EConfErr err;
 
@@ -608,7 +809,7 @@ public static partial class EConf
             nint* keyFilesPtr;
             nint keyFilesSize;
             err = econf_readDirsHistory((nint)(&keyFilesPtr), (nint)(&keyFilesSize), userConfDir.ToHGlobalUni8(),
-                etcConfDir.ToHGlobalUni8(), projectName.ToHGlobalUni8(), configSuffix.ToHGlobalUni8(),
+                etcConfDir.ToHGlobalUni8(), projectName.ToHGlobalUni8(), configSuffix?.ToHGlobalUni8() ?? 0,
                 delim.ToHGlobalUni8(), comment.ToHGlobalUni8());
 
             keyFiles = new EConfFile[keyFilesSize];

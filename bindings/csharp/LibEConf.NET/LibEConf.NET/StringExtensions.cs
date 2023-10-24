@@ -10,7 +10,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="s">The string to convert.</param>
     /// <returns>A pointer to the unmanaged data.</returns>
-    public static nint   ToHGlobalUni8(this string s)
+    public static nint ToHGlobalUni8(this string s)
     {
         // Convert to UTF8
         var b = Encoding.UTF8.GetBytes(s);
@@ -24,5 +24,18 @@ public static class StringExtensions
         }
 
         return ptr;
+    }
+
+    /// <summary>
+    /// Converts escape sequences to their literal representation.
+    /// </summary>
+    /// <param name="s">The string to convert.</param>
+    /// <returns>The escaped string.</returns>
+    public static string Escape(this string s)
+    {
+        return s
+            .Replace("\n", "\\n")
+            .Replace("\r", "\\r")
+            .Replace("\t", "\\t");
     }
 }
