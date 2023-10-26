@@ -286,16 +286,28 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
   char run_dir[PATH_MAX];
   char etc_dir[PATH_MAX];
 
+#ifdef TESTSDIR
   if (project != NULL) {
-    snprintf(usr_dir, sizeof(usr_dir),"%s/%s", usr_subdir, project);
+    snprintf(usr_dir, sizeof(usr_dir), "%s%s/%s", TESTSDIR, usr_subdir, project);
+    snprintf(run_dir, sizeof(run_dir), "%s%s/%s", TESTSDIR, DEFAULT_RUN_SUBDIR, project);
+    snprintf(etc_dir, sizeof(etc_dir), "%s%s/%s", TESTSDIR, DEFAULT_ETC_SUBDIR, project);
+  } else {
+    snprintf(usr_dir, sizeof(usr_dir), "%s%s", TESTSDIR, usr_subdir);
+    snprintf(run_dir, sizeof(run_dir), "%s%s", TESTSDIR, DEFAULT_RUN_SUBDIR);
+    snprintf(etc_dir, sizeof(etc_dir), "%s%s", TESTSDIR, DEFAULT_ETC_SUBDIR);
+  }
+#else
+  if (project != NULL) {
+    snprintf(usr_dir, sizeof(usr_dir), "%s/%s", usr_subdir, project);
     snprintf(run_dir, sizeof(run_dir), "%s/%s", DEFAULT_RUN_SUBDIR, project);
     snprintf(etc_dir, sizeof(etc_dir), "%s/%s", DEFAULT_ETC_SUBDIR, project);
   } else {
-    snprintf(usr_dir, sizeof(usr_dir),"%s", usr_subdir);
+    snprintf(usr_dir, sizeof(usr_dir), "%s", usr_subdir);
     snprintf(run_dir, sizeof(run_dir), "%s", DEFAULT_RUN_SUBDIR);
     snprintf(etc_dir, sizeof(etc_dir), "%s", DEFAULT_ETC_SUBDIR);
   }
-	  
+#endif
+
   econf_err ret = readConfigWithCallback(key_file,
 					 usr_dir,
 					 run_dir,
@@ -549,6 +561,8 @@ econf_getGroups(econf_file *kf, size_t *length, char ***groups)
 econf_err
 econf_getKeys(econf_file *kf, const char *grp, size_t *length, char ***keys)
 {
+  if (length != NULL)
+    *length = 0; /* initialize */
   if (!kf)
     return ECONF_ERROR;
 

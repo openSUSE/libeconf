@@ -70,8 +70,30 @@ tst_getconfdirs7_exe = executable('tst-getconfdirs7', 'tst-getconfdirs7.c', c_ar
 test('tst-getconfdirs7', tst_getconfdirs7_exe)
 tst_getconfdirs8_exe = executable('tst-getconfdirs8', 'tst-getconfdirs8.c', c_args: ['-DSUFFIX="conf"', test_args], dependencies : libeconf_dep)
 test('tst-getconfdirs8', tst_getconfdirs8_exe)
-tst_uapi_1_exe = executable('tst-uapi-1', sources: ['tst-uapi-1.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/mergefiles.c'], c_args: test_args, dependencies : libeconf_dep)
+
+tst_uapi_1_exe = executable('tst-uapi-1',
+  sources: ['tst-uapi-1.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
+            '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-1-data' + '"'])
 test('tst-uapi-1', tst_uapi_1_exe)
+
+tst_uapi_2_exe = executable('tst-uapi-2',
+  sources: ['tst-uapi-2.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
+            '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-2-data' + '"'])
+test('tst-uapi-2', tst_uapi_2_exe)
+
+tst_uapi_3_exe = executable('tst-uapi-3',
+  sources: ['tst-uapi-3.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
+            '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-3-data' + '"'])
+test('tst-uapi-3', tst_uapi_3_exe)
+
+tst_uapi_4_exe = executable('tst-uapi-4',
+  sources: ['tst-uapi-4.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
+            '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-4-data' + '"'])
+test('tst-uapi-4', tst_uapi_4_exe)
 
 tst_parse_error_exe = executable('tst-parse-error', 'tst-parse-error.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-parse-error', tst_parse_error_exe)
