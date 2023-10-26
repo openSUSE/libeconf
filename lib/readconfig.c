@@ -28,7 +28,7 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
 					const void *callback_data)
 {
   const char *suffix, *default_dirs[4] = {NULL, NULL, NULL, NULL};
-  char *distfile, *etcfile, *cp;
+  char *distfile, *runfile, *etcfile, *cp;
   econf_file *key_file;
   econf_err error;
 
@@ -53,7 +53,7 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
     suffix = "";
   }
 
-  /* create file names for etc and distribution config */
+  /* create file names for etc, run and distribution config */
   if (dist_conf_dir != NULL)
     {
       distfile = alloca(strlen (dist_conf_dir) + strlen (config_name) +
@@ -66,6 +66,19 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
     }
   else
     distfile = NULL;
+
+  if (run_conf_dir != NULL)
+    {
+      runfile = alloca(strlen (run_conf_dir) + strlen (config_name) +
+		       strlen (suffix) + 2);
+
+      cp = stpcpy (runfile, run_conf_dir);
+      *cp++ = '/';
+      cp = stpcpy (cp, config_name);
+      stpcpy (cp, suffix);
+    }
+  else
+    runfile = NULL;
 
   if (etc_conf_dir != NULL)
     {
@@ -89,22 +102,34 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
     }
 
   if (etcfile && !error) {
-    /* /etc/<config_name>.<suffix> does exist, ignore /usr/etc/<config_name>.<suffix> */
+    /* <etc_conf_dir>/<config_name>.<suffix> does exist, ignore <run_conf_dir>/<config_name>.<suffix>
+       and <dist_conf_dir>/<config_name>.<suffix> */
     *size = 1;
   } else {
-    /* /etc/<config_name>.<suffix> does not exist, so read /usr/etc */
-    if (distfile)
+    /* <etc_conf_dir>/<config_name>.<suffix> does not exist, so read <run_conf_dir> */
+    if (runfile)
       {
-        error = econf_readFileWithCallback(&key_file, distfile, delim, comment,
+        error = econf_readFileWithCallback(&key_file, runfile, delim, comment,
 					   callback, callback_data);
 	if (error && error != ECONF_NOFILE)
 	  return error;
       }
 
-    if (distfile && !error) /* /usr/etc/<config_name>.<suffix> does exist */
+    if (runfile && !error) /* <run_conf_dir>/<config_name>.<suffix> does exist */
       *size = 1;
   }
-
+  
+  /* <etc_conf_dir>/<config_name>.<suffix> and <run_conf_dir>/<config_name>.<suffix> do not exist,
+     so read <dist_conf_dir>/<config_name>.<suffix> */
+  if (*size == 0 && distfile) {
+    error = econf_readFileWithCallback(&key_file, distfile, delim, comment,
+				       callback, callback_data);
+    if (error && error != ECONF_NOFILE)
+      return error;
+    if (!error) /* <dist_conf_dir>/<config_name>.<suffix> does exist */
+      *size = 1;
+  }
+  
   /* XXX Re-add get_default_dirs in a reworked version, which
      adds additional directories to look at, e.g. XDG or home directory */
 
@@ -150,7 +175,7 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
   configure_dirs[conf_count+1] = NULL;
 
   int i = 0;
-  /* merge all files in e.g. /usr/etc and /etc */
+  /* merge all files in <dist_conf_dir>, <run_conf_dir> and <etc_conf_dir> */
   default_dirs[0] = dist_conf_dir;
   if (run_conf_dir == NULL ) {
     default_dirs[1] = etc_conf_dir;	  
