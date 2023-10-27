@@ -6,8 +6,6 @@
 #include <string.h>
 
 #include "libeconf.h"
-#include "../lib/helpers.h"
-#include "../lib/mergefiles.h"
 
 /* Test case:
 
