@@ -155,24 +155,28 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
        "default_dirs/config_name.d/"
        "default_dirs/config_name/"
     */
-  char *suffix_d = malloc (strlen(suffix) + 4); /* + strlen(".d/") */
-  if (suffix_d == NULL)
-    return ECONF_NOMEM;
-  cp = stpcpy(suffix_d, suffix);
-  stpcpy(cp, ".d");
-
   char **configure_dirs = malloc(sizeof(char *) * (conf_count + 2));
   if (configure_dirs == NULL)
   {
-    free(suffix_d);
     return ECONF_NOMEM;
   }
-  configure_dirs[0] = suffix_d;
-  for (int i = 0; i < conf_count; i++)
+
+  if (conf_count == 0)
   {
-    configure_dirs[i+1] = strdup(conf_dirs[i]);
+    char *suffix_d = malloc (strlen(suffix) + 4); /* + strlen(".d/") */
+    if (suffix_d == NULL)
+      return ECONF_NOMEM;
+    cp = stpcpy(suffix_d, suffix);
+    stpcpy(cp, ".d");
+    configure_dirs[0] = suffix_d;
+    configure_dirs[1] = NULL;
+  } else {
+    for (int i = 0; i < conf_count; i++)
+    {
+      configure_dirs[i] = strdup(conf_dirs[i]);
+    }
+    configure_dirs[conf_count] = NULL;
   }
-  configure_dirs[conf_count+1] = NULL;
 
   int i = 0;
   /* merge all files in <dist_conf_dir>, <run_conf_dir> and <etc_conf_dir> */
