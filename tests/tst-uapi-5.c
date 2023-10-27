@@ -11,11 +11,12 @@
 
 /* Test case:
 
-   /usr/lib/foo/etc/bar.conf exists
-   /run/foo/bar.conf exists
-   /etc/foo/bar.conf not exists
+   /etc/foo/bar.conf exists
+   /etc/foo/bar.conf.d/a.conf exists
+   /etc/foo/bar.conf.d/b.conf exists
 
-   libeconf should ignore /usr/foo/etc/bar.conf, and this contains
+   libeconf should read /etc/foo/bar.conf, /etc/foo/bar.conf.d/a.conf
+   and /etc/foo/bar.conf.d/b.conf in this order.
 */
 
 static int
@@ -59,7 +60,7 @@ main(void)
 	                    "foo",
                             "/usr/etc",
 			    "bar",
-			    "conf", "=", "#");
+			    "conf", "=", "#");  
   if (error)
     {
       fprintf (stderr, "ERROR: econf_readConfig: %s\n",
@@ -67,13 +68,15 @@ main(void)
       return 1;
     }
 
-  if (check_key(key_file, "KEY1", "run") != 0)
+  if (check_key(key_file, "ETC", "true") != 0)
     retval = 1;
-  if (check_key(key_file, "USRETC", NULL) != 0)
+  if (check_key(key_file, "KEY1", "b") != 0)
     retval = 1;
-  if (check_key(key_file, "RUN", "true") != 0)
+  if (check_key(key_file, "KEY2", "b") != 0)
     retval = 1;
-
+  if (check_key(key_file, "KEY3", "a") != 0)
+    retval = 1;
+  
   econf_free (key_file);
 
   return retval;

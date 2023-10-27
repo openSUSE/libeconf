@@ -10,10 +10,10 @@
 #include "../lib/mergefiles.h"
 
 /* Test case:
-   Test the systemd like behavior:
+
    /usr/lib/foo/etc/bar.conf exists
    /run/foo/bar.conf exists
-   /etc/foo/getconfidr.conf exists but empty
+   /etc/foo/bar.conf exists but empty
 
    No data will be available.
 */

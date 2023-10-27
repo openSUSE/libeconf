@@ -95,6 +95,12 @@ tst_uapi_4_exe = executable('tst-uapi-4',
   c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-4-data' + '"'])
 test('tst-uapi-4', tst_uapi_4_exe)
 
+tst_uapi_5_exe = executable('tst-uapi-5',
+  sources: ['tst-uapi-5.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
+            '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-5-data' + '"'])
+test('tst-uapi-5', tst_uapi_5_exe)
+
 tst_parse_error_exe = executable('tst-parse-error', 'tst-parse-error.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-parse-error', tst_parse_error_exe)
 
