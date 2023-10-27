@@ -8,12 +8,11 @@
 #include "libeconf.h"
 #include "../lib/helpers.h"
 #include "../lib/mergefiles.h"
-#include "../lib/readconfig.h"
 
 /* Test case:
    Test the systemd like behavior:
-   /usr/lib/foo/etc/getconfdir.conf exists
-   /run/foo/getconfdir.conf exists
+   /usr/lib/foo/etc/bar.conf exists
+   /run/foo/bar.conf exists
    /etc/foo/getconfidr.conf exists but empty
 
    No data will be available.
@@ -31,7 +30,7 @@ main(void)
   error = econf_readConfig (&key_file,
 	                    "foo",
                             "/usr/etc",
-			    "getconfdir",
+			    "bar",
 			    "conf", "=", "#");  
   if (error)
     {

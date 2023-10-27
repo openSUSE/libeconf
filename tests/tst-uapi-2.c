@@ -8,15 +8,14 @@
 #include "libeconf.h"
 #include "../lib/helpers.h"
 #include "../lib/mergefiles.h"
-#include "../lib/readconfig.h"
 
 /* Test case:
    Test the systemd like behavior:
-   /usr/lib/foo/etc/getconfdir.conf exists
-   /run/foo/getconfdir.conf exists
+   /usr/lib/foo/etc/bar.conf exists
+   /run/foo/bar.conf exists
    /etc/foo/getconfidr.conf exists
 
-   libeconf should read /etc/getconfdir.conf only
+   libeconf should read /etc/bar.conf only
 */
 
 static int
@@ -59,7 +58,7 @@ main(void)
   error = econf_readConfig (&key_file,
 	                    "foo",
                             "/usr/etc",
-			    "getconfdir",
+			    "bar",
 			    "conf", "=", "#");  
   if (error)
     {
