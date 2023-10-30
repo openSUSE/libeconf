@@ -1069,14 +1069,12 @@ econf_reset_security_settings(void);
  *         in which the files have to be parsed.
  *
  * @param dir_postfix_list list of directory structures.
- *        E.G. with the given list: {"/conf.d/", ".d/", "/", NULL} files in following
+ *        E.G. with the given list: {"conf.d", ".d", "/", NULL} files in following
  *        directories will be parsed:
  *           "<default_dirs>/<config_name>.<suffix>.d/"
  *           "<default_dirs>/<config_name>/conf.d/"
  *           "<default_dirs>/<config_name>.d/"
  *           "<default_dirs>/<config_name>/"
- *        The entry "<default_dirs>/<config_name>.<suffix>.d/" will be added
- *        automatically.
  *
  * @return econf_err ECONF_SUCCESS or error code
  *

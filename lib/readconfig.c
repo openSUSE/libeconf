@@ -34,101 +34,105 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
 
   *size = 0;
 
-  if (config_name == NULL || strlen (config_name) == 0 || delim == NULL)
+  if (delim == NULL)
     return ECONF_ERROR;
 
-  if (config_suffix != NULL && strlen (config_suffix) > 0)
+  if (config_name != NULL && strlen (config_name) != 0)
   {
-    // Prepend a . to the config suffix if not provided
-    if (config_suffix[0] == '.')
-      suffix = config_suffix;
-    else
+    /* Reading main configuration file. */
+    if (config_suffix != NULL && strlen (config_suffix) > 0)
+    {
+      // Prepend a . to the config suffix if not provided
+      if (config_suffix[0] == '.')
+        suffix = config_suffix;
+      else
+        {
+	  cp = alloca (strlen(config_suffix) + 2);
+	  cp[0] = '.';
+	  strcpy(cp+1, config_suffix);
+	  suffix = cp;
+        }
+    } else {
+      suffix = "";
+    }
+
+    /* create file names for etc, run and distribution config */
+    if (dist_conf_dir != NULL)
       {
-	cp = alloca (strlen(config_suffix) + 2);
-	cp[0] = '.';
-	strcpy(cp+1, config_suffix);
-	suffix = cp;
+        distfile = alloca(strlen (dist_conf_dir) + strlen (config_name) +
+			  strlen (suffix) + 2);
+
+        cp = stpcpy (distfile, dist_conf_dir);
+        *cp++ = '/';
+        cp = stpcpy (cp, config_name);
+        stpcpy (cp, suffix);
       }
-  } else {
-    suffix = "";
-  }
+    else
+      distfile = NULL;
 
-  /* create file names for etc, run and distribution config */
-  if (dist_conf_dir != NULL)
-    {
-      distfile = alloca(strlen (dist_conf_dir) + strlen (config_name) +
-			strlen (suffix) + 2);
-
-      cp = stpcpy (distfile, dist_conf_dir);
-      *cp++ = '/';
-      cp = stpcpy (cp, config_name);
-      stpcpy (cp, suffix);
-    }
-  else
-    distfile = NULL;
-
-  if (run_conf_dir != NULL)
-    {
-      runfile = alloca(strlen (run_conf_dir) + strlen (config_name) +
-		       strlen (suffix) + 2);
-
-      cp = stpcpy (runfile, run_conf_dir);
-      *cp++ = '/';
-      cp = stpcpy (cp, config_name);
-      stpcpy (cp, suffix);
-    }
-  else
-    runfile = NULL;
-
-  if (etc_conf_dir != NULL)
-    {
-      etcfile = alloca(strlen (etc_conf_dir) + strlen (config_name) +
-		       strlen (suffix) + 2);
-
-      cp = stpcpy (etcfile, etc_conf_dir);
-      *cp++ = '/';
-      cp = stpcpy (cp, config_name);
-      stpcpy (cp, suffix);
-    }
-  else
-    etcfile = NULL;
-
-  if (etcfile)
-    {
-      error = econf_readFileWithCallback(&key_file, etcfile, delim, comment,
-					 callback, callback_data);
-      if (error && error != ECONF_NOFILE)
-	return error;
-    }
-
-  if (etcfile && !error) {
-    /* <etc_conf_dir>/<config_name>.<suffix> does exist, ignore <run_conf_dir>/<config_name>.<suffix>
-       and <dist_conf_dir>/<config_name>.<suffix> */
-    *size = 1;
-  } else {
-    /* <etc_conf_dir>/<config_name>.<suffix> does not exist, so read <run_conf_dir> */
-    if (runfile)
+    if (run_conf_dir != NULL)
       {
-        error = econf_readFileWithCallback(&key_file, runfile, delim, comment,
-					   callback, callback_data);
-	if (error && error != ECONF_NOFILE)
+        runfile = alloca(strlen (run_conf_dir) + strlen (config_name) +
+			 strlen (suffix) + 2);
+
+        cp = stpcpy (runfile, run_conf_dir);
+        *cp++ = '/';
+        cp = stpcpy (cp, config_name);
+        stpcpy (cp, suffix);
+      }
+    else
+      runfile = NULL;
+
+    if (etc_conf_dir != NULL)
+      {
+        etcfile = alloca(strlen (etc_conf_dir) + strlen (config_name) +
+			 strlen (suffix) + 2);
+
+        cp = stpcpy (etcfile, etc_conf_dir);
+        *cp++ = '/';
+        cp = stpcpy (cp, config_name);
+        stpcpy (cp, suffix);
+      }
+    else
+      etcfile = NULL;
+
+    if (etcfile)
+      {
+        error = econf_readFileWithCallback(&key_file, etcfile, delim, comment,
+	  				   callback, callback_data);
+        if (error && error != ECONF_NOFILE)
 	  return error;
       }
 
-    if (runfile && !error) /* <run_conf_dir>/<config_name>.<suffix> does exist */
+    if (etcfile && !error) {
+      /* <etc_conf_dir>/<config_name>.<suffix> does exist, ignore <run_conf_dir>/<config_name>.<suffix>
+         and <dist_conf_dir>/<config_name>.<suffix> */
       *size = 1;
-  }
+    } else {
+      /* <etc_conf_dir>/<config_name>.<suffix> does not exist, so read <run_conf_dir> */
+      if (runfile)
+        {
+          error = econf_readFileWithCallback(&key_file, runfile, delim, comment,
+					     callback, callback_data);
+	  if (error && error != ECONF_NOFILE)
+	    return error;
+        }
+
+      if (runfile && !error) /* <run_conf_dir>/<config_name>.<suffix> does exist */
+        *size = 1;
+    }
   
-  /* <etc_conf_dir>/<config_name>.<suffix> and <run_conf_dir>/<config_name>.<suffix> do not exist,
-     so read <dist_conf_dir>/<config_name>.<suffix> */
-  if (*size == 0 && distfile) {
-    error = econf_readFileWithCallback(&key_file, distfile, delim, comment,
-				       callback, callback_data);
-    if (error && error != ECONF_NOFILE)
-      return error;
-    if (!error) /* <dist_conf_dir>/<config_name>.<suffix> does exist */
-      *size = 1;
-  }
+    /* <etc_conf_dir>/<config_name>.<suffix> and <run_conf_dir>/<config_name>.<suffix> do not exist,
+       so read <dist_conf_dir>/<config_name>.<suffix> */
+    if (*size == 0 && distfile) {
+      error = econf_readFileWithCallback(&key_file, distfile, delim, comment,
+					 callback, callback_data);
+      if (error && error != ECONF_NOFILE)
+        return error;
+      if (!error) /* <dist_conf_dir>/<config_name>.<suffix> does exist */
+        *size = 1;
+    }
+  } /* reading main config file */
   
   /* XXX Re-add get_default_dirs in a reworked version, which
      adds additional directories to look at, e.g. XDG or home directory */

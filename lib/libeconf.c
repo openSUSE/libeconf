@@ -285,6 +285,19 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
   char usr_dir[PATH_MAX];
   char run_dir[PATH_MAX];
   char etc_dir[PATH_MAX];
+  econf_err ret = ECONF_SUCCESS;
+
+  if ( config_name == NULL || strlen(config_name) == 0) {
+    /* Drop-ins without Main Configuration File. */
+    /* e.g. parsing /usr/lib/<project>.d/a.conf, /usr/lib/<project>.d/b.conf and /etc/<project>.d/c.conf */
+    /* https://uapi-group.org/specifications/specs/configuration_files_specification/#drop-ins-without-main-configuration-file */
+    config_name = project;
+    project = NULL;
+    const char *dirs[] = {".d", NULL};
+    ret = econf_set_conf_dirs(dirs);
+    if (ret != ECONF_SUCCESS)
+      return ret;
+  }
 
 #ifdef TESTSDIR
   if (project != NULL) {
@@ -308,18 +321,18 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
   }
 #endif
 
-  econf_err ret = readConfigWithCallback(key_file,
-					 usr_dir,
-					 run_dir,
-					 etc_dir,
-					 config_name,
-					 config_suffix,
-					 delim,
-					 comment,
-					 conf_dirs,
-					 conf_count,
-					 callback,
-					 callback_data);
+  ret = readConfigWithCallback(key_file,
+			       usr_dir,
+			       run_dir,
+			       etc_dir,
+			       config_name,
+			       config_suffix,
+			       delim,
+			       comment,
+			       conf_dirs,
+			       conf_count,
+			       callback,
+			       callback_data);
   return ret;
 }  
 
