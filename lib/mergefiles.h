@@ -48,9 +48,11 @@ char **get_default_dirs(const char *usr_conf_dir, const char *etc_conf_dir);
 
 /* Receives a list of config directories to look for and calls 'check_conf_dir' */
 econf_err traverse_conf_dirs(econf_file ***key_files, char *conf_dirs[],
-                              size_t *size, const char *path, 
-                              const char *config_suffix,
-                              const char *delim, const char *comment);
+			     size_t *size, const char *path,
+			     const char *config_suffix,
+			     const char *delim, const char *comment,
+			     bool (*callback)(const char *filename, const void *data),
+			     const void *callback_data);
 
 /* Merge an array of given econf_files into one */
 econf_err merge_econf_files(econf_file **key_files, econf_file **merged_files);

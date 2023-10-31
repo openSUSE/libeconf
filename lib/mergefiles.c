@@ -162,7 +162,9 @@ char **get_default_dirs(const char *usr_conf_dir, const char *etc_conf_dir) {
 // with the given suffix
 static econf_err
 check_conf_dir(econf_file ***key_files, size_t *size, const char *path,
-	       const char *config_suffix, const char *delim, const char *comment)
+	       const char *config_suffix, const char *delim, const char *comment,
+	       bool (*callback)(const char *filename, const void *data),
+	       const void *callback_data)
 {
   struct dirent **de;
   int num_dirs = scandir(path, &de, NULL, alphasort);
@@ -174,7 +176,8 @@ check_conf_dir(econf_file ***key_files, size_t *size, const char *path,
           strncmp(de[i]->d_name + lenstr - lensuffix, config_suffix, lensuffix) == 0) {
         char *file_path = combine_strings(path, de[i]->d_name, '/');
         econf_file *key_file;
-	econf_err error = econf_readFile(&key_file, file_path, delim, comment);
+	econf_err error = econf_readFileWithCallback(&key_file, file_path, delim, comment,
+						     callback, callback_data);
         free(file_path);
         if(!error && key_file) {
           key_file->on_merge_delete = 1;
@@ -198,7 +201,9 @@ econf_err traverse_conf_dirs(econf_file ***key_files,
 			     char *config_dirs[],
 			     size_t *size, const char *path,
 			     const char *config_suffix,
-			     const char *delim, const char *comment) {
+			     const char *delim, const char *comment,
+			     bool (*callback)(const char *filename, const void *data),
+			     const void *callback_data) {
   int i;
 
   if (config_dirs == NULL)
@@ -214,7 +219,8 @@ econf_err traverse_conf_dirs(econf_file ***key_files,
     cp = stpcpy (fulldir, path);
     stpcpy (cp, config_dirs[i++]);
     econf_err error = check_conf_dir(key_files, size,
-				     fulldir, config_suffix, delim, comment);
+				     fulldir, config_suffix, delim, comment,
+				     callback, callback_data);
     free (fulldir);
     if (error)
       return error;

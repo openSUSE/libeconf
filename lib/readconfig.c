@@ -194,7 +194,7 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
   while (default_dirs[i]) {
     char *project_path = combine_strings(default_dirs[i], config_name, '/');
     error = traverse_conf_dirs(key_files, configure_dirs, size, project_path,
-			       suffix, delim, comment);
+			       suffix, delim, comment, callback, callback_data);
     free(project_path);
     if (error != ECONF_SUCCESS)
     {

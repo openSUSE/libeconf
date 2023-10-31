@@ -125,6 +125,18 @@ tst_uapi_9_exe = executable('tst-uapi-9',
   c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-9-data' + '"'])
 test('tst-uapi-9', tst_uapi_9_exe)
 
+tst_uapi_10_exe = executable('tst-uapi-10',
+  sources: ['tst-uapi-10.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
+            '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-10-data' + '"'])
+test('tst-uapi-10', tst_uapi_10_exe)
+
+tst_uapi_11_exe = executable('tst-uapi-11',
+  sources: ['tst-uapi-11.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
+            '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-11-data' + '"'])
+test('tst-uapi-11', tst_uapi_11_exe)
+
 tst_parse_error_exe = executable('tst-parse-error', 'tst-parse-error.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-parse-error', tst_parse_error_exe)
 
