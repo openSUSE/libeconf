@@ -56,3 +56,7 @@ exists:
 
 The API is written in plain C. The description can be found here :https://opensuse.github.io/libeconf/
 
+## Bindings for other languages
+
+- [Python](bindings/python3/) ([Documentation](bindings/python3/docs/python-libeconf.3))
+- [C#](bindings/csharp/) ([Documentation](bindings/csharp/docs/README.md))
