@@ -255,11 +255,22 @@ extern econf_err econf_mergeFiles(econf_file **merged_file,
  *    - $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix
  *    - /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
  *
+ *  No main $config_name.$config_suffix file is defined or must not be parsed:
+ *
+ *    - $usr_subdir/$project.d/*.$config_suffix
+ *    - /run/$project.d/*.$config_suffix
+ *    - /etc/$project.d/*.$config_suffix
+ *
+ * This call fulfills all requirements, defined by the Linux Userspace API (UAPI) Group
+ * chapter "Configuration Files Specification".
+ * See: https://uapi-group.org/specifications/specs/configuration_files_specification/
  *
  * @param key_file content of parsed file(s)
  * @param project name of the project used as subdirectory, can be NULL
  * @param usr_subdir absolute path of the first directory (often "/usr/lib")
- * @param config_name basename of the configuration file
+ * @param config_name basename of the configuration file.
+ *        If it is NULL, drop-ins without a main configuration file will
+ *        be parsed only.
  * @param config_suffix suffix of the configuration file. Can also be NULL.
  * @param delim delimiters of key/value e.g. "\t ="
  *        If delim contains space characters AND none space characters,
@@ -272,8 +283,8 @@ extern econf_err econf_mergeFiles(econf_file **merged_file,
  *  /etc/foo/example.conf does exist:
  *
  *  - /etc/foo/example.conf
- *  - /run/foo/example.conf.d/ *.conf
  *  - /usr/lib/foo/example.conf.d/ *.conf
+ *  - /run/foo/example.conf.d/ *.conf
  *  - /etc/foo/example.conf.d/ *.conf
  *
  *  /etc/foo/example.conf does NOT exist:
@@ -281,15 +292,15 @@ extern econf_err econf_mergeFiles(econf_file **merged_file,
  *    /run/foo/example.conf does exist:
  *
  *    - /run/foo/example.conf
- *    - /run/foo/example.conf.d/ *.conf
  *    - /usr/lib/foo/example.conf.d/ *.conf
+ *    - /run/foo/example.conf.d/ *.conf
  *    - /etc/foo/example.conf.d/ *.conf
  *
  *    /run/foo/example.conf does NOT exist:
  *
  *    - /usr/lib/foo/example.conf
- *    - /run/foo/example.conf.d/ *.conf
  *    - /usr/lib/foo/example.conf.d/ *.conf
+ *    - /run/foo/example.conf.d/ *.conf
  *    - /etc/foo/example.conf.d/ *.conf
  *
  * @code
@@ -323,8 +334,8 @@ extern econf_err econf_readConfig (econf_file **key_file,
  *  /etc/$project/$config_name.$config_suffix does exist:
  *
  *  - /etc/$project/$config_name.$config_suffix
- *  - /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
  *  - $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *  - /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
  *  - /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
  *
  *  /etc/$project/$config_name.$config_suffix does NOT exist:
@@ -332,24 +343,36 @@ extern econf_err econf_readConfig (econf_file **key_file,
  *    /run/$project/$config_name.$config_suffix does exist:
  *
  *    - /run/$project/$config_name.$config_suffix
- *    - /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
  *    - $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *    - /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
  *    - /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
  *
  *    /run/$project/$config_name.$config_suffix does NOT exist:
  *
  *    - $usr_subdir/$project/$config_name.$config_suffix
- *    - /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
  *    - $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *    - /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
  *    - /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
+ *
+ *  No main $config_name.$config_suffix file is defined or must not be parsed:
+ *
+ *    - $usr_subdir/$project.d/*.$config_suffix
+ *    - /run/$project.d/*.$config_suffix
+ *    - /etc/$project.d/*.$config_suffix
  *
  * For each parsed file the user defined function will be called in order
  * e.g. to check the correct file permissions.
+ *
+ * This call fulfills all requirements, defined by the Linux Userspace API (UAPI) Group
+ * chapter "Configuration Files Specification".
+ * See: https://uapi-group.org/specifications/specs/configuration_files_specification/
  *
  * @param key_file content of parsed file(s)
  * @param project name of the project used as subdirectory, can be NULL
  * @param usr_subdir absolute path of the first directory (often "/usr/lib")
  * @param config_name basename of the configuration file
+ *        If it is NULL, drop-ins without a main configuration file will
+ *        be parsed only.
  * @param config_suffix suffix of the configuration file. Can also be NULL.
  * @param delim delimiters of key/value e.g. "\t ="
  *        If delim contains space characters AND none space characters,
@@ -366,8 +389,8 @@ extern econf_err econf_readConfig (econf_file **key_file,
  *  /etc/foo/example.conf does exist:
  *
  *  - /etc/foo/example.conf
- *  - /run/foo/example.conf.d/ *.conf
  *  - /usr/lib/foo/example.conf.d/ *.conf
+ *  - /run/foo/example.conf.d/ *.conf
  *  - /etc/foo/example.conf.d/ *.conf
  *
  *  /etc/foo/example.conf does NOT exist:
@@ -375,15 +398,15 @@ extern econf_err econf_readConfig (econf_file **key_file,
  *    /run/foo/example.conf does exist:
  *
  *    - /run/foo/example.conf
- *    - /run/foo/example.conf.d/ *.conf
  *    - /usr/lib/foo/example.conf.d/ *.conf
+ *    - /run/foo/example.conf.d/ *.conf
  *    - /etc/foo/example.conf.d/ *.conf
  *
  *    /run/foo/example.conf does NOT exist:
  *
  *    - /usr/lib/foo/example.conf
- *    - /run/foo/example.conf.d/ *.conf
  *    - /usr/lib/foo/example.conf.d/ *.conf
+ *    - /run/foo/example.conf.d/ *.conf
  *    - /etc/foo/example.conf.d/ *.conf
  *
  * @code
@@ -423,6 +446,7 @@ extern econf_err econf_readConfigWithCallback(econf_file **key_file,
 
 /** @brief Evaluating key/values of a given configuration by reading and merging all
  *         needed/available files in two different directories (normally in /usr/etc and /etc).
+ *         DEPRECATED: Use the econf_readConfig/econf_readConfigWithCallback instead.
  *
  * @param key_file content of parsed file(s)
  * @param usr_conf_dir absolute path of the first directory (normally "/usr/etc")
@@ -453,6 +477,7 @@ extern econf_err econf_readConfigWithCallback(econf_file **key_file,
  * @endcode
  *
  */
+extern void __attribute__ ((deprecated("Use the econf_readConfig/econf_readConfigWithCallback instead")))
 extern econf_err econf_readDirs(econf_file **key_file,
 				const char *usr_conf_dir,
 				const char *etc_conf_dir,
@@ -464,6 +489,7 @@ extern econf_err econf_readDirs(econf_file **key_file,
 /** @brief Evaluating key/values for every given configuration files in two different
  *  directories (normally in /usr/etc and /etc). For each parsed file the user defined function
  *  will be called in order e.g. to check the correct file permissions.
+ *  DEPRECATED: Use the econf_readConfig/econf_readConfigWithCallback instead.
  *
  * @param key_file content of parsed file(s)
  * @param usr_conf_dir absolute path of the first directory (normally "/usr/etc")
@@ -505,6 +531,7 @@ extern econf_err econf_readDirs(econf_file **key_file,
  * @endcode
  *
  */
+extern void __attribute__ ((deprecated("Use the econf_readConfig/econf_readConfigWithCallback instead")))
  extern econf_err econf_readDirsWithCallback(econf_file **key_file,
 					     const char *usr_conf_dir,
 					     const char *etc_conf_dir,
@@ -1006,15 +1033,14 @@ extern void econf_freeArray(char **array);
 extern void econf_freeFile(econf_file *key_file);
 
 /** @brief All parsed files require this user permission.
- *         DEPRECATED: Use the callback in econf_readFileWithCallback,
- *         econf_readDirsWithCallback or econf_readDirsHistoryWithCallback
- *         instead.
+ *         DEPRECATED: Use the callback in econf_readFileWithCallback or
+ *         econf_readConfigWithCallback instead.
  *
  * @param owner User ID
  * @return void
  *
  */
-extern void __attribute__ ((deprecated("use one of econf_read*WithCallback instead")))
+extern void __attribute__ ((deprecated("use callback in econf_readFileWithCallback or econf_readConfigWithCallback instead")))
 econf_requireOwner(uid_t owner);
 
 /** @brief All parsed files require this group permission.
@@ -1026,43 +1052,41 @@ econf_requireOwner(uid_t owner);
  * @return void
  *
  */
-extern void __attribute__ ((deprecated("use one of econf_read*WithCallback instead")))
+extern void __attribute__ ((deprecated("use callback in econf_readFileWithCallback or econf_readConfigWithCallback instead")))
 econf_requireGroup(gid_t group);
 
 /** @brief All parsed file have to have these file and directory permissions.
- *         DEPRECATED: Use the callback in econf_readFileWithCallback,
- *         econf_readDirsWithCallback or econf_readDirsHistoryWithCallback
- *         instead.
+ *         DEPRECATED: Use the callback in econf_readFileWithCallback or
+ *         econf_readConfigWithCallback instead.
  *
  * @param file_perms file permissions
  * @param dir_perms dir permissions
  * @return void
  *
  */
-extern void __attribute__ ((deprecated("use one of econf_read*WithCallback instead")))
+extern void __attribute__ ((deprecated("use callback in econf_readFileWithCallback or econf_readConfigWithCallback instead")))
 econf_requirePermissions(mode_t file_perms, mode_t dir_perms);
 
 /** @brief Allowing the parser to follow sym links (default: true).
- *         DEPRECATED: Use the callback in econf_readFileWithCallback,
- *         econf_readDirsWithCallback or econf_readDirsHistoryWithCallback
- *         instead.
+ *         DEPRECATED: Use the callback in econf_readFileWithCallback or
+ *         econf_readConfigWithCallback instead.
  *
  * @param allow allow to follow sym links.
  * @return void
  *
  */
-extern void __attribute__ ((deprecated("use one of econf_read*WithCallback instead")))
+extern void __attribute__ ((deprecated("use callback in econf_readFileWithCallback or econf_readConfigWithCallback instead")))
 econf_followSymlinks(bool allow);
 
 /** @brief Reset all UID, GID, permissions,... restrictions for parsed files/dirs.
- *         DEPRECATED: Use the callback in econf_readFileWithCallback,
- *         econf_readDirsWithCallback or econf_readDirsHistoryWithCallback
+ *         DEPRECATED: Use the callback in econf_readFileWithCallback or
+ *         econf_readConfigWithCallback instead.
  *         instead.
  *
  * @return void
  *
  */
-extern void __attribute__ ((deprecated("use one of econf_read*WithCallback instead")))
+extern void __attribute__ ((deprecated("use callback in econf_readFileWithCallback or econf_readConfigWithCallback instead")))
 econf_reset_security_settings(void);
 
 /** @brief Sets a list of directory structures (with order) which describes the directories
