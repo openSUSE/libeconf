@@ -66,6 +66,10 @@ exists:
 * /run/_project_/_example_._suffix_.d/*._suffix_
 * /etc/_project_/_example_._suffix_.d/*._suffix_
 
+The libeconf library fulfills all requirements defined by the **Linux Userspace API (UAPI) Group**
+chapter "Configuration Files Specification".
+See: :https://uapi-group.org/specifications/specs/configuration_files_specification/
+
 ## API
 
 The API is written in plain C. The description can be found here :https://opensuse.github.io/libeconf/
