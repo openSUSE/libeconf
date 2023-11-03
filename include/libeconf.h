@@ -257,9 +257,9 @@ extern econf_err econf_mergeFiles(econf_file **merged_file,
  *
  *  No main $config_name.$config_suffix file is defined or must not be parsed:
  *
- *    - $usr_subdir/$project.d/*.$config_suffix
- *    - /run/$project.d/*.$config_suffix
- *    - /etc/$project.d/*.$config_suffix
+ *    - $usr_subdir/$project.d/ *.$config_suffix
+ *    - /run/$project.d/ *.$config_suffix
+ *    - /etc/$project.d/ *.$config_suffix
  *
  * This call fulfills all requirements, defined by the Linux Userspace API (UAPI) Group
  * chapter "Configuration Files Specification".
@@ -356,9 +356,9 @@ extern econf_err econf_readConfig (econf_file **key_file,
  *
  *  No main $config_name.$config_suffix file is defined or must not be parsed:
  *
- *    - $usr_subdir/$project.d/*.$config_suffix
- *    - /run/$project.d/*.$config_suffix
- *    - /etc/$project.d/*.$config_suffix
+ *    - $usr_subdir/$project.d/ *.$config_suffix
+ *    - /run/$project.d/ *.$config_suffix
+ *    - /etc/$project.d/ *.$config_suffix
  *
  * For each parsed file the user defined function will be called in order
  * e.g. to check the correct file permissions.
@@ -477,14 +477,14 @@ extern econf_err econf_readConfigWithCallback(econf_file **key_file,
  * @endcode
  *
  */
-extern void __attribute__ ((deprecated("Use the econf_readConfig/econf_readConfigWithCallback instead")))
-extern econf_err econf_readDirs(econf_file **key_file,
-				const char *usr_conf_dir,
-				const char *etc_conf_dir,
-				const char *config_name,
-				const char *config_suffix,
-				const char *delim,
-				const char *comment);
+extern econf_err __attribute__ ((deprecated("Use the econf_readConfig/econf_readConfigWithCallback instead")))
+econf_readDirs(econf_file **key_file,
+	       const char *usr_conf_dir,
+	       const char *etc_conf_dir,
+	       const char *config_name,
+	       const char *config_suffix,
+	       const char *delim,
+	       const char *comment);
 
 /** @brief Evaluating key/values for every given configuration files in two different
  *  directories (normally in /usr/etc and /etc). For each parsed file the user defined function
@@ -531,16 +531,16 @@ extern econf_err econf_readDirs(econf_file **key_file,
  * @endcode
  *
  */
-extern void __attribute__ ((deprecated("Use the econf_readConfig/econf_readConfigWithCallback instead")))
- extern econf_err econf_readDirsWithCallback(econf_file **key_file,
-					     const char *usr_conf_dir,
-					     const char *etc_conf_dir,
-					     const char *config_name,
-					     const char *config_suffix,
-					     const char *delim,
-					     const char *comment,
-					     bool (*callback)(const char *filename, const void *data),
-					     const void *callback_data);
+extern econf_err __attribute__ ((deprecated("Use the econf_readConfig/econf_readConfigWithCallback instead")))
+econf_readDirsWithCallback(econf_file **key_file,
+			   const char *usr_conf_dir,
+			   const char *etc_conf_dir,
+			   const char *config_name,
+			   const char *config_suffix,
+			   const char *delim,
+			   const char *comment,
+			   bool (*callback)(const char *filename, const void *data),
+			   const void *callback_data);
 
 /** @brief Evaluating key/values for every given configuration files in two different
  *  directories (normally in /usr/etc and /etc). Returns a list of read configuration
@@ -1095,8 +1095,7 @@ econf_reset_security_settings(void);
  * @param dir_postfix_list list of directory structures.
  *        E.G. with the given list: {"conf.d", ".d", "/", NULL} files in following
  *        directories will be parsed:
- *           "<default_dirs>/<config_name>.<suffix>.d/"
- *           "<default_dirs>/<config_name>/conf.d/"
+ *           "<default_dirs>/<config_name>.conf.d/"
  *           "<default_dirs>/<config_name>.d/"
  *           "<default_dirs>/<config_name>/"
  *
