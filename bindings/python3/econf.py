@@ -434,6 +434,7 @@ def read_dirs_history(
     comment: str | bytes,
 ) -> list[EconfFile]:
     """
+
     Evaluating key/values of a given configuration by reading and merging all needed/available
     files from different directories.
 
