@@ -7,6 +7,7 @@ set(econf_SRCS libeconf.c
                keyfile.c
                econf_error.c
                get_value_def.c
+	       readconfig.c
                )
 
 set(econf_HDRS defines.h
@@ -14,6 +15,7 @@ set(econf_HDRS defines.h
                mergefiles.h
                helpers.h
                keyfile.h
+	       readconfig.h
                )
 
 add_library(econf SHARED ${econf_SRCS} ${econf_HDRS}

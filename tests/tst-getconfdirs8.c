@@ -56,7 +56,7 @@ main(void)
   int retval = 0;
   econf_err error;
 
-  const char *dirs[] = {"/conf.d/", ".d/", "/", NULL};
+  const char *dirs[] = {".conf.d", ".d", NULL};
   error = econf_set_conf_dirs(dirs);
   if (error)
   {
@@ -66,9 +66,9 @@ main(void)
   }
 
   error = econf_readDirs (&key_file,
-				    TESTSDIR"tst-getconfdirs8-data/usr/etc",
-				    TESTSDIR"tst-getconfdirs8-data/etc",
-				    "getconfdir", SUFFIX, "=", "#");
+			  TESTSDIR"tst-getconfdirs8-data/usr/etc",
+			  TESTSDIR"tst-getconfdirs8-data/etc",
+			  "getconfdir", SUFFIX, "=", "#");
   if (error)
     {
       fprintf (stderr, "ERROR: econf_readDirs: %s\n",

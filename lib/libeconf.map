@@ -73,3 +73,8 @@ LIBECONF_0.5 {
     econf_readDirsHistoryWithCallback;
     econf_set_conf_dirs;
 } LIBECONF_0.4;
+LIBECONF_0.6 {
+  global:
+    econf_readConfigWithCallback;
+    econf_readConfig;
+} LIBECONF_0.5;

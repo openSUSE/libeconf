@@ -41,3 +41,6 @@
 #define NO hashstring("no")
 #define TRUE hashstring("true")
 #define FALSE hashstring("false")
+
+#define DEFAULT_RUN_SUBDIR "/run"
+#define DEFAULT_ETC_SUBDIR "/etc"

@@ -28,6 +28,7 @@
 #include "helpers.h"
 #include "keyfile.h"
 #include "mergefiles.h"
+#include "readconfig.h"
 
 #include <libgen.h>
 #include <dirent.h>
@@ -271,232 +272,161 @@ econf_err econf_mergeFiles(econf_file **merged_file, econf_file *usr_file, econf
   return ECONF_SUCCESS;
 }
 
+econf_err econf_readConfigWithCallback(econf_file **key_file,
+				       const char *project,
+				       const char *usr_subdir,
+				       const char *config_name,
+				       const char *config_suffix,
+				       const char *delim,
+				       const char *comment,
+				       bool (*callback)(const char *filename, const void *data),
+				       const void *callback_data)
+{
+  char usr_dir[PATH_MAX];
+  char run_dir[PATH_MAX];
+  char etc_dir[PATH_MAX];
+  econf_err ret = ECONF_SUCCESS;
+
+  if ( config_name == NULL || strlen(config_name) == 0) {
+    /* Drop-ins without Main Configuration File. */
+    /* e.g. parsing /usr/lib/<project>.d/a.conf, /usr/lib/<project>.d/b.conf and /etc/<project>.d/c.conf */
+    /* https://uapi-group.org/specifications/specs/configuration_files_specification/#drop-ins-without-main-configuration-file */
+    config_name = project;
+    project = NULL;
+    const char *dirs[] = {".d", NULL};
+    ret = econf_set_conf_dirs(dirs);
+    if (ret != ECONF_SUCCESS)
+      return ret;
+  }
+
+#ifdef TESTSDIR
+  if (project != NULL) {
+    snprintf(usr_dir, sizeof(usr_dir), "%s%s/%s", TESTSDIR, usr_subdir, project);
+    snprintf(run_dir, sizeof(run_dir), "%s%s/%s", TESTSDIR, DEFAULT_RUN_SUBDIR, project);
+    snprintf(etc_dir, sizeof(etc_dir), "%s%s/%s", TESTSDIR, DEFAULT_ETC_SUBDIR, project);
+  } else {
+    snprintf(usr_dir, sizeof(usr_dir), "%s%s", TESTSDIR, usr_subdir);
+    snprintf(run_dir, sizeof(run_dir), "%s%s", TESTSDIR, DEFAULT_RUN_SUBDIR);
+    snprintf(etc_dir, sizeof(etc_dir), "%s%s", TESTSDIR, DEFAULT_ETC_SUBDIR);
+  }
+#else
+  if (project != NULL) {
+    snprintf(usr_dir, sizeof(usr_dir), "%s/%s", usr_subdir, project);
+    snprintf(run_dir, sizeof(run_dir), "%s/%s", DEFAULT_RUN_SUBDIR, project);
+    snprintf(etc_dir, sizeof(etc_dir), "%s/%s", DEFAULT_ETC_SUBDIR, project);
+  } else {
+    snprintf(usr_dir, sizeof(usr_dir), "%s", usr_subdir);
+    snprintf(run_dir, sizeof(run_dir), "%s", DEFAULT_RUN_SUBDIR);
+    snprintf(etc_dir, sizeof(etc_dir), "%s", DEFAULT_ETC_SUBDIR);
+  }
+#endif
+
+  ret = readConfigWithCallback(key_file,
+			       usr_dir,
+			       run_dir,
+			       etc_dir,
+			       config_name,
+			       config_suffix,
+			       delim,
+			       comment,
+			       conf_dirs,
+			       conf_count,
+			       callback,
+			       callback_data);
+  return ret;
+}  
+
+
+econf_err econf_readConfig (econf_file **key_file,
+			    const char *project,
+			    const char *usr_subdir,
+			    const char *config_name,
+			    const char *config_suffix,
+			    const char *delim,
+			    const char *comment)
+{
+  return econf_readConfigWithCallback(key_file,
+				      project,
+				      usr_subdir,
+				      config_name,
+				      config_suffix,
+				      delim,
+				      comment,
+				      NULL,
+				      NULL);
+}
 
 econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
 					    size_t *size,
 					    const char *dist_conf_dir,
 					    const char *etc_conf_dir,
-					    const char *project_name,
+					    const char *config_name,
 					    const char *config_suffix,
 					    const char *delim,
 					    const char *comment,
 					    bool (*callback)(const char *filename, const void *data),
 					    const void *callback_data)
 {
-  const char *suffix, *default_dirs[3] = {NULL, NULL, NULL};
-  char *distfile, *etcfile, *cp;
-  econf_file *key_file;
-  econf_err error;
-
-  *size = 0;
-
-  if (project_name == NULL || strlen (project_name) == 0 || delim == NULL)
-    return ECONF_ERROR;
-
-  if (config_suffix != NULL && strlen (config_suffix) > 0)
-  {
-    // Prepend a . to the config suffix if not provided
-    if (config_suffix[0] == '.')
-      suffix = config_suffix;
-    else
-      {
-	cp = alloca (strlen(config_suffix) + 2);
-	cp[0] = '.';
-	strcpy(cp+1, config_suffix);
-	suffix = cp;
-      }
-  } else {
-    suffix = "";
-  }
-
-  /* create file names for etc and distribution config */
-  if (dist_conf_dir != NULL)
-    {
-      distfile = alloca(strlen (dist_conf_dir) + strlen (project_name) +
-			strlen (suffix) + 2);
-
-      cp = stpcpy (distfile, dist_conf_dir);
-      *cp++ = '/';
-      cp = stpcpy (cp, project_name);
-      stpcpy (cp, suffix);
-    }
-  else
-    distfile = NULL;
-
-  if (etc_conf_dir != NULL)
-    {
-      etcfile = alloca(strlen (etc_conf_dir) + strlen (project_name) +
-		       strlen (suffix) + 2);
-
-      cp = stpcpy (etcfile, etc_conf_dir);
-      *cp++ = '/';
-      cp = stpcpy (cp, project_name);
-      stpcpy (cp, suffix);
-    }
-  else
-    etcfile = NULL;
-
-  if (etcfile)
-    {
-      error = econf_readFileWithCallback(&key_file, etcfile, delim, comment,
-					 callback, callback_data);
-      if (error && error != ECONF_NOFILE)
-	return error;
-    }
-
-  if (etcfile && !error) {
-    /* /etc/<project_name>.<suffix> does exist, ignore /usr/etc/<project_name>.<suffix> */
-    *size = 1;
-  } else {
-    /* /etc/<project_name>.<suffix> does not exist, so read /usr/etc */
-    if (distfile)
-      {
-        error = econf_readFileWithCallback(&key_file, distfile, delim, comment,
-					   callback, callback_data);
-	if (error && error != ECONF_NOFILE)
-	  return error;
-      }
-
-    if (distfile && !error) /* /usr/etc/<project_name>.<suffix> does exist */
-      *size = 1;
-  }
-
-  /* XXX Re-add get_default_dirs in a reworked version, which
-     adds additional directories to look at, e.g. XDG or home directory */
-
-  /* create space to store the econf_files for merging */
-  *size = *size+1;
-  *key_files = calloc(*size, sizeof(econf_file*));
-  if (*key_files == NULL) {
-    econf_freeFile(key_file);
-    return ECONF_NOMEM;
-  }
-
-  if (*size == 2) {
-    key_file->on_merge_delete = 1;
-    (*key_files)[0] = key_file;
-  }
-
-  /*
-    Indicate which directories to look for. The order is:
-    "default_dirs/project_name.suffix.d/"
-    AND all other directories which has been set by
-    econf_set_conf_dirs. E.G.:
-       "default_dirs/project_name/conf.d/"
-       "default_dirs/project_name.d/"
-       "default_dirs/project_name/"
-    */
-  char *suffix_d = malloc (strlen(suffix) + 4); /* + strlen(".d/") */
-  if (suffix_d == NULL)
-    return ECONF_NOMEM;
-  cp = stpcpy(suffix_d, suffix);
-  stpcpy(cp, ".d");
-
-  char **configure_dirs = malloc(sizeof(char *) * (conf_count + 2));
-  if (configure_dirs == NULL)
-  {
-    free(suffix_d);
-    return ECONF_NOMEM;
-  }
-  configure_dirs[0] = suffix_d;
-  for (int i = 0; i < conf_count; i++)
-  {
-    configure_dirs[i+1] = strdup(conf_dirs[i]);
-  }
-  configure_dirs[conf_count+1] = NULL;
-
-  int i = 0;
-  /* merge all files in e.g. /usr/etc and /etc */
-  default_dirs[0] = dist_conf_dir;
-  default_dirs[1] = etc_conf_dir;
-  while (default_dirs[i]) {
-    char *project_path = combine_strings(default_dirs[i], project_name, '/');
-    error = traverse_conf_dirs(key_files, configure_dirs, size, project_path,
-			       suffix, delim, comment);
-    free(project_path);
-    if (error != ECONF_SUCCESS)
-    {
-      for(size_t k = 0; k < *size-1; k++)
-      {
-	econf_freeFile((*key_files)[k]);
-      }
-      free(*key_files);
-      *key_files = NULL;
-      econf_freeArray(configure_dirs);
-      return error;
-    }
-    i++;
-  }
-  (*size)--;
-  (*key_files)[*size] = NULL;
-  econf_freeArray(configure_dirs);
-  if (*size <= 0)
-  {
-    free(*key_files);
-    *key_files = NULL;
-    return ECONF_NOFILE;
-  }
-  return ECONF_SUCCESS;
+   return readConfigHistoryWithCallback(key_files,
+					size,
+					dist_conf_dir,
+					NULL,
+					etc_conf_dir,
+					config_name,
+					config_suffix,
+					delim,
+					comment,
+					conf_dirs,
+					conf_count,
+					callback,
+					callback_data);
 }
 
 econf_err econf_readDirsHistory(econf_file ***key_files,
 				size_t *size,
 				const char *dist_conf_dir,
 				const char *etc_conf_dir,
-				const char *project_name,
+				const char *config_name,
 				const char *config_suffix,
 				const char *delim,
 				const char *comment) {
-  return econf_readDirsHistoryWithCallback(key_files, size, dist_conf_dir,
-					   etc_conf_dir, project_name,
-					   config_suffix, delim, comment, NULL, NULL);
+  return readConfigHistoryWithCallback(key_files, size, dist_conf_dir, NULL,
+				       etc_conf_dir, config_name,
+				       config_suffix, delim, comment,
+				       conf_dirs, conf_count,
+				       NULL, NULL);
 }
 
 econf_err econf_readDirsWithCallback(econf_file **result,
 				     const char *dist_conf_dir,
 				     const char *etc_conf_dir,
-				     const char *project_name,
+				     const char *config_name,
 				     const char *config_suffix,
 				     const char *delim,
 				     const char *comment,
 				     bool (*callback)(const char *filename, const void *data),
 				     const void *callback_data)
 {
-  size_t size = 0;
-  econf_file **key_files;
-  econf_err error;
-
-  error = econf_readDirsHistoryWithCallback(&key_files,
-					    &size,
-					    dist_conf_dir,
-					    etc_conf_dir,
-					    project_name,
-					    config_suffix,
-					    delim,
-					    comment,
-					    callback,
-					    callback_data);
-  if (error != ECONF_SUCCESS)
-    return error;
-
-  // Merge the list of acquired key_files into merged_file
-  error = merge_econf_files(key_files, result);
-  free(key_files);
-
-  return error;
+  return readConfigWithCallback(result, dist_conf_dir, NULL,
+				etc_conf_dir, config_name,
+				config_suffix, delim, comment,
+				conf_dirs, conf_count,
+				callback, callback_data);
 }
 
 econf_err econf_readDirs(econf_file **result,
 			 const char *dist_conf_dir,
 			 const char *etc_conf_dir,
-			 const char *project_name,
+			 const char *config_name,
 			 const char *config_suffix,
 			 const char *delim,
 			 const char *comment)
 {
-  return econf_readDirsWithCallback(result, dist_conf_dir, etc_conf_dir,
-				    project_name, config_suffix, delim,
-				    comment, NULL, NULL);
+  return readConfigWithCallback(result, dist_conf_dir, NULL,
+				etc_conf_dir, config_name,
+				config_suffix, delim, comment,
+				conf_dirs, conf_count,
+				NULL, NULL);
 }
 
 // Write content of a econf_file struct to specified location
@@ -644,6 +574,8 @@ econf_getGroups(econf_file *kf, size_t *length, char ***groups)
 econf_err
 econf_getKeys(econf_file *kf, const char *grp, size_t *length, char ***keys)
 {
+  if (length != NULL)
+    *length = 0; /* initialize */
   if (!kf)
     return ECONF_ERROR;
 

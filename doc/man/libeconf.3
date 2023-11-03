@@ -14,12 +14,15 @@ manage key=value configuration files.
 It reads configuration file snippets from different directories and builds
 the final configuration file for the application from it.
 
-The first file is the vendor provided configuration file.
+The first file is the vendor provided configuration file places in /usr/_vendordir_/_project_.
+Optionally, /run/_project_ is also supported for ephemeral overrides.
+
+Defining _project_ sub directory is optional.
 
 There are two methods of overriding this vendor settings: Copy the file from
-/usr/_vendordir_ to /etc and modify the settings (see \fBxample 1\fP).
+/usr/_vendordir_/_project_ to /etc/_project_ and modify the settings (see \fBExample 1\fP).
 
-Alternatively, a directory named _file_._suffix_.d/ within /etc can be created,
+Alternatively, a directory named _file_._suffix_.d/ within /etc/_project_ can be created,
 with drop-in files in the form _name_._suffix_ (see \fBExample 2\fP).
 
 These files contain only the changes of the specific settings the user is
@@ -31,26 +34,30 @@ lexicographic order of their filename.
 The first method is useful to override the complete configuration file with an
 own one, the vendor supplied configuration is ignored.
 
-So, if /etc/_example_._suffix_ exists, /usr/_vendor_/_example_._suffix_
-will not be read.
+So, if /etc/_project_/_example_._suffix_ exists, /usr/_vendor_/_project_/_example_._suffix_
+and /run/_project_/_example_._suffix_ will not be read.
 .br
 The disadvantage is, that changes of the vendor configuration file, due e.g.
 an package update, are ignored and the user has to manually merge them.
 
-The other method will continue to use /usr/_vendor_/_example_._suffix_ as base
-configuration file and merge all changes from /etc/_example_._suffix_.d/*._suffix_.
+The other method will continue to use /usr/_vendor_/_project_/_example_._suffix_ as base
+configuration file and merge all changes from /etc/_project_/_example_._suffix_.d/*._suffix_.
 .br
 So the user will automatically get improvements of the vendor, with the drawback,
 that they could be incompatible with the user made changes.
 .br
-If there is a file with the same name in /usr/_vendor_/_example_._suffix_.d/ and
-in /etc/_example_._suffix_.d/*._suffix_., the file in /usr/_vendor_/_example_._suffix_.d/
+If there is a file with the same name in /usr/_vendor_/_project_/_example_._suffix_.d/ and
+in /etc/_project_/_example_._suffix_.d/*._suffix_., the file in /usr/_project_/_vendor_/_example_._suffix_.d/
 will completely ignored.
 .br
 To disable a configuration file supplied by the vendor, the recommended way is to place
-a symlink to /dev/null in the configuration directory in /etc/, with the same filename
+a symlink to /dev/null in the configuration directory in /etc/_project_/, with the same filename
 as the vendor configuration file.
 
+Optionally, schemes with only drop-ins and without a ‘main’ configuration file will be supported too. In such
+schemes many drop-ins are loaded from a common directory in each hierarchy.
+For example, /usr/lib/<project>.d/*, /run/<project>.d/* and /etc/<project>.d/c.conf are all loaded and parsed
+in this scheme.
 
 .SS "Example 1"
 .sp
@@ -58,20 +65,32 @@ If a /etc/_example_._suffix_ files exists:
 
 * /etc/_example_._suffix_
 
-* /usr/_vendor_/_example_._suffix_.d/*._suffix_
+* /usr/_vendor_/_project_/_example_._suffix_.d/*._suffix_
 
-* /etc/_example_._suffix_.d/*._suffix_
+* /run/_project_/_example_._suffix_.d/*._suffix_
+
+* /etc/_project_/_example_._suffix_.d/*._suffix_
 
 .SS "Example 2"
 .sp
 The list of files and directories read if **no** /etc/_example_._suffix_ file
 exists:
 
-* /usr/_vendor_/_example_._suffix_
+* /usr/_vendor_/_project_/_example_._suffix_ if no /run/_project_/_example_._suffix_ exist
 
-* /usr/_vendor_/_example_._suffix_.d/*._suffix_
+* /usr/_vendor_/_project_/_example_._suffix_.d/*._suffix_
 
-* /etc/_example_._suffix_.d/*._suffix_
+* /run/_project_/_example_._suffix_.d/*._suffix_
+
+* /etc/_project_/_example_._suffix_.d/*._suffix_
+
+.SS "UAPI Configuration Files Specification"
+.sp
+The libeconf library fulfills all requirements defined by the Linux Userspace API (UAPI) Group
+chapter "Configuration Files Specification".
+.br
+See: https://uapi-group.org/specifications/specs/configuration_files_specification/
+
 
 .SH SYNOPSIS
 .br
@@ -113,6 +132,14 @@ exists:
 
 .in +1c
 .ti -1c
+.RI "\fBeconf_err\fP \fBeconf_readConfig\fP (\fBeconf_file\fP **key_file, const char *project, const char *usr_subdir, const char *config_name, const char *config_suffix, const char *delim, const char *comment)"
+.br
+.RI "Evaluating key/values of a given configuration by reading and merging all needed/available files in three different directories (normally in /usr/etc, /run and /etc)\&. "
+.ti -1c
+.RI "\fBeconf_err\fP \fBeconf_readConfigWithCallback\fP (\fBeconf_file\fP **key_file, const char *project, const char *usr_subdir, const char *config_name, const char *config_suffix, const char *delim, const char *comment, bool (*callback)(const char *filename, const void *data), const void *callback_data)"
+.br
+.RI "Has the same functionality like \fBeconf_readConfig\fP. The user can additionally define a callback in order e.g. to check all parsed file\&. "
+.ti -1c
 .RI "\fBeconf_err\fP \fBeconf_readFile\fP (\fBeconf_file\fP **result, const char *file_name, const char *delim, const char *comment)"
 .br
 .RI "Process the file of the given file_name and save its contents into key_file object\&. "
@@ -124,22 +151,6 @@ exists:
 .RI "\fBeconf_err\fP \fBeconf_mergeFiles\fP (\fBeconf_file\fP **merged_file, \fBeconf_file\fP *usr_file, \fBeconf_file\fP *etc_file)"
 .br
 .RI "Merge the contents of two key_files objects\&. "
-.ti -1c
-.RI "\fBeconf_err\fP \fBeconf_readDirs\fP (\fBeconf_file\fP **key_file, const char *usr_conf_dir, const char *etc_conf_dir, const char *project_name, const char *config_suffix, const char *delim, const char *comment)"
-.br
-.RI "Evaluating key/values of a given configuration by reading and merging all needed/available files in two different directories (normally in /usr/etc and /etc)\&. "
-.ti -1c
-.RI "\fBeconf_err\fP \fBeconf_readDirsWithCallback\fP (\fBeconf_file\fP **key_file, const char *usr_conf_dir, const char *etc_conf_dir, const char *project_name, const char *config_suffix, const char *delim, const char *comment, bool (*callback)(const char *filename, const void *data), const void *callback_data)"
-.br
-.RI "Has the same functionality like \fBeconf_readDirs\fP. The user can additionally define a callback in order e.g. to check all parsed file\&. "
-.ti -1c
-.RI "\fBeconf_err\fP \fBeconf_readDirsHistory\fP (\fBeconf_file\fP ***key_files, size_t *size, const char *usr_conf_dir, const char *etc_conf_dir, const char *project_name, const char *config_suffix, const char *delim, const char *comment)"
-.br
-.RI "Evaluating key/values for every given configuration files in two different directories (normally in /usr/etc and /etc)\&. "
-.ti -1c
-.RI "\fBeconf_err\fP \fBeconf_readDirsHistoryWithCallback\fP (\fBeconf_file\fP ***key_files, size_t *size, const char *usr_conf_dir, const char *etc_conf_dir, const char *project_name, const char *config_suffix, const char *delim, const char *comment, bool (*callback)(const char *filename, const void *data), const void *callback_data)"
-.br
-.RI "Has the same functionality like \fBeconf_readDirsHistory\fP. The user can additionally define a callback in order e.g. to check all parsed file\&. "
 .ti -1c
 .RI "\fBeconf_err\fP \fBeconf_newKeyFile\fP (\fBeconf_file\fP **result, char delimiter, char comment)"
 .br
@@ -425,6 +436,227 @@ User defined parsing callback has failed\&.
 
 .SH "Function Documentation"
 .PP 
+ 
+.SS "\fBeconf_err\fP econf_readConfig (\fBeconf_file\fP ** key_file, const char *project, const char *usr_subdir, const char *config_name, const char *config_suffix, const char *delim, const char *comment)"
+
+.PP
+ Evaluating key/values of a given configuration by reading and merging all needed/available files from different directories. Order is:\&
+ 
+   /etc/$project/$config_name.$config_suffix does exist:
+   
+     -- /etc/$project/$config_name.$config_suffix
+     -- $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix     
+     -- /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
+     -- /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
+  
+   /etc/$project/$config_name.$config_suffix does NOT exist:
+  
+     - /run/$project/$config_name.$config_suffix does exist:
+  
+      -- /run/$project/$config_name.$config_suffix
+      -- $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix      
+      -- /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
+      -- /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
+  
+     - /run/$project/$config_name.$config_suffix does NOT exist:
+  
+      -- $usr_subdir/$project/$config_name.$config_suffix
+      -- $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix      
+      -- /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
+      -- /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
+
+   No main $config_name.$config_suffix file is defined or must not be parsed:
+
+      -- $usr_subdir/$project.d/*.$config_suffix      
+      -- /run/$project.d/*.$config_suffix
+      -- /etc/$project.d/*.$config_suffix
+   
+.PP
+\fBParameters:\fP
+.RS 4
+\fIkey_file\fP content of parsed file(s) 
+.br
+\fIproject\fP name of the project used as subdirectory, can be NULL
+.br
+\fIusr_subdir\fP absolute path of the first directory (often "/usr/lib")
+.br
+\fIconfig_name\fP basename of the configuration file. If it is NULL, drop-ins without
+a main configuration file will be parsed only.
+.br
+\fIconfig_suffix\fP suffix of the configuration file\&. Can also be NULL\&. 
+.br
+\fIdelim\fP delimiters of key/value e\&.g\&. '\\t ='. If delim contains space characters
+AND none space characters, multiline values are not parseable.
+.br
+\fIcomment\fP array of characters which define the start of a comment 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+econf_err ECONF_SUCCESS or error code
+.RE
+.PP
+Example: Reading content in different cases in following order:\&
+
+   /etc/foo/example.conf does exist:
+ 
+   - /etc/foo/example.conf
+   - /usr/lib/foo/example.conf.d/ *.conf   
+   - /run/foo/example.conf.d/ *.conf
+   - /etc/foo/example.conf.d/ *.conf
+ 
+   /etc/foo/example.conf does NOT exist:
+ 
+     /run/foo/example.conf does exist:
+ 
+     - /run/foo/example.conf
+     - /usr/lib/foo/example.conf.d/ *.conf     
+     - /run/foo/example.conf.d/ *.conf
+     - /etc/foo/example.conf.d/ *.conf
+ 
+     /run/foo/example.conf does NOT exist:
+ 
+     - /usr/lib/foo/example.conf
+     - /usr/lib/foo/example.conf.d/ *.conf     
+     - /run/foo/example.conf.d/ *.conf
+     - /etc/foo/example.conf.d/ *.conf
+
+.PP
+.nf
+#include "libeconf\&.h"
+
+econf_file *key_file = NULL;
+econf_err error;
+
+error = econf_readConfig (&key_file,
+                          "foo",
+                          "/usr/lib",
+                          "example",
+                          "conf",
+                          "=", "#");
+
+econf_free (key_file);
+
+.SS "\fBeconf_err\fP econf_readConfigWithCallback (\fBeconf_file\fP ** key_file, const char *project, const char *usr_subdir, const char *config_name, const char *config_suffix, const char *delim, const char *comment, bool (*callback)(const char *filename, const void *data), const void *callback_data)"
+
+.PP
+ Evaluating key/values of a given configuration by reading and merging all needed/available files from different directories. Order is:\&
+ 
+   /etc/$project/$config_name.$config_suffix does exist:
+   
+     -- /etc/$project/$config_name.$config_suffix
+     -- $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix     
+     -- /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
+     -- /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
+  
+   /etc/$project/$config_name.$config_suffix does NOT exist:
+  
+     - /run/$project/$config_name.$config_suffix does exist:
+  
+      -- /run/$project/$config_name.$config_suffix
+      -- $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix      
+      -- /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
+      -- /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
+  
+     - /run/$project/$config_name.$config_suffix does NOT exist:
+  
+      -- $usr_subdir/$project/$config_name.$config_suffix
+      -- $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix      
+      -- /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
+      -- /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
+
+   No main $config_name.$config_suffix file is defined or must not be parsed:
+
+      -- $usr_subdir/$project.d/*.$config_suffix      
+      -- /run/$project.d/*.$config_suffix
+      -- /etc/$project.d/*.$config_suffix
+.br
+
+For each parsed file the user defined function will be called in order e.g.
+to check the correct file permissions.
+   
+.PP
+\fBParameters:\fP
+.RS 4
+\fIkey_file\fP content of parsed file(s)
+.br
+\fIproject\fP name of the project used as subdirectory, can be NULL
+.br
+\fIusr_subdir\fP absolute path of the first directory (often "/usr/lib")
+.br
+\fIconfig_name\fP basename of the configuration file. If it is NULL, drop-ins without
+a main configuration file will be parsed only.
+.br
+\fIconfig_suffix\fP suffix of the configuration file\&. Can also be NULL\&.
+.br
+\fIdelim\fP delimiters of key/value e\&.g\&. '\\t ='. If delim contains space characters
+AND none space characters, multiline values are not parseable.
+.br
+\fIcomment\fP array of characters which define the start of a comment
+.br
+\fIcallback\fP function which will be called for each file. This user defined function has the
+pathname as paramter and returns true if this file can be parsed. If not, the parsing of
+all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned.
+.br
+\fIcallback_data\fP pointer which will be given to the callback function.
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+econf_err ECONF_SUCCESS or error code
+.RE
+.PP
+Example: Reading content in different cases in following order:\&
+
+   /etc/foo/example.conf does exist:
+ 
+   - /etc/foo/example.conf
+   - /usr/lib/foo/example.conf.d/ *.conf   
+   - /run/foo/example.conf.d/ *.conf
+   - /etc/foo/example.conf.d/ *.conf
+ 
+   /etc/foo/example.conf does NOT exist:
+ 
+     /run/foo/example.conf does exist:
+ 
+     - /run/foo/example.conf
+     - /usr/lib/foo/example.conf.d/ *.conf     
+     - /run/foo/example.conf.d/ *.conf
+     - /etc/foo/example.conf.d/ *.conf
+ 
+     /run/foo/example.conf does NOT exist:
+ 
+     - /usr/lib/foo/example.conf
+     - /usr/lib/foo/example.conf.d/ *.conf     
+     - /run/foo/example.conf.d/ *.conf
+     - /etc/foo/example.conf.d/ *.conf
+
+.PP
+.nf
+#include "libeconf\&.h"
+
+bool checkFile(const char *filename, const void *data) {
+  /* checking code which returns true or false */
+  return true;
+}
+
+econf_file *key_file = NULL;
+econf_err error;
+
+error = econf_readConfigWithCallback (&key_file,
+                                      "foo",
+                                      "/usr/lib",
+                                      "example",
+                                      "conf",
+                                      "=", "#",
+                                      checkFile,
+                                      NULL);
+
+econf_free (key_file);
+
+.fi
+.PP
+
 .SS "\fBeconf_err\fP econf_readFile (\fBeconf_file\fP ** result, const char * file_name, const char * delim, const char * comment)"
 
 .PP
@@ -543,174 +775,6 @@ econf_free (key_file_1);
 econf_free (key_file_2);
 
 .fi
-.PP
- 
-.SS "\fBeconf_err\fP econf_readDirs (\fBeconf_file\fP ** key_file, const char * usr_conf_dir, const char * etc_conf_dir, const char * project_name, const char * config_suffix, const char * delim, const char * comment)"
-
-.PP
-Evaluating the content of a given configuration file by reading all needed/available files in two different directories (normally in /usr/etc and /etc)\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkey_file\fP content of parsed file(s) 
-.br
-\fIusr_conf_dir\fP absolute path of the first directory (normally '/usr/etc') 
-.br
-\fIetc_conf_dir\fP absolute path of the second directory (normally '/etc')
-.br
-\fIproject_name\fP basename of the configuration file 
-.br
-\fIconfig_suffix\fP suffix of the configuration file\&. Can also be NULL\&. 
-.br
-\fIdelim\fP delimiters of key/value e\&.g\&. '\\t =' 
-.br
-\fIcomment\fP array of characters which define the start of a comment 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code
-.RE
-.PP
-Example: Reading content of example\&.conf in /usr/etc and /etc directory\&. 
-.PP
-.nf
-#include "libeconf\&.h"
-
-econf_file *key_file = NULL;
-econf_err error;
-
-error = econf_readDirs (&key_file,
-                        "/usr/etc",
-                        "/etc",
-                        "example",
-                        "conf",
-                        "=", "#");
-
-econf_free (key_file);
-
-.fi
-.PP
-
-.SS "\fBeconf_err\fP econf_readDirsWithCallback (\fBeconf_file\fP ** key_file, const char * usr_conf_dir, const char * etc_conf_dir, const char * project_name, const char * config_suffix, const char * delim, const char * comment, bool (*callback)(const char *filename, const void *data), const void *callback_data)"
-
-.PP
-Evaluating the content of a given configuration file by reading all needed/available files in two different directories (normally in /usr/etc and /etc)\&. For each parsed file the user defined function will be called in order e.g. to check the correct file permissions\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkey_file\fP content of parsed file(s)
-.br
-\fIusr_conf_dir\fP absolute path of the first directory (normally '/usr/etc')
-.br
-\fIetc_conf_dir\fP absolute path of the second directory (normally '/etc')
-.br
-\fIproject_name\fP basename of the configuration file
-.br
-\fIconfig_suffix\fP suffix of the configuration file\&. Can also be NULL\&.
-.br
-\fIdelim\fP delimiters of key/value e\&.g\&. '\\t ='
-.br
-\fIcomment\fP array of characters which define the start of a comment
-.br
-\fIcallback\fP function which will be called for each file\&. This user defined function has the pathname as paramter and returns true if this file can be parsed\&. If not, the parsing of all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned\&.
-.br
-\fIcallback_data\fP pointer which will be given to the callback function.
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code
-.RE
-.PP
-Example: Reading content of example\&.conf in /usr/etc and /etc directory\&.
-.PP
-.nf
-#include "libeconf.h"
-
-bool checkFile(const char *filename, const void *data) {
-  /* checking code which returns true or false */
-  return true;
-}
-
-econf_file *key_file = NULL;
-econf_err error;
-
-error = econf_readDirsWithCallback (&key_file,
-                                  "/usr/etc",
-                                  "/etc",
-                                  "example",
-                                  "conf",
-                                  "=", "#",
-                                  checkFile,
-                                  NULL);
-
-econf_free (key_file);
-.fi
-.PP
-
-.SS "\fBeconf_err\fP econf_readDirsHistory (\fBeconf_file\fP *** key_files, size_t * size, const char * usr_conf_dir, const char * etc_conf_dir, const char * project_name, const char * config_suffix, const char * delim, const char * comment)"
-
-.PP
-Evaluating key/values for every given configuration files in two different directories (normally in /usr/etc and /etc)\&. Returns a list of read configuration files and their values\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkey_files\fP list of parsed file(s)\&. Each entry includes all key/value, path, comments,\&.\&.\&. information of the regarding file\&.
-.br
-\fIsize\fP Size of the evaluated key_files list\&.
-.br
-\fIusr_conf_dir\fP absolute path of the first directory (normally '/usr/etc')
-.br
-\fIetc_conf_dir\fP absolute path of the second directory (normally '/etc')
-.br
-\fIproject_name\fP basename of the configuration file
-.br
-\fIconfig_suffix\fP suffix of the configuration file\&. Can also be NULL\&.
-.br
-\fIdelim\fP delimiters of key/value e\&.g\&. '\\t ='
-.br
-\fIcomment\fP array of characters which define the start of a comment
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_readDirsHistoryWithCallback (\fBeconf_file\fP *** key_files, size_t * size, const char * usr_conf_dir, const char * etc_conf_dir, const char * project_name, const char * config_suffix, const char * delim, const char * comment, bool (*callback)(const char *filename, const void *data), const void *callback_data)"
-
-.PP
-Evaluating key/values for every given configuration files in two different directories (normally in /usr/etc and /etc)\&. For each parsed file the user defined function will be called in order e.g. to check the correct file permissions\&. Returns a list of read configuration files and their values\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkey_files\fP list of parsed file(s)\&. Each entry includes all key/value, path, comments,\&.\&.\&. information of the regarding file\&.
-.br
-\fIsize\fP Size of the evaluated key_files list\&.
-.br
-\fIusr_conf_dir\fP absolute path of the first directory (normally '/usr/etc')
-.br
-\fIetc_conf_dir\fP absolute path of the second directory (normally '/etc')
-.br
-\fIproject_name\fP basename of the configuration file
-.br
-\fIconfig_suffix\fP suffix of the configuration file\&. Can also be NULL\&.
-.br
-\fIdelim\fP delimiters of key/value e\&.g\&. '\\t ='
-.br
-\fIcomment\fP array of characters which define the start of a comment
-.br
-\fIcallback\fP function which will be called for each file\&. This user defined function has the pathname as paramter and returns true if this file can be parsed\&. If not, the parsing of all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned\&.
-.br
-\fIcallback_data\fP pointer which will be given to the callback function.
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code
-.RE
 .PP
  
 .SS "\fBeconf_err\fP econf_newKeyFile (\fBeconf_file\fP ** result, char delimiter, char comment)"

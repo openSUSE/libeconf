@@ -736,7 +736,7 @@ int main (int argc, char *argv[])
 
     if (getenv("XDG_CONFIG_HOME") == NULL) {
         /* if no XDG_CONFIG_HOME is specified take ~/.config as default */
-	snprintf(xdg_config_dir, sizeof(xdg_config_dir-8), "%s/.config", home_dir);
+	snprintf(xdg_config_dir, sizeof(xdg_config_dir), "%s/.config", home_dir);
     } else {
         snprintf(xdg_config_dir, sizeof(xdg_config_dir), "%s", getenv("XDG_CONFIG_HOME"));
     }

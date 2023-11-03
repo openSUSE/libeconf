@@ -225,20 +225,18 @@ def merge_files(usr_file: EconfFile, etc_file: EconfFile) -> EconfFile:
 def read_dirs(
     usr_conf_dir: str | bytes,
     etc_conf_dir: str | bytes,
-    project_name: str | bytes,
+    config_name: str | bytes,
     config_suffix: str | bytes,
     delim: str | bytes,
     comment: str | bytes,
 ) -> EconfFile:
     """
-    Read configuration from the first found config file and merge with snippets from conf.d/ directory
-
-    e.g. searches /usr/etc/ and /etc/ for an example.conf file and merges it with the snippets in either
-    /usr/etc/example.conf.d/ or /etc/example.conf.d
+    Evaluating key/values of a given configuration by reading and merging all needed/available
+    files from different directories.
 
     :param usr_conf_dir: absolute path of the first directory to be searched
     :param etc_conf_dir: absolute path of the second directory to be searched
-    :param project_name: basename of the configuration file
+    :param config_name: basename of the configuration file
     :param config_suffix: suffix of the configuration file
     :param delim: delimiter of a key/value e.g. '='
     :param comment: string that defines the start of a comment e.g. '#'
@@ -247,7 +245,7 @@ def read_dirs(
     result = EconfFile(c_void_p())
     usr_conf_dir = _encode_str(usr_conf_dir)
     etc_conf_dir = _encode_str(etc_conf_dir)
-    project_name = _encode_str(project_name)
+    config_name = _encode_str(config_name)
     config_suffix = _encode_str(config_suffix)
     delim = _ensure_valid_char(delim)
     comment = _ensure_valid_char(comment)
@@ -255,7 +253,7 @@ def read_dirs(
         byref(result._ptr),
         usr_conf_dir,
         etc_conf_dir,
-        project_name,
+        config_name,
         config_suffix,
         delim,
         comment,
@@ -268,7 +266,7 @@ def read_dirs(
 def read_dirs_with_callback(
     usr_conf_dir: str | bytes,
     etc_conf_dir: str | bytes,
-    project_name: str | bytes,
+    config_name: str | bytes,
     config_suffix: str | bytes,
     delim: str | bytes,
     comment: str | bytes,
@@ -276,17 +274,15 @@ def read_dirs_with_callback(
     callback_data: any,
 ) -> EconfFile:
     """
-    Read configuration from the first found config file and merge with snippets from conf.d/ directory
+    Evaluating key/values of a given configuration by reading and merging all needed/available
+    files from different directories.
 
     For every file a user defined function will be called in order e.g. to check the correct file permissions.
     If the function returns False the parsing will be aborted and an Exception will be raised
 
-    e.g. searches /usr/etc/ and /etc/ for an example.conf file and merges it with the snippets in either
-    /usr/etc/example.conf.d/ or /etc/example.conf.d
-
     :param usr_conf_dir: absolute path of the first directory to be searched
     :param etc_conf_dir: absolute path of the second directory to be searched
-    :param project_name: basename of the configuration file
+    :param config_name: basename of the configuration file
     :param config_suffix: suffix of the configuration file
     :param delim: delimiter of a key/value e.g. '='
     :param comment: string that defines the start of a comment e.g. '#'
@@ -297,7 +293,7 @@ def read_dirs_with_callback(
     result = EconfFile(c_void_p())
     usr_conf_dir = _encode_str(usr_conf_dir)
     etc_conf_dir = _encode_str(etc_conf_dir)
-    project_name = _encode_str(project_name)
+    config_name = _encode_str(config_name)
     config_suffix = _encode_str(config_suffix)
     delim = _ensure_valid_char(delim)
     comment = _ensure_valid_char(comment)
@@ -312,7 +308,7 @@ def read_dirs_with_callback(
         byref(result._ptr),
         usr_conf_dir,
         etc_conf_dir,
-        project_name,
+        config_name,
         config_suffix,
         delim,
         comment,
@@ -325,24 +321,126 @@ def read_dirs_with_callback(
         )
     return result
 
+def read_config(
+    project: str | bytes,
+    usr_conf_dir: str | bytes,
+    config_name: str | bytes,
+    config_suffix: str | bytes,
+    delim: str | bytes,
+    comment: str | bytes,
+) -> EconfFile:
+    """
+    Evaluating key/values of a given configuration by reading and merging all needed/available
+    files from different directories.
+
+    This call fulfills all requirements, defined by the Linux Userspace API (UAPI) Group
+    chapter "Configuration Files Specification".
+
+    :param project: name of the project used as subdirectory
+    :param usr_conf_dir: absolute path of the first directory to be searched
+    :param config_name: basename of the configuration file
+    :param config_suffix: suffix of the configuration file
+    :param delim: delimiter of a key/value e.g. '='
+    :param comment: string that defines the start of a comment e.g. '#'
+    :return: merged EconfFile object
+    """
+    result = EconfFile(c_void_p())
+    project = _encode_str(project)
+    usr_conf_dir = _encode_str(usr_conf_dir)
+    config_name = _encode_str(config_name)
+    config_suffix = _encode_str(config_suffix)
+    delim = _ensure_valid_char(delim)
+    comment = _ensure_valid_char(comment)
+    err = LIBECONF.econf_readConfig(
+        byref(result._ptr),
+        project,
+        usr_conf_dir,
+        config_name,
+        config_suffix,
+        delim,
+        comment,
+    )
+    if err:
+        raise ECONF_EXCEPTION[EconfError(err)](f"read_config failed with error: {err_string(err)}")
+    return result
+
+def read_config_with_callback(
+    project: str | bytes,
+    usr_conf_dir: str | bytes,
+    config_name: str | bytes,
+    config_suffix: str | bytes,
+    delim: str | bytes,
+    comment: str | bytes,
+    callback: Callable[[any], bool],
+    callback_data: any,
+) -> EconfFile:
+    """
+    Evaluating key/values of a given configuration by reading and merging all needed/available
+    files from different directories.
+
+    For every file a user defined function will be called in order e.g. to check the correct file permissions.
+    If the function returns False the parsing will be aborted and an Exception will be raised
+
+    This call fulfills all requirements, defined by the Linux Userspace API (UAPI) Group
+    chapter "Configuration Files Specification".
+
+    :param project: name of the project used as subdirectory
+    :param usr_conf_dir: absolute path of the first directory to be searched
+    :param config_name: basename of the configuration file
+    :param config_suffix: suffix of the configuration file
+    :param delim: delimiter of a key/value e.g. '='
+    :param comment: string that defines the start of a comment e.g. '#'
+    :param callback: User defined function which will be called for each file and returns a boolean
+    :param callback_data: argument to be give to the callback function
+    :return: merged EconfFile object
+    """
+    result = EconfFile(c_void_p())
+    project = _encode_str(project)
+    usr_conf_dir = _encode_str(usr_conf_dir)
+    config_name = _encode_str(config_name)
+    config_suffix = _encode_str(config_suffix)
+    delim = _ensure_valid_char(delim)
+    comment = _ensure_valid_char(comment)
+
+    def callback_proxy(fake_data: c_void_p):
+        return callback(callback_data)
+
+    CBFUNC = CFUNCTYPE(c_bool, c_void_p)
+    cb_func = CBFUNC(callback_proxy)
+
+    err = LIBECONF.econf_readConfigWithCallback(
+        byref(result._ptr),
+        project,
+        usr_conf_dir,
+        config_name,
+        config_suffix,
+        delim,
+        comment,
+        cb_func,
+        c_void_p(None),
+    )
+    if err:
+        raise ECONF_EXCEPTION[EconfError(err)](
+            f"read_config_with_callback failed with error: {err_string(err)}"
+        )
+    return result
 
 def read_dirs_history(
     usr_conf_dir: str | bytes,
     etc_conf_dir: str | bytes,
-    project_name: str | bytes,
+    config_name: str | bytes,
     config_suffix: str | bytes,
     delim: str | bytes,
     comment: str | bytes,
 ) -> list[EconfFile]:
     """
-    Read configuration from the first found config file and snippets from conf.d/ directory
 
-    e.g. searches /usr/etc/ and /etc/ for an example.conf file and the snippets in either
-    /usr/etc/example.conf.d/ or /etc/example.conf.d
+    Evaluating key/values of a given configuration by reading and merging all needed/available
+    files from different directories.
 
     :param usr_conf_dir: absolute path of the first directory to be searched
     :param etc_conf_dir: absolute path of the second directory to be searched
-    :param project_name: basename of the configuration file
+    :param config_name: basename of the configuration file
     :param config_suffix: suffix of the configuration file
     :param delim: delimiter of a key/value e.g. '='
     :param comment: string that defines the start of a comment e.g. '#'
@@ -352,7 +450,7 @@ def read_dirs_history(
     size = c_size_t()
     usr_conf_dir = _encode_str(usr_conf_dir)
     etc_conf_dir = _encode_str(etc_conf_dir)
-    project_name = _encode_str(project_name)
+    config_name = _encode_str(config_name)
     config_suffix = _encode_str(config_suffix)
     delim = _ensure_valid_char(delim)
     comment = _ensure_valid_char(comment)
@@ -361,7 +459,7 @@ def read_dirs_history(
         byref(size),
         usr_conf_dir,
         etc_conf_dir,
-        project_name,
+        config_name,
         config_suffix,
         delim,
         comment,
@@ -377,7 +475,7 @@ def read_dirs_history(
 def read_dirs_history_with_callback(
     usr_conf_dir: str | bytes,
     etc_conf_dir: str | bytes,
-    project_name: str | bytes,
+    config_name: str | bytes,
     config_suffix: str | bytes,
     delim: str | bytes,
     comment: str | bytes,
@@ -385,17 +483,15 @@ def read_dirs_history_with_callback(
     callback_data: any,
 ) -> EconfFile:
     """
-    Read configuration from the first found config file and snippets from conf.d/ directory
+    Evaluating key/values of a given configuration by reading and merging all needed/available
+    files from different directories.
 
     For every file a user defined function will be called in order e.g. to check the correct file permissions.
     If the function returns False the parsing will be aborted and an Exception will be raised
 
-    e.g. searches /usr/etc/ and /etc/ for an example.conf file and the snippets in either
-    /usr/etc/example.conf.d/ or /etc/example.conf.d
-
     :param usr_conf_dir: absolute path of the first directory to be searched
     :param etc_conf_dir: absolute path of the second directory to be searched
-    :param project_name: basename of the configuration file
+    :param config_name: basename of the configuration file
     :param config_suffix: suffix of the configuration file
     :param delim: delimiter of a key/value e.g. '='
     :param comment: string that defines the start of a comment e.g. '#'
@@ -407,7 +503,7 @@ def read_dirs_history_with_callback(
     size = c_size_t()
     usr_conf_dir = _encode_str(usr_conf_dir)
     etc_conf_dir = _encode_str(etc_conf_dir)
-    project_name = _encode_str(project_name)
+    config_name = _encode_str(config_name)
     config_suffix = _encode_str(config_suffix)
     delim = _ensure_valid_char(delim)
     comment = _ensure_valid_char(comment)
@@ -423,7 +519,7 @@ def read_dirs_history_with_callback(
         byref(size),
         usr_conf_dir,
         etc_conf_dir,
-        project_name,
+        config_name,
         config_suffix,
         delim,
         comment,
@@ -946,9 +1042,8 @@ def set_conf_dirs(dir_postfix_list: list[str]) -> None:
     """
     Set a list of directories (with order) that describe the paths where files have to be parsed
 
-    E.G. with the given list: {"/conf.d/", ".d/", "/", NULL} files in following directories will be parsed:
-    "<default_dirs>/<project_name>.<suffix>.d/" "<default_dirs>/<project_name>/conf.d/" "<default_dirs>/<project_name>.d/" "<default_dirs>/<project_name>/"
-    The entry "<default_dirs>/<project_name>.<suffix>.d/" will be added automatically.
+    E.G. with the given list: {"conf.d", ".d", "/", NULL} files in following directories will be parsed:
+    "<default_dirs>/<config_name>.conf.d/" "<default_dirs>/<config_name>.d/" "<default_dirs>/<config_name>/"
 
     :param dir_postfix_list: List of directories
     :return: None
