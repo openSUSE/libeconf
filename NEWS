@@ -1,3 +1,8 @@
+Version 0.6.0
+* Supporting Linux Userspace API (UAPI) Group
+  chapter "Configuration Files Specification".
+  See: https://uapi-group.org/specifications/specs/configuration_files_specification/
+
 Version 0.5.3
 * Added bindings for python3 and C#
 * Supporting Linux Userspace API (UAPI) Group
