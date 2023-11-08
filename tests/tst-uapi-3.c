@@ -50,7 +50,6 @@ main(void)
       retval = 1;      
     }
   
-  econf_free (keys);
   econf_free (key_file);
 
   return retval;
