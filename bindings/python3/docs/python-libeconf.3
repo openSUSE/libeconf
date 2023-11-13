@@ -27,7 +27,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "PYTHON-LIBECONF" "3" "Oct 20, 2023" "" "python-libeconf"
+.TH "PYTHON-LIBECONF" "3" "Nov 13, 2023" "" "python-libeconf"
 .sp
 \fBpython\-libeconf\fP is a Python Library which offers Python bindings for
 \fI\%libeconf\fP\&.
@@ -42,7 +42,7 @@ the application from it.
 \fBWARNING:\fP
 .INDENT 0.0
 .INDENT 3.5
-The recommended way to install this project is to get the rpm package.
+The recommended way to install this project is to get it via your distro package manager.
 If you install this project from pypi libeconf will not be automatically installed.
 To use this project please make sure you have libeconf installed on your system!
 .UNINDENT
@@ -72,7 +72,30 @@ import econf
 .UNINDENT
 .UNINDENT
 .sp
-For information about the functions provided by this library, have a look at \fI\%API\fP
+For information about the functions provided by this library, have a look at the \fI\%API\fP section
+.SS usage example
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+>>> import econf
+>>> file = econf.read_file(\(dqexamples/etc/example/example.conf\(dq, \(dq=\(dq, \(dq#\(dq)
+>>> econf.get_groups(file)
+[\(aqAnother Group\(aq, \(aqFirst Group\(aq, \(aqGroup\(aq]
+>>> econf.get_keys(file, \(dqGroup\(dq)
+[\(aqBla\(aq, \(aqWelcome[la]\(aq, \(aqWelcome\(aq]
+>>> econf.get_int_value(file, \(dqGroup\(dq, \(dqBla\(dq)
+12311
+>>> econf.set_int_value(file, \(dqGroup\(dq, \(dqBla\(dq, 5)
+>>> econf.get_int_value(file, \(dqGroup\(dq, \(dqBla\(dq)
+5
+>>> econf.write_file(file, \(dqexamples/etc/example\(dq, \(dqexample_new.conf\(dq)
+>>>
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
 .SS API
 .TS
 center;
