@@ -634,6 +634,8 @@ econf_err econf_get ## FCT_TYPE ## Value(econf_file *kf, const char *group, \
   free(grp); \
   if (error) \
     return error; \
+  if (result == NULL) \
+    return ECONF_ARGUMENT_IS_NULL_VALUE; \
   return get ## FCT_TYPE ## ValueNum(*kf, num, result);	\
 }
 

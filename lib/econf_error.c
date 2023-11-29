@@ -51,7 +51,8 @@ static const char *messages[] = {
   "File has wrong file permissions", /* ECONF_WRONG_FILE_PERMISSION */
   "File has wrong dir permissions", /* ECONF_WRONG_DIR_PERMISSION */
   "File is a sym link which is not permitted", /* ECONF_ERROR_FILE_IS_SYM_LINK */
-  "User defined parsing callback has failed" /* ECONF_PARSING_CALLBACK_FAILED */
+  "User defined parsing callback has failed", /* ECONF_PARSING_CALLBACK_FAILED */
+  "Given argument is NULL", /* ECONF_ARGUMENT_IS_NULL_VALUE */
 };
 
 const char *
