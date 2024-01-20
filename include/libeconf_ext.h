@@ -35,7 +35,7 @@ extern "C" {
 #endif
 
 struct econf_ext_value {
-  /** Values of a given key in form of an string array.*/
+  /** Values of a given key in form of a string array.*/
   char **values;
   /** Path of the configuration file where this value has been read. */
   char *file;
