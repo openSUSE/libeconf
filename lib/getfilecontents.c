@@ -242,7 +242,6 @@ econf_err
 read_file(econf_file *ef, const char *file,
 	  const char *delim, const char *comment)
 {
-  char buf[BUFSIZ];
   char *current_group = NULL;
   char *current_comment_before_key = NULL;
   char *current_comment_after_value = NULL;
@@ -265,12 +264,13 @@ read_file(econf_file *ef, const char *file,
   }
   ef->delimiter = *delim;
 
-  while (fgets(buf, BUFSIZ-1, kf)) {
+  char *buf = malloc(BUFSIZ*sizeof(char));
+  size_t max_size = BUFSIZ;
+  while (getline(&buf, &max_size, kf) >0) {
     char *p, *name, *data = NULL;
     bool quote_seen = false, delim_seen = false;
     char *org_buf __attribute__ ((__cleanup__(free_buffer))) = strdup(buf);
 
-    buf[BUFSIZ-1] = '\0';
     line++;
     last_scanned_line_nr = line;
 
@@ -301,8 +301,10 @@ read_file(econf_file *ef, const char *file,
 	    char *content = current_comment_before_key;
 	    int ret = asprintf(&current_comment_before_key, "%s\n%s", content,
 			       p+1);
-	    if(ret<0)
+	    if(ret<0) {
+	      free(buf);
 	      return ECONF_NOMEM;
+	    }
 	    free(content);
 	  } else {
 	    current_comment_before_key = strdup(p+1);
@@ -315,8 +317,10 @@ read_file(econf_file *ef, const char *file,
 	    char *content = current_comment_after_value;
 	    int ret = asprintf(&current_comment_after_value, "%s\n%s", content,
 			       p+1);
-	    if(ret<0)
+	    if(ret<0) {
+	      free(buf);
 	      return ECONF_NOMEM;
+	    }
 	    free(content);
 	  } else {
 	    current_comment_after_value = strdup(p+1);
@@ -516,6 +520,7 @@ read_file(econf_file *ef, const char *file,
   }
 
  out:
+  free(buf);
   fclose (kf);
   if (current_group)
     free (current_group);

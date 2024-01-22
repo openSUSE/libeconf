@@ -48,6 +48,8 @@ tst_string_exe = executable('tst-string', 'tst-string.c', c_args: test_args, dep
 test('tst-string', tst_string_exe)
 tst_string_append_exe = executable('tst-string-append', 'tst-string-append.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-string-append', tst_string_append_exe)
+tst_long_name_exe = executable('tst-long-name', 'tst-long-name.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-long-name', tst_long_name_exe)
 tst_security_exe = executable('tst-security', 'tst-security.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-security', tst_security_exe)
 tst_checkfiles_exe = executable('tst-checkfiles', 'tst-checkfiles.c', c_args: test_args, dependencies : libeconf_dep)
