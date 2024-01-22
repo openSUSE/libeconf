@@ -38,7 +38,7 @@ If you want to build with the address sanitizer enabled, add
 # Tagging new Release
 
 1. Edit NEWS declaring the new version number and making all the changes to it.
-2. Update the version number in CMakeCache.txt and meson.build.
+2. Update the version number in CMakeLists.txt and meson.build.
 2. Commit to git.
 3. On https://github.com/openSUSE/libeconf click on releases on the right column (or go to https://github.com/openSUSE/libeconf/releases)
 4. 'Draft a new release'.
