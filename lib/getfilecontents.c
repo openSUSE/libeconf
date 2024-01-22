@@ -287,7 +287,7 @@ read_file(econf_file *ef, const char *file,
     while (*name && isspace((unsigned)*name))
       name++;
 
-    /* go through all comment characters and check, if one of could be found */
+    /* go through all comment characters and check if one of them could be found */
     for (size_t i = 0; i < strlen(comment); i++) {
       p = strchr(name, comment[i]);
       if (p)
@@ -366,7 +366,7 @@ read_file(econf_file *ef, const char *file,
       continue;
     }
 
-    /* Valid delimters are defined */
+    /* Valid delimiters are defined */
     /* go to the end of the name */
     data = name;
     while (*data && !(isspace((unsigned)*data) ||
@@ -437,17 +437,17 @@ read_file(econf_file *ef, const char *file,
       }
     }
     
-    /* Go on. It is not an multiline entry */
+    /* Go on. It is not a multiline entry */
     
     if (!*name || data == name)
       continue;
 
     if (*data == '\0')
-      /* No seperator -> return NULL pointer, there is no value,
+      /* No separator -> return NULL pointer, there is no value,
 	 not even an empty key */
       data = NULL;
     else {
-      /* go to the begin of the value */
+      /* go to the beginning of the value */
       while (*data && isspace((unsigned)*data))
 	data++;
       if (!has_wsp && !delim_seen) {
@@ -492,7 +492,7 @@ read_file(econf_file *ef, const char *file,
 	p--;
       while (p > data && (isspace((unsigned)*p)))
 	p--;
-      /* Strip double quotes only if both leading and trainling quote exist. */
+      /* Strip double quotes only if both leading and trailing quotes exist. */
       if (p >= data && quote_seen) {
 	if (*p == '"')
 	  p--;
