@@ -499,7 +499,7 @@ read_file(econf_file *ef, const char *file,
 	else
 	  data--;
       }
-      if (*(p + 1) != '\0')
+      if (*p != '\0' && *(p + 1) != '\0')
 	*(p + 1) = '\0';
     }
 
