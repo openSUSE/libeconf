@@ -37,6 +37,7 @@ set(TESTS tst-filedoesnotexit1
           tst-arguments5
 	  tst-string
 	  tst-string-append
+	  tst-long-name
 	  tst-security
 	  tst-checkfiles
 	  tst-delimiter-comment
