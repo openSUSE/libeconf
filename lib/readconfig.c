@@ -162,14 +162,19 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
   char **configure_dirs = malloc(sizeof(char *) * (conf_count + 2));
   if (configure_dirs == NULL)
   {
+    free(*key_files);
+    *key_files = NULL;
     return ECONF_NOMEM;
   }
 
   if (conf_count == 0)
   {
     char *suffix_d = malloc (strlen(suffix) + 4); /* + strlen(".d/") */
-    if (suffix_d == NULL)
+    if (suffix_d == NULL) {
+      free(*key_files);
+      *key_files = NULL;
       return ECONF_NOMEM;
+    }
     cp = stpcpy(suffix_d, suffix);
     stpcpy(cp, ".d");
     configure_dirs[0] = suffix_d;
