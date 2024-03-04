@@ -29,7 +29,7 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
 {
   const char *suffix, *default_dirs[4] = {NULL, NULL, NULL, NULL};
   char *distfile, *runfile, *etcfile, *cp;
-  econf_file *key_file;
+  econf_file *key_file = NULL;
   econf_err error;
 
   *size = 0;
