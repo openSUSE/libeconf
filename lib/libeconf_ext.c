@@ -90,15 +90,19 @@ econf_getExtValue(econf_file *kf, const char *group,
     {
       /* one quoted string only */
       (*result)->values = realloc ((*result)->values, sizeof (char*) * ++n_del);
-      if ((*result)->values == NULL)
+      if ((*result)->values == NULL) {
+        econf_freeExtValue(*result);
         return ECONF_NOMEM; /* memory allocation failed */
+      }
       (*result)->values[n_del-1] = strdup(value_string);
     } else {
       /* splitting into a character array */
       while ((line = strsep(&value_string, "\n")) != NULL) {
         (*result)->values = realloc ((*result)->values, sizeof (char*) * ++n_del);
-        if ((*result)->values == NULL)
+        if ((*result)->values == NULL) {
+          econf_freeExtValue(*result);
           return ECONF_NOMEM; /* memory allocation failed */
+        }
         (*result)->values[n_del-1] = strdup(trim(line));
       }
     }
