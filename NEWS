@@ -1,3 +1,6 @@
+Version 0.6.2
+* fixed RESOURCE_LEAK (CWE-772) and UNINIT (CWE-457)
+
 Version 0.6.1
 * Reading lines which are greater than BUFSIZ.
 
