@@ -31,6 +31,7 @@
 #include "readconfig.h"
 
 #include <libgen.h>
+#include <limits.h>
 #include <dirent.h>
 #include <stdio.h>
 #include <string.h>
