@@ -1,3 +1,7 @@
+Version 0.6.3
+* fixed build with musl libc on ppc64le
+* creating static libeconf.a
+
 Version 0.6.2
 * fixed RESOURCE_LEAK (CWE-772) and UNINIT (CWE-457)
 
