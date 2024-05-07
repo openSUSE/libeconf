@@ -230,5 +230,6 @@ struct file_entry cpy_file_entry(struct file_entry fe) {
   else
     copied_fe.comment_after_value = NULL;  
   copied_fe.line_number = fe.line_number;
+  copied_fe.quotes = false;
   return copied_fe;
 }
