@@ -44,7 +44,7 @@ as the vendor configuration file.
 
 Optionally, schemes with only drop-ins and without a ‘main’ configuration file will be supported too. In such
 schemes many drop-ins are loaded from a common directory in each hierarchy.
-For example, /usr/lib/<project>.d/*, /run/<project>.d/* and /etc/<project>.d/c.conf are all loaded and parsed
+For example, /usr/lib/_project_.d/*, /run/_project_.d/* and /etc/_project_.d/c.conf are all loaded and parsed
 in this scheme.
 
 **Example 1**
@@ -76,5 +76,5 @@ The API is written in plain C. The description can be found here :https://opensu
 
 ## Bindings for other languages
 
-- [Python](https://github.com/openSUSE/libeconf/blob/v0.6.0/bindings/python3/) ([Documentation](https://github.com/openSUSE/libeconf/blob/v0.6.0/bindings/python3/docs/python-libeconf.3)
-- [C#](https://github.com/openSUSE/libeconf/blob/v0.6.0/bindings/csharp/) ([Documentation](https://github.com/openSUSE/libeconf/blob/v0.6.0/bindings/csharp/docs/README.md))
+- [Python](https://github.com/openSUSE/libeconf/blob/v0.7.0/bindings/python3/) ([Documentation](https://github.com/openSUSE/libeconf/blob/v0.6.0/bindings/python3/docs/python-libeconf.3)
+- [C#](https://github.com/openSUSE/libeconf/blob/v0.7.0/bindings/csharp/) ([Documentation](https://github.com/openSUSE/libeconf/blob/v0.6.0/bindings/csharp/docs/README.md))

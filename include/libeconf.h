@@ -149,8 +149,8 @@ typedef struct econf_file econf_file;
  * Default behaviour if entries have the same name in one file: The
  * first hit will be returned. Further entries will be ignored.
  * This can be changed by setting the environment variable 
- * ECONF_JOIN_SAME_ENTRIES. In that case entries with the same name
- * will be joined to one single entry.
+ * JOIN_SAME_ENTRIES (see econf_set_opt). In that case entries with
+ * the same name will be joined to one single entry.
  */
 extern econf_err econf_readFile(econf_file **result, const char *file_name,
 				const char *delim, const char *comment);
@@ -191,8 +191,8 @@ extern econf_err econf_readFile(econf_file **result, const char *file_name,
  * Default behaviour if entries have the same name in one file: The
  * first hit will be returned. Further entries will be ignored.
  * This can be changed by setting the environment variable
- * ECONF_JOIN_SAME_ENTRIES. In that case entries with the same name
- * will be joined to one single entry.
+ * JOIN_SAME_ENTRIES (see econf_set_opt). In that case entries with
+ * the same name will be joined to one single entry.
  */
 extern econf_err econf_readFileWithCallback(econf_file **result, const char *file_name,
 					    const char *delim, const char *comment,
@@ -618,8 +618,8 @@ extern econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
  * Default behaviour if entries have the same name in one file: The
  * first hit will be returned. Further entries will be ignored.
  * This can be changed by setting the environment variable 
- * ECONF_JOIN_SAME_ENTRIES. In that case entries with the same name
- * will be joined to one single entry. 
+ * JOIN_SAME_ENTRIES (see econf_set_opt). In that case entries with
+ * the same name will be joined to one single entry.
  */
 extern econf_err econf_newKeyFile(econf_file **result, char delimiter, char comment);
 
@@ -1033,6 +1033,27 @@ extern void econf_freeArray(char **array);
  *
  */
 extern void econf_freeFile(econf_file *key_file);
+
+/** @brief Set libeconv environment.
+ *
+ * @param option defined as a string (format "<key>=<value>")
+ * @return void
+ *
+ * Usage:
+ * @code
+ *   #include "libeconf.h"
+ *
+ *   econf_set_opt("JOIN_SAME_ENTRIES=1");
+ * @endcode
+ *
+ * Not known options will be ignored. Following options are supported:
+ *  JOIN_SAME_ENTRIES  (default 0)
+ *    Parsed entries with the same name will not be replaces but
+ *    will be joined to one entry.
+ *  PYTHON_STYLE  (default 0)
+ *    E.G. Identations will be handled like multiline entries.
+ */
+extern void econf_set_opt(const char *option);
 
 /** @brief All parsed files require this user permission.
  *         DEPRECATED: Use the callback in econf_readFileWithCallback or

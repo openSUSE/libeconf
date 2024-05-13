@@ -9,7 +9,7 @@
 
 /* Test case:
  *  An string array has been defined mutitple times in a file with the
- *  same ID. If the environment ECONF_JOIN_SAME_ENTRIES is set, these 
+ *  same ID. If the environment JOIN_SAME_ENTRIES is set, these
  *  multiple entries are packed into an single one.
  */
 
@@ -114,7 +114,7 @@ main(void)
   };
 
   /* double entries will be joined together */
-  setenv("ECONF_JOIN_SAME_ENTRIES", "1", 1); 
+  econf_set_opt("JOIN_SAME_ENTRIES=1");
   
   error = econf_readFile (&key_file, TESTSDIR"tst-append-string/input.conf", "=", "#");
   if (error)

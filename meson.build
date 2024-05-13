@@ -7,7 +7,7 @@ project(
 		  'b_pie=true',
 		  'warning_level=3',],
   license : 'MIT',
-  version : '0.6.3',
+  version : '0.7.0',
 )
 
 cc = meson.get_compiler('c')
@@ -50,6 +50,7 @@ libeconf_src = files(
   'lib/libeconf_ext.c',
   'lib/readconfig.c',
   'lib/mergefiles.c',
+  'lib/options.c'
 )
 example_src = ['example/example.c']
 econftool_src = ['util/econftool.c']
