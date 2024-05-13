@@ -631,6 +631,15 @@ def write_file(ef: EconfFile, save_to_dir: str, file_name: str) -> None:
     if err:
         raise ECONF_EXCEPTION[EconfError(err)](f"write_file failed with error: {err_string(err)}")
 
+def econf_set_opt(option: str) -> None:
+    """
+    Set libeconv environment.
+
+    :param option: defined as a string (format <key>=<value>)
+    :return: Nothing
+    """
+    c_option = _encode_str(option)
+    LIBECONF.econf_set_opt(c_option)
 
 def get_path(ef: EconfFile) -> str:
     """

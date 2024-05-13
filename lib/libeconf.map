@@ -78,3 +78,7 @@ LIBECONF_0.6 {
     econf_readConfigWithCallback;
     econf_readConfig;
 } LIBECONF_0.5;
+LIBECONF_0.7 {
+  global:
+    econf_set_opt;
+} LIBECONF_0.6;

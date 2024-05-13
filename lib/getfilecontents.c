@@ -25,6 +25,7 @@
 #include "defines.h"
 #include "getfilecontents.h"
 #include "helpers.h"
+#include "options.h"
 
 #include <errno.h>
 #include <limits.h>
@@ -529,7 +530,7 @@ read_file(econf_file *ef, const char *file,
   if (current_comment_after_value)
     free(current_comment_after_value);
 
-  if(getenv("ECONF_JOIN_SAME_ENTRIES"))
+  if(option_join_same_entries() == true)
   {
     join_same_entries(ef);
   }

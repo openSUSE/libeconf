@@ -700,7 +700,7 @@ econf_free (key_file);
 .fi
 .PP
 .PP
-Default behaviour if entries have the same name in one file: The first hit will be returned\&. Further entries will be ignored\&. This can be changed by setting the environment variable ECONF_JOIN_SAME_ENTRIES\&. In that case entries with the same name will be joined to one single entry\&.
+Default behaviour if entries have the same name in one file: The first hit will be returned\&. Further entries will be ignored\&. This can be changed by setting the environment variable JOIN_SAME_ENTRIES (see econf_set_opt)\&. In that case entries with the same name will be joined to one single entry\&.
 
 .SS "\fBeconf_err\fP econf_readFileWithCallback (\fBeconf_file\fP ** result, const char * file_name, const char * delim, const char * comment, bool (*callback)(const char *filename, const void *data), const void *callback_data)"
 
@@ -744,7 +744,7 @@ econf_free (key_file);
 .fi
 .PP
 .PP
-Default behaviour if entries have the same name in one file: The first hit will be returned\&. Further entries will be ignored\&. This can be changed by setting the environment variable ECONF_JOIN_SAME_ENTRIES\&. In that case entries with the same name will be joined to one single entry\&.
+Default behaviour if entries have the same name in one file: The first hit will be returned\&. Further entries will be ignored\&. This can be changed by setting the environment variable JOIN_SAME_ENTRIES (see econf_set_opt)\&. In that case entries with the same name will be joined to one single entry\&.
 
 .SS "\fBeconf_err\fP econf_mergeFiles (\fBeconf_file\fP ** merged_file, \fBeconf_file\fP * usr_file, \fBeconf_file\fP * etc_file)"
 
