@@ -61,7 +61,7 @@ test('tst-extvalue', tst_extvalue_exe)
 tst_comments_exe = executable('tst-comments', 'tst-comments.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-comments', tst_comments_exe)
 tst_comments2_exe = executable('tst-comments2',
-  sources: ['tst-comments2.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
+  sources: ['tst-comments2.c', '../lib/helpers.c', '../lib/options.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
             '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],
   c_args: ['-DTESTSDIR="' + testdir + 'tst-comments2-data' + '"'], dependencies : staticlibeconf_dep)
 test('tst-comments2', tst_comments2_exe)
