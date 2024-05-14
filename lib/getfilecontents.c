@@ -125,6 +125,7 @@ store (econf_file *ef, const char *group, const char *key,
        const bool quotes,
        const bool append_entry)
 {
+
   if (append_entry)
   {
     /* Appending next line to the last entry. */
@@ -290,7 +291,7 @@ read_file(econf_file *ef, const char *file,
 
     /* go through all comment characters and check if one of them could be found */
     for (size_t i = 0; i < strlen(comment); i++) {
-      p = strchr(name, comment[i]);
+      p = strrchr(name, comment[i]);
       if (p)
       {
 	if(p==name)
@@ -310,24 +311,41 @@ read_file(econf_file *ef, const char *file,
 	  } else {
 	    current_comment_before_key = strdup(p+1);
 	  }
+	  *p = '\0';
 	} else {
 	  /* Comment is defined after the key/value in the same line */
-	  if (current_comment_after_value)
+	  char *first_quote = strchr(name, '"');
+	  char *last_quote = strrchr(name, '"');
+	  bool delim_found = false;
+
+	  data = name;
+	  while (*data && !(isspace((unsigned)*data) ||
+			    strchr(delim, *data) != NULL))
+		  data++;
+	  if (*data && strchr(delim, *data) != NULL)
+	    delim_found = false;
+
+	  if ( first_quote==NULL || /* no quote */
+	       (first_quote!=last_quote && last_quote<p) || /* comment is in string included */
+	       (first_quote==last_quote && last_quote<p && !delim_found)) /* multiline with one quote */
 	  {
-	    /* appending */
-	    char *content = current_comment_after_value;
-	    int ret = asprintf(&current_comment_after_value, "%s\n%s", content,
+	    if (current_comment_after_value)
+	    {
+	      /* appending */
+	      char *content = current_comment_after_value;
+	      int ret = asprintf(&current_comment_after_value, "%s\n%s", content,
 			       p+1);
-	    if(ret<0) {
-	      free(buf);
-	      return ECONF_NOMEM;
+	      if(ret<0) {
+	        free(buf);
+	        return ECONF_NOMEM;
+	      }
+	      free(content);
+	    } else {
+	      current_comment_after_value = strdup(p+1);
 	    }
-	    free(content);
-	  } else {
-	    current_comment_after_value = strdup(p+1);
+	    *p = '\0';
 	  }
 	}
-	*p = '\0';
       }
     }
 
