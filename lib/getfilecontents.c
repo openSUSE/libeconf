@@ -133,6 +133,13 @@ store (econf_file *ef, const char *group, const char *key,
     {
       return ECONF_MISSING_DELIMITER;
     }
+
+    if (append_entry && option_python_style() == true) {
+      /* ignore space at the beginning of the line because it is the identation of python style */
+      while (*value && isspace((unsigned)*value))
+        value++;
+    }
+
     char *content = ef->file_entry[ef->length-1].value;
     int ret = asprintf(&(ef->file_entry[ef->length-1].value), "%s\n%s", content,
 	     value);
@@ -312,7 +319,7 @@ read_file(econf_file *ef, const char *file,
 	    current_comment_before_key = strdup(p+1);
 	  }
 	  *p = '\0';
-	} else {
+	} else if (option_python_style() == false) { /* not for python config files */
 	  /* Comment is defined after the key/value in the same line */
 	  char *first_quote = strchr(name, '"');
 	  char *last_quote = strrchr(name, '"');
@@ -421,15 +428,22 @@ read_file(econf_file *ef, const char *file,
       /* Checking and adding multiline entries which are
        * not defined by a beginning quote in the line before.
        */
-      bool found_delim = delim_seen;
-      if (!found_delim)
+      bool found_delim = false;
+      if (option_python_style() == false ||
+	  !isspace(*org_buf))
       {
-        /* searching the rest of the string for delimiters */
-	char *c = data;
-	while (*c && !(strchr(delim, *c) != NULL))
-	  c++;
-        if (*c)
-	  found_delim = true;
+        /* It is not a typical python style with identation */
+	/* So, delimiter has to be regarded */
+        found_delim = delim_seen;
+        if (!found_delim)
+        {
+          /* searching the rest of the string for delimiters */
+	  char *c = data;
+	  while (*c && !(strchr(delim, *c) != NULL))
+	    c++;
+          if (*c)
+	    found_delim = true;
+	}
       }
       if (!found_delim &&
 	  /* Entry has already been found */
@@ -437,11 +451,13 @@ read_file(econf_file *ef, const char *file,
 	  /* The Entry must be the next line. Otherwise it is a new one */
 	  ef->file_entry[ef->length-1].line_number+1 == line)
       {
-        /* removing comments */
-        for (size_t i = 0; i < strlen(comment); i++) {
-	  char *pt = strchr(org_buf, comment[i]);
-	  if (pt)
-	    *pt = '\0';
+	if (option_python_style() == false) { /* not for python config files */
+          /* removing comments */
+          for (size_t i = 0; i < strlen(comment); i++) {
+	    char *pt = strchr(org_buf, comment[i]);
+	    if (pt)
+	      *pt = '\0';
+	  }
 	}
 	/* removing \n at the end of the line */
 	if( org_buf[strlen(org_buf)-1] == '\n' )
