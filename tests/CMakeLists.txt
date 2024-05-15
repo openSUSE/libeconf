@@ -43,6 +43,7 @@ set(TESTS tst-filedoesnotexit1
 	  tst-delimiter-comment
 	  tst-extvalue
 	  tst-comments
+	  tst-python
           tst-getconfdirs1
           tst-getconfdirs2
           tst-getconfdirs3
