@@ -288,7 +288,10 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
   char etc_dir[PATH_MAX];
   econf_err ret = ECONF_SUCCESS;
 
-  if ( config_name == NULL || strlen(config_name) == 0) {
+  if (usr_subdir == NULL)
+    usr_subdir = "";
+
+  if (config_name == NULL || strlen(config_name) == 0) {
     /* Drop-ins without Main Configuration File. */
     /* e.g. parsing /usr/lib/<project>.d/a.conf, /usr/lib/<project>.d/b.conf and /etc/<project>.d/c.conf */
     /* https://uapi-group.org/specifications/specs/configuration_files_specification/#drop-ins-without-main-configuration-file */
