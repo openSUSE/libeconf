@@ -27,7 +27,8 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
 					bool (*callback)(const char *filename, const void *data),
 					const void *callback_data)
 {
-  const char *suffix, *default_dirs[4] = {NULL, NULL, NULL, NULL};
+  const char *suffix = "";
+  const char *default_dirs[4] = {NULL, NULL, NULL, NULL};
   char *distfile, *runfile, *etcfile, *cp;
   econf_file *key_file = NULL;
   econf_err error;
@@ -52,8 +53,6 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
 	  strcpy(cp+1, config_suffix);
 	  suffix = cp;
         }
-    } else {
-      suffix = "";
     }
 
     /* create file names for etc, run and distribution config */
@@ -173,6 +172,7 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
     if (suffix_d == NULL) {
       free(*key_files);
       *key_files = NULL;
+      econf_freeArray(configure_dirs);
       return ECONF_NOMEM;
     }
     cp = stpcpy(suffix_d, suffix);
