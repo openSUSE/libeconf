@@ -26,15 +26,18 @@ var libeconf_8h =
       [ "ECONF_WRONG_FILE_PERMISSION", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa768ba4de0c5ba47154dba9dc4a26cb84", null ],
       [ "ECONF_WRONG_DIR_PERMISSION", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aac04246deccfe0075cc58956c543fa408", null ],
       [ "ECONF_ERROR_FILE_IS_SYM_LINK", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aab09de6a0a65f054a6c542151a675e241", null ],
-      [ "ECONF_PARSING_CALLBACK_FAILED", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa6b9c2f2cdbbf94dbaabfa42e3425deb4", null ]
+      [ "ECONF_PARSING_CALLBACK_FAILED", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa6b9c2f2cdbbf94dbaabfa42e3425deb4", null ],
+      [ "ECONF_ARGUMENT_IS_NULL_VALUE", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa85a26e85a81e96c384691d7201d3db60", null ]
     ] ],
     [ "econf_readFile", "libeconf_8h.html#aa03377bd02882239b3342c095f916561", null ],
     [ "econf_readFileWithCallback", "libeconf_8h.html#a6bf61969ee7ea191fdd28b0c8de5761d", null ],
     [ "econf_mergeFiles", "libeconf_8h.html#a2aba75b3474b33173edbc0f80b2e8a79", null ],
-    [ "econf_readDirs", "libeconf_8h.html#a7ff92b0fb657aa21220a89a0fcb59227", null ],
-    [ "econf_readDirsWithCallback", "libeconf_8h.html#aa54f0d5e7d918e23ae53f66c48191811", null ],
-    [ "econf_readDirsHistory", "libeconf_8h.html#a55faa39cd3887073d1aaba364bd09f94", null ],
-    [ "econf_readDirsHistoryWithCallback", "libeconf_8h.html#a50cb704ad90f36ade8a619bfc986f89b", null ],
+    [ "econf_readConfig", "libeconf_8h.html#a0ed2af8bb1d8f4563a9ac5c83a798881", null ],
+    [ "econf_readConfigWithCallback", "libeconf_8h.html#ace4ad5a9fd48b5efae40d683d14cf313", null ],
+    [ "econf_readDirs", "libeconf_8h.html#a42f74209e586b194b1f966f5381ce827", null ],
+    [ "econf_readDirsWithCallback", "libeconf_8h.html#a910efcd721aa9a2cdbafeb187479a923", null ],
+    [ "econf_readDirsHistory", "libeconf_8h.html#a64407a0ea75bbfb09d0af8fdb991c40b", null ],
+    [ "econf_readDirsHistoryWithCallback", "libeconf_8h.html#a3e99ddefa0267f8c9f7bf04a44968f93", null ],
     [ "econf_newKeyFile", "libeconf_8h.html#a94f42f580d8c9dff8cdb01a5c91bb5ec", null ],
     [ "econf_newIniFile", "libeconf_8h.html#a0b7c823419269683749a7394e776b22c", null ],
     [ "econf_comment_tag", "libeconf_8h.html#a5d24ab3c1515a2a0cf4668221a0ee6f7", null ],
@@ -73,7 +76,11 @@ var libeconf_8h =
     [ "econf_errLocation", "libeconf_8h.html#adc459d1dfa9096425d4f248b04669761", null ],
     [ "econf_freeArray", "libeconf_8h.html#ad6da8744e42ba1f4ddf5179a79fde50e", null ],
     [ "econf_freeFile", "libeconf_8h.html#af5fe145fe20e3a39efa781756a1f2589", null ],
-    [ "__attribute__", "libeconf_8h.html#a75b8fd4dfcc61b88e96db56be871143a", null ],
-    [ "econf_set_conf_dirs", "libeconf_8h.html#a0466a16c30cfcd58ec6201d210c64731", null ],
-    [ "dir_perms", "libeconf_8h.html#a8180855e033a12c0de69b680c99af657", null ]
+    [ "econf_set_opt", "libeconf_8h.html#a5eac8c86eb4324fcae5e50968b233474", null ],
+    [ "econf_requireOwner", "libeconf_8h.html#ab9cf0bcce775cd0d03dcb9bbba534087", null ],
+    [ "econf_requireGroup", "libeconf_8h.html#a4b9a4f31d04c7ea2087173f7877ec223", null ],
+    [ "econf_requirePermissions", "libeconf_8h.html#a3378794c25da9179c98671b082f4fdd4", null ],
+    [ "econf_followSymlinks", "libeconf_8h.html#a1d7cc79ac8b7a3ba1253cc24dcc82949", null ],
+    [ "econf_reset_security_settings", "libeconf_8h.html#ac2c27395368eddbc50c1dc7736bbcf49", null ],
+    [ "econf_set_conf_dirs", "libeconf_8h.html#a0466a16c30cfcd58ec6201d210c64731", null ]
 ];
