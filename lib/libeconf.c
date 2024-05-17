@@ -324,11 +324,9 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
     snprintf(etc_dir, sizeof(etc_dir), "%s", DEFAULT_ETC_SUBDIR);
   }
 #endif
-
+  const char *parse_dirs[3] = {usr_dir, run_dir, etc_dir};
   ret = readConfigWithCallback(key_file,
-			       usr_dir,
-			       run_dir,
-			       etc_dir,
+			       parse_dirs, 3,
 			       config_name,
 			       config_suffix,
 			       delim,
@@ -371,11 +369,11 @@ econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
 					    bool (*callback)(const char *filename, const void *data),
 					    const void *callback_data)
 {
+   const char *parse_dirs[2] = {dist_conf_dir, etc_conf_dir};
+
    return readConfigHistoryWithCallback(key_files,
 					size,
-					dist_conf_dir,
-					NULL,
-					etc_conf_dir,
+					parse_dirs, 2,
 					config_name,
 					config_suffix,
 					delim,
@@ -394,8 +392,11 @@ econf_err econf_readDirsHistory(econf_file ***key_files,
 				const char *config_suffix,
 				const char *delim,
 				const char *comment) {
-  return readConfigHistoryWithCallback(key_files, size, dist_conf_dir, NULL,
-				       etc_conf_dir, config_name,
+  const char *parse_dirs[2] = {dist_conf_dir, etc_conf_dir};
+
+  return readConfigHistoryWithCallback(key_files, size,
+				       parse_dirs, 2,
+				       config_name,
 				       config_suffix, delim, comment,
 				       conf_dirs, conf_count,
 				       NULL, NULL);
@@ -411,8 +412,10 @@ econf_err econf_readDirsWithCallback(econf_file **result,
 				     bool (*callback)(const char *filename, const void *data),
 				     const void *callback_data)
 {
-  return readConfigWithCallback(result, dist_conf_dir, NULL,
-				etc_conf_dir, config_name,
+  const char *parse_dirs[2] = {dist_conf_dir, etc_conf_dir};
+
+  return readConfigWithCallback(result, parse_dirs, 2,
+				config_name,
 				config_suffix, delim, comment,
 				conf_dirs, conf_count,
 				callback, callback_data);
@@ -426,8 +429,10 @@ econf_err econf_readDirs(econf_file **result,
 			 const char *delim,
 			 const char *comment)
 {
-  return readConfigWithCallback(result, dist_conf_dir, NULL,
-				etc_conf_dir, config_name,
+  const char *parse_dirs[2] = {dist_conf_dir, etc_conf_dir};
+
+  return readConfigWithCallback(result, parse_dirs, 2,
+				config_name,
 				config_suffix, delim, comment,
 				conf_dirs, conf_count,
 				NULL, NULL);

@@ -6,9 +6,8 @@
 
 extern econf_err readConfigHistoryWithCallback(econf_file ***key_files,
 					       size_t *size,
-					       const char *dist_conf_dir,
-					       const char *run_conf_dir,
-					       const char *etc_conf_dir,
+					       const char **parse_dirs,
+					       const int parse_dirs_count,
 					       const char *config_name,
 					       const char *config_suffix,
 					       const char *delim,
@@ -19,9 +18,8 @@ extern econf_err readConfigHistoryWithCallback(econf_file ***key_files,
 					       const void *callback_data);
 
 extern econf_err readConfigWithCallback(econf_file **result,
-					const char *dist_conf_dir,
-					const char *run_conf_dir,
-					const char *etc_conf_dir,
+					const char **parse_dirs,
+					const int parse_dirs_count,
 					const char *config_name,
 					const char *config_suffix,
 					const char *delim,
