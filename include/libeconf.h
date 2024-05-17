@@ -1128,6 +1128,9 @@ econf_reset_security_settings(void);
  *
  * @return econf_err ECONF_SUCCESS or error code
  *
+ * CAUTION: Setting options is NOT TRHEAD-SAFE because they are set
+ *          globally in libeconf.
+ *
  */
 extern econf_err econf_set_conf_dirs(const char **dir_postfix_list);
 
