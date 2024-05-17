@@ -1052,6 +1052,10 @@ extern void econf_freeFile(econf_file *key_file);
  *    will be joined to one entry.
  *  PYTHON_STYLE  (default 0)
  *    E.G. Identations will be handled like multiline entries.
+ *
+ * CAUTION: Setting options is NOT TRHEAD-SAFE because they are set
+ *          globally in libeconf.
+ *
  */
 extern void econf_set_opt(const char *option);
 
