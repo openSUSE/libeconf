@@ -29,6 +29,7 @@
 #include "keyfile.h"
 #include "mergefiles.h"
 #include "readconfig.h"
+#include "options.h"
 
 #include <libgen.h>
 #include <limits.h>
@@ -325,16 +326,32 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
   }
 #endif
   const char *parse_dirs[3] = {usr_dir, run_dir, etc_dir};
-  ret = readConfigWithCallback(key_file,
-			       parse_dirs, 3,
-			       config_name,
-			       config_suffix,
-			       delim,
-			       comment,
-			       conf_dirs,
-			       conf_count,
-			       callback,
-			       callback_data);
+  int man_parse_dirs_count = 0;
+  const char **man_parse_dirs = NULL;
+  option_parse_dirs(&man_parse_dirs, &man_parse_dirs_count);
+  if (man_parse_dirs == 0) {
+    ret = readConfigWithCallback(key_file,
+				 parse_dirs, 3,
+				 config_name,
+				 config_suffix,
+				 delim,
+				 comment,
+				 conf_dirs,
+				 conf_count,
+				 callback,
+				 callback_data);
+  } else {
+    ret = readConfigWithCallback(key_file,
+				 man_parse_dirs, man_parse_dirs_count,
+				 config_name,
+				 config_suffix,
+				 delim,
+				 comment,
+				 conf_dirs,
+				 conf_count,
+				 callback,
+				 callback_data);
+  }
   return ret;
 }  
 

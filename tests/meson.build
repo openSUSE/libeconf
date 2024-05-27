@@ -85,6 +85,9 @@ test('tst-getconfdirs7', tst_getconfdirs7_exe)
 tst_getconfdirs8_exe = executable('tst-getconfdirs8', 'tst-getconfdirs8.c', c_args: ['-DSUFFIX="conf"', test_args], dependencies : libeconf_dep)
 test('tst-getconfdirs8', tst_getconfdirs8_exe)
 
+tst_man_dir_exe = executable('tst-man-dir', 'tst-man-dir.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-man-dir', tst_man_dir_exe)
+
 tst_uapi_1_exe = executable('tst-uapi-1',
   sources: ['tst-uapi-1.c', '../lib/helpers.c', '../lib/options.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
             '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],

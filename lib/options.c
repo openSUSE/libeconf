@@ -27,9 +27,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define CONFIG_DIRS "CONFIG_DIRS="
+
 /*General options which can be set with econf_set_opt */
 static bool join_same_entries = false;
 static bool python_style = false;
+static char **parse_dirs = {NULL};
+static int parse_dirs_count = 0;
 
 extern void econf_set_opt(const char *option)
 {
@@ -49,6 +53,21 @@ extern void econf_set_opt(const char *option)
     python_style = false;
     return;
   }
+
+  if (strncmp(option, CONFIG_DIRS, strlen(CONFIG_DIRS)) == 0) {
+    // free old entry
+    if (parse_dirs) econf_freeArray(parse_dirs);
+    parse_dirs_count = 0;
+    parse_dirs = malloc(sizeof(char *));
+
+    char* in_Ptr = strdup(option + strlen(CONFIG_DIRS));
+    char* o_Ptr;
+    while ((o_Ptr = strsep(&in_Ptr, ":")) != NULL) {
+      parse_dirs = realloc(parse_dirs, (++parse_dirs_count+1) * sizeof(char *));
+      parse_dirs[parse_dirs_count-1] = strdup(o_Ptr);
+    }
+    parse_dirs[parse_dirs_count] = NULL;
+  }
 }
 
 bool option_join_same_entries(void)
@@ -60,3 +79,8 @@ bool option_python_style(void)
   return python_style;
 }
 
+void option_parse_dirs(char ***dirs, int *count)
+{
+  *count = parse_dirs_count;
+  *dirs = parse_dirs;
+}

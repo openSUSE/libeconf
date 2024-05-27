@@ -1052,6 +1052,11 @@ extern void econf_freeFile(econf_file *key_file);
  *    will be joined to one entry.
  *  PYTHON_STYLE  (default 0)
  *    E.G. Identations will be handled like multiline entries.
+ *  CONFIG_DIRS
+ *    List of directories from which the configuration files have to be parsed.
+ *    The list is a string, divides by ":". The last entry has the highest
+ *    priority. E.g.: "CONFIG_DIRS=/usr/etc/:/run:/etc"
+ *    
  *
  * CAUTION: Setting options is NOT TRHEAD-SAFE because they are set
  *          globally in libeconf.
