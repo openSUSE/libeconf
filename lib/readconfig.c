@@ -27,7 +27,6 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
 					const void *callback_data)
 {
   const char *suffix = "";
-  const char *default_dirs[4] = {NULL, NULL, NULL, NULL};
   char *filename, *cp;
   econf_file *key_file = NULL;
   econf_err error;

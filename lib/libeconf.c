@@ -342,7 +342,8 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
 				 callback_data);
   } else {
     ret = readConfigWithCallback(key_file,
-				 man_parse_dirs, man_parse_dirs_count,
+				 (const char **)man_parse_dirs,
+				 man_parse_dirs_count,
 				 config_name,
 				 config_suffix,
 				 delim,

@@ -32,7 +32,7 @@
 /*General options which can be set with econf_set_opt */
 static bool join_same_entries = false;
 static bool python_style = false;
-static char **parse_dirs = {NULL};
+static const char **parse_dirs = {NULL};
 static int parse_dirs_count = 0;
 
 extern void econf_set_opt(const char *option)
@@ -55,8 +55,6 @@ extern void econf_set_opt(const char *option)
   }
 
   if (strncmp(option, CONFIG_DIRS, strlen(CONFIG_DIRS)) == 0) {
-    // free old entry
-    if (parse_dirs) econf_freeArray(parse_dirs);
     parse_dirs_count = 0;
     parse_dirs = malloc(sizeof(char *));
 
@@ -79,7 +77,7 @@ bool option_python_style(void)
   return python_style;
 }
 
-void option_parse_dirs(char ***dirs, int *count)
+void option_parse_dirs(const char ***dirs, int *count)
 {
   *count = parse_dirs_count;
   *dirs = parse_dirs;
