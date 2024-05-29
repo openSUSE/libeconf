@@ -80,5 +80,5 @@ LIBECONF_0.6 {
 } LIBECONF_0.5;
 LIBECONF_0.7 {
   global:
-    econf_set_opt;
+    econf_newKeyFile_with_options;
 } LIBECONF_0.6;

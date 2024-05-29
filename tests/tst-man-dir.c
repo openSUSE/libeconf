@@ -48,7 +48,13 @@ main(void)
   int retval = 0;
   econf_err error;
 
-  econf_set_opt("CONFIG_DIRS="TESTSDIR"tst-man-dir-data/usr/etc/:"TESTSDIR"tst-man-dir-data/run:"TESTSDIR"tst-man-dir-data/etc");
+  if ((error = econf_newKeyFile_with_options(&key_file,
+					     "PARSING_DIRS="TESTSDIR"tst-man-dir-data/usr/etc/:"TESTSDIR"tst-man-dir-data/run:"TESTSDIR"tst-man-dir-data/etc")))
+  {
+    fprintf (stderr, "ERROR: couldn't create new file: %s\n",
+             econf_errString(error));
+    return 1;
+  }
 
   error = econf_readConfig (&key_file,
 			    NULL,

@@ -63,7 +63,6 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
        *cp++ = '/';
        cp = stpcpy (cp, config_name);
        stpcpy (cp, suffix);
-
        error = econf_readFileWithCallback(&key_file, filename, delim, comment,
 	  				   callback, callback_data);
        if (error && error != ECONF_NOFILE)

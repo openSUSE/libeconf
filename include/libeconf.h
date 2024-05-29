@@ -605,9 +605,6 @@ extern econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
 						   bool (*callback)(const char *filename, const void *data),
 						   const void *callback_data);
 
-/* The API/ABI of the following three functions (econf_newKeyFile,
-   econf_newIniFile and econf_writeFile) are not stable and will change */
-
 /** @brief Create a new econf_file object.
  *
  * @param result Pointer to the allocated econf_file object.
@@ -615,13 +612,28 @@ extern econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
  * @param comment Character which defines the start of a comment.
  * @return econf_err ECONF_SUCCESS or error code
  *
- * Default behaviour if entries have the same name in one file: The
- * first hit will be returned. Further entries will be ignored.
- * This can be changed by setting the environment variable 
- * JOIN_SAME_ENTRIES (see econf_set_opt). In that case entries with
- * the same name will be joined to one single entry.
  */
 extern econf_err econf_newKeyFile(econf_file **result, char delimiter, char comment);
+
+/** @brief Create a new econf_file object with special options.
+ *
+ * @param result Pointer to the allocated econf_file object.
+ * @param options defined as a string separated by ";"
+ *        format "<key>=<value>"; e.g. "JOIN_SAME_ENTRIES=1;COMMENT=#"
+ * @return econf_err ECONF_SUCCESS or error code
+ *
+ * Not known options will be ignored. Following options are supported:
+ *  JOIN_SAME_ENTRIES  (default 0)
+ *    Parsed entries with the same name will not be replaces but
+ *    will be joined to one entry.
+ *  PYTHON_STYLE  (default 0)
+ *    E.G. Identations will be handled like multiline entries.
+ *  PARSING_DIRS (default /usr/etc/:/run:/etc)
+ *    List of directories from which the configuration files have to be parsed.
+ *    The list is a string, divides by ":". The last entry has the highest
+ *    priority. E.g.: "PARSING_DIRS=/usr/etc/:/run:/etc"
+ */
+extern econf_err econf_newKeyFile_with_options(econf_file **result, const char *options);
 
 /** @brief Create a new econf_file object in IniFile format. So the delimiter
  *         will be "=" and comments are beginning with "#".
@@ -1033,36 +1045,6 @@ extern void econf_freeArray(char **array);
  *
  */
 extern void econf_freeFile(econf_file *key_file);
-
-/** @brief Set libeconv environment.
- *
- * @param option defined as a string (format "<key>=<value>")
- * @return void
- *
- * Usage:
- * @code
- *   #include "libeconf.h"
- *
- *   econf_set_opt("JOIN_SAME_ENTRIES=1");
- * @endcode
- *
- * Not known options will be ignored. Following options are supported:
- *  JOIN_SAME_ENTRIES  (default 0)
- *    Parsed entries with the same name will not be replaces but
- *    will be joined to one entry.
- *  PYTHON_STYLE  (default 0)
- *    E.G. Identations will be handled like multiline entries.
- *  CONFIG_DIRS
- *    List of directories from which the configuration files have to be parsed.
- *    The list is a string, divides by ":". The last entry has the highest
- *    priority. E.g.: "CONFIG_DIRS=/usr/etc/:/run:/etc"
- *    
- *
- * CAUTION: Setting options is NOT TRHEAD-SAFE because they are set
- *          globally in libeconf.
- *
- */
-extern void econf_set_opt(const char *option);
 
 /** @brief All parsed files require this user permission.
  *         DEPRECATED: Use the callback in econf_readFileWithCallback or

@@ -50,7 +50,6 @@ libeconf_src = files(
   'lib/libeconf_ext.c',
   'lib/readconfig.c',
   'lib/mergefiles.c',
-  'lib/options.c'
 )
 example_src = ['example/example.c']
 econftool_src = ['util/econftool.c']

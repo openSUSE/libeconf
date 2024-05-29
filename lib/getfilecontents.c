@@ -25,7 +25,6 @@
 #include "defines.h"
 #include "getfilecontents.h"
 #include "helpers.h"
-#include "options.h"
 
 #include <errno.h>
 #include <limits.h>
@@ -134,7 +133,7 @@ store (econf_file *ef, const char *group, const char *key,
       return ECONF_MISSING_DELIMITER;
     }
 
-    if (append_entry && option_python_style() == true) {
+    if (append_entry && ef->python_style == true) {
       /* ignore space at the beginning of the line because it is the identation of python style */
       while (*value && isspace((unsigned)*value))
         value++;
@@ -319,7 +318,7 @@ read_file(econf_file *ef, const char *file,
 	    current_comment_before_key = strdup(p+1);
 	  }
 	  *p = '\0';
-	} else if (option_python_style() == false) { /* not for python config files */
+	} else if (ef->python_style == false) { /* not for python config files */
 	  /* Comment is defined after the key/value in the same line */
 	  char *first_quote = strchr(name, '"');
 	  char *last_quote = strrchr(name, '"');
@@ -429,7 +428,7 @@ read_file(econf_file *ef, const char *file,
        * not defined by a beginning quote in the line before.
        */
       bool found_delim = false;
-      if (option_python_style() == false ||
+      if (ef->python_style == false ||
 	  !isspace(*org_buf))
       {
         /* It is not a typical python style with identation */
@@ -451,7 +450,7 @@ read_file(econf_file *ef, const char *file,
 	  /* The Entry must be the next line. Otherwise it is a new one */
 	  ef->file_entry[ef->length-1].line_number+1 == line)
       {
-	if (option_python_style() == false) { /* not for python config files */
+	if (ef->python_style == false) { /* not for python config files */
           /* removing comments */
           for (size_t i = 0; i < strlen(comment); i++) {
 	    char *pt = strchr(org_buf, comment[i]);
@@ -564,7 +563,7 @@ read_file(econf_file *ef, const char *file,
   if (current_comment_after_value)
     free(current_comment_after_value);
 
-  if(option_join_same_entries() == true)
+  if(ef->join_same_entries == true)
   {
     join_same_entries(ef);
   }

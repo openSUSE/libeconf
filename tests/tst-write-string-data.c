@@ -16,7 +16,7 @@ main(void)
   econf_err error;  
 
   // Read test data
-  econf_file *kf_fromfile;
+  econf_file *kf_fromfile = NULL;
   error = econf_readFile(&kf_fromfile,
 			 TESTSDIR"tst-write-string-data/usr/etc/tst-string-data.conf",
 			 "=", "#");
@@ -30,7 +30,7 @@ main(void)
   econf_writeFile(kf_fromfile, TESTSDIR"tst-write-string-data/", "out.ini");
 
   // And reading it again
-  econf_file *kf_compare;
+  econf_file *kf_compare = NULL;
   error = econf_readFile(&kf_compare,
 			 TESTSDIR"tst-write-string-data/out.ini", "=", "#");
   if (error || kf_compare == NULL) {
@@ -61,10 +61,10 @@ main(void)
   }
 
   // Merge two econf_files. One value is a NULL value.
-  econf_file *kf_freshini;
+  econf_file *kf_freshini = NULL;
   econf_newIniFile(&kf_freshini);
   econf_setStringValue(kf_freshini, "test", "test", NULL);  
-  econf_file *kf_merged;
+  econf_file *kf_merged = NULL;
   econf_mergeFiles(&kf_merged, kf_freshini, kf_fromfile);
 
   econf_free(kf_freshini);

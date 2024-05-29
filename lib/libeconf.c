@@ -29,7 +29,6 @@
 #include "keyfile.h"
 #include "mergefiles.h"
 #include "readconfig.h"
-#include "options.h"
 
 #include <libgen.h>
 #include <limits.h>
@@ -37,6 +36,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
+
+#define PARSING_DIRS "PARSING_DIRS="
 
 // Checking file permissions, uid, group,...
 static bool file_owner_set = false;
@@ -116,7 +117,11 @@ econf_newKeyFile(econf_file **result, char delimiter, char comment)
   key_file->length = 0;
   key_file->delimiter = delimiter;
   key_file->comment = comment;
+  key_file->join_same_entries = false;
+  key_file->python_style = false;
 
+  key_file->parse_dirs = NULL;
+  key_file->parse_dirs_count = 0;
   key_file->file_entry = malloc(KEY_FILE_DEFAULT_LENGTH * sizeof(struct file_entry));
   if (key_file->file_entry == NULL)
     {
@@ -129,6 +134,56 @@ econf_newKeyFile(econf_file **result, char delimiter, char comment)
 
   *result = key_file;
 
+  return ECONF_SUCCESS;
+}
+
+// Create a new econf_file defined by options and without pre initialized entries.
+econf_err
+econf_newKeyFile_with_options(econf_file **result, const char *options) {
+  *result = calloc(1, sizeof(econf_file));
+
+  if (*result == NULL)
+    return ECONF_NOMEM;
+  (*result)->alloc_length = 0;
+  (*result)->length = 0;
+  (*result)->join_same_entries = false;
+  (*result)->python_style = false;
+  (*result)->parse_dirs = NULL;
+  (*result)->parse_dirs_count = 0;
+
+  if (options == NULL || strlen(options) == 0)
+    return ECONF_SUCCESS;
+
+  char* in_opt = strdup(options);
+  char* begin_opt = in_opt;
+  char* o_opt;
+  while ((o_opt = strsep(&in_opt, ";")) != NULL) {
+    if (strcmp(o_opt, "JOIN_SAME_ENTRIES=1") == 0)
+      (*result)->join_same_entries = true;
+
+    if (strcmp(o_opt, "PYTHON_STYLE=1") == 0)
+      (*result)->python_style = true;
+
+    if (strncmp(o_opt, PARSING_DIRS, strlen(PARSING_DIRS)) == 0) {
+      (*result)->parse_dirs = malloc(sizeof(char *));
+      if ((*result)->parse_dirs == NULL)
+        return ECONF_NOMEM;
+
+      char* in_entry = strdup(o_opt + strlen(PARSING_DIRS));
+      char* begin_entry = in_entry;
+      char* o_entry;
+      while ((o_entry = strsep(&in_entry, ":")) != NULL) {
+        (*result)->parse_dirs = realloc((*result)->parse_dirs,
+					(++(*result)->parse_dirs_count+1) * sizeof(char *));
+        if ((*result)->parse_dirs == NULL)
+          return ECONF_NOMEM;
+	(*result)->parse_dirs[(*result)->parse_dirs_count-1] = strdup(o_entry);
+      }
+      (*result)->parse_dirs[(*result)->parse_dirs_count] = NULL;
+      free (begin_entry);
+    }
+  }
+  free (begin_opt);
   return ECONF_SUCCESS;
 }
 
@@ -203,11 +258,20 @@ econf_err econf_readFileWithCallback(econf_file **key_file, const char *file_nam
   if (absolute_path == NULL)
     return t_err;
 
-  *key_file = calloc(1, sizeof(econf_file));
-  if (*key_file == NULL) {
+  econf_file *new_key_file = NULL;
+  if (econf_newKeyFile_with_options(&new_key_file, "") != ECONF_SUCCESS) {
     free (absolute_path);
     return ECONF_NOMEM;
   }
+  if (*key_file != NULL) {
+    /* saving flags and freeing old key_file*/
+    new_key_file->join_same_entries = (*key_file)->join_same_entries;
+    new_key_file->python_style = (*key_file)->python_style;
+    new_key_file->parse_dirs = (*key_file)->parse_dirs;
+    new_key_file->parse_dirs_count = (*key_file)->parse_dirs_count;
+    econf_freeFile(*key_file);
+  }
+  *key_file = new_key_file;
 
   if (*comment)
     (*key_file)->comment = comment[0];
@@ -326,10 +390,7 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
   }
 #endif
   const char *parse_dirs[3] = {usr_dir, run_dir, etc_dir};
-  int man_parse_dirs_count = 0;
-  const char **man_parse_dirs = NULL;
-  option_parse_dirs(&man_parse_dirs, &man_parse_dirs_count);
-  if (man_parse_dirs == 0) {
+  if (*key_file == NULL || (*key_file)->parse_dirs_count == 0) {
     ret = readConfigWithCallback(key_file,
 				 parse_dirs, 3,
 				 config_name,
@@ -342,8 +403,8 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
 				 callback_data);
   } else {
     ret = readConfigWithCallback(key_file,
-				 (const char **)man_parse_dirs,
-				 man_parse_dirs_count,
+				 (*key_file)->parse_dirs,
+				 (*key_file)->parse_dirs_count,
 				 config_name,
 				 config_suffix,
 				 delim,

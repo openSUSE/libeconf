@@ -114,8 +114,13 @@ main(void)
   };
 
   /* double entries will be joined together */
-  econf_set_opt("JOIN_SAME_ENTRIES=1");
-  
+  if (error = econf_newKeyFile_with_options(&key_file, "JOIN_SAME_ENTRIES=1"))
+  {
+    fprintf (stderr, "ERROR: couldn't create new file: %s\n",
+             econf_errString(error));
+    return 1;
+  }
+
   error = econf_readFile (&key_file, TESTSDIR"tst-append-string/input.conf", "=", "#");
   if (error)
   {

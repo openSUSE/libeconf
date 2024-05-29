@@ -110,54 +110,6 @@ size_t add_new_groups(struct file_entry **fe, econf_file *uf, econf_file *ef,
   return added_keys;
 }
 
-
-#if 0
-// TODO: Make this function configureable with econf_set_opt()
-// TODO: provide the initial array from the calling function (needs to be
-// already big enough to hold this additional two entries)
-char **get_default_dirs(const char *usr_conf_dir, const char *etc_conf_dir) {
-  size_t default_dir_number = 3, dir_num = 0;
-
-  char **default_dirs = malloc(default_dir_number * sizeof(char *));
-  if (default_dirs == NULL)
-    return NULL;
-
-  if (etc_conf_dir)
-    {
-      // Set config directory in /etc
-      default_dirs[dir_num++] = strdup(etc_conf_dir); /* XXX ENOMEM check */
-    }
-  if (usr_conf_dir)
-    {
-      // Set config directory in /usr
-      default_dirs[dir_num++] = strdup(usr_conf_dir); /* XXX ENOMEM check */
-    }
-
-  // TODO: Use secure_getenv() instead and check if the variable is actually set
-  // For security reasons, this code should only be enabled if the application
-  // sets a flag to do so (introduce econf_set_opt() for this.
-  // Using user supplied configs can lead to a security problem (e.g. su)
-
-  // If XDG_CONFIG_DIRS is set check it as well
-  if(getenv("XDG_CONFIG_DIRS")) {
-    default_dirs = realloc(default_dirs, ++default_dir_number * sizeof(char *));
-    default_dirs[dir_num++] = strdup(getenv("XDG_CONFIG_DIRS"));
-  }
-  // XDG config home
-  if (getenv("XDG_CONFIG_HOME")) {
-    default_dirs[dir_num++] = strdup(getenv("XDG_CONFIG_HOME"));
-  } else {
-    sprintf(default_dirs[dir_num++] = malloc(strlen("/home//.config") +
-            strlen(getenv("USERNAME")) + 1), "/home/%s/.config",
-            getenv("USERNAME"));
-  }
-
-  default_dirs[dir_num] = NULL;
-
-  return default_dirs;
-}
-#endif
-
 // Check if the given directory exists. If so look for config files
 // with the given suffix
 static econf_err
@@ -175,7 +127,7 @@ check_conf_dir(econf_file ***key_files, size_t *size, const char *path,
       if (lensuffix < lenstr &&
           strncmp(de[i]->d_name + lenstr - lensuffix, config_suffix, lensuffix) == 0) {
         char *file_path = combine_strings(path, de[i]->d_name, '/');
-        econf_file *key_file;
+        econf_file *key_file = NULL;
 	econf_err error = econf_readFileWithCallback(&key_file, file_path, delim, comment,
 						     callback, callback_data);
         free(file_path);
