@@ -24,6 +24,8 @@ main(void)
 			  TESTSDIR"tst-parse-error/etc",
 			  "missing_bracket", "conf", "=", "#");
   econf_free (key_file);
+  key_file = NULL;
+
   if (error != ECONF_MISSING_BRACKET)
   {
     fprintf (stderr, "wrong return value for missing brackets: %s\n",

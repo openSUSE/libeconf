@@ -21,6 +21,8 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
 					const char *config_suffix,
 					const char *delim,
 					const char *comment,
+					const bool join_same_entries,
+					const bool python_style,
 					char **conf_dirs,
 					const int conf_dirs_count,
 					bool (*callback)(const char *filename, const void *data),
@@ -63,6 +65,12 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
        *cp++ = '/';
        cp = stpcpy (cp, config_name);
        stpcpy (cp, suffix);
+       if (key_file == NULL) {
+	 if ((error = econf_newKeyFile_with_options(&key_file, "")) != ECONF_SUCCESS)
+           return error;
+	 key_file->join_same_entries = join_same_entries;
+	 key_file->python_style = python_style;
+       }
        error = econf_readFileWithCallback(&key_file, filename, delim, comment,
 	  				   callback, callback_data);
        if (error && error != ECONF_NOFILE)
@@ -130,7 +138,8 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
   for (int i = 0; i < parse_dirs_count; i++) {
     char *project_path = combine_strings(parse_dirs[i], config_name, '/');
     error = traverse_conf_dirs(key_files, configure_dirs, size, project_path,
-			       suffix, delim, comment, callback, callback_data);
+			       suffix, delim, comment, join_same_entries, python_style,
+			       callback, callback_data);
     free(project_path);
     if (error != ECONF_SUCCESS)
     {
@@ -158,8 +167,6 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
 
 
 econf_err readConfigWithCallback(econf_file **result,
-				 const char **parse_dirs,
-				 const int parse_dirs_count,
 				 const char *config_name,
 				 const char *config_suffix,
 				 const char *delim,
@@ -173,14 +180,19 @@ econf_err readConfigWithCallback(econf_file **result,
   econf_file **key_files;
   econf_err error;
 
+  if (*result == NULL)
+    return ECONF_ARGUMENT_IS_NULL_VALUE;
+
   error = readConfigHistoryWithCallback(&key_files,
 					&size,
-					parse_dirs,
-					parse_dirs_count,
+					(*result)->parse_dirs,
+					(*result)->parse_dirs_count,
 					config_name,
 					config_suffix,
 					delim,
 					comment,
+					(*result)->join_same_entries,
+					(*result)->python_style,
 					conf_dirs,
 					conf_dirs_count,
 					callback,

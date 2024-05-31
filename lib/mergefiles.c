@@ -115,10 +115,13 @@ size_t add_new_groups(struct file_entry **fe, econf_file *uf, econf_file *ef,
 static econf_err
 check_conf_dir(econf_file ***key_files, size_t *size, const char *path,
 	       const char *config_suffix, const char *delim, const char *comment,
+	       const bool join_same_entries, const bool python_style,
 	       bool (*callback)(const char *filename, const void *data),
 	       const void *callback_data)
 {
   struct dirent **de;
+  econf_err error;
+
   int num_dirs = scandir(path, &de, NULL, alphasort);
   if(num_dirs > 0) {
     for (int i = 0; i < num_dirs; i++) {
@@ -128,8 +131,12 @@ check_conf_dir(econf_file ***key_files, size_t *size, const char *path,
           strncmp(de[i]->d_name + lenstr - lensuffix, config_suffix, lensuffix) == 0) {
         char *file_path = combine_strings(path, de[i]->d_name, '/');
         econf_file *key_file = NULL;
-	econf_err error = econf_readFileWithCallback(&key_file, file_path, delim, comment,
-						     callback, callback_data);
+	if ((error = econf_newKeyFile_with_options(&key_file, "")) != ECONF_SUCCESS)
+          return error;
+        key_file->join_same_entries = join_same_entries;
+        key_file->python_style = python_style;
+	error = econf_readFileWithCallback(&key_file, file_path, delim, comment,
+					   callback, callback_data);
         free(file_path);
         if(!error && key_file) {
           key_file->on_merge_delete = 1;
@@ -154,6 +161,7 @@ econf_err traverse_conf_dirs(econf_file ***key_files,
 			     size_t *size, const char *path,
 			     const char *config_suffix,
 			     const char *delim, const char *comment,
+	                     const bool join_same_entries, const bool python_style,
 			     bool (*callback)(const char *filename, const void *data),
 			     const void *callback_data) {
   int i;
@@ -172,6 +180,7 @@ econf_err traverse_conf_dirs(econf_file ***key_files,
     stpcpy (cp, config_dirs[i++]);
     econf_err error = check_conf_dir(key_files, size,
 				     fulldir, config_suffix, delim, comment,
+	                             join_same_entries, python_style,
 				     callback, callback_data);
     free (fulldir);
     if (error)
