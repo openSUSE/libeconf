@@ -447,20 +447,26 @@ econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
 					    bool (*callback)(const char *filename, const void *data),
 					    const void *callback_data)
 {
-   const char *parse_dirs[2] = {dist_conf_dir, etc_conf_dir};
+   int count = 2;
+   char **parse_dirs = calloc(count+1, sizeof(char *));
+   parse_dirs[count] = NULL;
+   parse_dirs[0] = strdup(dist_conf_dir);
+   parse_dirs[1] = strdup(etc_conf_dir);
 
-   return readConfigHistoryWithCallback(key_files,
-					size,
-					parse_dirs, 2,
-					config_name,
-					config_suffix,
-					delim,
-					comment,
-					false, false, /*join_same_entries, python_style*/
-					conf_dirs,
-					conf_count,
-					callback,
-					callback_data);
+   econf_err ret = readConfigHistoryWithCallback(key_files,
+						 size,
+						 parse_dirs, 2,
+						 config_name,
+						 config_suffix,
+						 delim,
+						 comment,
+						 false, false, /*join_same_entries, python_style*/
+						 conf_dirs,
+						 conf_count,
+						 callback,
+						 callback_data);
+   econf_freeArray(parse_dirs);
+   return ret;
 }
 
 econf_err econf_readDirsHistory(econf_file ***key_files,
@@ -471,15 +477,21 @@ econf_err econf_readDirsHistory(econf_file ***key_files,
 				const char *config_suffix,
 				const char *delim,
 				const char *comment) {
-  const char *parse_dirs[2] = {dist_conf_dir, etc_conf_dir};
+  int count = 2;
+  char **parse_dirs = calloc(count+1, sizeof(char *));
+  parse_dirs[count] = NULL;
+  parse_dirs[0] = strdup(dist_conf_dir);
+  parse_dirs[1] = strdup(etc_conf_dir);
 
-  return readConfigHistoryWithCallback(key_files, size,
-				       parse_dirs, 2,
-				       config_name,
-				       config_suffix, delim, comment,
-				       false, false, /*join_same_entries, python_style*/
-				       conf_dirs, conf_count,
-				       NULL, NULL);
+  econf_err ret = readConfigHistoryWithCallback(key_files, size,
+						parse_dirs, 2,
+						config_name,
+						config_suffix, delim, comment,
+						false, false, /*join_same_entries, python_style*/
+						conf_dirs, conf_count,
+						NULL, NULL);
+  econf_freeArray(parse_dirs);
+  return ret;
 }
 
 econf_err econf_readDirsWithCallback(econf_file **result,
@@ -817,6 +829,8 @@ void econf_freeFile(econf_file *key_file) {
 
   if (key_file->path)
     free(key_file->path);
+
+  econf_freeArray(key_file->parse_dirs);
 
   free(key_file);
 }

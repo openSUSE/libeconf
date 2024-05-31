@@ -74,7 +74,7 @@ typedef struct econf_file {
 
   /* List of directories from which the configuration files have to be parsed. */
   /* The last entry has the highest priority. */
-  const char **parse_dirs;
+  char **parse_dirs;
   int parse_dirs_count;
 
 } econf_file;

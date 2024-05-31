@@ -6,7 +6,7 @@
 
 extern econf_err readConfigHistoryWithCallback(econf_file ***key_files,
 					       size_t *size,
-					       const char **parse_dirs,
+					       char **parse_dirs,
 					       const int parse_dirs_count,
 					       const char *config_name,
 					       const char *config_suffix,
