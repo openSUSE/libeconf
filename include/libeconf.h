@@ -621,7 +621,7 @@ extern econf_err econf_newKeyFile(econf_file **result, char delimiter, char comm
  *
  * @param result Pointer to the allocated econf_file object.
  * @param options defined as a string separated by ";"
- *        format "<key>=<value>"; e.g. "JOIN_SAME_ENTRIES=1;COMMENT=#"
+ *        format "<key>=<value>"; e.g. "JOIN_SAME_ENTRIES=1"
  * @return econf_err ECONF_SUCCESS or error code
  *
  * Not known options will be ignored. Following options are supported:
