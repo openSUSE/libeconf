@@ -104,7 +104,7 @@ main(void)
 
   if (error = econf_newKeyFile_with_options(&key_file, "PYTHON_STYLE=1"))
   {
-    fprintf (stderr, "ERROR: couldn't create new file: %s\n",
+    fprintf (stderr, "ERROR: couldn't create new key_file: %s\n",
              econf_errString(error));
     return 1;
   }
