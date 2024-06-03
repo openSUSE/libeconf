@@ -51,7 +51,7 @@ main(void)
   if ((error = econf_newKeyFile_with_options(&key_file,
 					     "PARSING_DIRS="TESTSDIR"tst-man-dir-data/usr/etc/:"TESTSDIR"tst-man-dir-data/run:"TESTSDIR"tst-man-dir-data/etc")))
   {
-    fprintf (stderr, "ERROR: couldn't create new file: %s\n",
+    fprintf (stderr, "ERROR: couldn't create new econf_file: %s\n",
              econf_errString(error));
     return 1;
   }

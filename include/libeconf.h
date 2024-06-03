@@ -84,7 +84,9 @@ enum econf_err {
   /** User defined parsing callback has failed **/
   ECONF_PARSING_CALLBACK_FAILED = 21,
   /** Given argument is NULL */
-  ECONF_ARGUMENT_IS_NULL_VALUE = 22
+  ECONF_ARGUMENT_IS_NULL_VALUE = 22,
+  /** Given option not found **/
+  ECONF_OPTION_NOT_FOUND = 23
 };
 
 typedef enum econf_err econf_err;

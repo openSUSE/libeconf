@@ -158,11 +158,15 @@ econf_newKeyFile_with_options(econf_file **result, const char *options) {
   char* begin_opt = in_opt;
   char* o_opt;
   while ((o_opt = strsep(&in_opt, ";")) != NULL) {
-    if (strcmp(o_opt, "JOIN_SAME_ENTRIES=1") == 0)
+    if (strcmp(o_opt, "JOIN_SAME_ENTRIES=1") == 0) {
       (*result)->join_same_entries = true;
+      continue;
+    }
 
-    if (strcmp(o_opt, "PYTHON_STYLE=1") == 0)
+    if (strcmp(o_opt, "PYTHON_STYLE=1") == 0) {
       (*result)->python_style = true;
+      continue;
+    }
 
     if (strncmp(o_opt, PARSING_DIRS, strlen(PARSING_DIRS)) == 0) {
       (*result)->parse_dirs = malloc(sizeof(char *));
@@ -181,7 +185,11 @@ econf_newKeyFile_with_options(econf_file **result, const char *options) {
       }
       (*result)->parse_dirs[(*result)->parse_dirs_count] = NULL;
       free (begin_entry);
+      continue;
     }
+
+    /* not found --> break */
+    return ECONF_OPTION_NOT_FOUND;
   }
   free (begin_opt);
   return ECONF_SUCCESS;
