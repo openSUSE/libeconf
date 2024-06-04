@@ -1,3 +1,41 @@
+Version 0.7.0
+* Setting parsing options via econf_file struct.
+  see econf_newKeyFile_with_options.
+  Following options are supported:
+   JOIN_SAME_ENTRIES  (default 0)
+     Parsed entries with the same name will not be replaces but
+     will be joined to one entry.
+   PYTHON_STYLE  (default 0)
+     E.G. Identations will be handled like multiline entries.
+   PARSING_DIRS (default /usr/etc/:/run:/etc)
+     List of directories from which the configuration files have to be parsed.
+     The list is a string, divides by ":". The last entry has the highest
+     priority. E.g.: "PARSING_DIRS=/usr/etc/:/run:/etc"
+   CONFIG_DIRS (default <empty>)
+     List of directory structures (with order) which describes the directories
+     in which the files have to be parsed.
+     The list is a string, divides by ":". The last entry has the highest
+     priority. E.g. with the given list: "CONFIG_DIRS=.conf.d:.d" files in
+     following directories will be parsed:
+            "<default_dirs>/<config_name>.conf.d/"
+            "<default_dirs>/<config_name>.d/"
+            "<default_dirs>/<config_name>/"
+* CAUTION: From now on every econf_file element MUST be intialized.
+  Either with NULL or:
+   econf_file *key_file = NULL;
+   if (error = econf_newKeyFile_with_options(&key_file, "PYTHON_STYLE=1"))
+   {
+      fprintf (stderr, "ERROR: couldn't create new key file: %s\n",
+               econf_errString(error));
+      return 1;
+   }
+   error = econf_readConfig (&key_file,
+                             "foo",
+                             "/usr/lib",
+                             "example",
+                             "conf",
+                             "=", "#");
+
 Version 0.6.3
 * fixed build with musl libc on ppc64le
 * creating static libeconf.a
