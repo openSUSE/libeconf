@@ -56,6 +56,43 @@ main(void)
   int retval = 0;
   econf_err error;
 
+  /* Testing with options set in econf_newKeyFile_with_options */
+
+  if (error = econf_newKeyFile_with_options(&key_file, "CONFIG_DIRS=.conf.d:.d"))
+  {
+    fprintf (stderr, "ERROR: couldn't create new key file: %s\n",
+	     econf_errString(error));
+    return 1;
+  }
+  error = econf_readDirs (&key_file,
+			  TESTSDIR"tst-getconfdirs8-data/usr/etc",
+			  TESTSDIR"tst-getconfdirs8-data/etc",
+			  "getconfdir", SUFFIX, "=", "#");
+  if (error)
+  {
+    fprintf (stderr, "ERROR: econf_readDirs: %s\n",
+	     econf_errString(error));
+    return 1;
+  }
+
+  if (check_key(key_file, "KEY1", "etcconfd") != 0)
+    retval = 1;
+  if (check_key(key_file, "KEY2", "usrconfd") != 0)
+    retval = 1;
+  if (check_key(key_file, "KEY3", "etcconfd3") != 0)
+    retval = 1;
+  if (check_key(key_file, "USRETC", NULL) != 0)
+    retval = 1;
+  if (check_key(key_file, "ETC", "true") != 0)
+    retval = 1;
+  if (check_key(key_file, "KEY4", "etcd4") != 0)
+    retval = 1;
+
+  econf_free (key_file);
+  key_file = NULL;
+
+  /* Testing with econf_set_conf_dirs */
+
   const char *dirs[] = {".conf.d", ".d", NULL};
   error = econf_set_conf_dirs(dirs);
   if (error)

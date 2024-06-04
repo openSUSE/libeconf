@@ -183,20 +183,38 @@ econf_err readConfigWithCallback(econf_file **result,
   if (*result == NULL)
     return ECONF_ARGUMENT_IS_NULL_VALUE;
 
-  error = readConfigHistoryWithCallback(&key_files,
-					&size,
-					(*result)->parse_dirs,
-					(*result)->parse_dirs_count,
-					config_name,
-					config_suffix,
-					delim,
-					comment,
-					(*result)->join_same_entries,
-					(*result)->python_style,
-					conf_dirs,
-					conf_dirs_count,
-					callback,
-					callback_data);
+  if ((*result)->conf_count > 0) {
+    /* Setting defined in econf_file have higher priority */
+    error = readConfigHistoryWithCallback(&key_files,
+					  &size,
+					  (*result)->parse_dirs,
+					  (*result)->parse_dirs_count,
+					  config_name,
+					  config_suffix,
+					  delim,
+					  comment,
+					  (*result)->join_same_entries,
+					  (*result)->python_style,
+					  (*result)->conf_dirs,
+					  (*result)->conf_count,
+					  callback,
+					  callback_data);
+  } else {
+    error = readConfigHistoryWithCallback(&key_files,
+					  &size,
+					  (*result)->parse_dirs,
+					  (*result)->parse_dirs_count,
+					  config_name,
+					  config_suffix,
+					  delim,
+					  comment,
+					  (*result)->join_same_entries,
+					  (*result)->python_style,
+					  conf_dirs,
+					  conf_dirs_count,
+					  callback,
+					  callback_data);
+  }
   if (error != ECONF_SUCCESS)
     return error;
 

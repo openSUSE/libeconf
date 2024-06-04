@@ -38,6 +38,7 @@
 #include <sys/stat.h>
 
 #define PARSING_DIRS "PARSING_DIRS="
+#define CONFIG_DIRS "CONFIG_DIRS="
 
 // Checking file permissions, uid, group,...
 static bool file_owner_set = false;
@@ -122,6 +123,8 @@ econf_newKeyFile(econf_file **result, char delimiter, char comment)
 
   key_file->parse_dirs = NULL;
   key_file->parse_dirs_count = 0;
+  key_file->conf_dirs = NULL;
+  key_file->conf_count = 0;
   key_file->file_entry = malloc(KEY_FILE_DEFAULT_LENGTH * sizeof(struct file_entry));
   if (key_file->file_entry == NULL)
     {
@@ -150,6 +153,8 @@ econf_newKeyFile_with_options(econf_file **result, const char *options) {
   (*result)->python_style = false;
   (*result)->parse_dirs = NULL;
   (*result)->parse_dirs_count = 0;
+  (*result)->conf_dirs = NULL;
+  (*result)->conf_count = 0;
 
   if (options == NULL || strlen(options) == 0)
     return ECONF_SUCCESS;
@@ -184,6 +189,25 @@ econf_newKeyFile_with_options(econf_file **result, const char *options) {
 	(*result)->parse_dirs[(*result)->parse_dirs_count-1] = strdup(o_entry);
       }
       (*result)->parse_dirs[(*result)->parse_dirs_count] = NULL;
+      free (begin_entry);
+      continue;
+    }
+
+    if (strncmp(o_opt, CONFIG_DIRS, strlen(CONFIG_DIRS)) == 0) {
+      (*result)->conf_dirs = malloc(sizeof(char *));
+      if ((*result)->conf_dirs == NULL)
+        return ECONF_NOMEM;
+      char* in_entry = strdup(o_opt + strlen(CONFIG_DIRS));
+      char* begin_entry = in_entry;
+      char* o_entry;
+      while ((o_entry = strsep(&in_entry, ":")) != NULL) {
+        (*result)->conf_dirs = realloc((*result)->conf_dirs,
+				       (++(*result)->conf_count+1) * sizeof(char *));
+        if ((*result)->conf_dirs == NULL)
+          return ECONF_NOMEM;
+	(*result)->conf_dirs[(*result)->conf_count-1] = strdup(o_entry);
+      }
+      (*result)->conf_dirs[(*result)->conf_count] = NULL;
       free (begin_entry);
       continue;
     }
@@ -277,6 +301,8 @@ econf_err econf_readFileWithCallback(econf_file **key_file, const char *file_nam
     new_key_file->python_style = (*key_file)->python_style;
     new_key_file->parse_dirs = (*key_file)->parse_dirs;
     new_key_file->parse_dirs_count = (*key_file)->parse_dirs_count;
+    new_key_file->conf_dirs = (*key_file)->conf_dirs;
+    new_key_file->conf_count = (*key_file)->conf_count;
     econf_freeFile(*key_file);
   }
   *key_file = new_key_file;
@@ -361,8 +387,10 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
   char etc_dir[PATH_MAX];
   econf_err ret = ECONF_SUCCESS;
 
-  if (usr_subdir == NULL)
-    usr_subdir = "";
+  if (*key_file == NULL) {
+    if ((ret = econf_newKeyFile_with_options(key_file, "")) != ECONF_SUCCESS)
+      return ret;
+  }
 
   if (config_name == NULL || strlen(config_name) == 0) {
     /* Drop-ins without Main Configuration File. */
@@ -370,11 +398,15 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
     /* https://uapi-group.org/specifications/specs/configuration_files_specification/#drop-ins-without-main-configuration-file */
     config_name = project;
     project = NULL;
-    const char *dirs[] = {".d", NULL};
-    ret = econf_set_conf_dirs(dirs);
-    if (ret != ECONF_SUCCESS)
-      return ret;
+    if ((*key_file)->conf_count > 0) econf_freeArray((*key_file)->conf_dirs);
+    (*key_file)->conf_count = 1;
+    (*key_file)->conf_dirs = calloc((*key_file)->conf_count +1, sizeof(char *));
+    (*key_file)->conf_dirs[(*key_file)->conf_count] = NULL;
+    (*key_file)->conf_dirs[0] = strdup(".d");
   }
+
+  if (usr_subdir == NULL)
+    usr_subdir = "";
 
 #ifdef TESTSDIR
   if (project != NULL) {
@@ -398,10 +430,6 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
   }
 #endif
 
-  if (*key_file == NULL) {
-    if ((ret = econf_newKeyFile_with_options(key_file, "")) != ECONF_SUCCESS)
-      return ret;
-  }
   if ((*key_file)->parse_dirs_count == 0) {
     /* taking default */
     (*key_file)->parse_dirs_count = 3;

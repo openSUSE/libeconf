@@ -77,6 +77,10 @@ typedef struct econf_file {
   char **parse_dirs;
   int parse_dirs_count;
 
+  // configuration directories format
+  char **conf_dirs;
+  int conf_count;
+
 } econf_file;
 
 /* Increases both length and alloc_length of key_file by one and initializes

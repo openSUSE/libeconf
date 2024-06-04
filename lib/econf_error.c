@@ -53,6 +53,7 @@ static const char *messages[] = {
   "File is a sym link which is not permitted", /* ECONF_ERROR_FILE_IS_SYM_LINK */
   "User defined parsing callback has failed", /* ECONF_PARSING_CALLBACK_FAILED */
   "Given argument is NULL", /* ECONF_ARGUMENT_IS_NULL_VALUE */
+  "Given option not found", /* ECONF_OPTION_NOT_FOUND */
 };
 
 const char *

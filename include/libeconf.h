@@ -650,6 +650,15 @@ extern econf_err econf_newKeyFile(econf_file **result, char delimiter, char comm
  *    List of directories from which the configuration files have to be parsed.
  *    The list is a string, divides by ":". The last entry has the highest
  *    priority. E.g.: "PARSING_DIRS=/usr/etc/:/run:/etc"
+ *  CONFIG_DIRS (default <empty>)
+ *    List of directory structures (with order) which describes the directories
+ *    in which the files have to be parsed.
+ *    The list is a string, divides by ":". The last entry has the highest
+ *    priority. E.g. with the given list: "CONFIG_DIRS=.conf.d:.d" files in following
+ *    directories will be parsed:
+ *           "<default_dirs>/<config_name>.conf.d/"
+ *           "<default_dirs>/<config_name>.d/"
+ *           "<default_dirs>/<config_name>/"
  *
  * e.g. Parsing configuration files written in python style:
  *
@@ -1159,11 +1168,13 @@ econf_reset_security_settings(void);
  *
  * @return econf_err ECONF_SUCCESS or error code
  *
- * CAUTION: Setting options is NOT TRHEAD-SAFE because they are set
- *          globally in libeconf.
+ * CAUTION: These options are NOT TRHEAD-SAFE because they are set
+ *          globally in libeconf. Individual setting set with econf_newKeyFile_with_options
+ *          have higher priority and are trhead-safe.
  *
  */
-extern econf_err econf_set_conf_dirs(const char **dir_postfix_list);
+extern econf_err __attribute__ ((deprecated("Is not thread-safe. Use econf_newKeyFile_with_options instead")))
+econf_set_conf_dirs(const char **dir_postfix_list);
 
 #ifdef __cplusplus
 }
