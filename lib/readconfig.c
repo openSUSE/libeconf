@@ -24,7 +24,7 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
 					const bool join_same_entries,
 					const bool python_style,
 					char **conf_dirs,
-					const int conf_dirs_count,
+					const int conf_count,
 					bool (*callback)(const char *filename, const void *data),
 					const void *callback_data)
 {
@@ -105,7 +105,7 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
        "default_dirs/config_name.d/"
        "default_dirs/config_name/"
     */
-  char **configure_dirs = malloc(sizeof(char *) * (conf_dirs_count + 2));
+  char **configure_dirs = malloc(sizeof(char *) * (conf_count + 2));
   if (configure_dirs == NULL)
   {
     free(*key_files);
@@ -113,7 +113,7 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
     return ECONF_NOMEM;
   }
 
-  if (conf_dirs_count == 0)
+  if (conf_count == 0)
   {
     char *suffix_d = malloc (strlen(suffix) + 4); /* + strlen(".d/") */
     if (suffix_d == NULL) {
@@ -127,11 +127,11 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
     configure_dirs[0] = suffix_d;
     configure_dirs[1] = NULL;
   } else {
-    for (int i = 0; i < conf_dirs_count; i++)
+    for (int i = 0; i < conf_count; i++)
     {
       configure_dirs[i] = strdup(conf_dirs[i]);
     }
-    configure_dirs[conf_dirs_count] = NULL;
+    configure_dirs[conf_count] = NULL;
   }
 
   /* merge all files in e.g. <dist_conf_dir>, <run_conf_dir> and <etc_conf_dir> */
@@ -172,7 +172,7 @@ econf_err readConfigWithCallback(econf_file **result,
 				 const char *delim,
 				 const char *comment,
 				 char **conf_dirs,
-				 const int conf_dirs_count,
+				 const int conf_count,
 				 bool (*callback)(const char *filename, const void *data),
 				 const void *callback_data)
 {
@@ -211,7 +211,7 @@ econf_err readConfigWithCallback(econf_file **result,
 					  (*result)->join_same_entries,
 					  (*result)->python_style,
 					  conf_dirs,
-					  conf_dirs_count,
+					  conf_count,
 					  callback,
 					  callback_data);
   }
