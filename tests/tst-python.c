@@ -102,7 +102,12 @@ main(void)
   };
   unsigned int i;
 
-  econf_set_opt("PYTHON_STYLE=1");
+  if (error = econf_newKeyFile_with_options(&key_file, "PYTHON_STYLE=1"))
+  {
+    fprintf (stderr, "ERROR: couldn't create new key_file: %s\n",
+             econf_errString(error));
+    return 1;
+  }
 
   error = econf_readFile (&key_file, TESTSDIR"tst-python-data/arguments.conf", "=", "#");
   if (error)

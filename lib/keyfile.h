@@ -61,6 +61,26 @@ typedef struct econf_file {
      being merged with another econf_file.  */
   bool on_merge_delete;
   char *path;
+
+  /* General options */
+
+  /* Parsed entries with the same name will not be replaces but */
+  /* will be joined to one entry. */
+  bool join_same_entries;
+
+  /* Using python text style. */
+  /* e.b. Identations will be handled like multiline entries. */
+  bool python_style;
+
+  /* List of directories from which the configuration files have to be parsed. */
+  /* The last entry has the highest priority. */
+  char **parse_dirs;
+  int parse_dirs_count;
+
+  // configuration directories format
+  char **conf_dirs;
+  int conf_count;
+
 } econf_file;
 
 /* Increases both length and alloc_length of key_file by one and initializes

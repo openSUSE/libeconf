@@ -44,6 +44,8 @@ set(TESTS tst-filedoesnotexit1
 	  tst-extvalue
 	  tst-comments
 	  tst-python
+	  tst-options
+	  tst-man-dir
           tst-getconfdirs1
           tst-getconfdirs2
           tst-getconfdirs3

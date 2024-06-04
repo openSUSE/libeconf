@@ -28,6 +28,7 @@ main(void)
 	       econf_errString(error));
       return 1;
   }
+
   path = econf_getPath(key_file);
   if (strlen(path) > 0) {
     fprintf (stderr,
@@ -40,6 +41,7 @@ main(void)
 
   free(path);  
   econf_free (key_file);
+  key_file = NULL;
   
   error = econf_readFile (&key_file,
 			  TESTSDIR"tst-merge1-data/usr/etc/tst-merge1.conf",

@@ -84,7 +84,9 @@ enum econf_err {
   /** User defined parsing callback has failed **/
   ECONF_PARSING_CALLBACK_FAILED = 21,
   /** Given argument is NULL */
-  ECONF_ARGUMENT_IS_NULL_VALUE = 22
+  ECONF_ARGUMENT_IS_NULL_VALUE = 22,
+  /** Given option not found **/
+  ECONF_OPTION_NOT_FOUND = 23
 };
 
 typedef enum econf_err econf_err;
@@ -126,7 +128,7 @@ typedef struct econf_file econf_file;
 
 /** @brief Process the file of the given file_name and save its contents into key_file object.
  *
- * @param result content of parsed file
+ * @param result content of parsed file. MUST be initialized (e.g. with NULL).
  * @param file_name absolute path of parsed file
  * @param delim delimiters of key/value e.g. "\t =".
  *        If delim contains space characters AND none space characters,
@@ -144,12 +146,13 @@ typedef struct econf_file econf_file;
  *   error = econf_readFile (&key_file, "/etc/test.conf", "=", "#");
  *
  *   econf_free (key_file);
+ *   key_file = NULL;
  * @endcode
  *
  * Default behaviour if entries have the same name in one file: The
  * first hit will be returned. Further entries will be ignored.
- * This can be changed by setting the environment variable 
- * JOIN_SAME_ENTRIES (see econf_set_opt). In that case entries with
+ * This can be changed by setting the option JOIN_SAME_ENTRIES
+ * (see econf_newKeyFile_with_options). In that case entries with
  * the same name will be joined to one single entry.
  */
 extern econf_err econf_readFile(econf_file **result, const char *file_name,
@@ -159,7 +162,7 @@ extern econf_err econf_readFile(econf_file **result, const char *file_name,
 /** @brief Process the file of the given file_name and save its contents into key_file object.
  *  The user defined function will be called in order e.g. to check the correct file permissions.
  *
- * @param result content of parsed file
+ * @param result content of parsed file. MUST be initialized (e.g. with NULL).
  * @param file_name absolute path of parsed file
  * @param delim delimiters of key/value e.g. "\t =".
  *        If delim contains space characters AND none space characters,
@@ -186,12 +189,13 @@ extern econf_err econf_readFile(econf_file **result, const char *file_name,
  *   error = econf_readFileWithCallback (&key_file, "/etc/test.conf", "=", "#", checkFile, NULL);
  *
  *   econf_free (key_file);
+ *   key_file = NULL;
  * @endcode
  *
  * Default behaviour if entries have the same name in one file: The
  * first hit will be returned. Further entries will be ignored.
- * This can be changed by setting the environment variable
- * JOIN_SAME_ENTRIES (see econf_set_opt). In that case entries with
+ * This can be changed by setting the option JOIN_SAME_ENTRIES
+ * (see econf_newKeyFile_with_options). In that case entries with
  * the same name will be joined to one single entry.
  */
 extern econf_err econf_readFileWithCallback(econf_file **result, const char *file_name,
@@ -267,7 +271,7 @@ extern econf_err econf_mergeFiles(econf_file **merged_file,
  * chapter "Configuration Files Specification".
  * See: https://uapi-group.org/specifications/specs/configuration_files_specification/
  *
- * @param key_file content of parsed file(s)
+ * @param key_file content of parsed file(s). MUST be initialized (e.g. with NULL).
  * @param project name of the project used as subdirectory, can be NULL
  * @param usr_subdir absolute path of the first directory (often "/usr/lib")
  * @param config_name basename of the configuration file.
@@ -319,7 +323,13 @@ extern econf_err econf_mergeFiles(econf_file **merged_file,
  *                             "=", "#");
  *
  *   econf_free (key_file);
+ *   key_file = NULL;
  * @endcode
+ *
+ * It is also possible to set additional options for e.g. parsing
+ * config files which has python style format or defining the order
+ * how to parse the configuration files. For more information have a look to
+ * econf_newKeyFile_with_options.
  *
  */
 extern econf_err econf_readConfig (econf_file **key_file,
@@ -369,7 +379,7 @@ extern econf_err econf_readConfig (econf_file **key_file,
  * chapter "Configuration Files Specification".
  * See: https://uapi-group.org/specifications/specs/configuration_files_specification/
  *
- * @param key_file content of parsed file(s)
+ * @param key_file content of parsed file(s). MUST be initialized (e.g. with NULL).
  * @param project name of the project used as subdirectory, can be NULL
  * @param usr_subdir absolute path of the first directory (often "/usr/lib")
  * @param config_name basename of the configuration file
@@ -432,7 +442,13 @@ extern econf_err econf_readConfig (econf_file **key_file,
  *                                         NULL);
  *
  *   econf_free (key_file);
+ *   key_file = NULL;
  * @endcode
+ *
+ * It is also possible to set additional options for e.g. parsing
+ * config files which has python style format or defining the order
+ * how to parse the configuration files. For more information have a look to
+ * econf_newKeyFile_with_options.
  *
  */
 extern econf_err econf_readConfigWithCallback(econf_file **key_file,
@@ -450,7 +466,7 @@ extern econf_err econf_readConfigWithCallback(econf_file **key_file,
  *         needed/available files in two different directories (normally in /usr/etc and /etc).
  *         DEPRECATED: Use the econf_readConfig/econf_readConfigWithCallback instead.
  *
- * @param key_file content of parsed file(s)
+ * @param key_file content of parsed file(s). MUST be initialized (e.g. with NULL).
  * @param usr_conf_dir absolute path of the first directory (normally "/usr/etc")
  * @param etc_conf_dir absolute path of the second directory (normally "/etc")
  * @param config_name basename of the configuration file
@@ -476,6 +492,7 @@ extern econf_err econf_readConfigWithCallback(econf_file **key_file,
  *                           "=", "#");
  *
  *   econf_free (key_file);
+ *   key_file = NULL;
  * @endcode
  *
  */
@@ -493,7 +510,7 @@ econf_readDirs(econf_file **key_file,
  *  will be called in order e.g. to check the correct file permissions.
  *  DEPRECATED: Use the econf_readConfig/econf_readConfigWithCallback instead.
  *
- * @param key_file content of parsed file(s)
+ * @param key_file content of parsed file(s). MUST be initialized (e.g. with NULL).
  * @param usr_conf_dir absolute path of the first directory (normally "/usr/etc")
  * @param etc_conf_dir absolute path of the second directory (normally "/etc")
  * @param config_name basename of the configuration file
@@ -530,6 +547,7 @@ econf_readDirs(econf_file **key_file,
  *                                       NULL);
  *
  *   econf_free (key_file);
+ *   key_file = NULL;
  * @endcode
  *
  */
@@ -605,9 +623,6 @@ extern econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
 						   bool (*callback)(const char *filename, const void *data),
 						   const void *callback_data);
 
-/* The API/ABI of the following three functions (econf_newKeyFile,
-   econf_newIniFile and econf_writeFile) are not stable and will change */
-
 /** @brief Create a new econf_file object.
  *
  * @param result Pointer to the allocated econf_file object.
@@ -615,13 +630,63 @@ extern econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
  * @param comment Character which defines the start of a comment.
  * @return econf_err ECONF_SUCCESS or error code
  *
- * Default behaviour if entries have the same name in one file: The
- * first hit will be returned. Further entries will be ignored.
- * This can be changed by setting the environment variable 
- * JOIN_SAME_ENTRIES (see econf_set_opt). In that case entries with
- * the same name will be joined to one single entry.
  */
 extern econf_err econf_newKeyFile(econf_file **result, char delimiter, char comment);
+
+/** @brief Create a new econf_file object with special options.
+ *
+ * @param result Pointer to the allocated econf_file object.
+ * @param options defined as a string separated by ";"
+ *        format "<key>=<value>"; e.g. "JOIN_SAME_ENTRIES=1"
+ * @return econf_err ECONF_SUCCESS or error code
+ *
+ * Following options are supported:
+ *  JOIN_SAME_ENTRIES  (default 0)
+ *    Parsed entries with the same name will not be replaces but
+ *    will be joined to one entry.
+ *  PYTHON_STYLE  (default 0)
+ *    E.G. Identations will be handled like multiline entries.
+ *  PARSING_DIRS (default /usr/etc/:/run:/etc)
+ *    List of directories from which the configuration files have to be parsed.
+ *    The list is a string, divides by ":". The last entry has the highest
+ *    priority. E.g.: "PARSING_DIRS=/usr/etc/:/run:/etc"
+ *  CONFIG_DIRS (default <empty>)
+ *    List of directory structures (with order) which describes the directories
+ *    in which the files have to be parsed.
+ *    The list is a string, divides by ":". The last entry has the highest
+ *    priority. E.g. with the given list: "CONFIG_DIRS=.conf.d:.d" files in following
+ *    directories will be parsed:
+ *           "<default_dirs>/<config_name>.conf.d/"
+ *           "<default_dirs>/<config_name>.d/"
+ *           "<default_dirs>/<config_name>/"
+ *
+ * e.g. Parsing configuration files written in python style:
+ *
+ * @code
+ *   #include "libeconf.h"
+ *
+ *   econf_file *key_file = NULL;
+ *   econf_err error;
+ *
+ *   if (error = econf_newKeyFile_with_options(&key_file, "PYTHON_STYLE=1"))
+ *   {
+ *     fprintf (stderr, "ERROR: couldn't create new key file: %s\n",
+ *              econf_errString(error));
+ *     return 1;
+ *   }
+ *
+ *   error = econf_readConfig (&key_file,
+ *                             "foo",
+ *                             "/usr/lib",
+ *                             "example",
+ *                             "conf",
+ *                             "=", "#");
+ *
+ *   econf_free (key_file);
+ *   key_file = NULL;
+ * @endcode
+ */
+extern econf_err econf_newKeyFile_with_options(econf_file **result, const char *options);
 
 /** @brief Create a new econf_file object in IniFile format. So the delimiter
  *         will be "=" and comments are beginning with "#".
@@ -1034,31 +1099,6 @@ extern void econf_freeArray(char **array);
  */
 extern void econf_freeFile(econf_file *key_file);
 
-/** @brief Set libeconv environment.
- *
- * @param option defined as a string (format "<key>=<value>")
- * @return void
- *
- * Usage:
- * @code
- *   #include "libeconf.h"
- *
- *   econf_set_opt("JOIN_SAME_ENTRIES=1");
- * @endcode
- *
- * Not known options will be ignored. Following options are supported:
- *  JOIN_SAME_ENTRIES  (default 0)
- *    Parsed entries with the same name will not be replaces but
- *    will be joined to one entry.
- *  PYTHON_STYLE  (default 0)
- *    E.G. Identations will be handled like multiline entries.
- *
- * CAUTION: Setting options is NOT TRHEAD-SAFE because they are set
- *          globally in libeconf.
- *
- */
-extern void econf_set_opt(const char *option);
-
 /** @brief All parsed files require this user permission.
  *         DEPRECATED: Use the callback in econf_readFileWithCallback or
  *         econf_readConfigWithCallback instead.
@@ -1128,11 +1168,13 @@ econf_reset_security_settings(void);
  *
  * @return econf_err ECONF_SUCCESS or error code
  *
- * CAUTION: Setting options is NOT TRHEAD-SAFE because they are set
- *          globally in libeconf.
+ * CAUTION: These options are NOT TRHEAD-SAFE because they are set
+ *          globally in libeconf. Individual setting set with econf_newKeyFile_with_options
+ *          have higher priority and are trhead-safe.
  *
  */
-extern econf_err econf_set_conf_dirs(const char **dir_postfix_list);
+extern econf_err __attribute__ ((deprecated("Is not thread-safe. Use econf_newKeyFile_with_options instead")))
+econf_set_conf_dirs(const char **dir_postfix_list);
 
 #ifdef __cplusplus
 }

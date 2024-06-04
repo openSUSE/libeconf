@@ -37,6 +37,9 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#define PARSING_DIRS "PARSING_DIRS="
+#define CONFIG_DIRS "CONFIG_DIRS="
+
 // Checking file permissions, uid, group,...
 static bool file_owner_set = false;
 static uid_t file_owner = 0;
@@ -115,7 +118,13 @@ econf_newKeyFile(econf_file **result, char delimiter, char comment)
   key_file->length = 0;
   key_file->delimiter = delimiter;
   key_file->comment = comment;
+  key_file->join_same_entries = false;
+  key_file->python_style = false;
 
+  key_file->parse_dirs = NULL;
+  key_file->parse_dirs_count = 0;
+  key_file->conf_dirs = NULL;
+  key_file->conf_count = 0;
   key_file->file_entry = malloc(KEY_FILE_DEFAULT_LENGTH * sizeof(struct file_entry));
   if (key_file->file_entry == NULL)
     {
@@ -128,6 +137,85 @@ econf_newKeyFile(econf_file **result, char delimiter, char comment)
 
   *result = key_file;
 
+  return ECONF_SUCCESS;
+}
+
+// Create a new econf_file defined by options and without pre initialized entries.
+econf_err
+econf_newKeyFile_with_options(econf_file **result, const char *options) {
+  *result = calloc(1, sizeof(econf_file));
+
+  if (*result == NULL)
+    return ECONF_NOMEM;
+  (*result)->alloc_length = 0;
+  (*result)->length = 0;
+  (*result)->join_same_entries = false;
+  (*result)->python_style = false;
+  (*result)->parse_dirs = NULL;
+  (*result)->parse_dirs_count = 0;
+  (*result)->conf_dirs = NULL;
+  (*result)->conf_count = 0;
+
+  if (options == NULL || strlen(options) == 0)
+    return ECONF_SUCCESS;
+
+  char* in_opt = strdup(options);
+  char* begin_opt = in_opt;
+  char* o_opt;
+  while ((o_opt = strsep(&in_opt, ";")) != NULL) {
+    if (strcmp(o_opt, "JOIN_SAME_ENTRIES=1") == 0) {
+      (*result)->join_same_entries = true;
+      continue;
+    }
+
+    if (strcmp(o_opt, "PYTHON_STYLE=1") == 0) {
+      (*result)->python_style = true;
+      continue;
+    }
+
+    if (strncmp(o_opt, PARSING_DIRS, strlen(PARSING_DIRS)) == 0) {
+      (*result)->parse_dirs = malloc(sizeof(char *));
+      if ((*result)->parse_dirs == NULL)
+        return ECONF_NOMEM;
+
+      char* in_entry = strdup(o_opt + strlen(PARSING_DIRS));
+      char* begin_entry = in_entry;
+      char* o_entry;
+      while ((o_entry = strsep(&in_entry, ":")) != NULL) {
+        (*result)->parse_dirs = realloc((*result)->parse_dirs,
+					(++(*result)->parse_dirs_count+1) * sizeof(char *));
+        if ((*result)->parse_dirs == NULL)
+          return ECONF_NOMEM;
+	(*result)->parse_dirs[(*result)->parse_dirs_count-1] = strdup(o_entry);
+      }
+      (*result)->parse_dirs[(*result)->parse_dirs_count] = NULL;
+      free (begin_entry);
+      continue;
+    }
+
+    if (strncmp(o_opt, CONFIG_DIRS, strlen(CONFIG_DIRS)) == 0) {
+      (*result)->conf_dirs = malloc(sizeof(char *));
+      if ((*result)->conf_dirs == NULL)
+        return ECONF_NOMEM;
+      char* in_entry = strdup(o_opt + strlen(CONFIG_DIRS));
+      char* begin_entry = in_entry;
+      char* o_entry;
+      while ((o_entry = strsep(&in_entry, ":")) != NULL) {
+        (*result)->conf_dirs = realloc((*result)->conf_dirs,
+				       (++(*result)->conf_count+1) * sizeof(char *));
+        if ((*result)->conf_dirs == NULL)
+          return ECONF_NOMEM;
+	(*result)->conf_dirs[(*result)->conf_count-1] = strdup(o_entry);
+      }
+      (*result)->conf_dirs[(*result)->conf_count] = NULL;
+      free (begin_entry);
+      continue;
+    }
+
+    /* not found --> break */
+    return ECONF_OPTION_NOT_FOUND;
+  }
+  free (begin_opt);
   return ECONF_SUCCESS;
 }
 
@@ -202,11 +290,22 @@ econf_err econf_readFileWithCallback(econf_file **key_file, const char *file_nam
   if (absolute_path == NULL)
     return t_err;
 
-  *key_file = calloc(1, sizeof(econf_file));
-  if (*key_file == NULL) {
+  econf_file *new_key_file = NULL;
+  if ((t_err = econf_newKeyFile_with_options(&new_key_file, "")) != ECONF_SUCCESS) {
     free (absolute_path);
-    return ECONF_NOMEM;
+    return t_err;
   }
+  if (*key_file != NULL) {
+    /* saving flags and freeing old key_file*/
+    new_key_file->join_same_entries = (*key_file)->join_same_entries;
+    new_key_file->python_style = (*key_file)->python_style;
+    new_key_file->parse_dirs = (*key_file)->parse_dirs;
+    new_key_file->parse_dirs_count = (*key_file)->parse_dirs_count;
+    new_key_file->conf_dirs = (*key_file)->conf_dirs;
+    new_key_file->conf_count = (*key_file)->conf_count;
+    econf_freeFile(*key_file);
+  }
+  *key_file = new_key_file;
 
   if (*comment)
     (*key_file)->comment = comment[0];
@@ -288,8 +387,10 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
   char etc_dir[PATH_MAX];
   econf_err ret = ECONF_SUCCESS;
 
-  if (usr_subdir == NULL)
-    usr_subdir = "";
+  if (*key_file == NULL) {
+    if ((ret = econf_newKeyFile_with_options(key_file, "")) != ECONF_SUCCESS)
+      return ret;
+  }
 
   if (config_name == NULL || strlen(config_name) == 0) {
     /* Drop-ins without Main Configuration File. */
@@ -297,11 +398,15 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
     /* https://uapi-group.org/specifications/specs/configuration_files_specification/#drop-ins-without-main-configuration-file */
     config_name = project;
     project = NULL;
-    const char *dirs[] = {".d", NULL};
-    ret = econf_set_conf_dirs(dirs);
-    if (ret != ECONF_SUCCESS)
-      return ret;
+    if ((*key_file)->conf_count > 0) econf_freeArray((*key_file)->conf_dirs);
+    (*key_file)->conf_count = 1;
+    (*key_file)->conf_dirs = calloc((*key_file)->conf_count +1, sizeof(char *));
+    (*key_file)->conf_dirs[(*key_file)->conf_count] = NULL;
+    (*key_file)->conf_dirs[0] = strdup(".d");
   }
+
+  if (usr_subdir == NULL)
+    usr_subdir = "";
 
 #ifdef TESTSDIR
   if (project != NULL) {
@@ -325,10 +430,17 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
   }
 #endif
 
+  if ((*key_file)->parse_dirs_count == 0) {
+    /* taking default */
+    (*key_file)->parse_dirs_count = 3;
+    (*key_file)->parse_dirs = calloc((*key_file)->parse_dirs_count +1, sizeof(char *));
+    (*key_file)->parse_dirs[(*key_file)->parse_dirs_count] = NULL;
+    (*key_file)->parse_dirs[0] = strdup(usr_dir);
+    (*key_file)->parse_dirs[1] = strdup(run_dir);
+    (*key_file)->parse_dirs[2] = strdup(etc_dir);
+  }
+
   ret = readConfigWithCallback(key_file,
-			       usr_dir,
-			       run_dir,
-			       etc_dir,
 			       config_name,
 			       config_suffix,
 			       delim,
@@ -371,19 +483,26 @@ econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
 					    bool (*callback)(const char *filename, const void *data),
 					    const void *callback_data)
 {
-   return readConfigHistoryWithCallback(key_files,
-					size,
-					dist_conf_dir,
-					NULL,
-					etc_conf_dir,
-					config_name,
-					config_suffix,
-					delim,
-					comment,
-					conf_dirs,
-					conf_count,
-					callback,
-					callback_data);
+   int count = 2;
+   char **parse_dirs = calloc(count+1, sizeof(char *));
+   parse_dirs[count] = NULL;
+   parse_dirs[0] = strdup(dist_conf_dir);
+   parse_dirs[1] = strdup(etc_conf_dir);
+
+   econf_err ret = readConfigHistoryWithCallback(key_files,
+						 size,
+						 parse_dirs, 2,
+						 config_name,
+						 config_suffix,
+						 delim,
+						 comment,
+						 false, false, /*join_same_entries, python_style*/
+						 conf_dirs,
+						 conf_count,
+						 callback,
+						 callback_data);
+   econf_freeArray(parse_dirs);
+   return ret;
 }
 
 econf_err econf_readDirsHistory(econf_file ***key_files,
@@ -394,11 +513,21 @@ econf_err econf_readDirsHistory(econf_file ***key_files,
 				const char *config_suffix,
 				const char *delim,
 				const char *comment) {
-  return readConfigHistoryWithCallback(key_files, size, dist_conf_dir, NULL,
-				       etc_conf_dir, config_name,
-				       config_suffix, delim, comment,
-				       conf_dirs, conf_count,
-				       NULL, NULL);
+  int count = 2;
+  char **parse_dirs = calloc(count+1, sizeof(char *));
+  parse_dirs[count] = NULL;
+  parse_dirs[0] = strdup(dist_conf_dir);
+  parse_dirs[1] = strdup(etc_conf_dir);
+
+  econf_err ret = readConfigHistoryWithCallback(key_files, size,
+						parse_dirs, 2,
+						config_name,
+						config_suffix, delim, comment,
+						false, false, /*join_same_entries, python_style*/
+						conf_dirs, conf_count,
+						NULL, NULL);
+  econf_freeArray(parse_dirs);
+  return ret;
 }
 
 econf_err econf_readDirsWithCallback(econf_file **result,
@@ -411,8 +540,21 @@ econf_err econf_readDirsWithCallback(econf_file **result,
 				     bool (*callback)(const char *filename, const void *data),
 				     const void *callback_data)
 {
-  return readConfigWithCallback(result, dist_conf_dir, NULL,
-				etc_conf_dir, config_name,
+  if (*result == NULL) {
+    econf_err ret;
+    if ((ret = econf_newKeyFile_with_options(result, "")) != ECONF_SUCCESS)
+      return ret;
+  }
+  if ((*result)->parse_dirs_count == 0) {
+    (*result)->parse_dirs_count = 2;
+    (*result)->parse_dirs = calloc((*result)->parse_dirs_count+1, sizeof(char *));
+    (*result)->parse_dirs[(*result)->parse_dirs_count] = NULL;
+    (*result)->parse_dirs[0] = strdup(dist_conf_dir);
+    (*result)->parse_dirs[1] = strdup(etc_conf_dir);
+  }
+
+  return readConfigWithCallback(result,
+				config_name,
 				config_suffix, delim, comment,
 				conf_dirs, conf_count,
 				callback, callback_data);
@@ -426,8 +568,20 @@ econf_err econf_readDirs(econf_file **result,
 			 const char *delim,
 			 const char *comment)
 {
-  return readConfigWithCallback(result, dist_conf_dir, NULL,
-				etc_conf_dir, config_name,
+  if (*result == NULL) {
+    econf_err ret;
+    if ((ret = econf_newKeyFile_with_options(result, "")) != ECONF_SUCCESS)
+      return ret;
+  }
+  if ((*result)->parse_dirs_count == 0) {
+    (*result)->parse_dirs_count = 2;
+    (*result)->parse_dirs = calloc((*result)->parse_dirs_count+1, sizeof(char *));
+    (*result)->parse_dirs[(*result)->parse_dirs_count] = NULL;
+    (*result)->parse_dirs[0] = strdup(dist_conf_dir);
+    (*result)->parse_dirs[1] = strdup(etc_conf_dir);
+  }
+  return readConfigWithCallback(result,
+				config_name,
 				config_suffix, delim, comment,
 				conf_dirs, conf_count,
 				NULL, NULL);
@@ -711,6 +865,8 @@ void econf_freeFile(econf_file *key_file) {
 
   if (key_file->path)
     free(key_file->path);
+
+  econf_freeArray(key_file->parse_dirs);
 
   free(key_file);
 }

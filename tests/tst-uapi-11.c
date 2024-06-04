@@ -53,6 +53,7 @@ main(void)
     }
 
   econf_free (key_file);
+  key_file = NULL;
 
   error = econf_readConfigWithCallback (&key_file,
 					"foo",

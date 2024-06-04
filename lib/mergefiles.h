@@ -51,6 +51,7 @@ econf_err traverse_conf_dirs(econf_file ***key_files, char *conf_dirs[],
 			     size_t *size, const char *path,
 			     const char *config_suffix,
 			     const char *delim, const char *comment,
+			     const bool join_same_entries, const bool python_style,
 			     bool (*callback)(const char *filename, const void *data),
 			     const void *callback_data);
 

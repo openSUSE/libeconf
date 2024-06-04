@@ -15,21 +15,21 @@
 
 econf_err readConfigHistoryWithCallback(econf_file ***key_files,
 					size_t *size,
-					const char *dist_conf_dir,
-					const char *run_conf_dir,
-					const char *etc_conf_dir,
+					char **parse_dirs,
+					const int parse_dirs_count,
 					const char *config_name,
 					const char *config_suffix,
 					const char *delim,
 					const char *comment,
+					const bool join_same_entries,
+					const bool python_style,
 					char **conf_dirs,
 					const int conf_count,
 					bool (*callback)(const char *filename, const void *data),
 					const void *callback_data)
 {
   const char *suffix = "";
-  const char *default_dirs[4] = {NULL, NULL, NULL, NULL};
-  char *distfile, *runfile, *etcfile, *cp;
+  char *filename, *cp;
   econf_file *key_file = NULL;
   econf_err error;
 
@@ -55,86 +55,33 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
         }
     }
 
-    /* create file names for etc, run and distribution config */
-    if (dist_conf_dir != NULL)
-      {
-        distfile = alloca(strlen (dist_conf_dir) + strlen (config_name) +
-			  strlen (suffix) + 2);
-
-        cp = stpcpy (distfile, dist_conf_dir);
-        *cp++ = '/';
-        cp = stpcpy (cp, config_name);
-        stpcpy (cp, suffix);
-      }
-    else
-      distfile = NULL;
-
-    if (run_conf_dir != NULL)
-      {
-        runfile = alloca(strlen (run_conf_dir) + strlen (config_name) +
+    /* Go reverse back of the different parsing directories in order
+       to parse the "main" configuration file */
+    for (int i = parse_dirs_count; i > 0; i--)
+    {
+       filename = alloca(strlen (parse_dirs[i-1]) + strlen (config_name) +
 			 strlen (suffix) + 2);
-
-        cp = stpcpy (runfile, run_conf_dir);
-        *cp++ = '/';
-        cp = stpcpy (cp, config_name);
-        stpcpy (cp, suffix);
-      }
-    else
-      runfile = NULL;
-
-    if (etc_conf_dir != NULL)
-      {
-        etcfile = alloca(strlen (etc_conf_dir) + strlen (config_name) +
-			 strlen (suffix) + 2);
-
-        cp = stpcpy (etcfile, etc_conf_dir);
-        *cp++ = '/';
-        cp = stpcpy (cp, config_name);
-        stpcpy (cp, suffix);
-      }
-    else
-      etcfile = NULL;
-
-    if (etcfile)
-      {
-        error = econf_readFileWithCallback(&key_file, etcfile, delim, comment,
+       cp = stpcpy (filename, parse_dirs[i-1]);
+       *cp++ = '/';
+       cp = stpcpy (cp, config_name);
+       stpcpy (cp, suffix);
+       if (key_file == NULL) {
+	 if ((error = econf_newKeyFile_with_options(&key_file, "")) != ECONF_SUCCESS)
+           return error;
+	 key_file->join_same_entries = join_same_entries;
+	 key_file->python_style = python_style;
+       }
+       error = econf_readFileWithCallback(&key_file, filename, delim, comment,
 	  				   callback, callback_data);
-        if (error && error != ECONF_NOFILE)
+       if (error && error != ECONF_NOFILE)
 	  return error;
-      }
-
-    if (etcfile && !error) {
-      /* <etc_conf_dir>/<config_name>.<suffix> does exist, ignore <run_conf_dir>/<config_name>.<suffix>
-         and <dist_conf_dir>/<config_name>.<suffix> */
-      *size = 1;
-    } else {
-      /* <etc_conf_dir>/<config_name>.<suffix> does not exist, so read <run_conf_dir> */
-      if (runfile)
-        {
-          error = econf_readFileWithCallback(&key_file, runfile, delim, comment,
-					     callback, callback_data);
-	  if (error && error != ECONF_NOFILE)
-	    return error;
-        }
-
-      if (runfile && !error) /* <run_conf_dir>/<config_name>.<suffix> does exist */
-        *size = 1;
+       if (error == ECONF_SUCCESS)
+       {
+	  *size = 1;
+          break;
+       }
     }
-  
-    /* <etc_conf_dir>/<config_name>.<suffix> and <run_conf_dir>/<config_name>.<suffix> do not exist,
-       so read <dist_conf_dir>/<config_name>.<suffix> */
-    if (*size == 0 && distfile) {
-      error = econf_readFileWithCallback(&key_file, distfile, delim, comment,
-					 callback, callback_data);
-      if (error && error != ECONF_NOFILE)
-        return error;
-      if (!error) /* <dist_conf_dir>/<config_name>.<suffix> does exist */
-        *size = 1;
-    }
-  } /* reading main config file */
-  
-  /* XXX Re-add get_default_dirs in a reworked version, which
-     adds additional directories to look at, e.g. XDG or home directory */
+  }
 
   /* create space to store the econf_files for merging */
   *size = *size+1;
@@ -187,19 +134,12 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
     configure_dirs[conf_count] = NULL;
   }
 
-  int i = 0;
-  /* merge all files in <dist_conf_dir>, <run_conf_dir> and <etc_conf_dir> */
-  default_dirs[0] = dist_conf_dir;
-  if (run_conf_dir == NULL ) {
-    default_dirs[1] = etc_conf_dir;	  
-  } else {
-    default_dirs[1] = run_conf_dir;  
-    default_dirs[2] = etc_conf_dir;
-  }
-  while (default_dirs[i]) {
-    char *project_path = combine_strings(default_dirs[i], config_name, '/');
+  /* merge all files in e.g. <dist_conf_dir>, <run_conf_dir> and <etc_conf_dir> */
+  for (int i = 0; i < parse_dirs_count; i++) {
+    char *project_path = combine_strings(parse_dirs[i], config_name, '/');
     error = traverse_conf_dirs(key_files, configure_dirs, size, project_path,
-			       suffix, delim, comment, callback, callback_data);
+			       suffix, delim, comment, join_same_entries, python_style,
+			       callback, callback_data);
     free(project_path);
     if (error != ECONF_SUCCESS)
     {
@@ -212,7 +152,6 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
       econf_freeArray(configure_dirs);
       return error;
     }
-    i++;
   }
   (*size)--;
   (*key_files)[*size] = NULL;
@@ -228,9 +167,6 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
 
 
 econf_err readConfigWithCallback(econf_file **result,
-				 const char *dist_conf_dir,
-				 const char *run_conf_dir,
-				 const char *etc_conf_dir,
 				 const char *config_name,
 				 const char *config_suffix,
 				 const char *delim,
@@ -244,19 +180,41 @@ econf_err readConfigWithCallback(econf_file **result,
   econf_file **key_files;
   econf_err error;
 
-  error = readConfigHistoryWithCallback(&key_files,
-					&size,
-					dist_conf_dir,
-					run_conf_dir,
-					etc_conf_dir,
-					config_name,
-					config_suffix,
-					delim,
-					comment,
-					conf_dirs,
-					conf_count,
-					callback,
-					callback_data);
+  if (*result == NULL)
+    return ECONF_ARGUMENT_IS_NULL_VALUE;
+
+  if ((*result)->conf_count > 0) {
+    /* Setting defined in econf_file have higher priority */
+    error = readConfigHistoryWithCallback(&key_files,
+					  &size,
+					  (*result)->parse_dirs,
+					  (*result)->parse_dirs_count,
+					  config_name,
+					  config_suffix,
+					  delim,
+					  comment,
+					  (*result)->join_same_entries,
+					  (*result)->python_style,
+					  (*result)->conf_dirs,
+					  (*result)->conf_count,
+					  callback,
+					  callback_data);
+  } else {
+    error = readConfigHistoryWithCallback(&key_files,
+					  &size,
+					  (*result)->parse_dirs,
+					  (*result)->parse_dirs_count,
+					  config_name,
+					  config_suffix,
+					  delim,
+					  comment,
+					  (*result)->join_same_entries,
+					  (*result)->python_style,
+					  conf_dirs,
+					  conf_count,
+					  callback,
+					  callback_data);
+  }
   if (error != ECONF_SUCCESS)
     return error;
 

@@ -4,7 +4,6 @@ set(econf_SRCS libeconf.c
                getfilecontents.c
                mergefiles.c
                helpers.c
-	       options.c
                keyfile.c
                econf_error.c
                get_value_def.c
@@ -15,7 +14,6 @@ set(econf_HDRS defines.h
                getfilecontents.h
                mergefiles.h
                helpers.h
-               options.h
                keyfile.h
 	       readconfig.h
                )

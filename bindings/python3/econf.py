@@ -48,7 +48,8 @@ class EconfError(Enum):
     WRONG_DIR_PERMISSION = 19
     ERROR_FILE_IS_SYM_LINK = 20
     PARSING_CALLBACK_FAILED = 21
-
+    ARGUMENT_IS_NULL_VALUE = 22
+    OPTION_NOT_FOUND = 23
 
 ECONF_EXCEPTION = {
     EconfError.ERROR: Exception,
@@ -71,7 +72,9 @@ ECONF_EXCEPTION = {
     EconfError.WRONG_FILE_PERMISSION: PermissionError,
     EconfError.WRONG_DIR_PERMISSION: PermissionError,
     EconfError.ERROR_FILE_IS_SYM_LINK: PermissionError,
-    EconfError.PARSING_CALLBACK_FAILED: Exception
+    EconfError.PARSING_CALLBACK_FAILED: Exception,
+    EconfError.ARGUMENT_IS_NULL_VALUE: ValueError,
+    EconfError.OPTION_NOT_FOUND: SyntaxError
 }
 
 
@@ -552,6 +555,19 @@ def new_key_file(delim: str | bytes, comment: str | bytes) -> EconfFile:
         raise ECONF_EXCEPTION[EconfError(err)](f"new_key_file failed with error: {err_string(err)}")
     return result
 
+def new_key_file_with_options(options: str | bytes) -> EconfFile:
+    """
+    Create a new econf_file object with special options.
+
+    :param options: options defined as a string separated by ";", format "<key>=<value>"; e.g. "JOIN_SAME_ENTRIES=1"
+    :return: created EconfFile object
+    """
+    result = EconfFile(c_void_p())
+    options = c_char(_ensure_valid_char(options))
+    err = LIBECONF.econf_newKeyFile_with_options(byref(result._ptr), options)
+    if err:
+        raise ECONF_EXCEPTION[EconfError(err)](f"new_key_file_with_options failed with error: {err_string(err)}")
+    return result
 
 def new_ini_file() -> EconfFile:
     """
@@ -630,16 +646,6 @@ def write_file(ef: EconfFile, save_to_dir: str, file_name: str) -> None:
     err = LIBECONF.econf_writeFile(byref(ef._ptr), c_save_to_dir, c_file_name)
     if err:
         raise ECONF_EXCEPTION[EconfError(err)](f"write_file failed with error: {err_string(err)}")
-
-def econf_set_opt(option: str) -> None:
-    """
-    Set libeconv environment.
-
-    :param option: defined as a string (format <key>=<value>)
-    :return: Nothing
-    """
-    c_option = _encode_str(option)
-    LIBECONF.econf_set_opt(c_option)
 
 def get_path(ef: EconfFile) -> str:
     """

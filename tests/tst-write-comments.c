@@ -90,7 +90,7 @@ main(void)
   econf_writeFile(key_file, TESTSDIR"tst-write-comments/", "out.ini");
 
   // And reading it again
-  econf_file *key_compare;
+  econf_file *key_compare = NULL;
   error = econf_readFile(&key_compare,
 			 TESTSDIR"tst-write-comments/out.ini", "=", "#");
   if (error || key_compare == NULL) {
