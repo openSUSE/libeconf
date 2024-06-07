@@ -26,6 +26,14 @@ main(void)
     return 1;
   }
 
+  // Error handling if directory does not exist
+  error = econf_writeFile(kf_fromfile, "not_exists/", "out.ini");
+  if (error != ECONF_NOFILE) {
+    fprintf (stderr, "econf_writeFile with no existing directory ERROR: expected: %s, got: %s\n",
+	     econf_errString(ECONF_NOFILE), econf_errString(error));
+    return 1;
+  }
+
   // Rewrite file to disk
   econf_writeFile(kf_fromfile, TESTSDIR"tst-write-string-data/", "out.ini");
 

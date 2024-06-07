@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
+#include <sys/stat.h>
 
 #define PARSING_DIRS "PARSING_DIRS="
 #define CONFIG_DIRS "CONFIG_DIRS="
@@ -522,12 +523,10 @@ econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
   if (!key_file)
     return ECONF_ERROR;
 
-  // Check if the directory exists
-  // XXX use stat instead of opendir
-  DIR *dir = opendir(save_to_dir);
-  if (dir)
-    closedir(dir);
-  else
+  /* Checking if the directory exists*/
+  struct stat stats;
+  stat(save_to_dir, &stats);
+  if (!S_ISDIR(stats.st_mode))
     return ECONF_NOFILE;
 
   // Create a file handle for the specified file
