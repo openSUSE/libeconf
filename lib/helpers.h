@@ -43,8 +43,6 @@ char *clearblank(size_t *vlen, char *string);
 char *get_absolute_path(const char *path, econf_err *error);
 
 /* Remove '[' and ']' from beginning and end */
-/* TODO: Function is currently not in use. But needs to be used to strip
-         the brackets from group elements before returning them to the user  */
 char *stripbrackets(char *string);
 
 /* Add '[' and ']' to the given string */
