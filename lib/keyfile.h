@@ -51,11 +51,8 @@ typedef struct econf_file {
      within the struct. If length would exceed alloc_length it's increased.  */
   size_t length, alloc_length;
   /* delimiter: char used to assign a value to a key
-     comment: Used to specify which char to regard as comment indicator.  */
-  /* TODO: Should eventually be of type *char to allow multiple character
-           delimiters and comment indicators.
-           Alternatively they could be removed from the struct and be passed
-           as parameters to the read/write functions for config files  */
+     comment: Used to specify which char to regard as comment indicator.
+     These two variables will be used for writing the entries into a file only. */
   char delimiter, comment;
   /* Binary variable to determine whether econf_file should be freed after
      being merged with another econf_file.  */
