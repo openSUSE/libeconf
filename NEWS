@@ -1,4 +1,6 @@
 Version 0.7.1
+* Improved error handling while file parsing. Added new return value
+  ECONF_VALUE_CONVERSION_ERROR.
 * Setting parsing options via econf_file struct.
   see econf_newKeyFile_with_options. These options will be used by
   econf_readConfig and econf_readConfigWithCallback.
