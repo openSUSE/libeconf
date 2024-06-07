@@ -54,11 +54,14 @@ void print_key_file(const econf_file key_file)
 
 
 econf_err key_file_append(econf_file *kf) {
-  /* XXX check return values and for NULL pointers */
+  if (kf == NULL)
+    return ECONF_ERROR;
   if(kf->length++ >= kf->alloc_length) {
     kf->alloc_length++;
     kf->file_entry =
       realloc(kf->file_entry, (kf->alloc_length) * sizeof(struct file_entry));
+    if (kf->file_entry == NULL)
+      return ECONF_NOMEM;
     initialize(kf, kf->alloc_length - 1);
   }
   return ECONF_SUCCESS;
