@@ -86,7 +86,9 @@ enum econf_err {
   /** Given argument is NULL */
   ECONF_ARGUMENT_IS_NULL_VALUE = 22,
   /** Given option not found **/
-  ECONF_OPTION_NOT_FOUND = 23
+  ECONF_OPTION_NOT_FOUND = 23,
+  /** Value cannot be converted **/
+  ECONF_VALUE_CONVERSION_ERROR = 24
 };
 
 typedef enum econf_err econf_err;

@@ -32,6 +32,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <limits.h>
 
 void print_key_file(const econf_file key_file)
 {
@@ -69,42 +70,69 @@ econf_err key_file_append(econf_file *kf) {
 
 /* --- GETTERS --- */
 
-/* XXX all get*ValueNum functions are missing error handling */
 econf_err getIntValueNum(econf_file key_file, size_t num, int32_t *result) {
-  *result = strtol(key_file.file_entry[num].value, NULL, 0);
+  char *endptr;
+  errno = 0;
+  *result = strtol(key_file.file_entry[num].value, &endptr, 0);
+  if (endptr == key_file.file_entry[num].value || errno == ERANGE || (errno != 0 && *result == 0))
+    return ECONF_VALUE_CONVERSION_ERROR;
   return ECONF_SUCCESS;
 }
 
 econf_err getInt64ValueNum(econf_file key_file, size_t num, int64_t *result) {
-  *result = strtoll(key_file.file_entry[num].value, NULL, 0);
+  char *endptr;
+  errno = 0;
+  *result = strtoll(key_file.file_entry[num].value, &endptr, 0);
+  if (endptr == key_file.file_entry[num].value || errno == ERANGE || (errno != 0 && *result == 0))
+    return ECONF_VALUE_CONVERSION_ERROR;
   return ECONF_SUCCESS;
 }
 
 econf_err getUIntValueNum(econf_file key_file, size_t num, uint32_t *result) {
-  *result = strtoul(key_file.file_entry[num].value, NULL, 0);
+  char *endptr;
+  errno = 0;
+  *result = strtoul(key_file.file_entry[num].value, &endptr, 0);
+  if (endptr == key_file.file_entry[num].value || errno == ERANGE || (errno != 0 && *result == 0))
+    return ECONF_VALUE_CONVERSION_ERROR;
   return ECONF_SUCCESS;
 }
 
 econf_err getUInt64ValueNum(econf_file key_file, size_t num, uint64_t *result) {
-  *result = strtoull(key_file.file_entry[num].value, NULL, 0);
+  char *endptr;
+  errno = 0;
+  *result = strtoull(key_file.file_entry[num].value, &endptr, 0);
+  if (endptr == key_file.file_entry[num].value || errno == ERANGE || (errno != 0 && *result == 0))
+    return ECONF_VALUE_CONVERSION_ERROR;
   return ECONF_SUCCESS;
 }
 
 econf_err getFloatValueNum(econf_file key_file, size_t num, float *result) {
-  *result = strtof(key_file.file_entry[num].value, NULL);
+  char *endptr;
+  errno = 0;
+  *result = strtof(key_file.file_entry[num].value, &endptr);
+  if (endptr == key_file.file_entry[num].value || errno == ERANGE || (errno != 0 && *result == 0))
+    return ECONF_VALUE_CONVERSION_ERROR;
   return ECONF_SUCCESS;
 }
 
 econf_err getDoubleValueNum(econf_file key_file, size_t num, double *result) {
-  *result = strtod(key_file.file_entry[num].value, NULL);
+  char *endptr;
+  errno = 0;
+  *result = strtod(key_file.file_entry[num].value, &endptr);
+  if (endptr == key_file.file_entry[num].value || errno == ERANGE || (errno != 0 && *result == 0))
+    return ECONF_VALUE_CONVERSION_ERROR;
   return ECONF_SUCCESS;
 }
 
 econf_err getStringValueNum(econf_file key_file, size_t num, char **result) {
   if (key_file.file_entry[num].value)
+  {
     *result = strdup(key_file.file_entry[num].value);
-  else
+    if (*result == NULL)
+      return ECONF_NOMEM;
+  } else {
     *result = NULL;
+  }
 
   return ECONF_SUCCESS;
 }

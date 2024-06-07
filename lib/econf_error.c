@@ -54,6 +54,7 @@ static const char *messages[] = {
   "User defined parsing callback has failed", /* ECONF_PARSING_CALLBACK_FAILED */
   "Given argument is NULL", /* ECONF_ARGUMENT_IS_NULL_VALUE */
   "Given option not found", /* ECONF_OPTION_NOT_FOUND */
+  "Value cannot be converted", /* ECONF_VALUE_CONVERSION_ERROR */
 };
 
 const char *

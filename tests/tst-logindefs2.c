@@ -68,6 +68,13 @@ main(void)
 	       "NUMBER", 123456, intval);
       retval = 1;
     }
+  error = econf_getIntValue (key_file, NULL, "CRAZY1", &intval);
+  if (error != ECONF_VALUE_CONVERSION_ERROR)
+    {
+      fprintf (stderr, "econf_getIntValue ERROR: expected: %s, got: %s\n",
+	       econf_errString(ECONF_VALUE_CONVERSION_ERROR), econf_errString(error));
+      retval = 1;
+    }
 
   uint64_t uintval = 0;
   econf_getUInt64Value(key_file, NULL, "OKTAL", &uintval);
@@ -75,6 +82,13 @@ main(void)
     {
       fprintf (stderr, "ERROR: %s, expected: %i, got: %d\n",
 	       "NUMBER", 400, (int) uintval);
+      retval = 1;
+    }
+  error = econf_getUInt64Value(key_file, NULL, "CRAZY1", &uintval);
+  if (error != ECONF_VALUE_CONVERSION_ERROR)
+    {
+      fprintf (stderr, "econf_getUInt64Value ERROR: expected: %s, got: %s\n",
+	       econf_errString(ECONF_VALUE_CONVERSION_ERROR), econf_errString(error));
       retval = 1;
     }
 
