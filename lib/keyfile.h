@@ -91,8 +91,7 @@ econf_err key_file_append(econf_file *key_file);
 
 /* Functions used to get a set value from key_file depending on num.
    Expects a pointer of fitting type and writes the result into the pointer.
-   num corresponds to the respective instance of the file_entry array.
-   TODO: Error checking and defining return value on error needs to done.  */
+   num corresponds to the respective instance of the file_entry array. */
 econf_err getIntValueNum(econf_file key_file, size_t num, int32_t *result);
 econf_err getInt64ValueNum(econf_file key_file, size_t num, int64_t *result);
 econf_err getUIntValueNum(econf_file key_file, size_t num, uint32_t *result);
