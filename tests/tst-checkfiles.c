@@ -27,7 +27,7 @@ bool checkLink(const char *filename, const void *data) {
 int
 main(void)
 {
-  econf_file *key_file = NULL;
+  econf_file *key_file = (econf_file *)-1;
   econf_err error;
 
   /* checking not allowed links*/

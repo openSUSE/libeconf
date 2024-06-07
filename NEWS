@@ -1,6 +1,7 @@
-Version 0.7.0
+Version 0.7.1
 * Setting parsing options via econf_file struct.
-  see econf_newKeyFile_with_options.
+  see econf_newKeyFile_with_options. These options will be used by
+  econf_readConfig and econf_readConfigWithCallback.
   Following options are supported:
    JOIN_SAME_ENTRIES  (default 0)
      Parsed entries with the same name will not be replaces but
@@ -20,7 +21,8 @@ Version 0.7.0
             "<default_dirs>/<config_name>.conf.d/"
             "<default_dirs>/<config_name>.d/"
             "<default_dirs>/<config_name>/"
-* CAUTION: From now on every econf_file element MUST be intialized.
+* CAUTION: From now on every econf_file element MUST be intialized if
+           econf_readConfig and econf_readConfigWithCallback is used.
   Either with NULL or:
    econf_file *key_file = NULL;
    if (error = econf_newKeyFile_with_options(&key_file, "PYTHON_STYLE=1"))

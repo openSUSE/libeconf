@@ -13,7 +13,7 @@
 int
 main(void)
 {
-  econf_file *key_file = NULL;
+  econf_file *key_file = (econf_file *)-1;
   econf_err error;
 
   error = econf_readFile (&key_file, "doesnotexist1.conf", "=", "#");

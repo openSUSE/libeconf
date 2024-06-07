@@ -26,6 +26,21 @@
 #include "libeconf.h"
 #include "keyfile.h"
 
+extern bool allow_follow_symlinks;
+// Checking file permissions, uid, group,...
+extern bool file_owner_set;
+extern uid_t file_owner;
+extern bool file_group_set;
+extern gid_t file_group;
+extern bool file_permissions_set;
+extern mode_t file_perms_file;
+extern mode_t file_perms_dir;
+
+extern econf_err read_file_with_callback(econf_file **key_file, const char *file_name,
+					    const char *delim, const char *comment,
+					    bool (*callback)(const char *filename, const void *data),
+					    const void *callback_data);
+
 /* Fill the econf_file struct with values from the given file */
 extern econf_err read_file(econf_file *read_file, const char *file,
 			   const char *delim, const char *comment);

@@ -91,7 +91,7 @@ check_StringArray (econf_file *key_file, const char *group,
 int
 main(void)
 {
-  econf_file *key_file = NULL;
+  econf_file *key_file = (econf_file *)-1;
   econf_err error;
   int retval = 0;
 
@@ -121,7 +121,11 @@ main(void)
     return 1;
   }
 
-  error = econf_readFile (&key_file, TESTSDIR"tst-append-string/input.conf", "=", "#");
+  error = econf_readConfig (&key_file,
+			    NULL,
+			    TESTSDIR"tst-append-string",
+			    "input", "conf",
+			    "=", "#");
   if (error)
   {
     fprintf (stderr, "ERROR: couldn't read configuration file: %s\n", econf_errString(error));

@@ -49,7 +49,7 @@ check_key(econf_file *key_file, char *key, char *expected_val)
 int
 main(void)
 {
-  econf_file *key_file = NULL;
+  econf_file *key_file = (econf_file *)-1;
   int retval = 0;
   econf_err error;
 

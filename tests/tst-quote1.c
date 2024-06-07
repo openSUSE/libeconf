@@ -48,7 +48,7 @@ check_String (econf_file *key_file, const char *group,
 int
 main(void)
 {
-  econf_file *key_file = NULL;
+  econf_file *key_file = (econf_file *)-1;
   const char *group="quote";
   econf_err error;
   int retval = 0;

@@ -46,14 +46,14 @@ check_key(econf_file *key_file, char *key, char *expected_val)
 int
 main(void)
 {
-  econf_file *key_file = NULL;
+  econf_file *key_file = (econf_file *)-1;
   int retval = 0;
   econf_err error;
 
   error = econf_readDirs (&key_file,
-				    TESTSDIR"tst-getconfdirs7-data/usr/etc",
-				    TESTSDIR"tst-getconfdirs7-data/etc",
-				    "lcdnetmon", "conf", "=", "#");
+			  TESTSDIR"tst-getconfdirs7-data/usr/etc",
+			  TESTSDIR"tst-getconfdirs7-data/etc",
+			  "lcdnetmon", "conf", "=", "#");
   if (error)
     {
       fprintf (stderr, "ERROR: econf_readDirs: %s\n",

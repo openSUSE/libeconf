@@ -32,10 +32,24 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include <libgen.h>
 
 /*info for reporting scan errors (line Nr, filename) */
 static uint64_t last_scanned_line_nr = 0;
 static char last_scanned_filename[PATH_MAX];
+
+
+// Checking file permissions, uid, group,...
+bool file_owner_set = false;
+uid_t file_owner = 0;
+bool file_group_set = false;
+gid_t file_group = 0;
+bool file_permissions_set = false;
+mode_t file_perms_file;
+mode_t file_perms_dir;
+bool allow_follow_symlinks = true;
 
 static econf_err
 join_same_entries(econf_file *ef)
@@ -243,6 +257,69 @@ check_delim(const char *str, bool *has_wsp, bool *has_nonwsp)
 static void free_buffer(char **buffer)
 {
     free(*buffer);
+}
+
+econf_err
+read_file_with_callback(econf_file **key_file, const char *file_name,
+			const char *delim, const char *comment,
+			bool (*callback)(const char *filename, const void *data),
+			const void *callback_data)
+{
+  econf_err t_err;
+  struct stat sb;
+
+  if (key_file == NULL || file_name == NULL || delim == NULL || comment == NULL)
+    return ECONF_ERROR;
+
+  // Checking file permissions, uid, group,...
+  if (lstat(file_name, &sb) == -1)
+    return ECONF_NOFILE;
+  if (!allow_follow_symlinks && (sb.st_mode&S_IFMT) == S_IFLNK)
+    return ECONF_ERROR_FILE_IS_SYM_LINK;
+  if (file_owner_set && sb.st_uid != file_owner)
+    return ECONF_WRONG_OWNER;
+  if (file_group_set && sb.st_gid != file_group)
+    return ECONF_WRONG_GROUP;
+  if (file_permissions_set) {
+    struct stat sb_dir;
+    if (!(sb.st_mode&file_perms_file))
+      return ECONF_WRONG_FILE_PERMISSION;
+    char *cdirc = strdup(file_name);
+    int dir_stat = lstat(dirname(cdirc), &sb_dir);
+    free(cdirc);
+    if ( dir_stat == -1)
+      return ECONF_NOFILE;
+    if (!(sb_dir.st_mode&file_perms_dir))
+      return ECONF_WRONG_DIR_PERMISSION;
+  }
+
+  // calling user defined checks
+  if (callback != NULL && !(*callback)(file_name, callback_data))
+    return ECONF_PARSING_CALLBACK_FAILED;
+
+  // Get absolute path if not provided
+  char *absolute_path = get_absolute_path(file_name, &t_err);
+  if (absolute_path == NULL)
+    return t_err;
+
+  if (*comment)
+    (*key_file)->comment = comment[0];
+  else {
+    (*key_file)->comment = '#';
+    comment = "#";
+  }
+
+  t_err = read_file(*key_file, absolute_path, delim, comment);
+
+  free (absolute_path);
+
+  if(t_err) {
+    econf_free(*key_file);
+    *key_file = NULL;
+    return t_err;
+  }
+
+  return ECONF_SUCCESS;
 }
 
 /* Read the file line by line and parse for comments, keys and values */

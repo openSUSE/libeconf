@@ -64,7 +64,7 @@ check_comments (econf_file *key_file, const char *key,
 int
 main(void)
 {
-  econf_file *key_file = NULL;
+  econf_file *key_file = (econf_file *)-1;
   econf_err error;
   int retval = 0;
 

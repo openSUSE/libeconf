@@ -82,7 +82,7 @@ check (econf_file *key_file, const char *key,
 int
 main(void)
 {
-  econf_file *key_file = NULL;
+  econf_file *key_file = (econf_file *)-1;
   econf_err error;
   int retval = 0;
 
@@ -102,14 +102,19 @@ main(void)
   };
   unsigned int i;
 
-  if (error = econf_newKeyFile_with_options(&key_file, "PYTHON_STYLE=1"))
+  error = econf_newKeyFile_with_options(&key_file, "PYTHON_STYLE=1");
+  if (error != ECONF_SUCCESS)
   {
     fprintf (stderr, "ERROR: couldn't create new key_file: %s\n",
              econf_errString(error));
     return 1;
   }
 
-  error = econf_readFile (&key_file, TESTSDIR"tst-python-data/arguments.conf", "=", "#");
+  error = econf_readConfig (&key_file,
+			    NULL,
+			    TESTSDIR"tst-python-data",
+			    "arguments", "conf",
+			    "=", "#");
   if (error)
   {
     fprintf (stderr, "ERROR: couldn't read configuration file: %s\n", econf_errString(error));

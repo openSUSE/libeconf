@@ -16,7 +16,7 @@
 int
 main(void)
 {
-  econf_file *key_file = NULL;
+  econf_file *key_file = (econf_file *)-1;
   econf_err error;
 
   /* no security restrictions are set */

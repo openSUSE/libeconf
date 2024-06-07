@@ -128,7 +128,7 @@ typedef struct econf_file econf_file;
 
 /** @brief Process the file of the given file_name and save its contents into key_file object.
  *
- * @param result content of parsed file. MUST be initialized (e.g. with NULL).
+ * @param result content of parsed file.
  * @param file_name absolute path of parsed file
  * @param delim delimiters of key/value e.g. "\t =".
  *        If delim contains space characters AND none space characters,
@@ -149,11 +149,6 @@ typedef struct econf_file econf_file;
  *   key_file = NULL;
  * @endcode
  *
- * Default behaviour if entries have the same name in one file: The
- * first hit will be returned. Further entries will be ignored.
- * This can be changed by setting the option JOIN_SAME_ENTRIES
- * (see econf_newKeyFile_with_options). In that case entries with
- * the same name will be joined to one single entry.
  */
 extern econf_err econf_readFile(econf_file **result, const char *file_name,
 				const char *delim, const char *comment);
@@ -162,7 +157,7 @@ extern econf_err econf_readFile(econf_file **result, const char *file_name,
 /** @brief Process the file of the given file_name and save its contents into key_file object.
  *  The user defined function will be called in order e.g. to check the correct file permissions.
  *
- * @param result content of parsed file. MUST be initialized (e.g. with NULL).
+ * @param result content of parsed file.
  * @param file_name absolute path of parsed file
  * @param delim delimiters of key/value e.g. "\t =".
  *        If delim contains space characters AND none space characters,
@@ -466,7 +461,7 @@ extern econf_err econf_readConfigWithCallback(econf_file **key_file,
  *         needed/available files in two different directories (normally in /usr/etc and /etc).
  *         DEPRECATED: Use the econf_readConfig/econf_readConfigWithCallback instead.
  *
- * @param key_file content of parsed file(s). MUST be initialized (e.g. with NULL).
+ * @param key_file content of parsed file(s).
  * @param usr_conf_dir absolute path of the first directory (normally "/usr/etc")
  * @param etc_conf_dir absolute path of the second directory (normally "/etc")
  * @param config_name basename of the configuration file
@@ -510,7 +505,7 @@ econf_readDirs(econf_file **key_file,
  *  will be called in order e.g. to check the correct file permissions.
  *  DEPRECATED: Use the econf_readConfig/econf_readConfigWithCallback instead.
  *
- * @param key_file content of parsed file(s). MUST be initialized (e.g. with NULL).
+ * @param key_file content of parsed file(s).
  * @param usr_conf_dir absolute path of the first directory (normally "/usr/etc")
  * @param etc_conf_dir absolute path of the second directory (normally "/etc")
  * @param config_name basename of the configuration file

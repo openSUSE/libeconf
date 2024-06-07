@@ -52,22 +52,26 @@ check_key(econf_file *key_file, char *key, char *expected_val)
 int
 main(void)
 {
-  econf_file *key_file = NULL;
+  econf_file *key_file = (econf_file *)-1;
   int retval = 0;
   econf_err error;
 
   /* Testing with options set in econf_newKeyFile_with_options */
 
-  if (error = econf_newKeyFile_with_options(&key_file, "CONFIG_DIRS=.conf.d:.d"))
+  error = econf_newKeyFile_with_options(&key_file,
+					"CONFIG_DIRS=.conf.d:.d;"	\
+					"PARSING_DIRS="TESTSDIR"tst-getconfdirs8-data/usr/etc:" \
+					TESTSDIR"tst-getconfdirs8-data/etc");
+  if (error != ECONF_SUCCESS)
   {
     fprintf (stderr, "ERROR: couldn't create new key file: %s\n",
 	     econf_errString(error));
     return 1;
   }
-  error = econf_readDirs (&key_file,
-			  TESTSDIR"tst-getconfdirs8-data/usr/etc",
-			  TESTSDIR"tst-getconfdirs8-data/etc",
-			  "getconfdir", SUFFIX, "=", "#");
+  error = econf_readConfig (&key_file,
+			    NULL,
+			    "",
+			    "getconfdir", SUFFIX, "=", "#");
   if (error)
   {
     fprintf (stderr, "ERROR: econf_readDirs: %s\n",

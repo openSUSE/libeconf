@@ -25,6 +25,7 @@
 #include "defines.h"
 #include "helpers.h"
 #include "mergefiles.h"
+#include "getfilecontents.h"
 
 #include <dirent.h>
 #include <stdio.h>
@@ -135,8 +136,8 @@ check_conf_dir(econf_file ***key_files, size_t *size, const char *path,
           return error;
         key_file->join_same_entries = join_same_entries;
         key_file->python_style = python_style;
-	error = econf_readFileWithCallback(&key_file, file_path, delim, comment,
-					   callback, callback_data);
+	error = read_file_with_callback(&key_file, file_path, delim, comment,
+					callback, callback_data);
         free(file_path);
         if(!error && key_file) {
           key_file->on_merge_delete = 1;

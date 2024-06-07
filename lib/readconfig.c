@@ -71,10 +71,12 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
 	 key_file->join_same_entries = join_same_entries;
 	 key_file->python_style = python_style;
        }
-       error = econf_readFileWithCallback(&key_file, filename, delim, comment,
-	  				   callback, callback_data);
-       if (error && error != ECONF_NOFILE)
+       error = read_file_with_callback(&key_file, filename, delim, comment,
+				       callback, callback_data);
+       if (error && error != ECONF_NOFILE) {
+	  econf_free(key_file);
 	  return error;
+       }
        if (error == ECONF_SUCCESS)
        {
 	  *size = 1;

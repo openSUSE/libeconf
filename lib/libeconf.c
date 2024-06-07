@@ -30,25 +30,14 @@
 #include "mergefiles.h"
 #include "readconfig.h"
 
-#include <libgen.h>
 #include <limits.h>
-#include <dirent.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/stat.h>
+#include <dirent.h>
 
 #define PARSING_DIRS "PARSING_DIRS="
 #define CONFIG_DIRS "CONFIG_DIRS="
 
-// Checking file permissions, uid, group,...
-static bool file_owner_set = false;
-static uid_t file_owner = 0;
-static bool file_group_set = false;
-static gid_t file_group = 0;
-static bool file_permissions_set = false;
-static mode_t file_perms_file;
-static mode_t file_perms_dir;
-bool allow_follow_symlinks = true;
 // configuration directories format
 char **conf_dirs = {NULL}; // see econf_set_conf_dirs
 int conf_count = 0;
@@ -254,77 +243,20 @@ econf_err econf_readFileWithCallback(econf_file **key_file, const char *file_nam
 				     const void *callback_data)
 {
   econf_err t_err;
-  struct stat sb;
 
-  if (key_file == NULL || file_name == NULL || delim == NULL || comment == NULL)
-    return ECONF_ERROR;
-
-  // Checking file permissions, uid, group,...
-  if (lstat(file_name, &sb) == -1)
-    return ECONF_NOFILE;
-  if (!allow_follow_symlinks && (sb.st_mode&S_IFMT) == S_IFLNK)
-    return ECONF_ERROR_FILE_IS_SYM_LINK;
-  if (file_owner_set && sb.st_uid != file_owner)
-    return ECONF_WRONG_OWNER;
-  if (file_group_set && sb.st_gid != file_group)
-    return ECONF_WRONG_GROUP;
-  if (file_permissions_set) {
-    struct stat sb_dir;
-    if (!(sb.st_mode&file_perms_file))
-      return ECONF_WRONG_FILE_PERMISSION;
-    char *cdirc = strdup(file_name);
-    int dir_stat = lstat(dirname(cdirc), &sb_dir);
-    free(cdirc);
-    if ( dir_stat == -1)
-      return ECONF_NOFILE;
-    if (!(sb_dir.st_mode&file_perms_dir))
-      return ECONF_WRONG_DIR_PERMISSION;
-  }
-
-  // calling user defined checks
-  if (callback != NULL && !(*callback)(file_name, callback_data))
-    return ECONF_PARSING_CALLBACK_FAILED;
-  
-  // Get absolute path if not provided
-  char *absolute_path = get_absolute_path(file_name, &t_err);
-  if (absolute_path == NULL)
-    return t_err;
-
-  econf_file *new_key_file = NULL;
-  if ((t_err = econf_newKeyFile_with_options(&new_key_file, "")) != ECONF_SUCCESS) {
-    free (absolute_path);
+  if ((t_err = econf_newKeyFile_with_options(key_file, "")) != ECONF_SUCCESS) {
     return t_err;
   }
-  if (*key_file != NULL) {
-    /* saving flags and freeing old key_file*/
-    new_key_file->join_same_entries = (*key_file)->join_same_entries;
-    new_key_file->python_style = (*key_file)->python_style;
-    new_key_file->parse_dirs = (*key_file)->parse_dirs;
-    new_key_file->parse_dirs_count = (*key_file)->parse_dirs_count;
-    new_key_file->conf_dirs = (*key_file)->conf_dirs;
-    new_key_file->conf_count = (*key_file)->conf_count;
+
+  t_err = read_file_with_callback(key_file, file_name,
+				  delim, comment,
+				  callback,
+				  callback_data);
+  if (t_err != ECONF_SUCCESS) {
     econf_freeFile(*key_file);
-  }
-  *key_file = new_key_file;
-
-  if (*comment)
-    (*key_file)->comment = comment[0];
-  else {
-    (*key_file)->comment = '#';
-    comment = "#";
-  }
-
-  t_err = read_file(*key_file, absolute_path, delim, comment);
-  
-  free (absolute_path);
-
-  if(t_err) {
-    econf_free(*key_file);
     *key_file = NULL;
-    return t_err;
   }
-
-  return ECONF_SUCCESS;
+  return t_err;
 }
 
 econf_err econf_readFile(econf_file **key_file, const char *file_name,
@@ -336,8 +268,10 @@ econf_err econf_readFile(econf_file **key_file, const char *file_name,
 // Merge the contents of two key files
 econf_err econf_mergeFiles(econf_file **merged_file, econf_file *usr_file, econf_file *etc_file)
 {
-  if (merged_file == NULL || usr_file == NULL || etc_file == NULL)
+  if (merged_file == NULL || usr_file == NULL || etc_file == NULL) {
+    *merged_file = NULL;
     return ECONF_ERROR;
+  }
 
   *merged_file = calloc(1, sizeof(econf_file));
   if (*merged_file == NULL)
@@ -540,18 +474,15 @@ econf_err econf_readDirsWithCallback(econf_file **result,
 				     bool (*callback)(const char *filename, const void *data),
 				     const void *callback_data)
 {
-  if (*result == NULL) {
-    econf_err ret;
-    if ((ret = econf_newKeyFile_with_options(result, "")) != ECONF_SUCCESS)
-      return ret;
-  }
-  if ((*result)->parse_dirs_count == 0) {
-    (*result)->parse_dirs_count = 2;
-    (*result)->parse_dirs = calloc((*result)->parse_dirs_count+1, sizeof(char *));
-    (*result)->parse_dirs[(*result)->parse_dirs_count] = NULL;
-    (*result)->parse_dirs[0] = strdup(dist_conf_dir);
-    (*result)->parse_dirs[1] = strdup(etc_conf_dir);
-  }
+  econf_err ret;
+  if ((ret = econf_newKeyFile_with_options(result, "")) != ECONF_SUCCESS)
+    return ret;
+
+  (*result)->parse_dirs_count = 2;
+  (*result)->parse_dirs = calloc((*result)->parse_dirs_count+1, sizeof(char *));
+  (*result)->parse_dirs[(*result)->parse_dirs_count] = NULL;
+  (*result)->parse_dirs[0] = strdup(dist_conf_dir);
+  (*result)->parse_dirs[1] = strdup(etc_conf_dir);
 
   return readConfigWithCallback(result,
 				config_name,
@@ -568,18 +499,16 @@ econf_err econf_readDirs(econf_file **result,
 			 const char *delim,
 			 const char *comment)
 {
-  if (*result == NULL) {
-    econf_err ret;
-    if ((ret = econf_newKeyFile_with_options(result, "")) != ECONF_SUCCESS)
-      return ret;
-  }
-  if ((*result)->parse_dirs_count == 0) {
-    (*result)->parse_dirs_count = 2;
-    (*result)->parse_dirs = calloc((*result)->parse_dirs_count+1, sizeof(char *));
-    (*result)->parse_dirs[(*result)->parse_dirs_count] = NULL;
-    (*result)->parse_dirs[0] = strdup(dist_conf_dir);
-    (*result)->parse_dirs[1] = strdup(etc_conf_dir);
-  }
+  econf_err ret;
+  if ((ret = econf_newKeyFile_with_options(result, "")) != ECONF_SUCCESS)
+    return ret;
+
+  (*result)->parse_dirs_count = 2;
+  (*result)->parse_dirs = calloc((*result)->parse_dirs_count+1, sizeof(char *));
+  (*result)->parse_dirs[(*result)->parse_dirs_count] = NULL;
+  (*result)->parse_dirs[0] = strdup(dist_conf_dir);
+  (*result)->parse_dirs[1] = strdup(etc_conf_dir);
+
   return readConfigWithCallback(result,
 				config_name,
 				config_suffix, delim, comment,
