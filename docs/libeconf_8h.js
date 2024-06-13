@@ -28,7 +28,8 @@ var libeconf_8h =
       [ "ECONF_ERROR_FILE_IS_SYM_LINK", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aab09de6a0a65f054a6c542151a675e241", null ],
       [ "ECONF_PARSING_CALLBACK_FAILED", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa6b9c2f2cdbbf94dbaabfa42e3425deb4", null ],
       [ "ECONF_ARGUMENT_IS_NULL_VALUE", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa85a26e85a81e96c384691d7201d3db60", null ],
-      [ "ECONF_OPTION_NOT_FOUND", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa88d2df1070c604a0d5ebc233126a805e", null ]
+      [ "ECONF_OPTION_NOT_FOUND", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa88d2df1070c604a0d5ebc233126a805e", null ],
+      [ "ECONF_VALUE_CONVERSION_ERROR", "libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa164ca0fcef7be06bac2c681a0dd97ba6", null ]
     ] ],
     [ "econf_readFile", "libeconf_8h.html#aa03377bd02882239b3342c095f916561", null ],
     [ "econf_readFileWithCallback", "libeconf_8h.html#a6bf61969ee7ea191fdd28b0c8de5761d", null ],

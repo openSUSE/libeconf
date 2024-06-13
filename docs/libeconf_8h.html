@@ -27,7 +27,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">libeconf
-   &#160;<span id="projectnumber">0.7.0</span>
+   &#160;<span id="projectnumber">0.7.1</span>
    </div>
   </td>
  </tr>
@@ -129,7 +129,9 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aab09de6a0a65f054a6c542151a675e241">ECONF_ERROR_FILE_IS_SYM_LINK</a> = 20, 
 <a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa6b9c2f2cdbbf94dbaabfa42e3425deb4">ECONF_PARSING_CALLBACK_FAILED</a> = 21, 
 <a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa85a26e85a81e96c384691d7201d3db60">ECONF_ARGUMENT_IS_NULL_VALUE</a> = 22, 
-<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa88d2df1070c604a0d5ebc233126a805e">ECONF_OPTION_NOT_FOUND</a> = 23
+<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa88d2df1070c604a0d5ebc233126a805e">ECONF_OPTION_NOT_FOUND</a> = 23, 
+<br />
+&#160;&#160;<a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0aa164ca0fcef7be06bac2c681a0dd97ba6">ECONF_VALUE_CONVERSION_ERROR</a> = 24
 <br />
  }</td></tr>
 <tr class="memdesc:a30cb4e6c5ce4daa333646b23b20caa0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">libeconf error codes  <a href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">More...</a><br /></td></tr>
@@ -354,7 +356,7 @@ Functions</h2></td></tr>
 <p>Use: econf_setValue(econf_file *key_file, char *group, char *key, <em>generic</em> value);</p>
 <p>Replace <em>generic</em> with one of the supported value types. Supported Types: int, long, unsigned int, unsigned long, float, double, string (as *char). Note: Does not detect "yes", "no", 1 and 0 as boolean type. If you want to set a bool value use "true" or "false" or use setBoolValue() directly. </p>
 
-<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00104">104</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00106">106</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
 
 </div>
 </div>
@@ -373,7 +375,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">(( \</div><div class="line">  _Generic((value), \</div><div class="line">    <a class="code" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a>*: <a class="code" href="libeconf_8h.html#af5fe145fe20e3a39efa781756a1f2589">econf_freeFile</a> , \</div><div class="line">    <span class="keywordtype">char</span>**: <a class="code" href="libeconf_8h.html#ad6da8744e42ba1f4ddf5179a79fde50e">econf_freeArray</a>)) \</div><div class="line">(value))</div><div class="ttc" id="libeconf_8h_html_a0d29e6d5c6c6d151bb3edc54019c8735"><div class="ttname"><a href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a></div><div class="ttdeci">struct econf_file econf_file</div><div class="ttdef"><b>Definition:</b> <a href="libeconf_8h_source.html#l00127">libeconf.h:127</a></div></div>
+<b>Value:</b><div class="fragment"><div class="line">(( \</div><div class="line">  _Generic((value), \</div><div class="line">    <a class="code" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a>*: <a class="code" href="libeconf_8h.html#af5fe145fe20e3a39efa781756a1f2589">econf_freeFile</a> , \</div><div class="line">    <span class="keywordtype">char</span>**: <a class="code" href="libeconf_8h.html#ad6da8744e42ba1f4ddf5179a79fde50e">econf_freeArray</a>)) \</div><div class="line">(value))</div><div class="ttc" id="libeconf_8h_html_a0d29e6d5c6c6d151bb3edc54019c8735"><div class="ttname"><a href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a></div><div class="ttdeci">struct econf_file econf_file</div><div class="ttdef"><b>Definition:</b> <a href="libeconf_8h_source.html#l00129">libeconf.h:129</a></div></div>
 <div class="ttc" id="libeconf_8h_html_ad6da8744e42ba1f4ddf5179a79fde50e"><div class="ttname"><a href="libeconf_8h.html#ad6da8744e42ba1f4ddf5179a79fde50e">econf_freeArray</a></div><div class="ttdeci">void econf_freeArray(char **array)</div><div class="ttdoc">Free an array of type char** created by econf_getGroups() or econf_getKeys(). </div></div>
 <div class="ttc" id="libeconf_8h_html_af5fe145fe20e3a39efa781756a1f2589"><div class="ttname"><a href="libeconf_8h.html#af5fe145fe20e3a39efa781756a1f2589">econf_freeFile</a></div><div class="ttdeci">void econf_freeFile(econf_file *key_file)</div><div class="ttdoc">Free memory allocated by e.g. </div></div>
 </div><!-- fragment -->
@@ -381,7 +383,7 @@ Functions</h2></td></tr>
 <p>Use: econf_free(<em>generic</em> value);</p>
 <p>Replace <em>generic</em> with one of the supported value types. Supported Types: char** and econf_file*. </p>
 
-<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00121">121</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00123">123</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
 
 </div>
 </div>
@@ -398,7 +400,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00092">92</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00094">94</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
 
 </div>
 </div>
@@ -414,7 +416,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00127">127</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00129">129</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
 
 </div>
 </div>
@@ -481,6 +483,8 @@ Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aa88d2df1070c604a0d5ebc233126a805e"></a>ECONF_OPTION_NOT_FOUND&#160;</td><td class="fielddoc"><p>Given option not found. </p>
 </td></tr>
+<tr><td class="fieldname"><a id="a30cb4e6c5ce4daa333646b23b20caa0aa164ca0fcef7be06bac2c681a0dd97ba6"></a>ECONF_VALUE_CONVERSION_ERROR&#160;</td><td class="fielddoc"><p>Value cannot be converted. </p>
+</td></tr>
 </table>
 
 <p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l00041">41</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
@@ -529,7 +533,7 @@ Functions</h2></td></tr>
 <p>Process the file of the given file_name and save its contents into key_file object. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">result</td><td>content of parsed file. MUST be initialized (e.g. with NULL). </td></tr>
+    <tr><td class="paramname">result</td><td>content of parsed file. </td></tr>
     <tr><td class="paramname">file_name</td><td>absolute path of parsed file </td></tr>
     <tr><td class="paramname">delim</td><td>delimiters of key/value e.g. "\t =". If delim contains space characters AND none space characters, multiline values are not parseable. </td></tr>
     <tr><td class="paramname">comment</td><td>array of characters which define the start of a comment </td></tr>
@@ -537,8 +541,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>econf_err ECONF_SUCCESS or error code</dd></dl>
-<p>Usage: </p><div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="libeconf_8h.html">libeconf.h</a>&quot;</span></div><div class="line"></div><div class="line"><a class="code" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *key_file = NULL;</div><div class="line"><a class="code" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a> error;</div><div class="line"></div><div class="line">error = <a class="code" href="libeconf_8h.html#aa03377bd02882239b3342c095f916561">econf_readFile</a> (&amp;key_file, <span class="stringliteral">&quot;/etc/test.conf&quot;</span>, <span class="stringliteral">&quot;=&quot;</span>, <span class="stringliteral">&quot;#&quot;</span>);</div><div class="line"></div><div class="line"><a class="code" href="libeconf_8h.html#a27a9d78ae827ef885a4373fa591ded73">econf_free</a> (key_file);</div><div class="line">key_file = NULL;</div></div><!-- fragment --><p>Default behaviour if entries have the same name in one file: The first hit will be returned. Further entries will be ignored. This can be changed by setting the option JOIN_SAME_ENTRIES (see econf_newKeyFile_with_options). In that case entries with the same name will be joined to one single entry. </p>
-
+<p>Usage: </p><div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="libeconf_8h.html">libeconf.h</a>&quot;</span></div><div class="line"></div><div class="line"><a class="code" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *key_file = NULL;</div><div class="line"><a class="code" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a> error;</div><div class="line"></div><div class="line">error = <a class="code" href="libeconf_8h.html#aa03377bd02882239b3342c095f916561">econf_readFile</a> (&amp;key_file, <span class="stringliteral">&quot;/etc/test.conf&quot;</span>, <span class="stringliteral">&quot;=&quot;</span>, <span class="stringliteral">&quot;#&quot;</span>);</div><div class="line"></div><div class="line"><a class="code" href="libeconf_8h.html#a27a9d78ae827ef885a4373fa591ded73">econf_free</a> (key_file);</div><div class="line">key_file = NULL;</div></div><!-- fragment --> 
 </div>
 </div>
 <a id="a6bf61969ee7ea191fdd28b0c8de5761d"></a>
@@ -595,7 +598,7 @@ Functions</h2></td></tr>
 <p>The user defined function will be called in order e.g. to check the correct file permissions.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">result</td><td>content of parsed file. MUST be initialized (e.g. with NULL). </td></tr>
+    <tr><td class="paramname">result</td><td>content of parsed file. </td></tr>
     <tr><td class="paramname">file_name</td><td>absolute path of parsed file </td></tr>
     <tr><td class="paramname">delim</td><td>delimiters of key/value e.g. "\t =". If delim contains space characters AND none space characters, multiline values are not parseable. </td></tr>
     <tr><td class="paramname">comment</td><td>array of characters which define the start of a comment </td></tr>
@@ -984,7 +987,7 @@ Functions</h2></td></tr>
 <p>DEPRECATED: Use the econf_readConfig/econf_readConfigWithCallback instead.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">key_file</td><td>content of parsed file(s). MUST be initialized (e.g. with NULL). </td></tr>
+    <tr><td class="paramname">key_file</td><td>content of parsed file(s). </td></tr>
     <tr><td class="paramname">usr_conf_dir</td><td>absolute path of the first directory (normally "/usr/etc") </td></tr>
     <tr><td class="paramname">etc_conf_dir</td><td>absolute path of the second directory (normally "/etc") </td></tr>
     <tr><td class="paramname">config_name</td><td>basename of the configuration file </td></tr>
@@ -1070,7 +1073,7 @@ Functions</h2></td></tr>
 <p>For each parsed file the user defined function will be called in order e.g. to check the correct file permissions. DEPRECATED: Use the econf_readConfig/econf_readConfigWithCallback instead.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">key_file</td><td>content of parsed file(s). MUST be initialized (e.g. with NULL). </td></tr>
+    <tr><td class="paramname">key_file</td><td>content of parsed file(s). </td></tr>
     <tr><td class="paramname">usr_conf_dir</td><td>absolute path of the first directory (normally "/usr/etc") </td></tr>
     <tr><td class="paramname">etc_conf_dir</td><td>absolute path of the second directory (normally "/etc") </td></tr>
     <tr><td class="paramname">config_name</td><td>basename of the configuration file </td></tr>
