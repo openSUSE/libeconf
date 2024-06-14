@@ -110,7 +110,7 @@ econf_err getFloatValueNum(econf_file key_file, size_t num, float *result) {
   char *endptr;
   errno = 0;
   *result = strtof(key_file.file_entry[num].value, &endptr);
-  if (endptr == key_file.file_entry[num].value || errno == ERANGE || (errno != 0 && *result == 0))
+  if (endptr == key_file.file_entry[num].value) /* do not check errno because it is a false alarm in ppc and S390 */
     return ECONF_VALUE_CONVERSION_ERROR;
   return ECONF_SUCCESS;
 }
