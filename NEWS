@@ -1,3 +1,7 @@
+Version 0.7.2
+* Do not check errno while float conversion. This is a false alarm for
+  S390 and PPC.
+
 Version 0.7.1
 * Improved error handling while parsing values with the wrong format.
   Added new return value ECONF_VALUE_CONVERSION_ERROR.
