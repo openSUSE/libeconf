@@ -14,7 +14,7 @@
    /usr/lib/foo/bar.conf.d/a.conf exists
    /etc/foo/bar.conf.d/a.conf exists but is empty.
 
-   As all relavant files are masked, not data will be read.
+   As all relevant files are masked, not data will be read.
 */
 
 

@@ -74,7 +74,7 @@ main(void)
   } tests[] = {
     { "none_comment", NULL, NULL },
     { "header_without_value", " header_without_value test", NULL },
-    { "header_with_value", " header_with_value test", "value desription" },
+    { "header_with_value", " header_with_value test", "value description" },
     { "multiline_header", " line 1\n line 2\n\n line 3", NULL },
   };
   unsigned int i;  

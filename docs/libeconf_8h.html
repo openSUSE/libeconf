@@ -602,7 +602,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">file_name</td><td>absolute path of parsed file </td></tr>
     <tr><td class="paramname">delim</td><td>delimiters of key/value e.g. "\t =". If delim contains space characters AND none space characters, multiline values are not parseable. </td></tr>
     <tr><td class="paramname">comment</td><td>array of characters which define the start of a comment </td></tr>
-    <tr><td class="paramname">callback</td><td>function which will be called for the given filename. This user defined function has the pathname as paramter and returns true if this file can be parsed. If not, the parsing will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned. </td></tr>
+    <tr><td class="paramname">callback</td><td>function which will be called for the given filename. This user defined function has the pathname as parameter and returns true if this file can be parsed. If not, the parsing will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned. </td></tr>
     <tr><td class="paramname">callback_data</td><td>pointer which will be given to the callback function. </td></tr>
   </table>
   </dd>
@@ -645,7 +645,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Merge the contents of two key_files objects. </p>
-<p>Entries in etc_file will be prefered. Comment and delimiter tag will be taken from usr_file. This can be changed by calling the functions econf_set_comment_tag and econf_set_delimiter_tag.</p>
+<p>Entries in etc_file will be preferred. Comment and delimiter tag will be taken from usr_file. This can be changed by calling the functions econf_set_comment_tag and econf_set_delimiter_tag.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">merged_file</td><td>merged data </td></tr>
@@ -894,7 +894,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">config_suffix</td><td>suffix of the configuration file. Can also be NULL. </td></tr>
     <tr><td class="paramname">delim</td><td>delimiters of key/value e.g. "\t =" If delim contains space characters AND none space characters, multiline values are not parseable. </td></tr>
     <tr><td class="paramname">comment</td><td>array of characters which define the start of a comment </td></tr>
-    <tr><td class="paramname">callback</td><td>function which will be called for each file. This user defined function has the pathname as paramter and returns true if this file can be parsed. If not, the parsing of all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned. </td></tr>
+    <tr><td class="paramname">callback</td><td>function which will be called for each file. This user defined function has the pathname as parameter and returns true if this file can be parsed. If not, the parsing of all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned. </td></tr>
     <tr><td class="paramname">callback_data</td><td>pointer which will be given to the callback function. </td></tr>
   </table>
   </dd>
@@ -1080,7 +1080,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">config_suffix</td><td>suffix of the configuration file. Can also be NULL. </td></tr>
     <tr><td class="paramname">delim</td><td>delimiters of key/value e.g. "\t =" If delim contains space characters AND none space characters, multiline values are not parseable. </td></tr>
     <tr><td class="paramname">comment</td><td>array of characters which define the start of a comment </td></tr>
-    <tr><td class="paramname">callback</td><td>function which will be called for each file. This user defined function has the pathname as paramter and returns true if this file can be parsed. If not, the parsing of all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned. </td></tr>
+    <tr><td class="paramname">callback</td><td>function which will be called for each file. This user defined function has the pathname as parameter and returns true if this file can be parsed. If not, the parsing of all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned. </td></tr>
     <tr><td class="paramname">callback_data</td><td>pointer which will be given to the callback function. </td></tr>
   </table>
   </dd>
@@ -1256,7 +1256,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">config_suffix</td><td>suffix of the configuration file. Can also be NULL. </td></tr>
     <tr><td class="paramname">delim</td><td>delimiters of key/value e.g. "\t =" If delim contains space characters AND none space characters, multiline values are not parseable. </td></tr>
     <tr><td class="paramname">comment</td><td>array of characters which define the start of a comment </td></tr>
-    <tr><td class="paramname">callback</td><td>function which will be called for each file. This user defined function has the pathname as paramter and returns true if this file can be parsed. If not, the parsing of all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned. </td></tr>
+    <tr><td class="paramname">callback</td><td>function which will be called for each file. This user defined function has the pathname as parameter and returns true if this file can be parsed. If not, the parsing of all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned. </td></tr>
     <tr><td class="paramname">callback_data</td><td>pointer which will be given to the callback function. </td></tr>
   </table>
   </dd>
