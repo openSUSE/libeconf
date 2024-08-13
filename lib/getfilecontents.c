@@ -367,7 +367,7 @@ read_file(econf_file *ef, const char *file,
     if (!*buf)
       continue; /* empty line */
 
-    /* ignore space at begin of the line */
+    /* ignore space at beginning of the line */
     name = buf;
     while (*name && isspace((unsigned)*name))
       name++;

@@ -101,7 +101,7 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
   /*
     Indicate which directories to look for. The order is:
     "default_dirs/config_name.suffix.d/"
-    AND all other directories which has been set by
+    AND all other directories which have been set by
     econf_set_conf_dirs. E.G.:
        "default_dirs/config_name/conf.d/"
        "default_dirs/config_name.d/"

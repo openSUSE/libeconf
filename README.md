@@ -49,7 +49,7 @@ in this scheme.
 
 **Example 1**
 
-If a /etc/_example_._suffix_ files exists:
+If a /etc/_example_._suffix_ file exists:
 
 * /etc/_example_._suffix_
 * /usr/_vendor_/_project_/_example_._suffix_.d/*._suffix_
@@ -72,7 +72,7 @@ See: :https://uapi-group.org/specifications/specs/configuration_files_specificat
 
 ## API
 
-The API is written in plain C. The description can be found here :https://opensuse.github.io/libeconf/
+The API is written in plain C. The description can be found here: https://opensuse.github.io/libeconf/
 
 ## Bindings for other languages
 

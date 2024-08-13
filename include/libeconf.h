@@ -730,7 +730,7 @@ extern void econf_set_comment_tag(econf_file *key_file, const char comment);
  */
 extern void econf_set_delimiter_tag(econf_file *key_file, const char delimiter);
 
-/** @brief Write content of a econf_file struct to specified location.
+/** @brief Write content of an econf_file struct to specified location.
  *
  * @param key_file Data which has to be written.
  * @param save_to_dir Directory into which the file has to be written.
@@ -1153,7 +1153,7 @@ econf_followSymlinks(bool allow);
 extern void __attribute__ ((deprecated("use callback in econf_readFileWithCallback or econf_readConfigWithCallback instead")))
 econf_reset_security_settings(void);
 
-/** @brief Sets a list of directory structures (with order) which describes the directories
+/** @brief Set a list of directory structures (with order) which describes the directories
  *         in which the files have to be parsed.
  *
  * @param dir_postfix_list list of directory structures.
