@@ -109,10 +109,6 @@ econf_err getPath(econf_file key_file, char **path);
 econf_err setGroup(econf_file *key_file, size_t num, const char *value);
 /* Set the key of the file_entry element number num */
 econf_err setKey(econf_file *key_file, size_t num, const char *value);
-/* Set comments of the file_entry element number num */
-econf_err setComments(econf_file *key_file, size_t num,
-		      const char *comment_before_key,
-		      const char *comment_after_value);
 
 /* Functions used to set a value from key_file depending on num.
    Expects a void pointer to the value which is cast to the corresponding
