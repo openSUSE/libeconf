@@ -40,8 +40,8 @@
 #define CONFIG_DIRS "CONFIG_DIRS="
 
 // configuration directories format
-char **conf_dirs = {NULL}; // see econf_set_conf_dirs
-int conf_count = 0;
+static char **conf_dirs = {NULL}; // see econf_set_conf_dirs
+static int conf_count = 0;
 
 void econf_requireOwner(uid_t owner)
 {
