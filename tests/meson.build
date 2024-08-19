@@ -181,6 +181,8 @@ tst_groups3_exe = executable('tst-groups3', 'tst-groups3.c', c_args: test_args, 
 test('tst-groups3', tst_groups3_exe)
 tst_groups4_exe = executable('tst-groups4', 'tst-groups4.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-groups4', tst_groups4_exe)
+tst_groups5_exe = executable('tst-groups5', 'tst-groups5.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-groups5', tst_groups5_exe)
 
 
 tst_parseconfig1_exe = executable('tst-parseconfig1', 'tst-parseconfig1.c', c_args: test_args, dependencies : libeconf_dep)
