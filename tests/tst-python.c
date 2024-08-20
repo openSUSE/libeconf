@@ -95,7 +95,7 @@ main(void)
     { "none_comment_with_delim", "1=test", NULL},
     { "header_single", "string with spaces", " header_single_line test"},
     { "header_single_with_delim", "string with spaces = 3", " header_single_line test with delim"},
-    { "header_with_value", "string with spaces #value desription", " header_with_value test"},
+    { "header_with_value", "string with spaces #value description", " header_with_value test"},
     { "multiline_header", "multiline header", " line 1\n line 2\n\n line 3"},
     { "multiline_entry", "line one # line 1\nline two # line 2", " header multiline"},
     { "multiline_entry_with_delim", "\nline one # line 1\nline two=\nline three= # line 3", NULL},

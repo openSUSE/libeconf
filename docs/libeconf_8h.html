@@ -188,7 +188,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:aa14d17dc8e3ebc26e155ceb2d497ad14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the delimiter character of the given econf_file object.  <a href="#aa14d17dc8e3ebc26e155ceb2d497ad14">More...</a><br /></td></tr>
 <tr class="separator:aa14d17dc8e3ebc26e155ceb2d497ad14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f1e5a7c748ef9147fc7d16604904171"><td class="memItemLeft" align="right" valign="top"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a5f1e5a7c748ef9147fc7d16604904171">econf_writeFile</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *key_file, const char *save_to_dir, const char *file_name)</td></tr>
-<tr class="memdesc:a5f1e5a7c748ef9147fc7d16604904171"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write content of a econf_file struct to specified location.  <a href="#a5f1e5a7c748ef9147fc7d16604904171">More...</a><br /></td></tr>
+<tr class="memdesc:a5f1e5a7c748ef9147fc7d16604904171"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write content of an econf_file struct to specified location.  <a href="#a5f1e5a7c748ef9147fc7d16604904171">More...</a><br /></td></tr>
 <tr class="separator:a5f1e5a7c748ef9147fc7d16604904171"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74c3b496fc241cc87bd8847716fee011"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a74c3b496fc241cc87bd8847716fee011">econf_getPath</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *kf)</td></tr>
 <tr class="memdesc:a74c3b496fc241cc87bd8847716fee011"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluating path name.  <a href="#a74c3b496fc241cc87bd8847716fee011">More...</a><br /></td></tr>
@@ -299,7 +299,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:ac2c27395368eddbc50c1dc7736bbcf49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset all UID, GID, permissions,...  <a href="#ac2c27395368eddbc50c1dc7736bbcf49">More...</a><br /></td></tr>
 <tr class="separator:ac2c27395368eddbc50c1dc7736bbcf49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0466a16c30cfcd58ec6201d210c64731"><td class="memItemLeft" align="right" valign="top"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf_8h.html#a0466a16c30cfcd58ec6201d210c64731">econf_set_conf_dirs</a> (const char **dir_postfix_list)</td></tr>
-<tr class="memdesc:a0466a16c30cfcd58ec6201d210c64731"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a list of directory structures (with order) which describes the directories in which the files have to be parsed.  <a href="#a0466a16c30cfcd58ec6201d210c64731">More...</a><br /></td></tr>
+<tr class="memdesc:a0466a16c30cfcd58ec6201d210c64731"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a list of directory structures (with order) which describes the directories in which the files have to be parsed.  <a href="#a0466a16c30cfcd58ec6201d210c64731">More...</a><br /></td></tr>
 <tr class="separator:a0466a16c30cfcd58ec6201d210c64731"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -602,7 +602,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">file_name</td><td>absolute path of parsed file </td></tr>
     <tr><td class="paramname">delim</td><td>delimiters of key/value e.g. "\t =". If delim contains space characters AND none space characters, multiline values are not parseable. </td></tr>
     <tr><td class="paramname">comment</td><td>array of characters which define the start of a comment </td></tr>
-    <tr><td class="paramname">callback</td><td>function which will be called for the given filename. This user defined function has the pathname as paramter and returns true if this file can be parsed. If not, the parsing will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned. </td></tr>
+    <tr><td class="paramname">callback</td><td>function which will be called for the given filename. This user defined function has the pathname as parameter and returns true if this file can be parsed. If not, the parsing will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned. </td></tr>
     <tr><td class="paramname">callback_data</td><td>pointer which will be given to the callback function. </td></tr>
   </table>
   </dd>
@@ -645,7 +645,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Merge the contents of two key_files objects. </p>
-<p>Entries in etc_file will be prefered. Comment and delimiter tag will be taken from usr_file. This can be changed by calling the functions econf_set_comment_tag and econf_set_delimiter_tag.</p>
+<p>Entries in etc_file will be preferred. Comment and delimiter tag will be taken from usr_file. This can be changed by calling the functions econf_set_comment_tag and econf_set_delimiter_tag.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">merged_file</td><td>merged data </td></tr>
@@ -894,7 +894,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">config_suffix</td><td>suffix of the configuration file. Can also be NULL. </td></tr>
     <tr><td class="paramname">delim</td><td>delimiters of key/value e.g. "\t =" If delim contains space characters AND none space characters, multiline values are not parseable. </td></tr>
     <tr><td class="paramname">comment</td><td>array of characters which define the start of a comment </td></tr>
-    <tr><td class="paramname">callback</td><td>function which will be called for each file. This user defined function has the pathname as paramter and returns true if this file can be parsed. If not, the parsing of all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned. </td></tr>
+    <tr><td class="paramname">callback</td><td>function which will be called for each file. This user defined function has the pathname as parameter and returns true if this file can be parsed. If not, the parsing of all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned. </td></tr>
     <tr><td class="paramname">callback_data</td><td>pointer which will be given to the callback function. </td></tr>
   </table>
   </dd>
@@ -1080,7 +1080,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">config_suffix</td><td>suffix of the configuration file. Can also be NULL. </td></tr>
     <tr><td class="paramname">delim</td><td>delimiters of key/value e.g. "\t =" If delim contains space characters AND none space characters, multiline values are not parseable. </td></tr>
     <tr><td class="paramname">comment</td><td>array of characters which define the start of a comment </td></tr>
-    <tr><td class="paramname">callback</td><td>function which will be called for each file. This user defined function has the pathname as paramter and returns true if this file can be parsed. If not, the parsing of all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned. </td></tr>
+    <tr><td class="paramname">callback</td><td>function which will be called for each file. This user defined function has the pathname as parameter and returns true if this file can be parsed. If not, the parsing of all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned. </td></tr>
     <tr><td class="paramname">callback_data</td><td>pointer which will be given to the callback function. </td></tr>
   </table>
   </dd>
@@ -1256,7 +1256,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">config_suffix</td><td>suffix of the configuration file. Can also be NULL. </td></tr>
     <tr><td class="paramname">delim</td><td>delimiters of key/value e.g. "\t =" If delim contains space characters AND none space characters, multiline values are not parseable. </td></tr>
     <tr><td class="paramname">comment</td><td>array of characters which define the start of a comment </td></tr>
-    <tr><td class="paramname">callback</td><td>function which will be called for each file. This user defined function has the pathname as paramter and returns true if this file can be parsed. If not, the parsing of all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned. </td></tr>
+    <tr><td class="paramname">callback</td><td>function which will be called for each file. This user defined function has the pathname as parameter and returns true if this file can be parsed. If not, the parsing of all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned. </td></tr>
     <tr><td class="paramname">callback_data</td><td>pointer which will be given to the callback function. </td></tr>
   </table>
   </dd>
@@ -1542,7 +1542,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Write content of a econf_file struct to specified location. </p>
+<p>Write content of an econf_file struct to specified location. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">key_file</td><td>Data which has to be written. </td></tr>
@@ -3271,7 +3271,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Sets a list of directory structures (with order) which describes the directories in which the files have to be parsed. </p>
+<p>Set a list of directory structures (with order) which describes the directories in which the files have to be parsed. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">dir_postfix_list</td><td>list of directory structures. E.G. with the given list: {"conf.d", ".d", "/", NULL} files in following directories will be parsed: "&lt;default_dirs&gt;/&lt;config_name&gt;.conf.d/" "&lt;default_dirs&gt;/&lt;config_name&gt;.d/" "&lt;default_dirs&gt;/&lt;config_name&gt;/"</td></tr>

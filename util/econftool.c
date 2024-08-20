@@ -106,7 +106,7 @@ static char *replace_str(char *str, char *orig, char *rep)
 }
 
 /**
- * @brief Change root dir if enviroment variable "ECONFTOOL_ROOT" exists
+ * @brief Change root dir if environment variable "ECONFTOOL_ROOT" exists
  *
  * @param change_path the path to be changed
  */

@@ -148,7 +148,7 @@ store (econf_file *ef, const char *group, const char *key,
     }
 
     if (append_entry && ef->python_style == true) {
-      /* ignore space at the beginning of the line because it is the identation of python style */
+      /* ignore space at the beginning of the line because it is the indentation of python style */
       while (*value && isspace((unsigned)*value))
         value++;
     }
@@ -367,7 +367,7 @@ read_file(econf_file *ef, const char *file,
     if (!*buf)
       continue; /* empty line */
 
-    /* ignore space at begin of the line */
+    /* ignore space at beginning of the line */
     name = buf;
     while (*name && isspace((unsigned)*name))
       name++;
@@ -508,7 +508,7 @@ read_file(econf_file *ef, const char *file,
       if (ef->python_style == false ||
 	  !isspace(*org_buf))
       {
-        /* It is not a typical python style with identation */
+        /* It is not a typical python style with indentation */
 	/* So, delimiter has to be regarded */
         found_delim = delim_seen;
         if (!found_delim)

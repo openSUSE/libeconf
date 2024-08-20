@@ -61,7 +61,7 @@ in this scheme.
 
 .SS "Example 1"
 .sp
-If a /etc/_example_._suffix_ files exists:
+If a /etc/_example_._suffix_ file exists:
 
 * /etc/_example_._suffix_
 
@@ -169,7 +169,7 @@ Documentation: \fI\%https://github.com/openSUSE/libeconf/blob/master/bindings/cs
 .ti -1c
 .RI "\fBeconf_err\fP \fBeconf_writeFile\fP (\fBeconf_file\fP *key_file, const char *save_to_dir, const char *file_name)"
 .br
-.RI "Write content of a econf_file struct to specified location\&. "
+.RI "Write content of an econf_file struct to specified location\&. "
 .ti -1c
 .RI "char * \fBeconf_getPath\fP (\fBeconf_file\fP *kf)"
 .br
@@ -321,7 +321,7 @@ Documentation: \fI\%https://github.com/openSUSE/libeconf/blob/master/bindings/cs
 .ti -1c
 .RI "\fBeconf_err\fP \fBeconf_set_conf_dirs\fP (const char **dir_postfix_list)"
 .br
-.RI "Sets a list of directory structures (with order) which describes the directories in which the files have to be parsed\&. "
+.RI "Set a list of directory structures (with order) which describes the directories in which the files have to be parsed\&. "
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -602,7 +602,7 @@ AND none space characters, multiline values are not parseable.
 \fIcomment\fP array of characters which define the start of a comment
 .br
 \fIcallback\fP function which will be called for each file. This user defined function has the
-pathname as paramter and returns true if this file can be parsed. If not, the parsing of
+pathname as parameter and returns true if this file can be parsed. If not, the parsing of
 all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned.
 .br
 \fIcallback_data\fP pointer which will be given to the callback function.
@@ -717,7 +717,7 @@ Process the file of the given file_name and save its contents into key_file obje
 .br
 \fIcomment\fP array of characters which define the start of a comment
 .br
-\fIcallback\fP function which will be called for the given filename\&. This user defined function has the pathname as paramter and returns true if this file can be parsed\&. If not, the parsing will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned\&.
+\fIcallback\fP function which will be called for the given filename\&. This user defined function has the pathname as parameter and returns true if this file can be parsed\&. If not, the parsing will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned\&.
 .br
 \fIcallback_data\fP pointer which will be given to the callback function.
 .RE
@@ -749,7 +749,7 @@ Default behaviour if entries have the same name in one file: The first hit will 
 .SS "\fBeconf_err\fP econf_mergeFiles (\fBeconf_file\fP ** merged_file, \fBeconf_file\fP * usr_file, \fBeconf_file\fP * etc_file)"
 
 .PP
-Merge the contents of two key_files objects\&. Entries in etc_file will be prefered\&. Comment and delimiter tag will be taken from usr_file\&. This can be changed by calling the functions econf_set_comment_tag and econf_set_delimiter_tag\&.
+Merge the contents of two key_files objects\&. Entries in etc_file will be preferred\&. Comment and delimiter tag will be taken from usr_file\&. This can be changed by calling the functions econf_set_comment_tag and econf_set_delimiter_tag\&.
 .PP
 \fBParameters:\fP
 .RS 4
@@ -823,7 +823,7 @@ econf_err ECONF_SUCCESS or error code
 .SS "\fBeconf_err\fP econf_writeFile (\fBeconf_file\fP * key_file, const char * save_to_dir, const char * file_name)"
 
 .PP
-Write content of a econf_file struct to specified location\&. 
+Write content of an econf_file struct to specified location\&. 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -1603,7 +1603,7 @@ void
 .SS "econf_err econf_set_conf_dirs (const char **dir_postfix_list)"
 
 .PP
-Sets a list of directory structures (with order) which describes the directories
+Set a list of directory structures (with order) which describes the directories
 in which the files have to be parsed\&.
 .PP
 \fBParameters:\fP

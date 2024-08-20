@@ -3,7 +3,7 @@
 
 declare -a teststrings=("example.conf"
                       "example.conf"
-                      "nonexistant.conf"
+                      "nonexistent.conf"
                       "randomstring")
 declare -a experr=("variable = 301"
                    "Path:"

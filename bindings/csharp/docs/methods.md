@@ -85,7 +85,7 @@ public static EConfErr SetConfDirs(string[] dirPostFixList)
 ```
 > Implements `econf_set_conf_dirs`
 
-Sets a list of directory structures (with order) which describes
+Set a list of directory structures (with order) which describes
 the directories in which the files have to be parsed.
 
 Param               | Description

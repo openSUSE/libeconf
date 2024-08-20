@@ -8,7 +8,7 @@
 #include "libeconf.h"
 
 /* Test case:
-   Read /usr/etc with empty values, add overide file
+   Read /usr/etc with empty values, add override file
    which replaces empty values with values
 */
 

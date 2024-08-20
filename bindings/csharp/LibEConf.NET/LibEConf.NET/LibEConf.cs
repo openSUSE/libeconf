@@ -826,7 +826,7 @@ public static partial class EConf
     }
 
     /// <summary>
-    /// Sets a list of directory structures (with order) which describes
+    /// Set a list of directory structures (with order) which describes
     /// the directories in which the files have to be parsed.
     /// </summary>
     /// <param name="dirPostFixList">List of directory structures.

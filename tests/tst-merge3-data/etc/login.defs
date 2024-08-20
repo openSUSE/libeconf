@@ -74,7 +74,7 @@ HUSHLOGIN_FILE	/etc/hushlogins
 # (used by login, su and runuser).
 #
 # ENV_SUPATH is an ENV_ROOTPATH override for su and runuser
-# (and falback for login).
+# (and fallback for login).
 #
 ENV_PATH	/usr/local/bin:/bin:/usr/bin
 ENV_ROOTPATH	/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
