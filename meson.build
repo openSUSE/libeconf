@@ -42,7 +42,6 @@ add_project_arguments(cc.get_supported_arguments(possible_cc_flags), language : 
 
 libeconf_src = files(
   'lib/econf_error.c',
-  'lib/get_value_def.c',
   'lib/getfilecontents.c',
   'lib/helpers.c',
   'lib/keyfile.c',

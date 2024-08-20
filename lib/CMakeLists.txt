@@ -6,7 +6,6 @@ set(econf_SRCS libeconf.c
                helpers.c
                keyfile.c
                econf_error.c
-               get_value_def.c
 	       readconfig.c
                )
 
