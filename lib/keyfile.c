@@ -217,37 +217,6 @@ econf_err setKey(econf_file *key_file, size_t num, const char *value) {
   return ECONF_SUCCESS;
 }
 
-econf_err setComments(econf_file *key_file, size_t num,
-		      const char *comment_before_key,
-		      const char *comment_after_value) {
-  if (key_file == NULL)
-    return ECONF_ERROR;
-
-  if (key_file->file_entry[num].comment_before_key)
-    free(key_file->file_entry[num].comment_before_key);
-  if (comment_before_key)
-  {
-    key_file->file_entry[num].comment_before_key = strdup(comment_before_key);
-    if (key_file->file_entry[num].comment_before_key == NULL)
-      return ECONF_NOMEM;
-  } else {
-    key_file->file_entry[num].comment_before_key = NULL;
-  }
-
-  if (key_file->file_entry[num].comment_after_value)
-    free(key_file->file_entry[num].comment_after_value);
-  if (comment_after_value)
-  {
-    key_file->file_entry[num].comment_after_value = strdup(comment_after_value);
-    if (key_file->file_entry[num].comment_after_value == NULL)
-      return ECONF_NOMEM;
-  } else {
-    key_file->file_entry[num].comment_after_value = NULL;
-  }
-
-  return ECONF_SUCCESS;
-}
-
 #define econf_setValueNum(FCT_TYPE, TYPE, FMT, PR)			\
 econf_err set ## FCT_TYPE ## ValueNum(econf_file *ef, size_t num, const void *v) { \
   const TYPE *value = (const TYPE*) v; \

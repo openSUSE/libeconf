@@ -50,28 +50,6 @@ void initialize(econf_file *key_file, size_t num) {
   key_file->file_entry[num].quotes = false;
 }
 
-// Remove whitespace from beginning and end, append string terminator
-char *clearblank(size_t *vlen, char *string) {
-  if (!*vlen) return string;
-
-  char *buffer = string, *ptr = string;
-  string[*vlen] = 0;
-
-  while (*string != 0) {
-    if (ptr == buffer && (*string == ' ' || *string == '\t')) {
-      (*vlen)--;
-    } else {
-      *ptr++ = *string;
-    }
-    string++;
-  }
-  while (buffer[*vlen - 1] == ' ' || buffer[*vlen - 1] == '\t')
-    (*vlen)--;
-
-  buffer[*vlen] = 0;
-  return buffer;
-}
-
 char *get_absolute_path(const char *path, econf_err *error) {
   char *absolute_path;
   if(*path != '/') {
