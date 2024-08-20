@@ -65,8 +65,7 @@ econf_errString (const econf_err error)
       static char buffer[1024]; /* should always be big enough, else truncate */
       const char *unknown = "Unknown libeconf error %i";
 
-      snprintf (buffer, sizeof (buffer) - 1, unknown, error);
-      buffer[sizeof(buffer)-1] = '\0';
+      snprintf (buffer, sizeof (buffer), unknown, error);
 
       return buffer;
     }
