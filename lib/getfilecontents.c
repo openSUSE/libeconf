@@ -205,9 +205,9 @@ store (econf_file *ef, const char *group, const char *key,
   ef->file_entry[ef->length-1].quotes = quotes;
 
   if (group)
-    ef->file_entry[ef->length-1].group = strdup(group);
+	  ef->file_entry[ef->length-1].group = setGroupList(ef, group);
   else
-    ef->file_entry[ef->length-1].group = strdup(KEY_FILE_NULL_VALUE);
+    ef->file_entry[ef->length-1].group = setGroupList(ef, KEY_FILE_NULL_VALUE);
 
   if (key) {
     /* remove space at the end of the key */

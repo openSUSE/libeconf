@@ -138,6 +138,7 @@ check_conf_dir(econf_file ***key_files, size_t *size, const char *path,
         key_file->python_style = python_style;
 	error = read_file_with_callback(&key_file, file_path, delim, comment,
 					callback, callback_data);
+  print_key_file(*key_file);  	
         free(file_path);
         if(!error && key_file) {
           key_file->on_merge_delete = 1;

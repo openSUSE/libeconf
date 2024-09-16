@@ -84,6 +84,8 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
        }
     }
   }
+  
+  print_key_file(*key_file);  
 
   /* create space to store the econf_files for merging */
   *size = *size+1;
@@ -164,6 +166,7 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
     *key_files = NULL;
     return ECONF_NOFILE;
   }
+
   return ECONF_SUCCESS;
 }
 
@@ -223,7 +226,8 @@ econf_err readConfigWithCallback(econf_file **result,
   // Merge the list of acquired key_files into merged_file
   error = merge_econf_files(key_files, result);
   free(key_files);
-
+  printf("rrrrrrrrrrrrressult\n");
+  print_key_file(**result);
   return error;
 }
 

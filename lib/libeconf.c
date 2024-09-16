@@ -115,6 +115,8 @@ econf_newKeyFile(econf_file **result, char delimiter, char comment)
   key_file->parse_dirs_count = 0;
   key_file->conf_dirs = NULL;
   key_file->conf_count = 0;
+  key_file->groups = NULL;
+  key_file->group_count = 0;
   key_file->file_entry = malloc(KEY_FILE_DEFAULT_LENGTH * sizeof(struct file_entry));
   if (key_file->file_entry == NULL)
     {
@@ -145,6 +147,9 @@ econf_newKeyFile_with_options(econf_file **result, const char *options) {
   (*result)->parse_dirs_count = 0;
   (*result)->conf_dirs = NULL;
   (*result)->conf_count = 0;
+  (*result)->groups = NULL;
+  (*result)->group_count = 0;
+  
 
   if (options == NULL || strlen(options) == 0)
     return ECONF_SUCCESS;
@@ -764,8 +769,9 @@ libeconf_setValue(Bool, const char *, value)
 void econf_freeArray(char** array) {
   if (!array) { return; }
   char *tmp = (char*) array;
-  while (*array)
+  while (*array) {
     free(*array++);
+  }
   free(tmp);
 }
 
@@ -777,8 +783,6 @@ void econf_freeFile(econf_file *key_file) {
   if (key_file->file_entry)
   {
     for (size_t i = 0; i < key_file->alloc_length; i++) {
-      if (key_file->file_entry[i].group)
-	free(key_file->file_entry[i].group);
       if (key_file->file_entry[i].key)
 	free(key_file->file_entry[i].key);
       if (key_file->file_entry[i].value)
@@ -795,6 +799,6 @@ void econf_freeFile(econf_file *key_file) {
     free(key_file->path);
 
   econf_freeArray(key_file->parse_dirs);
-
+  econf_freeArray(key_file->groups);
   free(key_file);
 }
