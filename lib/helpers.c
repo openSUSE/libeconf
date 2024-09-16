@@ -191,9 +191,9 @@ econf_err setKeyValue(econf_err (*function) (econf_file*, size_t, const void*),
   return function(kf, num, value);
 }
 
-struct file_entry cpy_file_entry(struct file_entry fe) {
+struct file_entry cpy_file_entry(econf_file *dest_kf, struct file_entry fe) {
   struct file_entry copied_fe;
-  copied_fe.group = fe.group;
+  copied_fe.group = setGroupList(dest_kf, fe.group);
   copied_fe.key = strdup(fe.key);
   if (fe.value)
     copied_fe.value = strdup(fe.value);

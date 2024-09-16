@@ -301,10 +301,12 @@ econf_err econf_mergeFiles(econf_file **merged_file, econf_file *usr_file, econf
        !strcmp(etc_file->file_entry->group, KEY_FILE_NULL_VALUE)) &&
       (usr_file->file_entry == NULL ||
        strcmp(usr_file->file_entry->group, KEY_FILE_NULL_VALUE))) {
-    merge_length = insert_nogroup(&fe, etc_file);
+    merge_length = insert_nogroup(*merged_file, &fe, etc_file);
   }
-  merge_length = merge_existing_groups(&fe, usr_file, etc_file, merge_length);
-  merge_length = add_new_groups(&fe, usr_file, etc_file, merge_length);
+  merge_length = merge_existing_groups(*merged_file,&fe, usr_file,
+				       etc_file, merge_length);
+  merge_length = add_new_groups(*merged_file, &fe, usr_file,
+				etc_file, merge_length);
   (*merged_file)->length = merge_length;
   (*merged_file)->alloc_length = merge_length;
 
