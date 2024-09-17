@@ -618,52 +618,32 @@ extern char *econf_getPath(econf_file *kf)
 }
 
 /* GETTER FUNCTIONS */
-// TODO: Currently only works with a sorted econf_file. If a new
-// key with an existing group is appended at the end the group
-// will show twice. So the key file either needs to be sorted
-// upon entering a new key or the function must ensure only
-// unique values are returned.
 econf_err
 econf_getGroups(econf_file *kf, size_t *length, char ***groups)
 {
   if (!kf || groups == NULL)
     return ECONF_ERROR;
 
-  size_t tmp = 0;
-  bool *uniques = calloc(kf->length,sizeof(bool));
-  if (uniques == NULL)
-    return ECONF_NOMEM;
-
-  for (size_t i = 0; i < kf->length; i++) {
-    if ((!i || strcmp(kf->file_entry[i].group, kf->file_entry[i - 1].group)) &&
-        strcmp(kf->file_entry[i].group, KEY_FILE_NULL_VALUE)) {
-      uniques[i] = 1;
-      tmp++;
+  if (kf->group_count <= 0)
+    return ECONF_NOGROUP;
+  *groups = NULL;
+  *length = 0;
+  for (int i = 0; i < kf->group_count; i++) {
+    if (strcmp(kf->groups[i], KEY_FILE_NULL_VALUE)) {
+      (*length)++;
+      *groups = realloc(*groups, (*length +1) * sizeof(char *));
+      if (*groups == NULL)
+        return ECONF_NOMEM;
+      (*groups)[*length] = NULL;
+      (*groups)[*length-1] = strdup(kf->groups[i]);
+      if ((*groups)[*length-1] == NULL)
+        return ECONF_NOMEM;
     }
   }
-  if (!tmp) {
-    free(uniques);
-    return ECONF_NOGROUP;
-  }
-  *groups = calloc(tmp + 1, sizeof(char*));
-  if (*groups == NULL) {
-    free(uniques);
-    return ECONF_NOMEM;
-  }
 
-  tmp = 0;
-  for (size_t i = 0; i < kf->length; i++)
-    if (uniques[i])
-      (*groups)[tmp++] = strdup(kf->file_entry[i].group);
-
-  if (length != NULL)
-    *length = tmp;
-
-  free(uniques);
   return ECONF_SUCCESS;
 }
 
-// TODO: Same issue as with getGroups()
 econf_err
 econf_getKeys(econf_file *kf, const char *grp, size_t *length, char ***keys)
 {
@@ -684,8 +664,7 @@ econf_getKeys(econf_file *kf, const char *grp, size_t *length, char ***keys)
       return ECONF_NOMEM;
     }
   for (size_t i = 0; i < kf->length; i++) {
-    if (!strcmp(kf->file_entry[i].group, group) &&
-        (!i || strcmp(kf->file_entry[i].key, kf->file_entry[i - 1].key))) {
+    if (!strcmp(kf->file_entry[i].group, group)) {
       uniques[i] = 1;
       tmp++;
     }

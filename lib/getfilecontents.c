@@ -453,9 +453,7 @@ read_file(econf_file *ef, const char *file,
 	retval = ECONF_EMPTY_SECTION_NAME;
 	goto out;
       }
-      if (current_group)
-	free (current_group);
-      current_group = strdup (name);
+      current_group = setGroupList(ef, name);
       continue;
     }
 
@@ -633,8 +631,6 @@ read_file(econf_file *ef, const char *file,
  out:
   free(buf);
   fclose (kf);
-  if (current_group)
-    free (current_group);
   if (current_comment_before_key)
     free(current_comment_before_key);
   if (current_comment_after_value)
