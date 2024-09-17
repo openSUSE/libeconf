@@ -11,13 +11,43 @@
    Open file and read all group entries and list them.
 */
 
+static int
+check_key(econf_file *key_file, char *group, char *key, char *expected_val)
+{
+  char *val = NULL;
+  econf_err error = econf_getStringValue (key_file, group, key, &val);
+
+  if (expected_val == NULL)
+    {
+      if (val == NULL)
+	return 0;
+
+      fprintf (stderr, "ERROR: %s/%s has value \"%s\"\n", group, key, val);
+      return 1;
+    }
+  if (val == NULL || strlen(val) == 0)
+    {
+      fprintf (stderr, "ERROR: %s/%s returns nothing! (%s)\n", group, key,
+	       econf_errString(error));
+      return 1;
+    }
+  if (strcmp (val, expected_val) != 0)
+    {
+      fprintf (stderr, "ERROR: %s/%s is not \"%s\"\n", group, key, expected_val);
+      return 1;
+    }
+
+  printf("Ok: %s/%s=%s\n", group, key, val);
+  free (val);
+  return 0;
+}
+
 int
 main(void)
 {
   econf_file *key_file = (econf_file *)-1;
   char **groups;
   size_t group_number;
-  char *val;
   econf_err error;
   int retval = 0;
 
@@ -67,33 +97,24 @@ main(void)
 	}
       else
 	{
-	  for (size_t j = 0; j < key_number; j++)
-	    {
-	      if ((error = econf_getStringValue (key_file, groups[i], keys[j], &val)))
-                  {
-                    fprintf (stderr, "Error reading \"%s\" from [%s]: %s\n",
-                             keys[j], groups[i], econf_errString(error));
-                    retval = 1;
-                  }
-
-	      printf ("%zu: Group: %s, Key: %s, Value: %s\n", j, groups[i], keys[j], val);
-	      free (val);
-	    }
-            econf_free (keys);
-	}
-
-      if ((error = econf_getStringValue (key_file, groups[i], "key", &val)))
-	{
-	  fprintf (stderr, "Error getting key for group '%s': %s\n",
-		   groups[i], econf_errString(error));
-	  retval = 1;
-	}
-      else
-	{
-	  printf ("Key: key, Group: %s, Value: %s\n", groups[i], val);
-	  free (val);
+	  if (!strcmp("section1", groups[i]) && key_number != 3 ) {
+	    fprintf (stderr, "Wrong number of keys found for group %s, got %zu, expected 3\n",
+		     groups[i], key_number);
+	    retval = 1;
+	  }
+	  if ((!strcmp("section1", groups[i]) || !strcmp("section1", groups[i])) && key_number != 3 ) {
+	    fprintf (stderr, "Wrong number of keys found for group %s, got %zu, expected 1\n",
+		     groups[i], key_number);
+	    retval = 1;
+	  }
 	}
     }
+  if (check_key(key_file, "section1", "key", "yes") != 0 ||
+      check_key(key_file, "section1", "key1", "no") != 0 ||
+      check_key(key_file, "section1", "key2", "yes") != 0 ||
+      check_key(key_file, "section2", "key", "yes") != 0 ||
+      check_key(key_file, "section3", "key", "yes"))
+	  return 1;
 
   econf_free (groups);
   econf_free (key_file);
