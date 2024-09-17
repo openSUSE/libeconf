@@ -428,12 +428,18 @@ econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
    int count = 2;
    char **parse_dirs = calloc(count+1, sizeof(char *));
    parse_dirs[count] = NULL;
-   parse_dirs[0] = strdup(dist_conf_dir);
-   parse_dirs[1] = strdup(etc_conf_dir);
+   if (dist_conf_dir)
+     parse_dirs[0] = strdup(dist_conf_dir);
+   else
+     parse_dirs[0] = strdup("");
+   if (etc_conf_dir)
+     parse_dirs[1] = strdup(etc_conf_dir);
+   else
+     parse_dirs[1] = strdup("");
 
    econf_err ret = readConfigHistoryWithCallback(key_files,
 						 size,
-						 parse_dirs, 2,
+						 parse_dirs, count,
 						 config_name,
 						 config_suffix,
 						 delim,
@@ -458,11 +464,17 @@ econf_err econf_readDirsHistory(econf_file ***key_files,
   int count = 2;
   char **parse_dirs = calloc(count+1, sizeof(char *));
   parse_dirs[count] = NULL;
-  parse_dirs[0] = strdup(dist_conf_dir);
-  parse_dirs[1] = strdup(etc_conf_dir);
+  if (dist_conf_dir)
+    parse_dirs[0] = strdup(dist_conf_dir);
+  else
+    parse_dirs[0] = strdup("");
+  if (etc_conf_dir)
+    parse_dirs[1] = strdup(etc_conf_dir);
+  else
+    parse_dirs[1] = strdup("");
 
   econf_err ret = readConfigHistoryWithCallback(key_files, size,
-						parse_dirs, 2,
+						parse_dirs, count,
 						config_name,
 						config_suffix, delim, comment,
 						false, false, /*join_same_entries, python_style*/
@@ -489,8 +501,14 @@ econf_err econf_readDirsWithCallback(econf_file **result,
   (*result)->parse_dirs_count = 2;
   (*result)->parse_dirs = calloc((*result)->parse_dirs_count+1, sizeof(char *));
   (*result)->parse_dirs[(*result)->parse_dirs_count] = NULL;
-  (*result)->parse_dirs[0] = strdup(dist_conf_dir);
-  (*result)->parse_dirs[1] = strdup(etc_conf_dir);
+  if (dist_conf_dir)
+    (*result)->parse_dirs[0] = strdup(dist_conf_dir);
+  else
+    (*result)->parse_dirs[0] = strdup("");
+  if (etc_conf_dir)
+    (*result)->parse_dirs[1] = strdup(etc_conf_dir);
+  else
+    (*result)->parse_dirs[1] = strdup("");
 
   return readConfigWithCallback(result,
 				config_name,
@@ -514,8 +532,14 @@ econf_err econf_readDirs(econf_file **result,
   (*result)->parse_dirs_count = 2;
   (*result)->parse_dirs = calloc((*result)->parse_dirs_count+1, sizeof(char *));
   (*result)->parse_dirs[(*result)->parse_dirs_count] = NULL;
-  (*result)->parse_dirs[0] = strdup(dist_conf_dir);
-  (*result)->parse_dirs[1] = strdup(etc_conf_dir);
+  if (dist_conf_dir)
+    (*result)->parse_dirs[0] = strdup(dist_conf_dir);
+  else
+    (*result)->parse_dirs[0] = strdup("");
+  if (etc_conf_dir)
+    (*result)->parse_dirs[1] = strdup(etc_conf_dir);
+  else
+    (*result)->parse_dirs[1] = strdup("");
 
   return readConfigWithCallback(result,
 				config_name,
