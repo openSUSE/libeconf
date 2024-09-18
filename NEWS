@@ -1,3 +1,8 @@
+Version 0.7.3
+* Fixed: econf_readDirs crashes if one of the paths is NULL (#211)
+* Handle groups correctly which do not have any key entry.
+* Added links to man page. E.g. "man econf_readConfig" is working now.
+
 Version 0.7.2
 * Do not check errno while float conversion. This is a false alarm for
   S390 and PPC.

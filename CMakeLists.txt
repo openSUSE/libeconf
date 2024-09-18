@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.12)
 # Ensure built-in policies from CMake are used, (e.g. improved policies for macOS)
 cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
 
-project(libeconf VERSION 0.7.2
+project(libeconf VERSION 0.7.3
                  DESCRIPTION "Enhanced config file parser, which merges config files placed in several locations into one."
                  LANGUAGES C
                  )
