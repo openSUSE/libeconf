@@ -115,6 +115,8 @@ econf_newKeyFile(econf_file **result, char delimiter, char comment)
   key_file->parse_dirs_count = 0;
   key_file->conf_dirs = NULL;
   key_file->conf_count = 0;
+  key_file->groups = NULL;
+  key_file->group_count = 0;
   key_file->file_entry = malloc(KEY_FILE_DEFAULT_LENGTH * sizeof(struct file_entry));
   if (key_file->file_entry == NULL)
     {
@@ -145,6 +147,9 @@ econf_newKeyFile_with_options(econf_file **result, const char *options) {
   (*result)->parse_dirs_count = 0;
   (*result)->conf_dirs = NULL;
   (*result)->conf_count = 0;
+  (*result)->groups = NULL;
+  (*result)->group_count = 0;
+  
 
   if (options == NULL || strlen(options) == 0)
     return ECONF_SUCCESS;
@@ -296,10 +301,12 @@ econf_err econf_mergeFiles(econf_file **merged_file, econf_file *usr_file, econf
        !strcmp(etc_file->file_entry->group, KEY_FILE_NULL_VALUE)) &&
       (usr_file->file_entry == NULL ||
        strcmp(usr_file->file_entry->group, KEY_FILE_NULL_VALUE))) {
-    merge_length = insert_nogroup(&fe, etc_file);
+    merge_length = insert_nogroup(*merged_file, &fe, etc_file);
   }
-  merge_length = merge_existing_groups(&fe, usr_file, etc_file, merge_length);
-  merge_length = add_new_groups(&fe, usr_file, etc_file, merge_length);
+  merge_length = merge_existing_groups(*merged_file,&fe, usr_file,
+				       etc_file, merge_length);
+  merge_length = add_new_groups(*merged_file, &fe, usr_file,
+				etc_file, merge_length);
   (*merged_file)->length = merge_length;
   (*merged_file)->alloc_length = merge_length;
 
@@ -421,12 +428,18 @@ econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
    int count = 2;
    char **parse_dirs = calloc(count+1, sizeof(char *));
    parse_dirs[count] = NULL;
-   parse_dirs[0] = strdup(dist_conf_dir);
-   parse_dirs[1] = strdup(etc_conf_dir);
+   if (dist_conf_dir)
+     parse_dirs[0] = strdup(dist_conf_dir);
+   else
+     parse_dirs[0] = strdup("");
+   if (etc_conf_dir)
+     parse_dirs[1] = strdup(etc_conf_dir);
+   else
+     parse_dirs[1] = strdup("");
 
    econf_err ret = readConfigHistoryWithCallback(key_files,
 						 size,
-						 parse_dirs, 2,
+						 parse_dirs, count,
 						 config_name,
 						 config_suffix,
 						 delim,
@@ -451,11 +464,17 @@ econf_err econf_readDirsHistory(econf_file ***key_files,
   int count = 2;
   char **parse_dirs = calloc(count+1, sizeof(char *));
   parse_dirs[count] = NULL;
-  parse_dirs[0] = strdup(dist_conf_dir);
-  parse_dirs[1] = strdup(etc_conf_dir);
+  if (dist_conf_dir)
+    parse_dirs[0] = strdup(dist_conf_dir);
+  else
+    parse_dirs[0] = strdup("");
+  if (etc_conf_dir)
+    parse_dirs[1] = strdup(etc_conf_dir);
+  else
+    parse_dirs[1] = strdup("");
 
   econf_err ret = readConfigHistoryWithCallback(key_files, size,
-						parse_dirs, 2,
+						parse_dirs, count,
 						config_name,
 						config_suffix, delim, comment,
 						false, false, /*join_same_entries, python_style*/
@@ -482,8 +501,14 @@ econf_err econf_readDirsWithCallback(econf_file **result,
   (*result)->parse_dirs_count = 2;
   (*result)->parse_dirs = calloc((*result)->parse_dirs_count+1, sizeof(char *));
   (*result)->parse_dirs[(*result)->parse_dirs_count] = NULL;
-  (*result)->parse_dirs[0] = strdup(dist_conf_dir);
-  (*result)->parse_dirs[1] = strdup(etc_conf_dir);
+  if (dist_conf_dir)
+    (*result)->parse_dirs[0] = strdup(dist_conf_dir);
+  else
+    (*result)->parse_dirs[0] = strdup("");
+  if (etc_conf_dir)
+    (*result)->parse_dirs[1] = strdup(etc_conf_dir);
+  else
+    (*result)->parse_dirs[1] = strdup("");
 
   return readConfigWithCallback(result,
 				config_name,
@@ -507,8 +532,14 @@ econf_err econf_readDirs(econf_file **result,
   (*result)->parse_dirs_count = 2;
   (*result)->parse_dirs = calloc((*result)->parse_dirs_count+1, sizeof(char *));
   (*result)->parse_dirs[(*result)->parse_dirs_count] = NULL;
-  (*result)->parse_dirs[0] = strdup(dist_conf_dir);
-  (*result)->parse_dirs[1] = strdup(etc_conf_dir);
+  if (dist_conf_dir)
+    (*result)->parse_dirs[0] = strdup(dist_conf_dir);
+  else
+    (*result)->parse_dirs[0] = strdup("");
+  if (etc_conf_dir)
+    (*result)->parse_dirs[1] = strdup(etc_conf_dir);
+  else
+    (*result)->parse_dirs[1] = strdup("");
 
   return readConfigWithCallback(result,
 				config_name,
@@ -611,52 +642,32 @@ extern char *econf_getPath(econf_file *kf)
 }
 
 /* GETTER FUNCTIONS */
-// TODO: Currently only works with a sorted econf_file. If a new
-// key with an existing group is appended at the end the group
-// will show twice. So the key file either needs to be sorted
-// upon entering a new key or the function must ensure only
-// unique values are returned.
 econf_err
 econf_getGroups(econf_file *kf, size_t *length, char ***groups)
 {
   if (!kf || groups == NULL)
     return ECONF_ERROR;
 
-  size_t tmp = 0;
-  bool *uniques = calloc(kf->length,sizeof(bool));
-  if (uniques == NULL)
-    return ECONF_NOMEM;
-
-  for (size_t i = 0; i < kf->length; i++) {
-    if ((!i || strcmp(kf->file_entry[i].group, kf->file_entry[i - 1].group)) &&
-        strcmp(kf->file_entry[i].group, KEY_FILE_NULL_VALUE)) {
-      uniques[i] = 1;
-      tmp++;
+  if (kf->group_count <= 0)
+    return ECONF_NOGROUP;
+  *groups = NULL;
+  *length = 0;
+  for (int i = 0; i < kf->group_count; i++) {
+    if (strcmp(kf->groups[i], KEY_FILE_NULL_VALUE)) {
+      (*length)++;
+      *groups = realloc(*groups, (*length +1) * sizeof(char *));
+      if (*groups == NULL)
+        return ECONF_NOMEM;
+      (*groups)[*length] = NULL;
+      (*groups)[*length-1] = strdup(kf->groups[i]);
+      if ((*groups)[*length-1] == NULL)
+        return ECONF_NOMEM;
     }
   }
-  if (!tmp) {
-    free(uniques);
-    return ECONF_NOGROUP;
-  }
-  *groups = calloc(tmp + 1, sizeof(char*));
-  if (*groups == NULL) {
-    free(uniques);
-    return ECONF_NOMEM;
-  }
 
-  tmp = 0;
-  for (size_t i = 0; i < kf->length; i++)
-    if (uniques[i])
-      (*groups)[tmp++] = strdup(kf->file_entry[i].group);
-
-  if (length != NULL)
-    *length = tmp;
-
-  free(uniques);
   return ECONF_SUCCESS;
 }
 
-// TODO: Same issue as with getGroups()
 econf_err
 econf_getKeys(econf_file *kf, const char *grp, size_t *length, char ***keys)
 {
@@ -677,8 +688,7 @@ econf_getKeys(econf_file *kf, const char *grp, size_t *length, char ***keys)
       return ECONF_NOMEM;
     }
   for (size_t i = 0; i < kf->length; i++) {
-    if (!strcmp(kf->file_entry[i].group, group) &&
-        (!i || strcmp(kf->file_entry[i].key, kf->file_entry[i - 1].key))) {
+    if (!strcmp(kf->file_entry[i].group, group)) {
       uniques[i] = 1;
       tmp++;
     }
@@ -764,8 +774,9 @@ libeconf_setValue(Bool, const char *, value)
 void econf_freeArray(char** array) {
   if (!array) { return; }
   char *tmp = (char*) array;
-  while (*array)
+  while (*array) {
     free(*array++);
+  }
   free(tmp);
 }
 
@@ -777,8 +788,6 @@ void econf_freeFile(econf_file *key_file) {
   if (key_file->file_entry)
   {
     for (size_t i = 0; i < key_file->alloc_length; i++) {
-      if (key_file->file_entry[i].group)
-	free(key_file->file_entry[i].group);
       if (key_file->file_entry[i].key)
 	free(key_file->file_entry[i].key);
       if (key_file->file_entry[i].value)
@@ -795,6 +804,6 @@ void econf_freeFile(econf_file *key_file) {
     free(key_file->path);
 
   econf_freeArray(key_file->parse_dirs);
-
+  econf_freeArray(key_file->groups);
   free(key_file);
 }

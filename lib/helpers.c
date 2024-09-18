@@ -42,7 +42,7 @@ char *combine_strings(const char *string_one, const char *string_two,
 
 // Set null value defined in include/defines.h
 void initialize(econf_file *key_file, size_t num) {
-  key_file->file_entry[num].group = strdup(KEY_FILE_NULL_VALUE);
+  key_file->file_entry[num].group = setGroupList(key_file, KEY_FILE_NULL_VALUE);
   key_file->file_entry[num].key = strdup(KEY_FILE_NULL_VALUE);
   key_file->file_entry[num].value = strdup(KEY_FILE_NULL_VALUE);
   key_file->file_entry[num].comment_before_key = NULL;
@@ -191,9 +191,9 @@ econf_err setKeyValue(econf_err (*function) (econf_file*, size_t, const void*),
   return function(kf, num, value);
 }
 
-struct file_entry cpy_file_entry(struct file_entry fe) {
+struct file_entry cpy_file_entry(econf_file *dest_kf, struct file_entry fe) {
   struct file_entry copied_fe;
-  copied_fe.group = strdup(fe.group);
+  copied_fe.group = setGroupList(dest_kf, fe.group);
   copied_fe.key = strdup(fe.key);
   if (fe.value)
     copied_fe.value = strdup(fe.value);
@@ -210,4 +210,33 @@ struct file_entry cpy_file_entry(struct file_entry fe) {
   copied_fe.line_number = fe.line_number;
   copied_fe.quotes = false;
   return copied_fe;
+}
+
+/* Handle groups in an string array */
+char *getFromGroupList(econf_file *key_file, const char *name) {
+  char *ret = NULL;
+  for (int i = 0; i < key_file->group_count; i++) {
+    if (!strcmp(key_file->groups[i], name)) {
+      ret = key_file->groups[i];
+      i = key_file->group_count;
+    }
+  }
+  return ret;
+}
+
+char *setGroupList(econf_file *key_file, const char *name) {
+  char *ret = getFromGroupList(key_file, name);
+  if (ret != NULL)
+    return ret;
+  key_file->group_count++;
+  key_file->groups =
+    realloc(key_file->groups, (key_file->group_count +1) * sizeof(char *));
+  if (key_file->groups == NULL) {
+    key_file->group_count--;
+  } else {
+    key_file->groups[key_file->group_count] = NULL;
+    key_file->groups[key_file->group_count-1] = strdup(name);
+    ret = key_file->groups[key_file->group_count-1];
+  }
+  return ret;
 }

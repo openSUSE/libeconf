@@ -84,6 +84,9 @@ tst_getconfdirs7_exe = executable('tst-getconfdirs7', 'tst-getconfdirs7.c', c_ar
 test('tst-getconfdirs7', tst_getconfdirs7_exe)
 tst_getconfdirs8_exe = executable('tst-getconfdirs8', 'tst-getconfdirs8.c', c_args: ['-DSUFFIX="conf"', test_args], dependencies : libeconf_dep)
 test('tst-getconfdirs8', tst_getconfdirs8_exe)
+tst_getconfdirs9_exe = executable('tst-getconfdirs9', 'tst-getconfdirs9.c', c_args: ['-DSUFFIX="conf"', test_args], dependencies : libeconf_dep)
+test('tst-getconfdirs9', tst_getconfdirs9_exe)
+
 
 tst_man_dir_exe = executable('tst-man-dir', 'tst-man-dir.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-man-dir', tst_man_dir_exe)
@@ -181,7 +184,10 @@ tst_groups3_exe = executable('tst-groups3', 'tst-groups3.c', c_args: test_args, 
 test('tst-groups3', tst_groups3_exe)
 tst_groups4_exe = executable('tst-groups4', 'tst-groups4.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-groups4', tst_groups4_exe)
-
+tst_groups5_exe = executable('tst-groups5', 'tst-groups5.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-groups5', tst_groups5_exe)
+tst_groups6_exe = executable('tst-groups6', 'tst-groups6.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-groups6', tst_groups6_exe)
 
 tst_parseconfig1_exe = executable('tst-parseconfig1', 'tst-parseconfig1.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-parseconfig1', tst_parseconfig1_exe)

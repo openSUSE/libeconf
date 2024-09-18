@@ -35,12 +35,13 @@
 
 // Insert the content of "etc_file.file_entry" into "fe" if there is no
 // group specified
-size_t insert_nogroup(struct file_entry **fe, econf_file *ef) {
+size_t insert_nogroup(econf_file *dest_kf, struct file_entry **fe,
+		      econf_file *ef) {
   size_t etc_start = 0;
   if (ef) {
     while (etc_start < ef->length &&
 	   !strcmp(ef->file_entry[etc_start].group, KEY_FILE_NULL_VALUE)) {
-      (*fe)[etc_start] = cpy_file_entry(ef->file_entry[etc_start]);
+      (*fe)[etc_start] = cpy_file_entry(dest_kf, ef->file_entry[etc_start]);
       etc_start++;
     }
   }
@@ -49,8 +50,8 @@ size_t insert_nogroup(struct file_entry **fe, econf_file *ef) {
 
 // Merge contents from existing usr_file groups
 // uf: usr_file, ef: etc_file
-size_t merge_existing_groups(struct file_entry **fe, econf_file *uf, econf_file *ef,
-                             const size_t etc_start) {
+size_t merge_existing_groups(econf_file *dest_kf, struct file_entry **fe, econf_file *uf,
+			     econf_file *ef, const size_t etc_start) {
   bool new_key;
   size_t merge_length = etc_start, tmp = etc_start, added_keys = etc_start;
   if (uf && ef) {
@@ -73,7 +74,7 @@ size_t merge_existing_groups(struct file_entry **fe, econf_file *uf, econf_file 
 	    }
 	    // If a new key is found for an existing group append it to the group
 	    if (new_key)
-	      (*fe)[i + added_keys++] = cpy_file_entry(ef->file_entry[j]);
+	      (*fe)[i + added_keys++] = cpy_file_entry(dest_kf, ef->file_entry[j]);
 	  }
 	}
 	merge_length = i + added_keys;
@@ -81,15 +82,16 @@ size_t merge_existing_groups(struct file_entry **fe, econf_file *uf, econf_file 
 	tmp = added_keys;
       }
       if (i != uf->length)
-	(*fe)[i + added_keys] = cpy_file_entry(uf->file_entry[i]);
+	(*fe)[i + added_keys] = cpy_file_entry(dest_kf, uf->file_entry[i]);
     }
   }
   return merge_length;
 }
 
 // Add entries from etc_file exclusive groups
-size_t add_new_groups(struct file_entry **fe, econf_file *uf, econf_file *ef,
-                      const size_t merge_length) {
+size_t add_new_groups(econf_file *dest_kf, struct file_entry **fe,
+		      econf_file *uf, econf_file *ef,
+		      const size_t merge_length) {
   size_t added_keys = merge_length;
   bool new_key;
   if (uf && ef) {
@@ -104,7 +106,7 @@ size_t add_new_groups(struct file_entry **fe, econf_file *uf, econf_file *ef,
 	}
       }
       if (new_key)
-	(*fe)[added_keys++] = cpy_file_entry(ef->file_entry[i]);
+	(*fe)[added_keys++] = cpy_file_entry(dest_kf, ef->file_entry[i]);
     }
     *fe = realloc(*fe, added_keys * sizeof(struct file_entry));
   }

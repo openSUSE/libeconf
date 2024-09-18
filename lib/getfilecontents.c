@@ -205,9 +205,9 @@ store (econf_file *ef, const char *group, const char *key,
   ef->file_entry[ef->length-1].quotes = quotes;
 
   if (group)
-    ef->file_entry[ef->length-1].group = strdup(group);
+	  ef->file_entry[ef->length-1].group = setGroupList(ef, group);
   else
-    ef->file_entry[ef->length-1].group = strdup(KEY_FILE_NULL_VALUE);
+    ef->file_entry[ef->length-1].group = setGroupList(ef, KEY_FILE_NULL_VALUE);
 
   if (key) {
     /* remove space at the end of the key */
@@ -453,9 +453,7 @@ read_file(econf_file *ef, const char *file,
 	retval = ECONF_EMPTY_SECTION_NAME;
 	goto out;
       }
-      if (current_group)
-	free (current_group);
-      current_group = strdup (name);
+      current_group = setGroupList(ef, name);
       continue;
     }
 
@@ -633,8 +631,6 @@ read_file(econf_file *ef, const char *file,
  out:
   free(buf);
   fclose (kf);
-  if (current_group)
-    free (current_group);
   if (current_comment_before_key)
     free(current_comment_before_key);
   if (current_comment_after_value)

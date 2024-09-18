@@ -69,4 +69,9 @@ econf_err setKeyValue(econf_err (*function) (econf_file*, size_t, const void*),
                  const void *value);
 
 /* Copy the contents of a file_entry struct */
-struct file_entry cpy_file_entry(struct file_entry fe);
+/* dest_kf contains the list of group names */
+struct file_entry cpy_file_entry(econf_file *dest_kf, struct file_entry fe);
+
+/* Handle groups in an string array */
+char *getFromGroupList(econf_file *key_file, const char *name);
+char *setGroupList(econf_file *key_file, const char *name);

@@ -164,6 +164,7 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
     *key_files = NULL;
     return ECONF_NOFILE;
   }
+
   return ECONF_SUCCESS;
 }
 

@@ -78,6 +78,10 @@ typedef struct econf_file {
   char **conf_dirs;
   int conf_count;
 
+  // groups
+  char **groups;
+  int group_count;
+
 } econf_file;
 
 /* Increases both length and alloc_length of key_file by one and initializes

@@ -33,14 +33,15 @@
 
 /* Insert the content of "etc_file.file_entry" into "fe" if there is no
    group specified.  */
-size_t insert_nogroup(struct file_entry **fe, econf_file *ef);
+size_t insert_nogroup(econf_file *dest_kf, struct file_entry **fe, econf_file *ef);
 
 /* Merge contents from existing usr_file groups */
-size_t merge_existing_groups(struct file_entry **fe, econf_file *uf, econf_file *ef,
+size_t merge_existing_groups(econf_file *dest_kf, struct file_entry **fe, econf_file *uf, econf_file *ef,
                              const size_t etc_start);
 
 /* Add entries from etc_file exclusive groups */
-size_t add_new_groups(struct file_entry **fe, econf_file *uf, econf_file *ef,
+size_t add_new_groups(econf_file *dest_kf, struct file_entry **fe,
+		      econf_file *uf, econf_file *ef,
                       const size_t merge_length);
 
 /* Returns the default dirs to iterate through when merging */

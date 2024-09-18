@@ -196,9 +196,8 @@ econf_err getPath(econf_file key_file, char **path) {
 econf_err setGroup(econf_file *key_file, size_t num, const char *value) {
   if (key_file == NULL || value == NULL)
     return ECONF_ERROR;
-  if (key_file->file_entry[num].group)
-    free(key_file->file_entry[num].group);
-  key_file->file_entry[num].group = strdup(value);
+
+  key_file->file_entry[num].group = setGroupList(key_file, value);
   if (key_file->file_entry[num].group == NULL)
     return ECONF_NOMEM;
 

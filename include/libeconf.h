@@ -647,7 +647,7 @@ extern econf_err econf_newKeyFile(econf_file **result, char delimiter, char comm
  *    List of directories from which the configuration files have to be parsed.
  *    The list is a string, divides by ":". The last entry has the highest
  *    priority. E.g.: "PARSING_DIRS=/usr/etc/:/run:/etc"
- *  CONFIG_DIRS (default <empty>)
+ *  CONFIG_DIRS (default \<empty\>)
  *    List of directory structures (with order) which describes the directories
  *    in which the files have to be parsed.
  *    The list is a string, divides by ":". The last entry has the highest
