@@ -108,6 +108,7 @@ main(void)
 	    retval = 1;
 	  }
 	}
+      econf_freeArray(keys);
     }
   if (check_key(key_file, "section1", "key", "yes") != 0 ||
       check_key(key_file, "section1", "key1", "no") != 0 ||

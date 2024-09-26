@@ -31,7 +31,7 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
   const char *suffix = "";
   char *filename, *cp;
   econf_file *key_file = NULL;
-  econf_err error;
+  econf_err error = ECONF_SUCCESS;
 
   *size = 0;
 
@@ -96,7 +96,10 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
   if (*size == 2) {
     key_file->on_merge_delete = 1;
     (*key_files)[0] = key_file;
+  } else {
+    econf_free(key_file);
   }
+  (*key_files)[*size-1] = NULL;
 
   /*
     Indicate which directories to look for. The order is:
@@ -155,6 +158,7 @@ econf_err readConfigHistoryWithCallback(econf_file ***key_files,
       return error;
     }
   }
+
   (*size)--;
   (*key_files)[*size] = NULL;
   econf_freeArray(configure_dirs);
@@ -180,8 +184,8 @@ econf_err readConfigWithCallback(econf_file **result,
 				 const void *callback_data)
 {
   size_t size = 0;
-  econf_file **key_files;
-  econf_err error;
+  econf_file **key_files = NULL;
+  econf_err error = ECONF_SUCCESS;
 
   if (*result == NULL)
     return ECONF_ARGUMENT_IS_NULL_VALUE;
@@ -218,12 +222,17 @@ econf_err readConfigWithCallback(econf_file **result,
 					  callback,
 					  callback_data);
   }
+
   if (error != ECONF_SUCCESS)
     return error;
 
-  // Merge the list of acquired key_files into merged_file
-  error = merge_econf_files(key_files, result);
-  free(key_files);
+  if (key_files) {
+    econf_free(*result);
+    *result = NULL;
+    // Merge the list of acquired key_files into merged_file
+    error = merge_econf_files(key_files, result);
+    free(key_files);
+  }
 
   return error;
 }

@@ -58,5 +58,7 @@ main(void)
     return 1;
   }  
 
+  econf_free (key_file);
+
   return retval;
 }
