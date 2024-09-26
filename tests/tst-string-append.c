@@ -91,7 +91,7 @@ check_StringArray (econf_file *key_file, const char *group,
 int
 main(void)
 {
-  econf_file *key_file = (econf_file *)-1;
+  econf_file *key_file = NULL;
   econf_err error;
   int retval = 0;
 
@@ -114,7 +114,7 @@ main(void)
   };
 
   /* double entries will be joined together */
-  if (error = econf_newKeyFile_with_options(&key_file, "JOIN_SAME_ENTRIES=1"))
+  if ((error = econf_newKeyFile_with_options(&key_file, "JOIN_SAME_ENTRIES=1")))
   {
     fprintf (stderr, "ERROR: couldn't create new file: %s\n",
              econf_errString(error));
@@ -129,7 +129,7 @@ main(void)
   if (error)
   {
     fprintf (stderr, "ERROR: couldn't read configuration file: %s\n", econf_errString(error));
-    return 1;
+    retval = 1;
   }
 
   for (size_t i = 0; i < sizeof(tests)/sizeof(*tests); i++)

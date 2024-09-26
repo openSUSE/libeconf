@@ -70,5 +70,7 @@ main(void)
     retval = 1;
   }
 
+  econf_free (key_file);
+
   return retval;
 }

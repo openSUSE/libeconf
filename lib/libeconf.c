@@ -208,6 +208,7 @@ econf_newKeyFile_with_options(econf_file **result, const char *options) {
     }
 
     /* not found --> break */
+    free(begin_opt);
     return ECONF_OPTION_NOT_FOUND;
   }
   free (begin_opt);
@@ -391,6 +392,7 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
 			       conf_count,
 			       callback,
 			       callback_data);
+
   return ret;
 }  
 
@@ -805,5 +807,6 @@ void econf_freeFile(econf_file *key_file) {
 
   econf_freeArray(key_file->parse_dirs);
   econf_freeArray(key_file->groups);
+  econf_freeArray(key_file->conf_dirs);
   free(key_file);
 }

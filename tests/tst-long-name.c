@@ -40,7 +40,7 @@ main(void)
     char *val;
     error = econf_getStringValue(key_file, NULL, keys[i], &val);
     if (error != ECONF_SUCCESS) {
-      fprintf(stderr, "Unable tto get string from key %s: %s",
+      fprintf(stderr, "Unable to get string from key %s: %s",
 	      keys[i], econf_errString(error));
       return 4;
     }
@@ -55,7 +55,9 @@ main(void)
       return 6;
     }	    
     printf("key: '%s', value: '%s'\n", keys[i], val);
+    free(val);
   }
+  econf_free(keys);
   econf_free(key_file);
   return retval;  
 }
