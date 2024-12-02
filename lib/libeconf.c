@@ -30,6 +30,7 @@
 #include "mergefiles.h"
 #include "readconfig.h"
 
+#include <errno.h>
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
@@ -557,7 +558,13 @@ econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
 
   /* Checking if the directory exists*/
   struct stat stats;
-  stat(save_to_dir, &stats);
+  if (stat(save_to_dir, &stats) < 0)
+    {
+      if (errno == ENOENT)
+	return ECONF_NOFILE;
+      else
+	return ECONF_ERROR;
+    }
   if (!S_ISDIR(stats.st_mode))
     return ECONF_NOFILE;
 
