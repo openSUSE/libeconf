@@ -20,6 +20,8 @@
   SOFTWARE.
 */
 
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 #include <errno.h>
 #include <ftw.h>
 #include <getopt.h>

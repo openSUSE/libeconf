@@ -21,6 +21,8 @@
   SOFTWARE.
 */
 
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 #include <libeconf.h>
 
 #include <math.h>
