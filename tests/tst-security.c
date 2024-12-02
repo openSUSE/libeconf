@@ -2,6 +2,8 @@
 #  include <config.h>
 #endif
 
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
