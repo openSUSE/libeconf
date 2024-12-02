@@ -4,7 +4,6 @@ on: [push, pull_request]
 
 env:
   VERBOSE: 1
-  ENABLE_VALGRIND: 1
 
 jobs:
   #  whitespace-errors:
@@ -19,6 +18,7 @@ jobs:
     env:
       CC: gcc-14
       TARGET: x86_64
+      ENABLE_VALGRIND: 1
     steps:
     - uses: actions/checkout@v4
       with:
@@ -69,6 +69,7 @@ jobs:
     env:
       CC: gcc-13
       TARGET: x86_64
+      ENABLE_VALGRIND: 1
     steps:
     - uses: actions/checkout@v4
       with:
