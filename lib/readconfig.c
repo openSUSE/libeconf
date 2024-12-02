@@ -236,4 +236,3 @@ econf_err readConfigWithCallback(econf_file **result,
 
   return error;
 }
-
