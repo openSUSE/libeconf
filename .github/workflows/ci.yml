@@ -4,6 +4,7 @@ on: [push, pull_request]
 
 env:
   VERBOSE: 1
+  ENABLE_VALGRIND: 1
 
 jobs:
   #  whitespace-errors:
@@ -145,62 +146,6 @@ jobs:
     runs-on: ubuntu-24.04
     env:
       CC: clang-18
-      TARGET: x86_64
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: install dependencies
-      run: ci/install-dependencies.sh
-    - name: build check
-      run: ci/build.sh
-
-  clang17-x86_64:
-    runs-on: ubuntu-24.04
-    env:
-      CC: clang-17
-      TARGET: x86_64
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: install dependencies
-      run: ci/install-dependencies.sh
-    - name: build check
-      run: ci/build.sh
-
-  clang16-x86_64:
-    runs-on: ubuntu-24.04
-    env:
-      CC: clang-16
-      TARGET: x86_64
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: install dependencies
-      run: ci/install-dependencies.sh
-    - name: build check
-      run: ci/build.sh
-
-  clang15-x86_64:
-    runs-on: ubuntu-24.04
-    env:
-      CC: clang-15
-      TARGET: x86_64
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: install dependencies
-      run: ci/install-dependencies.sh
-    - name: build check
-      run: ci/build.sh
-
-  clang14-x86_64:
-    runs-on: ubuntu-24.04
-    env:
-      CC: clang-14
       TARGET: x86_64
     steps:
     - uses: actions/checkout@v4
