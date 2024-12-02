@@ -21,17 +21,17 @@
 int
 main(void)
 {
-  econf_file *key_file = NULL;
+  __attribute__((cleanup(econf_freeFilep))) econf_file *key_file = NULL;
   int retval = 0;
   econf_err error;
   char **keys;
-  size_t key_number;  
+  size_t key_number;
 
   error = econf_readConfig (&key_file,
 	                    "foo",
                             "/usr/lib",
 			    "bar",
-			    "conf", "=", "#");  
+			    "conf", "=", "#");
   if (error)
     {
       fprintf (stderr, "ERROR: econf_readConfig: %s\n",
@@ -49,10 +49,8 @@ main(void)
   if (key_number > 0)
     {
       fprintf (stderr, "There should be no key. Key numbers: %ld\n", key_number);
-      retval = 1;      
+      retval = 1;
     }
-  
-  econf_free (key_file);
 
   return retval;
 }
