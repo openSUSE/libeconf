@@ -203,6 +203,8 @@ test('tst-shells2', tst_shells2_exe)
 tst_freep1_exe = executable('tst-freep1', 'tst-freep1.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-freep1', tst_freep1_exe)
 
+tst_readConfig1_exe = executable('tst-readConfig1', 'tst-readConfig1.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-readConfig1', tst_readConfig1_exe)
 
 test('tst_econftool1', find_program('tst-econftool1.sh'))
 test('tst_econftool_show1', find_program('tst-econftool_show1.sh'))
