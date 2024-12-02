@@ -329,10 +329,12 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
   char run_dir[PATH_MAX];
   char etc_dir[PATH_MAX];
   econf_err ret = ECONF_SUCCESS;
+  int init_keyfile = 0;
 
   if (*key_file == NULL) {
     if ((ret = econf_newKeyFile_with_options(key_file, "")) != ECONF_SUCCESS)
       return ret;
+    init_keyfile = 1;
   }
 
   if (config_name == NULL || strlen(config_name) == 0) {
@@ -392,6 +394,9 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
 			       conf_count,
 			       callback,
 			       callback_data);
+
+  if (init_keyfile && ret != ECONF_SUCCESS)
+    *key_file = econf_free(*key_file);
 
   return ret;
 }
