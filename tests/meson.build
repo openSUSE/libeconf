@@ -192,15 +192,16 @@ test('tst-groups6', tst_groups6_exe)
 tst_parseconfig1_exe = executable('tst-parseconfig1', 'tst-parseconfig1.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-parseconfig1', tst_parseconfig1_exe)
 
-
 tst_quote1_exe = executable('tst-quote1', 'tst-quote1.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-quote1', tst_quote1_exe)
-
 
 tst_shells1_exe = executable('tst-shells1', 'tst-shells1.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-shells1', tst_shells1_exe)
 tst_shells2_exe = executable('tst-shells2', 'tst-shells2.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-shells2', tst_shells2_exe)
+
+tst_freep1_exe = executable('tst-freep1', 'tst-freep1.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-freep1', tst_freep1_exe)
 
 
 test('tst_econftool1', find_program('tst-econftool1.sh'))
