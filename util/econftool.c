@@ -44,7 +44,7 @@ static char conf_dir[PATH_MAX] = {0}; /* the directory of the config file */
 static char conf_basename[PATH_MAX] = {0}; /* the filename without the suffix */
 static char conf_filename[PATH_MAX] = {0}; /* the filename including the suffix */
 static char conf_path[PATH_MAX] = {0}; /* the path concatenated with the filename and the suffix */
-static char xdg_config_dir[PATH_MAX] = {0};
+static char *xdg_config_dir = NULL;
 static char root_dir[PATH_MAX] = "/etc";
 static char usr_root_dir[PATH_MAX] = "/usr/etc";
 
@@ -738,9 +738,16 @@ int main (int argc, char *argv[])
 
     if (getenv("XDG_CONFIG_HOME") == NULL) {
         /* if no XDG_CONFIG_HOME is specified take ~/.config as default */
-	snprintf(xdg_config_dir, sizeof(xdg_config_dir), "%s/.config", home_dir);
+        if (asprintf(&xdg_config_dir, "%s/.config", home_dir) < 0) {
+	    fprintf(stderr, "Out of memory!\n");
+	    exit(EXIT_FAILURE);
+        }
     } else {
-        snprintf(xdg_config_dir, sizeof(xdg_config_dir), "%s", getenv("XDG_CONFIG_HOME"));
+        xdg_config_dir = strdup(getenv("XDG_CONFIG_HOME"));
+	if (xdg_config_dir == NULL) {
+	    fprintf(stderr, "Out of memory!\n");
+	    exit(EXIT_FAILURE);
+        }
     }
 
     /* Change Root dirs */
