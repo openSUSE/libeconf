@@ -149,7 +149,7 @@ econf_newKeyFile_with_options(econf_file **result, const char *options) {
   (*result)->conf_count = 0;
   (*result)->groups = NULL;
   (*result)->group_count = 0;
-  
+
 
   if (options == NULL || strlen(options) == 0)
     return ECONF_SUCCESS;
@@ -260,8 +260,7 @@ econf_err econf_readFileWithCallback(econf_file **key_file, const char *file_nam
 				  callback,
 				  callback_data);
   if (t_err != ECONF_SUCCESS) {
-    econf_freeFile(*key_file);
-    *key_file = NULL;
+    *key_file = econf_freeFile(*key_file);
   }
   return t_err;
 }
@@ -394,7 +393,7 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
 			       callback_data);
 
   return ret;
-}  
+}
 
 
 econf_err econf_readConfig (econf_file **key_file,
@@ -451,7 +450,7 @@ econf_err econf_readDirsHistoryWithCallback(econf_file ***key_files,
 						 conf_count,
 						 callback,
 						 callback_data);
-   econf_freeArray(parse_dirs);
+   parse_dirs = econf_freeArray(parse_dirs);
    return ret;
 }
 
@@ -482,7 +481,7 @@ econf_err econf_readDirsHistory(econf_file ***key_files,
 						false, false, /*join_same_entries, python_style*/
 						conf_dirs, conf_count,
 						NULL, NULL);
-  econf_freeArray(parse_dirs);
+  parse_dirs = econf_freeArray(parse_dirs);
   return ret;
 }
 
@@ -773,31 +772,28 @@ libeconf_setValue(Bool, const char *, value)
 
 /* --- DESTROY FUNCTIONS --- */
 
-void econf_freeArray(char** array) {
-  if (!array) { return; }
+char **econf_freeArray(char** array) {
+  if (!array) { return NULL; }
   char *tmp = (char*) array;
   while (*array) {
     free(*array++);
   }
   free(tmp);
+  return NULL;
 }
 
 // Free memory allocated by key_file
-void econf_freeFile(econf_file *key_file) {
+econf_file *econf_freeFile(econf_file *key_file) {
   if (!key_file)
-    return;
+    return NULL;
 
   if (key_file->file_entry)
   {
     for (size_t i = 0; i < key_file->alloc_length; i++) {
-      if (key_file->file_entry[i].key)
-	free(key_file->file_entry[i].key);
-      if (key_file->file_entry[i].value)
-	free(key_file->file_entry[i].value);
-      if (key_file->file_entry[i].comment_before_key)
-	free(key_file->file_entry[i].comment_before_key);
-      if (key_file->file_entry[i].comment_after_value)
-	free(key_file->file_entry[i].comment_after_value);
+      free(key_file->file_entry[i].key);
+      free(key_file->file_entry[i].value);
+      free(key_file->file_entry[i].comment_before_key);
+      free(key_file->file_entry[i].comment_after_value);
     }
     free(key_file->file_entry);
   }
@@ -809,4 +805,5 @@ void econf_freeFile(econf_file *key_file) {
   econf_freeArray(key_file->groups);
   econf_freeArray(key_file->conf_dirs);
   free(key_file);
+  return NULL;
 }
