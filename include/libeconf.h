@@ -1086,7 +1086,7 @@ extern void econf_errLocation (char **filename, uint64_t *line_nr);
  * @return void
  *
  */
-extern void econf_freeArray(char **array);
+extern char **econf_freeArray(char **array);
 
 /** @brief Free memory allocated by e.g. econf_readFile(), econf_readDirs(),...
  *
@@ -1094,7 +1094,7 @@ extern void econf_freeArray(char **array);
  * @return void
  *
  */
-extern void econf_freeFile(econf_file *key_file);
+extern econf_file *econf_freeFile(econf_file *key_file);
 
 /** @brief All parsed files require this user permission.
  *         DEPRECATED: Use the callback in econf_readFileWithCallback or
