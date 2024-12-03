@@ -27,6 +27,13 @@ main(void)
   char **keys;
   size_t key_number;
 
+  if ((error = econf_newKeyFile_with_options(&key_file, "ROOT_PREFIX="TESTSDIR)))
+    {
+      fprintf (stderr, "ERROR: couldn't allocate new file: %s\n",
+	       econf_errString(error));
+      return 1;
+    }
+
   error = econf_readConfig (&key_file,
 	                    "foo",
                             "/usr/lib",

@@ -60,10 +60,8 @@ tst_extvalue_exe = executable('tst-extvalue', 'tst-extvalue.c', c_args: test_arg
 test('tst-extvalue', tst_extvalue_exe)
 tst_comments_exe = executable('tst-comments', 'tst-comments.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-comments', tst_comments_exe)
-tst_comments2_exe = executable('tst-comments2',
-  sources: ['tst-comments2.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
-            '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],
-  c_args: ['-DTESTSDIR="' + testdir + 'tst-comments2-data' + '"'], dependencies : staticlibeconf_dep)
+tst_comments2_exe = executable('tst-comments2', 'tst-comments2.c',
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-comments2-data' + '"'], dependencies : libeconf_dep)
 test('tst-comments2', tst_comments2_exe)
 tst_python_exe = executable('tst-python', 'tst-python.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-python', tst_python_exe)
@@ -94,70 +92,48 @@ test('tst-man-dir', tst_man_dir_exe)
 tst_options_exe = executable('tst-options', 'tst-options.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-options', tst_options_exe)
 
-tst_uapi_1_exe = executable('tst-uapi-1',
-  sources: ['tst-uapi-1.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
-            '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],
-  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-1-data' + '"'], dependencies : staticlibeconf_dep)
+tst_uapi_1_exe = executable('tst-uapi-1', 'tst-uapi-1.c',
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-1-data' + '"'], dependencies : libeconf_dep)
 test('tst-uapi-1', tst_uapi_1_exe)
 
-tst_uapi_2_exe = executable('tst-uapi-2',
-  sources: ['tst-uapi-2.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
-            '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],
-  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-2-data' + '"'], dependencies : staticlibeconf_dep)
+tst_uapi_2_exe = executable('tst-uapi-2', 'tst-uapi-2.c',
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-2-data' + '"'], dependencies : libeconf_dep)
 test('tst-uapi-2', tst_uapi_2_exe)
 
-tst_uapi_3_exe = executable('tst-uapi-3',
-  sources: ['tst-uapi-3.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
-            '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],
-  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-3-data' + '"'], dependencies : staticlibeconf_dep)
+tst_uapi_3_exe = executable('tst-uapi-3', 'tst-uapi-3.c',
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-3-data' + '"'], dependencies : libeconf_dep)
 test('tst-uapi-3', tst_uapi_3_exe)
 
-tst_uapi_4_exe = executable('tst-uapi-4',
-  sources: ['tst-uapi-4.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
-            '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],
-  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-4-data' + '"'], dependencies : staticlibeconf_dep)
+tst_uapi_4_exe = executable('tst-uapi-4', 'tst-uapi-4.c',
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-4-data' + '"'], dependencies : libeconf_dep)
 test('tst-uapi-4', tst_uapi_4_exe)
 
-tst_uapi_5_exe = executable('tst-uapi-5',
-  sources: ['tst-uapi-5.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
-            '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],
-  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-5-data' + '"'], dependencies : staticlibeconf_dep)
+tst_uapi_5_exe = executable('tst-uapi-5', 'tst-uapi-5.c',
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-5-data' + '"'], dependencies : libeconf_dep)
 test('tst-uapi-5', tst_uapi_5_exe)
 
-tst_uapi_6_exe = executable('tst-uapi-6',
-  sources: ['tst-uapi-6.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
-            '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],
-  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-6-data' + '"'], dependencies : staticlibeconf_dep)
+tst_uapi_6_exe = executable('tst-uapi-6', 'tst-uapi-6.c',
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-6-data' + '"'], dependencies : libeconf_dep)
 test('tst-uapi-6', tst_uapi_6_exe)
 
-tst_uapi_7_exe = executable('tst-uapi-7',
-  sources: ['tst-uapi-7.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
-            '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],
-  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-7-data' + '"'], dependencies : staticlibeconf_dep)
+tst_uapi_7_exe = executable('tst-uapi-7', 'tst-uapi-7.c',
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-7-data' + '"'], dependencies : libeconf_dep)
 test('tst-uapi-7', tst_uapi_7_exe)
 
-tst_uapi_8_exe = executable('tst-uapi-8',
-  sources: ['tst-uapi-8.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
-            '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],
-  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-8-data' + '"'], dependencies : staticlibeconf_dep)
+tst_uapi_8_exe = executable('tst-uapi-8', 'tst-uapi-8.c',
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-8-data' + '"'], dependencies : libeconf_dep)
 test('tst-uapi-8', tst_uapi_8_exe)
 
-tst_uapi_9_exe = executable('tst-uapi-9',
-  sources: ['tst-uapi-9.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
-            '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],
-  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-9-data' + '"'], dependencies : staticlibeconf_dep)
+tst_uapi_9_exe = executable('tst-uapi-9', 'tst-uapi-9.c',
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-9-data' + '"'], dependencies : libeconf_dep)
 test('tst-uapi-9', tst_uapi_9_exe)
 
-tst_uapi_10_exe = executable('tst-uapi-10',
-  sources: ['tst-uapi-10.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
-            '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],
-  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-10-data' + '"'], dependencies : staticlibeconf_dep)
+tst_uapi_10_exe = executable('tst-uapi-10', 'tst-uapi-10.c',
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-10-data' + '"'], dependencies : libeconf_dep)
 test('tst-uapi-10', tst_uapi_10_exe)
 
-tst_uapi_11_exe = executable('tst-uapi-11',
-  sources: ['tst-uapi-11.c', '../lib/helpers.c', '../lib/readconfig.c', '../lib/libeconf.c', '../lib/getfilecontents.c',
-            '../lib/mergefiles.c', '../lib/econf_error.c', '../lib/keyfile.c'],
-  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-11-data' + '"'], dependencies : staticlibeconf_dep)
+tst_uapi_11_exe = executable('tst-uapi-11', 'tst-uapi-11.c',
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-11-data' + '"'], dependencies : libeconf_dep)
 test('tst-uapi-11', tst_uapi_11_exe)
 
 tst_parse_error_exe = executable('tst-parse-error', 'tst-parse-error.c', c_args: test_args, dependencies : libeconf_dep)

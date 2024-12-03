@@ -656,6 +656,8 @@ extern econf_err econf_newKeyFile(econf_file **result, char delimiter, char comm
  *           "<default_dirs>/<config_name>.conf.d/"
  *           "<default_dirs>/<config_name>.d/"
  *           "<default_dirs>/<config_name>/"
+ *  ROOT_PREFIX (default \<empty\>)
+ *    Directory prefix used for all search directories if specified.
  *
  * e.g. Parsing configuration files written in python style:
  *
