@@ -82,6 +82,9 @@ typedef struct econf_file {
   char **groups;
   int group_count;
 
+  // root prefix, added to /etc, /usr, /run, ...
+  char *root_prefix;
+
 } econf_file;
 
 /* Increases both length and alloc_length of key_file by one and initializes

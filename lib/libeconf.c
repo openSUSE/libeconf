@@ -39,6 +39,7 @@
 
 #define PARSING_DIRS "PARSING_DIRS="
 #define CONFIG_DIRS "CONFIG_DIRS="
+#define ROOT_PREFIX "ROOT_PREFIX="
 
 // configuration directories format
 static char **conf_dirs = {NULL}; // see econf_set_conf_dirs
@@ -150,7 +151,7 @@ econf_newKeyFile_with_options(econf_file **result, const char *options) {
   (*result)->conf_count = 0;
   (*result)->groups = NULL;
   (*result)->group_count = 0;
-
+  (*result)->root_prefix = NULL;
 
   if (options == NULL || strlen(options) == 0)
     return ECONF_SUCCESS;
@@ -205,6 +206,11 @@ econf_newKeyFile_with_options(econf_file **result, const char *options) {
       }
       (*result)->conf_dirs[(*result)->conf_count] = NULL;
       free (begin_entry);
+      continue;
+    }
+
+    if (strncmp(o_opt, ROOT_PREFIX, strlen(ROOT_PREFIX)) == 0) {
+      (*result)->root_prefix = strdup(o_opt + strlen(ROOT_PREFIX));
       continue;
     }
 
@@ -353,27 +359,27 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
   if (usr_subdir == NULL)
     usr_subdir = "";
 
-#ifdef TESTSDIR
-  if (project != NULL) {
-    snprintf(usr_dir, sizeof(usr_dir), "%s%s/%s", TESTSDIR, usr_subdir, project);
-    snprintf(run_dir, sizeof(run_dir), "%s%s/%s", TESTSDIR, DEFAULT_RUN_SUBDIR, project);
-    snprintf(etc_dir, sizeof(etc_dir), "%s%s/%s", TESTSDIR, DEFAULT_ETC_SUBDIR, project);
+  if ((*key_file)->root_prefix) {
+    if (project != NULL) {
+      snprintf(usr_dir, sizeof(usr_dir), "%s/%s/%s", (*key_file)->root_prefix, usr_subdir, project);
+      snprintf(run_dir, sizeof(run_dir), "%s/%s/%s", (*key_file)->root_prefix, DEFAULT_RUN_SUBDIR, project);
+      snprintf(etc_dir, sizeof(etc_dir), "%s/%s/%s", (*key_file)->root_prefix, DEFAULT_ETC_SUBDIR, project);
+    } else {
+      snprintf(usr_dir, sizeof(usr_dir), "%s%s", (*key_file)->root_prefix, usr_subdir);
+      snprintf(run_dir, sizeof(run_dir), "%s%s", (*key_file)->root_prefix, DEFAULT_RUN_SUBDIR);
+      snprintf(etc_dir, sizeof(etc_dir), "%s%s", (*key_file)->root_prefix, DEFAULT_ETC_SUBDIR);
+    }
   } else {
-    snprintf(usr_dir, sizeof(usr_dir), "%s%s", TESTSDIR, usr_subdir);
-    snprintf(run_dir, sizeof(run_dir), "%s%s", TESTSDIR, DEFAULT_RUN_SUBDIR);
-    snprintf(etc_dir, sizeof(etc_dir), "%s%s", TESTSDIR, DEFAULT_ETC_SUBDIR);
+    if (project != NULL) {
+      snprintf(usr_dir, sizeof(usr_dir), "%s/%s", usr_subdir, project);
+      snprintf(run_dir, sizeof(run_dir), "%s/%s", DEFAULT_RUN_SUBDIR, project);
+      snprintf(etc_dir, sizeof(etc_dir), "%s/%s", DEFAULT_ETC_SUBDIR, project);
+    } else {
+      snprintf(usr_dir, sizeof(usr_dir), "%s", usr_subdir);
+      snprintf(run_dir, sizeof(run_dir), "%s", DEFAULT_RUN_SUBDIR);
+      snprintf(etc_dir, sizeof(etc_dir), "%s", DEFAULT_ETC_SUBDIR);
+    }
   }
-#else
-  if (project != NULL) {
-    snprintf(usr_dir, sizeof(usr_dir), "%s/%s", usr_subdir, project);
-    snprintf(run_dir, sizeof(run_dir), "%s/%s", DEFAULT_RUN_SUBDIR, project);
-    snprintf(etc_dir, sizeof(etc_dir), "%s/%s", DEFAULT_ETC_SUBDIR, project);
-  } else {
-    snprintf(usr_dir, sizeof(usr_dir), "%s", usr_subdir);
-    snprintf(run_dir, sizeof(run_dir), "%s", DEFAULT_RUN_SUBDIR);
-    snprintf(etc_dir, sizeof(etc_dir), "%s", DEFAULT_ETC_SUBDIR);
-  }
-#endif
 
   if ((*key_file)->parse_dirs_count == 0) {
     /* taking default */
@@ -816,6 +822,7 @@ econf_file *econf_freeFile(econf_file *key_file) {
   econf_freeArray(key_file->parse_dirs);
   econf_freeArray(key_file->groups);
   econf_freeArray(key_file->conf_dirs);
+  free(key_file->root_prefix);
   free(key_file);
   return NULL;
 }
