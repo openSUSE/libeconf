@@ -38,8 +38,7 @@
 
 /*info for reporting scan errors (line Nr, filename) */
 static uint64_t last_scanned_line_nr = 0;
-static char last_scanned_filename[PATH_MAX];
-
+static char *last_scanned_filename = NULL;
 
 // Checking file permissions, uid, group,...
 bool file_owner_set = false;
@@ -338,7 +337,10 @@ read_file(econf_file *ef, const char *file,
   if (kf == NULL)
     return ECONF_NOFILE;
 
-  snprintf(last_scanned_filename, sizeof(last_scanned_filename), "%s", file);
+  free(last_scanned_filename);
+  last_scanned_filename = strdup(file);
+  if (last_scanned_filename == NULL)
+      return ECONF_NOMEM;
 
   check_delim(delim, &has_wsp, &has_nonwsp);
 
@@ -647,5 +649,10 @@ read_file(econf_file *ef, const char *file,
 void last_scanned_file(char **filename, uint64_t *line_nr)
 {
   *line_nr = last_scanned_line_nr;
-  *filename = strdup(last_scanned_filename);
+  *filename = strdup(last_scanned_filename ? last_scanned_filename : "");
+}
+
+void free_last_scanned_file()
+{
+  free(last_scanned_filename);
 }

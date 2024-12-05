@@ -40,13 +40,13 @@
 static const char *utilname = "econftool";
 static bool non_interactive = false;
 static char *conf_suffix = NULL; /* the suffix of the filename e.g. .conf */
-static char conf_dir[PATH_MAX] = {0}; /* the directory of the config file */
-static char conf_basename[PATH_MAX] = {0}; /* the filename without the suffix */
-static char conf_filename[PATH_MAX] = {0}; /* the filename including the suffix */
-static char conf_path[PATH_MAX] = {0}; /* the path concatenated with the filename and the suffix */
+static char *conf_dir = NULL; /* the directory of the config file */
+static char *conf_basename = NULL; /* the filename without the suffix */
+static char *conf_filename = NULL; /* the filename including the suffix */
+static char *conf_path = NULL; /* the path concatenated with the filename and the suffix */
 static char *xdg_config_dir = NULL;
-static char root_dir[PATH_MAX] = "/etc";
-static char usr_root_dir[PATH_MAX] = "/usr/etc";
+static char *root_dir = NULL;
+static char *usr_root_dir = NULL;
 
 /**
  * @brief Shows the usage.
@@ -112,26 +112,31 @@ static char *replace_str(char *str, char *orig, char *rep)
  *
  * @param change_path the path to be changed
  */
-static void change_root_dir(char change_path[PATH_MAX])
+static void change_root_dir(char **change_path)
 {
     if (getenv("ECONFTOOL_ROOT") != NULL) {
 
         int strlen_econftool_root = strlen(getenv("ECONFTOOL_ROOT"));
         /* check if ECONFTOOL_ROOT has already been added */
-        if (strncmp(change_path, getenv("ECONFTOOL_ROOT"), strlen_econftool_root) == 0)
+        if (*change_path != NULL &&
+	    strncmp(*change_path, getenv("ECONFTOOL_ROOT"), strlen_econftool_root) == 0)
             return;
 
-        if ((strlen(change_path) + strlen_econftool_root) >= PATH_MAX) {
-            fprintf(stderr, "ECONFTOOL_ROOT + change_path is too long\n");
-            exit(EXIT_FAILURE);
-        }
+	if (*change_path != NULL) {
+            char *tmp = strdup(*change_path);
+	    free(*change_path);
+	    if (asprintf(change_path, "%s%s", getenv("ECONFTOOL_ROOT"), tmp) < 0) {
+		fprintf(stderr, "Out of memory!\n");
+		exit(EXIT_FAILURE);
+	    }
 
-        char *tmp = strdup(change_path);
-
-        strcpy(change_path, getenv("ECONFTOOL_ROOT"));
-        strcat(change_path, tmp);
-
-        free(tmp);
+	    free(tmp);
+	} else {
+	    if (asprintf(change_path, "%s", getenv("ECONFTOOL_ROOT")) < 0) {
+		fprintf(stderr, "Out of memory!\n");
+		exit(EXIT_FAILURE);
+	    }
+	}
     }
 }
 
@@ -150,7 +155,7 @@ static int nftw_remove(const char *path, const struct stat *sb, int flag, struct
 /**
  * @brief Generate a tmpfile using mkstemp() and write its name into tmp_name
  */
-static int generate_tmp_file(char *tmp_name)
+static int generate_tmp_file(char **tmp_name)
 {
     int filedes;
     char tmp_filename[] = "/tmp/econftool-XXXXXX";
@@ -160,7 +165,11 @@ static int generate_tmp_file(char *tmp_name)
         return -1;
     }
 
-    strcpy(tmp_name, tmp_filename);
+    *tmp_name = strdup(tmp_filename);
+    if (*tmp_name == NULL) {
+        perror("out of memory!");
+        return -1;
+    }
     return 0;
 }
 
@@ -346,17 +355,26 @@ static int econf_edit_editor(struct econf_file **key_file_edit, struct econf_fil
     econf_err econf_error;
     int wstatus;
     char *editor;
-    char tmpfile_edit[FILENAME_MAX];
-    char path_tmpfile_edit[PATH_MAX];
-    char tmp_name[PATH_MAX];
+    char *tmpfile_edit = NULL;
+    char *path_tmpfile_edit = NULL;
+    char *tmp_name = NULL;
     char *tmp_path = getenv("TMPDIR");
     if (tmp_path == NULL)
         tmp_path = "/tmp";
 
-    if (generate_tmp_file(tmp_name))
+    if (generate_tmp_file(&tmp_name))
         return -1;
-    snprintf(path_tmpfile_edit, sizeof(path_tmpfile_edit), "%s", tmp_name);
-    snprintf(tmpfile_edit, sizeof(tmpfile_edit), "%s", strrchr(path_tmpfile_edit, '/') + 1);
+
+    path_tmpfile_edit = strdup(tmp_name);
+    if (path_tmpfile_edit == NULL) {
+       fprintf(stderr, "Out of memory!\n");
+       return -1;
+    }
+    tmpfile_edit = strdup(strrchr(path_tmpfile_edit, '/') + 1);
+    if (tmpfile_edit == NULL) {
+       fprintf(stderr, "Out of memory!\n");
+       return -1;
+    }
 
     editor = getenv("EDITOR");
     if (editor == NULL) {
@@ -537,18 +555,17 @@ static int econf_revert(bool is_root, bool use_homedir)
     char input[3] = "";
     int status = 0;
 
+    free(conf_path);
     if (!is_root || use_homedir) {
-        int ret = snprintf(conf_path, sizeof(conf_path), "%s/%s", xdg_config_dir, conf_filename);
-	if (ret < 0 || ret >= (int)(sizeof(conf_path))) { /* check truncation */
-	  fprintf(stderr, "Filename too long\n");
-	  return -1;
-	}
+	if (asprintf(&conf_path, "%s/%s", xdg_config_dir, conf_filename) < 0) {
+	   fprintf(stderr, "Out of memory!\n");
+	   return -1;
+        }
     } else {
-        int ret = snprintf(conf_path, sizeof(conf_path), "/etc/%s", conf_filename);
-	if (ret < 0 || ret >= (int)(sizeof(conf_path))) { /* check truncation */
-	  fprintf(stderr, "Filename too long\n");
-	  return -1;
-	}
+	if (asprintf(&conf_path, "/etc/%s", conf_filename) < 0) {
+	   fprintf(stderr, "Out of memory!\n");
+	   return -1;
+        }
     }
 
     if (access(conf_path, F_OK) == -1 && (access(conf_dir, F_OK) == -1 || !is_root)) {
@@ -609,7 +626,7 @@ int main (int argc, char *argv[])
 {
     static const char *dropin_filename = "90_econftool.conf";
     static econf_file *key_file = NULL;
-    char home_dir[PATH_MAX] = {0}; /* the path of the home directory */
+    char *home_dir = NULL; /* the path of the home directory */
     bool is_dropin_file = true;
     bool is_root = false;
     bool use_homedir = false;
@@ -631,12 +648,21 @@ int main (int argc, char *argv[])
         {0,             0,                 0,  0 }
     };
 
+    root_dir = strdup("/etc");
+    usr_root_dir = strdup("/usr/etc");
+    conf_dir = strdup("");
+    conf_basename = strdup("");
+
     while ((opt = getopt_long(argc, argv, "hfyuc:d:", longopts, &index)) != -1) {
         switch(opt) {
         case 'f':
             /* overwrite path */
-            snprintf(conf_dir, sizeof(conf_dir), "%s", "/etc");
-            change_root_dir(conf_dir);
+	    free(conf_dir);
+            if (asprintf(&conf_dir, "%s", "/etc") < 0) {
+		fprintf(stderr, "Out of memory!\n");
+		exit(EXIT_FAILURE);
+	    }
+            change_root_dir(&conf_dir);
             is_dropin_file = false;
             break;
         case 'h':
@@ -701,40 +727,57 @@ int main (int argc, char *argv[])
 	    exit(1);
 	} else {
             /* set filename to the proper argv argument */
-	    int ret = snprintf(conf_basename, strlen(argv[optind + 1]) - strlen(conf_suffix) + 1, "%s", argv[optind + 1]);
-	    if (ret < 0) { /* Do not check truncation because it is intent */
-	        fprintf(stderr, "snprintf general error\n");
+            free(conf_basename);
+	    conf_basename = strndup(argv[optind + 1], strlen(argv[optind + 1]) - strlen(conf_suffix));
+	    if (conf_basename == NULL) {
+	        fprintf(stderr, "Out of memory!\n");
 		return EXIT_FAILURE;
 	    }
 	}
     }
 
-    snprintf(conf_filename, sizeof(conf_filename), "%s" , argv[optind + 1]);
+    conf_filename = strdup(argv[optind + 1]);
+    if (conf_filename == NULL) {
+	fprintf(stderr, "Out of memory!\n");
+	exit(EXIT_FAILURE);
+    }
 
     if (is_dropin_file) {
-        int ret = snprintf(conf_dir, sizeof(conf_dir), "/etc/%s.d", conf_filename);
-	if (ret < 0 || ret >= (int)(sizeof(conf_dir))) { /* check truncation */
-	  fprintf(stderr, "Filename too long\n");
-	  return EXIT_FAILURE;
-	}
-        change_root_dir(conf_dir);
+        free(conf_dir);
+        if (asprintf(&conf_dir, "/etc/%s.d", conf_filename) < 0) {
+	    fprintf(stderr, "Out of memory!\n");
+	    exit(EXIT_FAILURE);
+        }
+        change_root_dir(&conf_dir);
     }
-    int ret_snprintf = snprintf(conf_path, sizeof(conf_path), "%s/%s", conf_dir, conf_filename);
-    if (ret_snprintf < 0 || ret_snprintf >= (int)(sizeof(conf_path))) { /* check truncation */
-      fprintf(stderr, "Filename too long\n");
-      return EXIT_FAILURE;
+
+    free(conf_path);
+    if (asprintf(&conf_path, "%s/%s", conf_dir, conf_filename) < 0) {
+	fprintf(stderr, "Out of memory!\n");
+	return EXIT_FAILURE;
     }
 
     if (getenv("ECONFTOOL_ROOT") == NULL)
         if (getenv("HOME") != NULL) {
-            snprintf(home_dir, sizeof(home_dir), "%s", getenv("HOME"));
+	    free(home_dir);
+	    home_dir = strdup(getenv("HOME"));
+	    if (home_dir == NULL) {
+		fprintf(stderr, "Out of memory!\n");
+		return EXIT_FAILURE;
+	    }
         } else {
             struct passwd *pw = getpwuid(getuid());
-            if(pw)
-                strcpy(home_dir, pw->pw_dir);
+            if(pw) {
+		free (home_dir);
+		home_dir = strdup(pw->pw_dir);
+		if (home_dir == NULL) {
+		    fprintf(stderr, "Out of memory!\n");
+		    return EXIT_FAILURE;
+		}
+	    }
         }
     else
-        change_root_dir(home_dir);
+        change_root_dir(&home_dir);
 
     if (getenv("XDG_CONFIG_HOME") == NULL) {
         /* if no XDG_CONFIG_HOME is specified take ~/.config as default */
@@ -751,11 +794,10 @@ int main (int argc, char *argv[])
     }
 
     /* Change Root dirs */
-    change_root_dir(root_dir);
-    change_root_dir(usr_root_dir);
+    change_root_dir(&root_dir);
+    change_root_dir(&usr_root_dir);
 
     int ret = 0;
-
     if (strcmp(argv[optind], "show") == 0) {
       ret = econf_read(&key_file, delimiters, comment, true);
     } else if (strcmp(argv[optind], "syntax") == 0) {
@@ -763,23 +805,31 @@ int main (int argc, char *argv[])
     } else if (strcmp(argv[optind], "edit") == 0) {
         if (!is_root || use_homedir) {
             /* adjust path to home directory of the user.*/
-            snprintf(conf_dir, sizeof(conf_dir), "%s", xdg_config_dir);
-            change_root_dir(conf_dir);
-            ret_snprintf = snprintf(conf_path, sizeof(conf_path), "%s/%s", conf_dir,
-				    conf_filename);
-	    if (ret_snprintf < 0 || ret_snprintf >= (int)(sizeof(conf_path))) { /* check truncation */
-	      fprintf(stderr, "Filename too long\n");
-	      return EXIT_FAILURE;
+            free(conf_dir);
+	    conf_dir = strdup(xdg_config_dir);
+	    if (conf_dir == NULL) {
+	        fprintf(stderr, "Out of memory!\n");
+		exit(EXIT_FAILURE);
+	    }
+            change_root_dir(&conf_dir);
+	    free(conf_path);
+	    if (asprintf(&conf_path, "%s/%s", conf_dir, conf_filename) < 0) {
+		fprintf(stderr, "Out of memory!\n");
+		return EXIT_FAILURE;
 	    }
         } else if(is_dropin_file) {
-            snprintf(conf_filename, sizeof(conf_filename), "%s", dropin_filename);
-            ret_snprintf = snprintf(conf_path, sizeof(conf_path), "%s/%s", conf_dir,
-				    conf_filename);
-	    if (ret_snprintf < 0 || ret_snprintf >= (int)(sizeof(conf_path))) { /* check truncation */
-	      fprintf(stderr, "Filename too long\n");
-	      return EXIT_FAILURE;
+	    free(conf_filename);
+	    conf_filename = strdup(dropin_filename);
+	    if (conf_filename == NULL) {
+	        fprintf(stderr, "Out of memory!\n");
+		exit(EXIT_FAILURE);
 	    }
-        }
+	    free(conf_path);
+	    if (asprintf(&conf_path, "%s/%s", conf_dir, conf_filename) < 0) {
+		fprintf(stderr, "Out of memory!\n");
+		return EXIT_FAILURE;
+	    }
+	}
 
         ret = econf_edit(&key_file, delimiters, comment);
     } else if (strcmp(argv[optind], "revert") == 0) {
