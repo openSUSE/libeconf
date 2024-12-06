@@ -132,6 +132,7 @@ static void change_root_dir(char **change_path)
 
 	    free(tmp);
 	} else {
+	    free(*change_path);
 	    if (asprintf(change_path, "%s", getenv("ECONFTOOL_ROOT")) < 0) {
 		fprintf(stderr, "Out of memory!\n");
 		exit(EXIT_FAILURE);
