@@ -16,7 +16,7 @@
 int
 main(void)
 {
-  econf_file *key_file = (econf_file *)-1;
+  econf_file *key_file = NULL;
   char **keys;
   size_t key_number;
   econf_err error;

@@ -15,7 +15,7 @@
 int
 main(void)
 {
-  econf_file *key_file_1 = (econf_file *)-1, *key_file_2 = (econf_file *)-1, *key_file_m = (econf_file *)-1;
+  econf_file *key_file_1 = NULL, *key_file_2 = NULL, *key_file_m = NULL;
   econf_err error;
 
   error = econf_readFile (&key_file_1, TESTSDIR"tst-merge3-data/etc/login.defs", " \t=", "#");

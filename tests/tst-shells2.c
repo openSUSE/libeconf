@@ -50,7 +50,7 @@ check_shell(econf_file *key_file, char *shell, int expected)
 int
 main(void)
 {
-  econf_file *key_file = (econf_file *)-1;
+  econf_file *key_file = NULL;
   int retval = 0;
   econf_err error;
   char **keys;
