@@ -794,6 +794,8 @@ int main (int argc, char *argv[])
         }
     }
 
+    free(home_dir);
+
     /* Change Root dirs */
     change_root_dir(&root_dir);
     change_root_dir(&usr_root_dir);
