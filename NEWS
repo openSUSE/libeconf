@@ -1,3 +1,11 @@
+Version 0.7.5
+* Fixed memory leaks.
+* Removed PATH_MAX define.
+* Add ROOT_PREFIX as option to replace TESTSDIR hack
+* Using valgrind for checking memory leaks.
+* Implement econf_*freep functions for automatic cleanup
+* Cleanup *free functions
+
 Version 0.7.4
 * Fixed memory leaks.
 
