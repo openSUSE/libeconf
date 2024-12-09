@@ -36,15 +36,28 @@ int main(void) {
   printf("------------------------ OUTPUT START ------------------------\n");
 
   clock_t begin = clock();
-
-  //econf_file *key_file = econf_newIniFile();
-  //econf_file *key_file = econf_readFile("example/etc/example/example.ini", "=", "#");
-
   econf_file *key_file;
 
-  if (econf_readDirs(&key_file, "example/usr/etc", "example/etc",
-				"example", ".ini", "=", "#"))
-    return 1; /* XXX better error handling */
+  // econf_newKeyFile_with_options is needed only for this example which has own
+  // test data structure. In normal cases it is NOT needed because the configuration
+  // files in the default directories on your system will be parsed.
+  econf_err ret = econf_newKeyFile_with_options(&key_file, "ROOT_PREFIX="EXAMPLEDIR);
+  if (ret != ECONF_SUCCESS) {
+      fprintf (stderr, "ERROR: couldn't allocate new key_file: %s\n",
+	       econf_errString(ret));
+      return 1;
+  }
+
+  ret = econf_readConfig (&key_file,
+				    NULL,
+				    "/usr/etc",
+				    "example",
+				    ".ini", "=", "#");
+  if (ret != ECONF_SUCCESS) {
+      fprintf (stderr, "ERROR: couldn't read data: %s\n",
+	       econf_errString(ret));
+      return 1;
+  }
 
   econf_setInt64Value(key_file, "[Basic Types]", "Int", INT64_MAX);
   int64_t i64val;
@@ -92,7 +105,7 @@ int main(void) {
   puts("\n");
   econf_free(keys);
 
-  econf_writeFile(key_file, "example/", "test.ini");
+  econf_writeFile(key_file, "./", "test.ini");
 
   econf_free(key_file);
 
