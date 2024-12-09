@@ -88,8 +88,11 @@ libeconf_dep = declare_dependency(
 )
 
 # Example
+exampledir = join_paths(meson.source_root(), 'example/')
+example_args = ['-DEXAMPLEDIR="' + exampledir + '"']
+executable('example', example_src, c_args: example_args, dependencies : libeconf_dep)
 
-executable('example', example_src, dependencies : libeconf_dep)
+# Commandline interface
 executable('econftool', econftool_src, dependencies : libeconf_dep, install : true, )
 
 # Unit tests

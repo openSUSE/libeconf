@@ -331,9 +331,9 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
 				       bool (*callback)(const char *filename, const void *data),
 				       const void *callback_data)
 {
-  char usr_dir[PATH_MAX];
-  char run_dir[PATH_MAX];
-  char etc_dir[PATH_MAX];
+  char *usr_dir = NULL;
+  char *run_dir = NULL;
+  char *etc_dir = NULL;
   econf_err ret = ECONF_SUCCESS;
   int init_keyfile = 0;
 
@@ -359,26 +359,61 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
   if (usr_subdir == NULL)
     usr_subdir = "";
 
+  int re = 0;
   if ((*key_file)->root_prefix) {
     if (project != NULL) {
-      snprintf(usr_dir, sizeof(usr_dir), "%s/%s/%s", (*key_file)->root_prefix, usr_subdir, project);
-      snprintf(run_dir, sizeof(run_dir), "%s/%s/%s", (*key_file)->root_prefix, DEFAULT_RUN_SUBDIR, project);
-      snprintf(etc_dir, sizeof(etc_dir), "%s/%s/%s", (*key_file)->root_prefix, DEFAULT_ETC_SUBDIR, project);
+      re = asprintf(&usr_dir, "%s/%s/%s", (*key_file)->root_prefix, usr_subdir, project);
     } else {
-      snprintf(usr_dir, sizeof(usr_dir), "%s%s", (*key_file)->root_prefix, usr_subdir);
-      snprintf(run_dir, sizeof(run_dir), "%s%s", (*key_file)->root_prefix, DEFAULT_RUN_SUBDIR);
-      snprintf(etc_dir, sizeof(etc_dir), "%s%s", (*key_file)->root_prefix, DEFAULT_ETC_SUBDIR);
+      re = asprintf(&usr_dir, "%s%s", (*key_file)->root_prefix, usr_subdir);
     }
   } else {
     if (project != NULL) {
-      snprintf(usr_dir, sizeof(usr_dir), "%s/%s", usr_subdir, project);
-      snprintf(run_dir, sizeof(run_dir), "%s/%s", DEFAULT_RUN_SUBDIR, project);
-      snprintf(etc_dir, sizeof(etc_dir), "%s/%s", DEFAULT_ETC_SUBDIR, project);
+      re = asprintf(&usr_dir,  "%s/%s", usr_subdir, project);
     } else {
-      snprintf(usr_dir, sizeof(usr_dir), "%s", usr_subdir);
-      snprintf(run_dir, sizeof(run_dir), "%s", DEFAULT_RUN_SUBDIR);
-      snprintf(etc_dir, sizeof(etc_dir), "%s", DEFAULT_ETC_SUBDIR);
+      re = asprintf(&usr_dir, "%s", usr_subdir);
     }
+  }
+
+  if (re < 0)
+    return ECONF_NOMEM;
+
+  if ((*key_file)->root_prefix) {
+    if (project != NULL) {
+      re = asprintf(&run_dir, "%s/%s/%s", (*key_file)->root_prefix, DEFAULT_RUN_SUBDIR, project);
+    } else {
+      re = asprintf(&run_dir, "%s%s", (*key_file)->root_prefix, DEFAULT_RUN_SUBDIR);
+    }
+  } else {
+    if (project != NULL) {
+      re = asprintf(&run_dir, "%s/%s", DEFAULT_RUN_SUBDIR, project);
+    } else {
+      re = asprintf(&run_dir, "%s", DEFAULT_RUN_SUBDIR);
+    }
+  }
+
+  if (re < 0) {
+    free(usr_dir);
+    return ECONF_NOMEM;
+  }
+
+  if ((*key_file)->root_prefix) {
+    if (project != NULL) {
+      re = asprintf(&etc_dir, "%s/%s/%s", (*key_file)->root_prefix, DEFAULT_ETC_SUBDIR, project);
+    } else {
+      re = asprintf(&etc_dir,  "%s%s", (*key_file)->root_prefix, DEFAULT_ETC_SUBDIR);
+    }
+  } else {
+    if (project != NULL) {
+      re = asprintf(&etc_dir, "%s/%s", DEFAULT_ETC_SUBDIR, project);
+    } else {
+      re = asprintf(&etc_dir, "%s", DEFAULT_ETC_SUBDIR);
+    }
+  }
+
+  if (re < 0) {
+    free(usr_dir);
+    free(run_dir);
+    return ECONF_NOMEM;
   }
 
   if ((*key_file)->parse_dirs_count == 0) {
@@ -403,6 +438,10 @@ econf_err econf_readConfigWithCallback(econf_file **key_file,
 
   if (init_keyfile && ret != ECONF_SUCCESS)
     *key_file = econf_free(*key_file);
+
+  free(usr_dir);
+  free(run_dir);
+  free(etc_dir);
 
   return ret;
 }
@@ -824,5 +863,6 @@ econf_file *econf_freeFile(econf_file *key_file) {
   econf_freeArray(key_file->conf_dirs);
   free(key_file->root_prefix);
   free(key_file);
+
   return NULL;
 }

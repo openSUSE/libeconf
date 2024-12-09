@@ -1096,7 +1096,11 @@ static __inline__ void econf_freeArrayp(char ***array) {
     *array = econf_freeArray(*array);
 }
 
-/** @brief Free memory allocated by e.g. econf_readFile(), econf_readDirs(),...
+/** @brief Free memory allocated and returned by
+ *         econf_readFile(), econf_readFileWithCallback,
+ *         econf_readDirs(), econf_readDirsWithCallback,
+ *         econf_readDirsHistory, econf_readDirsHistoryWithCallback,
+ *         econf_readConfig, econf_readConfigWithCallback
  *
  * @param key_file allocated data
  * @return void

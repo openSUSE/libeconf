@@ -15,7 +15,7 @@
 int
 main(void)
 {
-  econf_file *key_file = (econf_file *)-1;
+  econf_file *key_file = NULL;
   char **keys;
   size_t key_number;
   char *val;
@@ -108,7 +108,7 @@ main(void)
   econf_writeFile(key_file, TESTSDIR"tst-shells1-data/", "out.ini");
 
   // And reading it again
-  econf_file *key_compare = (econf_file *)-1;
+  econf_file *key_compare = NULL;
   error = econf_readFile(&key_compare,
 			 TESTSDIR"tst-shells1-data/out.ini", "", "#");
   if (error || key_compare == NULL) {

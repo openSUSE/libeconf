@@ -53,13 +53,12 @@ void initialize(econf_file *key_file, size_t num) {
 char *get_absolute_path(const char *path, econf_err *error) {
   char *absolute_path;
   if(*path != '/') {
-    char buffer[PATH_MAX];
-    if(!realpath(path, buffer)) {
+    absolute_path = realpath(path, NULL);
+    if(absolute_path == NULL) {
       if (error)
 	*error = ECONF_NOFILE;
       return NULL;
     }
-    absolute_path = strdup(buffer);
   } else {
     absolute_path = strdup(path);
   }
