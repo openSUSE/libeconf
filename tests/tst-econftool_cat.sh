@@ -14,7 +14,6 @@ declare -a experr=("variable = 301"
 teststringslength=${#teststrings[@]}
 
 econftool_exe="$PWD/../util/econftool"
-echo $econftool_exe >/tmp/stefan
 if ! [[ -f "$econftool_exe" ]]; then
     econftool_exe="$PWD/econftool"
     if ! [[ -f "$econftool_exe" ]]; then

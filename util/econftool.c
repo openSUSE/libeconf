@@ -107,6 +107,34 @@ static char *replace_str(char *str, char *orig, char *rep)
   return buffer;
 }
 
+
+/**
+ * @brief Defines a list of directories from which the configuration files have
+ *        to be parsed. The list is a string, divides by ":". The last entry has
+ *        the highest priority. E.g.: "PARSING_DIRS=/usr/etc/:/run:/etc"
+ *
+ */
+static econf_file *init_key_file(void)
+{
+    econf_file *key_file = NULL;
+    econf_err error;
+
+    char *param = NULL;
+    if (asprintf(&param, "PARSING_DIRS=%s:%s", usr_root_dir, root_dir) < 0) {
+	    fprintf(stderr, "Out of memory!\n");
+	    exit(EXIT_FAILURE);
+    }
+
+    if ((error = econf_newKeyFile_with_options(&key_file, param)))
+    {
+      fprintf (stderr, "ERROR: couldn't allocate new key_file: %s\n",
+	       econf_errString(error));
+      exit(EXIT_FAILURE);
+    }
+
+    return key_file;
+}
+
 /**
  * @brief Change root dir if environment variable "ECONFTOOL_ROOT" exists
  *
@@ -283,7 +311,7 @@ static econf_err pr_key_file(struct econf_file *key_file)
 
 /**
  * @brief This command will read all snippets for filename.conf
- *        (econf_readDirs) OR a single file only. After that it
+ *        (econf_readConfig) OR a single file only. After that it
  *        will evtl. print all groups, keys and their values as
  *        an application would see them.
  */
@@ -295,7 +323,8 @@ static int econf_read(struct econf_file **key_file, const char *delimiters, cons
         econf_error = econf_readFile(key_file, conf_filename,
 				     delimiters, comment);
     } else {
-        econf_error = econf_readDirs(key_file, usr_root_dir, root_dir, conf_basename,
+        *key_file = init_key_file();
+        econf_error = econf_readConfig(key_file, NULL, NULL, conf_basename,
 				     conf_suffix, delimiters, comment);
     }
     if (econf_error) {
@@ -313,7 +342,7 @@ static int econf_read(struct econf_file **key_file, const char *delimiters, cons
 
 /**
  * @brief This command will read all snippets for filename.conf
- *        (econf_readDirs) in hierarchical order and print all groups,
+ *        (econf_readDirsHistory) in hierarchical order and print all groups,
  *        keys and their values.
  */
 static int econf_cat(const char *delimiters, const char *comment)
@@ -453,7 +482,9 @@ static int econf_edit(struct econf_file **key_file, const char *delimiters, cons
         econf_error = econf_readFile(key_file, conf_filename,
 				     delimiters, comment);
     } else {
-        econf_error = econf_readDirs(key_file, usr_root_dir, root_dir, conf_basename, conf_suffix, delimiters, comment);
+        *key_file = init_key_file();
+        econf_error = econf_readConfig(key_file, NULL, NULL, conf_basename,
+				     conf_suffix, delimiters, comment);
     }
 
     if (econf_error == ECONF_NOFILE) {
