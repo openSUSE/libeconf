@@ -1,3 +1,7 @@
+Version 0.7.6
+* Do not parse files with name "." and ".." (bsc#1234405).
+* Fixed memory leak in econftool.
+
 Version 0.7.5
 * Fixed memory leaks.
 * Removed PATH_MAX define.
