@@ -132,7 +132,8 @@ check_conf_dir(econf_file ***key_files, size_t *size, const char *path,
       size_t lenstr = strlen(de[i]->d_name);
       size_t lensuffix = strlen(config_suffix);
       if (lensuffix < lenstr &&
-          strncmp(de[i]->d_name + lenstr - lensuffix, config_suffix, lensuffix) == 0) {
+          strncmp(de[i]->d_name + lenstr - lensuffix, config_suffix, lensuffix) == 0 &&
+	  strcmp(de[i]->d_name,".") != 0 && strcmp(de[i]->d_name,"..") != 0) {
         char *file_path = combine_strings(path, de[i]->d_name, '/');
         econf_file *key_file = NULL;
 	if ((error = econf_newKeyFile_with_options(&key_file, "")) != ECONF_SUCCESS)
