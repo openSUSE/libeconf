@@ -129,9 +129,11 @@ static econf_file *init_key_file(void)
     {
       fprintf (stderr, "ERROR: couldn't allocate new key_file: %s\n",
 	       econf_errString(error));
+      free(param);
       exit(EXIT_FAILURE);
     }
 
+    free(param);
     return key_file;
 }
 
