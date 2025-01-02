@@ -140,6 +140,10 @@ tst_uapi_pam_env_exe = executable('tst-uapi-pam_env', 'tst-uapi-pam_env.c',
   c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-pam_env-data' + '"'], dependencies : libeconf_dep)
 test('tst-uapi-pam_env', tst_uapi_pam_env_exe)
 
+tst_uapi_empty_dot_d_dir_exe = executable('tst-uapi-empty_dot_d_dir', 'tst-uapi-empty_dot_d_dir.c',
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-empty_dot_d_dir' + '"'], dependencies : libeconf_dep)
+test('tst-uapi-empty_dot_d_dir', tst_uapi_empty_dot_d_dir_exe)
+
 tst_parse_error_exe = executable('tst-parse-error', 'tst-parse-error.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-parse-error', tst_parse_error_exe)
 
