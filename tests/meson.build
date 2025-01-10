@@ -144,6 +144,10 @@ tst_uapi_empty_dot_d_dir_exe = executable('tst-uapi-empty_dot_d_dir', 'tst-uapi-
   c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-empty_dot_d_dir' + '"'], dependencies : libeconf_dep)
 test('tst-uapi-empty_dot_d_dir', tst_uapi_empty_dot_d_dir_exe)
 
+tst_uapi_empty_dot_d_dir2_exe = executable('tst-uapi-empty_dot_d_dir2', 'tst-uapi-empty_dot_d_dir2.c',
+  c_args: ['-DTESTSDIR="' + testdir + 'tst-uapi-empty_dot_d_dir2' + '"'], dependencies : libeconf_dep)
+test('tst-uapi-empty_dot_d_dir2', tst_uapi_empty_dot_d_dir2_exe)
+
 tst_parse_error_exe = executable('tst-parse-error', 'tst-parse-error.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-parse-error', tst_parse_error_exe)
 

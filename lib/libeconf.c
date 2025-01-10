@@ -293,6 +293,14 @@ econf_err econf_mergeFiles(econf_file **merged_file, econf_file *usr_file, econf
   (*merged_file)->delimiter = usr_file->delimiter;
   (*merged_file)->comment = usr_file->comment;
   (*merged_file)->path = NULL;
+  (*merged_file)->length = 0;
+  (*merged_file)->alloc_length = 0;
+  (*merged_file)->file_entry = NULL;
+  if((etc_file->length + usr_file->length)<= 0) {
+    /* nothing to merge */
+    return ECONF_SUCCESS;
+  }
+
   struct file_entry *fe =
       malloc((etc_file->length + usr_file->length) * sizeof(struct file_entry));
   if (fe == NULL)
@@ -316,7 +324,6 @@ econf_err econf_mergeFiles(econf_file **merged_file, econf_file *usr_file, econf
 				etc_file, merge_length);
   (*merged_file)->length = merge_length;
   (*merged_file)->alloc_length = merge_length;
-
   (*merged_file)->file_entry = fe;
   return ECONF_SUCCESS;
 }

@@ -9,13 +9,44 @@ bool callback_without_error(const char *filename, const void *data);
 bool callback_with_error(const char *filename, const void *data);
 
 /* Test case:
+
    /etc/environment which is empty
    /usr/etc/environment.d/a.conf which is empty
    /usr/etc/environment.d/b.conf which is empty
-   /usr/etc/environment.d/c.conf which is empty
+   /usr/etc/environment.d/c.conf which is NOT empty
 
-   libeconf should have none entry.
+   libeconf should read these files and return one entry.
 */
+
+static int
+check_key(econf_file *key_file, char *key, char *expected_val)
+{
+  char *val = NULL;
+  econf_err error = econf_getStringValue (key_file, "", key, &val);
+  if (expected_val == NULL)
+    {
+      if (val == NULL)
+	return 0;
+
+      fprintf (stderr, "ERROR: %s has value \"%s\"\n", key, val);
+      return 1;
+    }
+  if (val == NULL || strlen(val) == 0)
+    {
+      fprintf (stderr, "ERROR: %s returns nothing! (%s)\n", key,
+	       econf_errString(error));
+      return 1;
+    }
+  if (strcmp (val, expected_val) != 0)
+    {
+      fprintf (stderr, "ERROR: %s is not \"%s\"\n", key, expected_val);
+      return 1;
+    }
+
+  printf("Ok: %s=%s\n", key, val);
+  free (val);
+  return 0;
+}
 
 int
 main(void)
@@ -23,8 +54,6 @@ main(void)
   econf_file *key_file = NULL;
   int retval = 0;
   econf_err error;
-  char **keys;
-  size_t key_number;
 
   if ((error = econf_newKeyFile_with_options(&key_file, "ROOT_PREFIX="TESTSDIR)))
     {
@@ -46,18 +75,8 @@ main(void)
       return 1;
     }
 
-
-  error = econf_getKeys(key_file, NULL, &key_number, &keys);
-  if (error != ECONF_NOKEY)
-    {
-      fprintf (stderr, "Getting all keys should return error ECONF_NOKEY: %s\n", econf_errString(error));
-      return 1;
-    }
-  if (key_number != 0)
-    {
-      fprintf (stderr, "Key Number should be 0: %ld\n", key_number);
-      return 1;
-    }
+  if (check_key(key_file, "Y2STYLE", "dark.qss") != 0)
+    retval = 1;
 
   econf_free (key_file);
 
