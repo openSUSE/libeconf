@@ -214,8 +214,7 @@ econf_err merge_econf_files(econf_file **key_files, econf_file **merged_files) {
     */
     while (*double_key_files) {
       char * compare_file = basename((*double_key_files)->path);
-      if (strcmp(current_file, ".") != 0 && strcmp(current_file, "..") &&
-	  strcmp(current_file, compare_file) == 0) {
+      if (strcmp(current_file, compare_file) == 0) {
 	break;
       }
       double_key_files++;
