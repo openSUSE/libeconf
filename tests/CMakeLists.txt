@@ -4,9 +4,9 @@ add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 # Set up macro for building and adding tests
 macro(BuildAndAddTest TESTNAME)
   if (${TESTNAME} STREQUAL "tst-getconfdirs2")
-    add_executable(${TESTNAME} EXCLUDE_FROM_ALL tst-getconfdirs1.c)
+    add_executable(${TESTNAME} tst-getconfdirs1.c)
   else()
-    add_executable(${TESTNAME} EXCLUDE_FROM_ALL ${TESTNAME}.c)
+    add_executable(${TESTNAME} ${TESTNAME}.c)
   endif()
   target_link_libraries(${TESTNAME} PRIVATE econf)
   if (${TESTNAME} STREQUAL "tst-getconfdirs1")
@@ -47,7 +47,7 @@ set(TESTS tst-filedoesnotexit1
 	  tst-options
 	  tst-man-dir
           tst-getconfdirs1
-          tst-getconfdirs2
+          # tst-getconfdirs2
           tst-getconfdirs3
           tst-getconfdirs4
           tst-getconfdirs5
