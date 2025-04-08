@@ -179,6 +179,8 @@ test('tst-groups6', tst_groups6_exe)
 
 tst_parseconfig1_exe = executable('tst-parseconfig1', 'tst-parseconfig1.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-parseconfig1', tst_parseconfig1_exe)
+tst_parseconfig2_exe = executable('tst-parseconfig2', 'tst-parseconfig2.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-parseconfig2', tst_parseconfig2_exe)
 
 tst_quote1_exe = executable('tst-quote1', 'tst-quote1.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-quote1', tst_quote1_exe)
