@@ -182,7 +182,7 @@ store (econf_file *ef, const char *group, const char *key,
       }
       if(ret<0)
 	return ECONF_NOMEM;
-    }      
+    }
 
     return ECONF_SUCCESS;
   }
@@ -346,12 +346,12 @@ read_file(econf_file *ef, const char *file,
   }
   ef->delimiter = *delim;
 
-  char *buf = malloc(BUFSIZ*sizeof(char));
   size_t max_size = BUFSIZ;
-  while (getline(&buf, &max_size, kf) >0) {
+  char *buf = malloc(max_size * sizeof(char));
+  while (getline(&buf, &max_size, kf) != -1) {
     char *p, *name, *data = NULL;
     bool quote_seen = false, delim_seen = false;
-    char *org_buf __attribute__ ((__cleanup__(free_buffer))) = strdup(buf);
+    __attribute__ ((__cleanup__(free_buffer))) char *org_buf = strdup(buf);
 
     line++;
     last_scanned_line_nr = line;
@@ -374,7 +374,7 @@ read_file(econf_file *ef, const char *file,
       p = strrchr(name, comment[i]);
       if (p)
       {
-	if(p==name)
+	if (p==name)
 	{
 	  /* Comment is defined in the line before the key/value line */
 	  if (current_comment_before_key)
@@ -383,7 +383,7 @@ read_file(econf_file *ef, const char *file,
 	    char *content = current_comment_before_key;
 	    int ret = asprintf(&current_comment_before_key, "%s\n%s", content,
 			       p+1);
-	    if(ret<0) {
+	    if (ret<0) {
 	      free(buf);
 	      return ECONF_NOMEM;
 	    }
@@ -531,7 +531,7 @@ read_file(econf_file *ef, const char *file,
 	  }
 	}
 	/* removing \n at the end of the line */
-	if( org_buf[strlen(org_buf)-1] == '\n' )
+	if (strlen(org_buf) > 0 && org_buf[strlen(org_buf)-1] == '\n' )
 	  org_buf[strlen(org_buf)-1] = 0;
 	retval = store(ef, current_group, name, org_buf, line,
 		       current_comment_before_key, current_comment_after_value,
@@ -546,9 +546,9 @@ read_file(econf_file *ef, const char *file,
 	continue;
       }
     }
-    
+
     /* Go on. It is not a multiline entry */
-    
+
     if (!*name || data == name)
       continue;
 
@@ -620,7 +620,7 @@ read_file(econf_file *ef, const char *file,
     free(current_comment_before_key);
     current_comment_before_key = NULL;
     free(current_comment_after_value);
-    current_comment_after_value = NULL;    
+    current_comment_after_value = NULL;
     if (retval)
       goto out;
   }
