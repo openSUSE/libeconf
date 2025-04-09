@@ -47,7 +47,7 @@ set(TESTS tst-filedoesnotexit1
 	  tst-options
 	  tst-man-dir
           tst-getconfdirs1
-          # tst-getconfdirs2
+          tst-getconfdirs2
           tst-getconfdirs3
           tst-getconfdirs4
           tst-getconfdirs5
