@@ -351,7 +351,7 @@ read_file(econf_file *ef, const char *file,
   while (getline(&buf, &max_size, kf) != -1) {
     char *p, *name, *data = NULL;
     bool quote_seen = false, delim_seen = false;
-    __attribute__ ((__cleanup__(free_buffer))) char *org_buf = strdup(buf);
+    char *org_buf __attribute__ ((__cleanup__(free_buffer))) = strdup(buf);
 
     line++;
     last_scanned_line_nr = line;
