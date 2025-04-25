@@ -1,3 +1,6 @@
+Version 0.7.8
+* Fix memory access if there are a comment character inside a comment.
+
 Version 0.7.7
 * Additional fix for parsing empty config files (bsc#1234405).
 
