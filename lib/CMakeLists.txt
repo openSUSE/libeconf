@@ -33,7 +33,7 @@ set_target_properties(econf PROPERTIES
   C_STANDARD 11
   C_STANDARD_REQUIRED ON
   PUBLIC_HEADER "${PROJECT_SOURCE_DIR}/include/libeconf.h;${PROJECT_SOURCE_DIR}/include/libeconf_ext.h"
-  LINK_FLAGS "-Wl,--no-undefined -Wl,--version-script,\"${PROJECT_SOURCE_DIR}/lib/libeconf.map\""
+  LINK_FLAGS "-Wl,--no-undefined -Wl,--no-undefined-version -Wl,--version-script,\"${PROJECT_SOURCE_DIR}/lib/libeconf.map\""
 )
 
 # Install the library
