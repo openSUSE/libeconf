@@ -77,11 +77,6 @@ pkg.generate(
   version : meson.project_version(),
 )
 
-libeconf_static = static_library('econf',
-			libeconf_src,
-			include_directories : inc,
-			install : true)
-
 libeconf_dep = declare_dependency(
   link_with : lib,
   include_directories : inc,
