@@ -54,15 +54,20 @@ libeconf_src = files(
 example_src = ['example/example.c']
 econftool_src = ['util/econftool.c']
 
+possible_link_args = [
+      '-Wl,--no-undefined',
+      '-Wl,--no-undefined-version',
+      ]
+
 mapfile = 'lib/libeconf.map'
-version_flag = '-Wl,--version-script,@0@/@1@'.format(meson.current_source_dir(), mapfile)
+version_flag = ['-Wl,--version-script,@0@/@1@'.format(meson.current_source_dir(), mapfile)]
 
 lib = library(
   'econf',
   libeconf_src,
   include_directories : inc,
   install : true,
-  link_args : version_flag,
+  link_args : cc.get_supported_link_arguments(possible_link_args) + version_flag,
   link_depends : mapfile,
   version : meson.project_version(),
   soversion : '0',
