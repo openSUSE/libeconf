@@ -1,3 +1,8 @@
+Version 0.7.9
+* Comments can include comment character tag multiple time.
+* Fixed static library declaration in meason
+* Fixed versioning in cmake
+
 Version 0.7.8
 * Fix memory access if there are a comment character inside a comment.
 
