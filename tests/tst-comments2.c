@@ -75,6 +75,8 @@ main(void)
     retval = 1;
   if (check_key(key_file, "KEY3", "a") != 0)
     retval = 1;
+  if (check_key(key_file, "KEY4", "test with #") != 0)
+    retval = 1;
 
   econf_free (key_file);
 

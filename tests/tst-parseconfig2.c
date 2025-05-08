@@ -35,8 +35,9 @@ main(void)
     {
       fprintf(stderr, "ERROR: ANSI_COLOR has extra '\\n'!\n");
       free(val);
-      return 77; /* XXX skip for now until fixed */
+      return 1;
     }
+
   free (val);
 
   key_file = econf_free (key_file);

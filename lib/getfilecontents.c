@@ -146,7 +146,7 @@ store (econf_file *ef, const char *group, const char *key,
       return ECONF_MISSING_DELIMITER;
     }
 
-    if (append_entry && ef->python_style == true) {
+    if (ef->python_style == true) {
       /* ignore space at the beginning of the line because it is the indentation of python style */
       while (*value && isspace((unsigned)*value))
         value++;
@@ -371,7 +371,7 @@ read_file(econf_file *ef, const char *file,
 
     /* go through all comment characters and check if one of them could be found */
     for (size_t i = 0; i < strlen(comment); i++) {
-      p = strrchr(name, comment[i]);
+      p = strchr(name, comment[i]);
       if (p)
       {
 	if (p==name)
@@ -405,25 +405,37 @@ read_file(econf_file *ef, const char *file,
 	  if (*data && strchr(delim, *data) != NULL)
 	    delim_found = false;
 
-	  if ( first_quote==NULL || /* no quote */
-	       (first_quote!=last_quote && last_quote<p) || /* comment is in string included */
-	       (first_quote==last_quote && last_quote<p && !delim_found)) /* multiline with one quote */
-	  {
-	    if (current_comment_after_value)
+	  while (p) {
+	    /* going through all comments hits and find the first one */
+	    /* who i not inside of two quotes */
+	    if ( first_quote==NULL || /* no quote */
+		 (first_quote!=last_quote && last_quote<p) || /* comment is in string included */
+		 (first_quote==last_quote && last_quote<p && !delim_found)) /* multiline with one quote */
 	    {
-	      /* appending */
-	      char *content = current_comment_after_value;
-	      int ret = asprintf(&current_comment_after_value, "%s\n%s", content,
-			       p+1);
-	      if(ret<0) {
-	        free(buf);
-	        return ECONF_NOMEM;
+	      if (current_comment_after_value)
+	      {
+	        /* appending */
+	        char *content = current_comment_after_value;
+	        int ret = asprintf(&current_comment_after_value, "%s\n%s", content,
+				   p+1);
+	        if(ret<0) {
+	          free(buf);
+	          return ECONF_NOMEM;
+	        }
+	        free(content);
+	      } else {
+	        current_comment_after_value = strdup(p+1);
 	      }
-	      free(content);
+	      *p = '\0';
 	    } else {
-	      current_comment_after_value = strdup(p+1);
+	      p++;
 	    }
-	    *p = '\0';
+	    /* find next comment flag */
+	    for (size_t k = 0; k < strlen(comment); k++) {
+	      p = strchr(p, comment[k]);
+	      if (p)
+		break;
+	    }
 	  }
 	}
       }
