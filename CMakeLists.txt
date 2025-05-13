@@ -64,11 +64,15 @@ set(CMAKE_C_FLAGS_RELWITHDEBINFOSTRICT
 
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(BUILD_TESTS "Build tests" OFF)
+option(BUILD_EXAMPLES "Build examples" OFF)
 
 add_subdirectory(lib)
-add_subdirectory(example)
 add_subdirectory(util)
 add_subdirectory(doc)
+
+if(BUILD_EXAMPLES)
+    add_subdirectory(example)
+endif()
 
 if(BUILD_TESTS)
     include(CTest)
