@@ -18,7 +18,7 @@ set(econf_HDRS defines.h
 	       readconfig.h
                )
 
-add_library(econf SHARED ${econf_SRCS} ${econf_HDRS}
+add_library(econf ${econf_SRCS} ${econf_HDRS}
                "${PROJECT_SOURCE_DIR}/include/libeconf.h" "${PROJECT_SOURCE_DIR}/include/libeconf_ext.h")
 
 target_include_directories(econf PUBLIC
