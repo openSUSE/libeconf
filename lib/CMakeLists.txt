@@ -36,6 +36,16 @@ set_target_properties(econf PROPERTIES
   LINK_FLAGS "-Wl,--no-undefined -Wl,--no-undefined-version -Wl,--version-script,\"${PROJECT_SOURCE_DIR}/lib/libeconf.map\""
 )
 
+if(IS_ABSOLUTE "${CMAKE_INSTALL_INCLUDEDIR}")
+    set(PKG_CONFIG_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}")
+else()
+    set(PKG_CONFIG_INCLUDEDIR "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
+endif()
+if(IS_ABSOLUTE "${CMAKE_INSTALL_LIBDIR}")
+    set(PKG_CONFIG_LIBDIR "${CMAKE_INSTALL_LIBDIR}")
+else()
+    set(PKG_CONFIG_LIBDIR "\${exec_prefix}/${CMAKE_INSTALL_LIBDIR}")
+endif()
 # Install the library
 configure_file(${PROJECT_SOURCE_DIR}/cmake/libeconf.pc.in ${CMAKE_BINARY_DIR}/libeconf.pc @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/libeconf.pc
