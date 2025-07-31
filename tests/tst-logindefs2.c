@@ -169,7 +169,7 @@ main(void)
     free (strval);
 
   strval = NULL;
-  econf_getStringValue (key_file, NULL, "END", &strval);
+  econf_getStringValueDef (key_file, NULL, "END", &strval, "DEF");
   if (strval == NULL || strcmp (strval, "the is end") != 0)
     {
       fprintf (stderr, "ERROR: %s, expected: '%s', got: '%s'\n",
@@ -180,7 +180,19 @@ main(void)
     free (strval);
 
   strval = NULL;
-  econf_getStringValue (key_file, NULL, "NOTEXIST", &strval);
+  econf_getStringValueDef (key_file, NULL, "NOTEXIST", &strval, "DEF");
+  if (strval == NULL || strcmp (strval, "DEF") != 0)
+    {
+      fprintf (stderr, "ERROR: %s, expected: '%s', got: '%s'\n",
+	       "END", "the is end", strval?strval:"NULL");
+      retval = 1;
+    }
+  if (strval)
+    free (strval);
+
+
+  strval = NULL;
+  econf_getStringValueDef (key_file, NULL, "NOTEXIST", &strval, NULL);
   if (strval != NULL)
     {
       fprintf (stderr, "ERROR: %s, expected: '%s', got: '%s'\n",
@@ -189,6 +201,24 @@ main(void)
     }
   if (strval)
     free (strval);
+
+  boolval = false;
+  econf_getBoolValueDef (key_file, NULL, "BOOLEAN", &boolval, false);
+  if (boolval != true)
+    {
+      fprintf (stderr, "ERROR: %s, expected: %i, got: %i\n",
+	       "BOOLEAN", true, boolval);
+      retval = 1;
+    }
+
+  boolval = true;
+  econf_getBoolValueDef (key_file, NULL, "NOTEXIST", &boolval, false);
+  if (boolval != false)
+    {
+      fprintf (stderr, "ERROR: %s, expected: %i, got: %i\n",
+	       "BOOLEAN", false, boolval);
+      retval = 1;
+    }
 
   econf_free (keys);
   econf_free (key_file);

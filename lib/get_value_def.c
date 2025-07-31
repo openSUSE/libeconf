@@ -28,7 +28,10 @@
 #include <string.h>
 #include "libeconf.h"
 
-#define econf_getValueDef(FCT_TYPE, TYPE, STRDUP)				\
+#define str_copy def!=NULL ? (*result=strdup(def)) : (*result=NULL)
+#define value_copy *result=def
+
+#define econf_getValueDef(FCT_TYPE, TYPE, COPY)				\
 econf_err econf_get ## FCT_TYPE ## ValueDef(econf_file *ef, const char *group, \
 					     const char *key, TYPE *result, TYPE def) { \
   if (!ef) \
@@ -36,16 +39,16 @@ econf_err econf_get ## FCT_TYPE ## ValueDef(econf_file *ef, const char *group, \
 \
   econf_err error = econf_get ## FCT_TYPE ## Value(ef, group, key, result);	\
   if (error == ECONF_NOKEY) \
-    *result = STRDUP(def);  \
+    COPY;		    \
   return error; \
 }
 
 
-econf_getValueDef(Int, int32_t, )
-econf_getValueDef(Int64, int64_t, )
-econf_getValueDef(UInt, uint32_t, )
-econf_getValueDef(UInt64, uint64_t, )
-econf_getValueDef(Float, float, )
-econf_getValueDef(Double, double, )
-econf_getValueDef(String, char *, strdup)
-econf_getValueDef(Bool, bool, )
+econf_getValueDef(Int, int32_t, value_copy)
+econf_getValueDef(Int64, int64_t, value_copy)
+econf_getValueDef(UInt, uint32_t, value_copy)
+econf_getValueDef(UInt64, uint64_t, value_copy)
+econf_getValueDef(Float, float, value_copy)
+econf_getValueDef(Double, double, value_copy)
+econf_getValueDef(String, char *, str_copy)
+econf_getValueDef(Bool, bool, value_copy)
