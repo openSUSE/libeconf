@@ -130,11 +130,11 @@ econf_err setDoubleValueNum(econf_file *key_file, size_t num, const void *value)
 econf_err setStringValueNum(econf_file *key_file, size_t num, const void *value);
 econf_err setBoolValueNum(econf_file *key_file, size_t num, const void *value);
 
-econf_err setCommentsNum(econf_file key_file, size_t num,
+econf_err setCommentsNum(econf_file *key_file, size_t num,
 		      const char *comment_before_key,
 		      const char *comment_after_value);
-econf_err setLineNrNum(econf_file key_file, size_t num, const uint64_t line_nr);
-econf_err setPath(econf_file key_file, const char *path);
+econf_err setLineNrNum(econf_file *key_file, size_t num, const uint64_t line_nr);
+econf_err setPath(econf_file *key_file, const char *path);
 
 /* helper functions */
 

@@ -127,15 +127,15 @@ econf_setExtValue(econf_file *kf, const char *group,
   if (error)
     return error;
 
-  error = setCommentsNum(*kf, num,
+  error = setCommentsNum(kf, num,
 			 value->comment_before_key,
 			 value->comment_after_value);
   if (error)
     return error;
-  error = setPath(*kf, value->file);
+  error = setPath(kf, value->file);
   if (error)
     return error;
-  error = setLineNrNum(*kf, num, value->line_number);
+  error = setLineNrNum(kf, num, value->line_number);
   if (error)
     return error;
 
