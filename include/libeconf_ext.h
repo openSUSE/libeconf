@@ -62,6 +62,19 @@ typedef struct econf_ext_value econf_ext_value;
 extern econf_err econf_getExtValue(econf_file *kf, const char *group,
 				   const char *key, econf_ext_value **result);
 
+/** @brief Setting more information (e.g. comments) for given group/key.
+ *         Values have to be set via econf_set<Type>Value.
+ *
+ * @param kf given/parsed data
+ * @param group Desired group or NULL if there is no group defined.
+ * @param key Key for which the values have to be set.
+ * @param value All values which have to be set.
+ * @return econf_err ECONF_SUCCESS or error code
+ *
+ */
+extern econf_err econf_setExtValue(econf_file *kf, const char *group,
+				   const char *key, const econf_ext_value *value);
+
 /** @brief Free an complete econf_ext_value struct.
  *
  * @param to_free struct which has to be freed
