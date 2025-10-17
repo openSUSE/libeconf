@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: cmake configure with ASAN and UBSAN checks
-      run: cmake -B build -DCMAKE_BUILD_TYPE=Sanitize
+      run: cmake -D BUILD_TESTS=ON -B build -DCMAKE_BUILD_TYPE=Sanitize
     - name: make with ASAN and UBSAN checks
       run: make -C build
     - name: make check

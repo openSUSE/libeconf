@@ -80,7 +80,7 @@ econf_getExtValue(econf_file *kf, const char *group,
 
   (*result)->values = NULL;
 
-  if (value_string!=NULL) {
+  if (value_string != NULL) {
     strncpy(buf,value_string,BUFSIZ-1);
     buf[BUFSIZ-1] = '\0';
     free(value_string);
@@ -111,6 +111,33 @@ econf_getExtValue(econf_file *kf, const char *group,
   /* realloc one extra element for the last 0 */
   (*result)->values = realloc ((*result)->values, sizeof (char*) * ++n_del);
   (*result)->values[n_del-1] = 0;
+
+  return ECONF_SUCCESS;
+}
+
+econf_err
+econf_setExtValue(econf_file *kf, const char *group,
+		  const char *key, const econf_ext_value *value)
+{
+  if (!kf)
+    return ECONF_ERROR;
+
+  size_t num;
+  econf_err error = find_key(*kf, group, key, &num);
+  if (error)
+    return error;
+
+  error = setCommentsNum(kf, num,
+			 value->comment_before_key,
+			 value->comment_after_value);
+  if (error)
+    return error;
+  error = setPath(kf, value->file);
+  if (error)
+    return error;
+  error = setLineNrNum(kf, num, value->line_number);
+  if (error)
+    return error;
 
   return ECONF_SUCCESS;
 }

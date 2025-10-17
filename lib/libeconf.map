@@ -77,3 +77,7 @@ LIBECONF_0.7 {
   global:
     econf_newKeyFile_with_options;
 } LIBECONF_0.6;
+LIBECONF_0.8 {
+  global:
+    econf_setExtValue;
+} LIBECONF_0.7;

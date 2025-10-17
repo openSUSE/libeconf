@@ -277,3 +277,48 @@ econf_err setBoolValueNum(econf_file *kf, size_t num, const void *v) {
   free(tmp);
   return error;
 }
+
+econf_err setCommentsNum(econf_file *key_file, size_t num,
+			 const char *comment_before_key,
+			 const char *comment_after_value) {
+  free(key_file->file_entry[num].comment_before_key);
+  free(key_file->file_entry[num].comment_after_value);
+
+  if (comment_before_key != NULL) {
+     key_file->file_entry[num].comment_before_key = strdup( comment_before_key );
+     if (key_file->file_entry[num].comment_before_key == NULL )
+         return ECONF_NOMEM;
+  } else {
+     key_file->file_entry[num].comment_before_key = NULL;
+  }
+
+  if (comment_after_value != NULL) {
+     key_file->file_entry[num].comment_after_value = strdup( comment_after_value );
+     if (key_file->file_entry[num].comment_after_value == NULL )
+         return ECONF_NOMEM;
+  } else {
+     key_file->file_entry[num].comment_after_value = NULL;
+  }
+
+  return ECONF_SUCCESS;
+}
+
+econf_err setLineNrNum(econf_file *key_file, size_t num, const uint64_t line_nr) {
+  key_file->file_entry[num].line_number = line_nr;
+
+  return ECONF_SUCCESS;
+}
+
+econf_err setPath(econf_file *key_file, const char *path) {
+  free(key_file->path);
+  if (path != NULL) {
+     key_file->path = strdup(path);
+     if (key_file->path == NULL)
+        return ECONF_NOMEM;
+  } else {
+     key_file->path = NULL;
+  }
+
+  return ECONF_SUCCESS;
+}
+
