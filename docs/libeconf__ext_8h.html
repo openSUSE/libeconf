@@ -27,7 +27,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">libeconf
-   &#160;<span id="projectnumber">0.7.1</span>
+   &#160;<span id="projectnumber">0.8.0</span>
    </div>
   </td>
  </tr>
@@ -96,6 +96,9 @@ Functions</h2></td></tr>
 <tr class="memitem:aef2b0568b88fa788a7870a3b2bdd28a7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf__ext_8h.html#aef2b0568b88fa788a7870a3b2bdd28a7">econf_getExtValue</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *kf, const char *group, const char *key, <a class="el" href="structeconf__ext__value.html">econf_ext_value</a> **result)</td></tr>
 <tr class="memdesc:aef2b0568b88fa788a7870a3b2bdd28a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluating more information for given group/key.  <a href="#aef2b0568b88fa788a7870a3b2bdd28a7">More...</a><br /></td></tr>
 <tr class="separator:aef2b0568b88fa788a7870a3b2bdd28a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd864f3b3732c1a072898b937aaebcd8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf__ext_8h.html#afd864f3b3732c1a072898b937aaebcd8">econf_setExtValue</a> (<a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *kf, const char *group, const char *key, const <a class="el" href="structeconf__ext__value.html">econf_ext_value</a> *value)</td></tr>
+<tr class="memdesc:afd864f3b3732c1a072898b937aaebcd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setting more information (e.g.  <a href="#afd864f3b3732c1a072898b937aaebcd8">More...</a><br /></td></tr>
+<tr class="separator:afd864f3b3732c1a072898b937aaebcd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a288b413a3d769a1af204c78aa11d185f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="libeconf__ext_8h.html#a288b413a3d769a1af204c78aa11d185f">econf_freeExtValue</a> (<a class="el" href="structeconf__ext__value.html">econf_ext_value</a> *to_free)</td></tr>
 <tr class="memdesc:a288b413a3d769a1af204c78aa11d185f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Free an complete <a class="el" href="structeconf__ext__value.html">econf_ext_value</a> struct.  <a href="#a288b413a3d769a1af204c78aa11d185f">More...</a><br /></td></tr>
 <tr class="separator:a288b413a3d769a1af204c78aa11d185f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -167,6 +170,59 @@ Functions</h2></td></tr>
     <tr><td class="paramname">group</td><td>Desired group or NULL if there is no group defined. </td></tr>
     <tr><td class="paramname">key</td><td>Key for which the value is requested. </td></tr>
     <tr><td class="paramname">result</td><td>A newly allocated struct or NULL in error case. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>econf_err ECONF_SUCCESS or error code </dd></dl>
+
+</div>
+</div>
+<a id="afd864f3b3732c1a072898b937aaebcd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd864f3b3732c1a072898b937aaebcd8">&#9670;&nbsp;</a></span>econf_setExtValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="libeconf_8h.html#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a> econf_setExtValue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="libeconf_8h.html#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *&#160;</td>
+          <td class="paramname"><em>kf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>group</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeconf__ext__value.html">econf_ext_value</a> *&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Setting more information (e.g. </p>
+<p>comments) for given group/key. Values have to be set via econf_set&lt;Type&gt;Value.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">kf</td><td>given/parsed data </td></tr>
+    <tr><td class="paramname">group</td><td>Desired group or NULL if there is no group defined. </td></tr>
+    <tr><td class="paramname">key</td><td>Key for which the values have to be set. </td></tr>
+    <tr><td class="paramname">value</td><td>All values which have to be set. </td></tr>
   </table>
   </dd>
 </dl>
