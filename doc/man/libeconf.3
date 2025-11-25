@@ -215,35 +215,35 @@ Documentation: \fI\%https://github.com/openSUSE/libeconf/blob/master/bindings/cs
 .br
 .RI "Evaluating bool value for given group/key\&. "
 .ti -1c
-.RI "\fBeconf_err\fP \fBeconf_getIntValueDef\fP (\fBeconf_file\fP *kf, const char *group, const char *key, int32_t *result, int32_t def)"
+.RI "\fBeconf_err\fP \fBeconf_getIntValueDef\fP (\fBeconf_file\fP *kf, const char *group, const char *key, int32_t *result, const int32_t def)"
 .br
 .RI "Evaluating int32 value for given group/key\&. "
 .ti -1c
-.RI "\fBeconf_err\fP \fBeconf_getInt64ValueDef\fP (\fBeconf_file\fP *kf, const char *group, const char *key, int64_t *result, int64_t def)"
+.RI "\fBeconf_err\fP \fBeconf_getInt64ValueDef\fP (\fBeconf_file\fP *kf, const char *group, const char *key, int64_t *result, const int64_t def)"
 .br
 .RI "Evaluating int64 value for given group/key\&. "
 .ti -1c
-.RI "\fBeconf_err\fP \fBeconf_getUIntValueDef\fP (\fBeconf_file\fP *kf, const char *group, const char *key, uint32_t *result, uint32_t def)"
+.RI "\fBeconf_err\fP \fBeconf_getUIntValueDef\fP (\fBeconf_file\fP *kf, const char *group, const char *key, uint32_t *result, const uint32_t def)"
 .br
 .RI "Evaluating uint32 value for given group/key\&. "
 .ti -1c
-.RI "\fBeconf_err\fP \fBeconf_getUInt64ValueDef\fP (\fBeconf_file\fP *kf, const char *group, const char *key, uint64_t *result, uint64_t def)"
+.RI "\fBeconf_err\fP \fBeconf_getUInt64ValueDef\fP (\fBeconf_file\fP *kf, const char *group, const char *key, uint64_t *result, const uint64_t def)"
 .br
 .RI "Evaluating uint64 value for given group/key\&. "
 .ti -1c
-.RI "\fBeconf_err\fP \fBeconf_getFloatValueDef\fP (\fBeconf_file\fP *kf, const char *group, const char *key, float *result, float def)"
+.RI "\fBeconf_err\fP \fBeconf_getFloatValueDef\fP (\fBeconf_file\fP *kf, const char *group, const char *key, float *result, const float def)"
 .br
 .RI "Evaluating float value for given group/key\&. "
 .ti -1c
-.RI "\fBeconf_err\fP \fBeconf_getDoubleValueDef\fP (\fBeconf_file\fP *kf, const char *group, const char *key, double *result, double def)"
+.RI "\fBeconf_err\fP \fBeconf_getDoubleValueDef\fP (\fBeconf_file\fP *kf, const char *group, const char *key, double *result, const double def)"
 .br
 .RI "Evaluating double value for given group/key\&. "
 .ti -1c
-.RI "\fBeconf_err\fP \fBeconf_getStringValueDef\fP (\fBeconf_file\fP *kf, const char *group, const char *key, char **result, char *def)"
+.RI "\fBeconf_err\fP \fBeconf_getStringValueDef\fP (\fBeconf_file\fP *kf, const char *group, const char *key, char **result, const char *def)"
 .br
 .RI "Evaluating string value for given group/key\&. "
 .ti -1c
-.RI "\fBeconf_err\fP \fBeconf_getBoolValueDef\fP (\fBeconf_file\fP *kf, const char *group, const char *key, bool *result, bool def)"
+.RI "\fBeconf_err\fP \fBeconf_getBoolValueDef\fP (\fBeconf_file\fP *kf, const char *group, const char *key, bool *result, const bool def)"
 .br
 .RI "Evaluating bool value for given group/key\&. "
 .ti -1c
@@ -1074,7 +1074,7 @@ econf_err ECONF_SUCCESS or error code
 .RE
 .PP
 
-.SS "\fBeconf_err\fP econf_getIntValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, int32_t * result, int32_t def)"
+.SS "\fBeconf_err\fP econf_getIntValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, int32_t * result, const int32_t def)"
 
 .PP
 Evaluating int32 value for given group/key\&. If key is not found, the default value is returned and error is ECONF_NOKEY\&.
@@ -1098,7 +1098,7 @@ econf_err ECONF_SUCCESS or error code
 .RE
 .PP
 
-.SS "\fBeconf_err\fP econf_getInt64ValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, int64_t * result, int64_t def)"
+.SS "\fBeconf_err\fP econf_getInt64ValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, int64_t * result, const int64_t def)"
 
 .PP
 Evaluating int64 value for given group/key\&. If key is not found, the default value is returned and error is ECONF_NOKEY\&.
@@ -1122,7 +1122,7 @@ econf_err ECONF_SUCCESS or error code
 .RE
 .PP
 
-.SS "\fBeconf_err\fP econf_getUIntValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, uint32_t * result, uint32_t def)"
+.SS "\fBeconf_err\fP econf_getUIntValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, uint32_t * result, const uint32_t def)"
 
 .PP
 Evaluating uint32 value for given group/key\&. If key is not found, the default value is returned and error is ECONF_NOKEY\&.
@@ -1146,7 +1146,7 @@ econf_err ECONF_SUCCESS or error code
 .RE
 .PP
 
-.SS "\fBeconf_err\fP econf_getUInt64ValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, uint64_t * result, uint64_t def)"
+.SS "\fBeconf_err\fP econf_getUInt64ValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, uint64_t * result, const uint64_t def)"
 
 .PP
 Evaluating uint64 value for given group/key\&. If key is not found, the default value is returned and error is ECONF_NOKEY\&.
@@ -1170,7 +1170,7 @@ econf_err ECONF_SUCCESS or error code
 .RE
 .PP
 
-.SS "\fBeconf_err\fP econf_getFloatValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, float * result, float def)"
+.SS "\fBeconf_err\fP econf_getFloatValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, float * result, const float def)"
 
 .PP
 Evaluating float value for given group/key\&. If key is not found, the default value is returned and error is ECONF_NOKEY\&.
@@ -1194,7 +1194,7 @@ econf_err ECONF_SUCCESS or error code
 .RE
 .PP
 
-.SS "\fBeconf_err\fP econf_getDoubleValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, double * result, double def)"
+.SS "\fBeconf_err\fP econf_getDoubleValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, double * result, const double def)"
 
 .PP
 Evaluating double value for given group/key\&. If key is not found, the default value is returned and error is ECONF_NOKEY\&.
@@ -1218,7 +1218,7 @@ econf_err ECONF_SUCCESS or error code
 .RE
 .PP
 
-.SS "\fBeconf_err\fP econf_getStringValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, char ** result, char * def)"
+.SS "\fBeconf_err\fP econf_getStringValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, char ** result, const char * def)"
 
 .PP
 Evaluating string value for given group/key\&. If key is not found, the default value is returned and error is ECONF_NOKEY\&.
@@ -1242,7 +1242,7 @@ econf_err ECONF_SUCCESS or error code
 .RE
 .PP
 
-.SS "\fBeconf_err\fP econf_getBoolValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, bool * result, bool def)"
+.SS "\fBeconf_err\fP econf_getBoolValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, bool * result, const bool def)"
 
 .PP
 Evaluating bool value for given group/key\&. If key is not found, the default value is returned and error is ECONF_NOKEY\&.

@@ -33,7 +33,7 @@
 
 #define econf_getValueDef(FCT_TYPE, TYPE, COPY)				\
 econf_err econf_get ## FCT_TYPE ## ValueDef(econf_file *ef, const char *group, \
-					     const char *key, TYPE *result, TYPE def) { \
+					     const char *key, TYPE *result, const TYPE def) { \
   if (!ef) \
     return ECONF_ERROR; \
 \
