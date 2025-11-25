@@ -1,3 +1,6 @@
+Version 0.8.1
+* Set default parameter in econf_get<type>ValueDef to "const"
+
 Version 0.8.0
 * New interface call: econf_setExtValue
 
