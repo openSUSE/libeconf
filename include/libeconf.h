@@ -877,7 +877,7 @@ extern econf_err econf_getBoolValue(econf_file *kf, const char *group, const cha
  * @return econf_err ECONF_SUCCESS or error code
  *
  */
-extern econf_err econf_getIntValueDef(econf_file *kf, const char *group, const char *key, int32_t *result, int32_t def);
+extern econf_err econf_getIntValueDef(econf_file *kf, const char *group, const char *key, int32_t *result, const int32_t def);
 
 /** @brief Evaluating int64 value for given group/key.
  *         If key is not found, the default value is returned and error is ECONF_NOKEY.
@@ -890,7 +890,7 @@ extern econf_err econf_getIntValueDef(econf_file *kf, const char *group, const c
  * @return econf_err ECONF_SUCCESS or error code
  *
  */
-extern econf_err econf_getInt64ValueDef(econf_file *kf, const char *group, const char *key, int64_t *result, int64_t def);
+extern econf_err econf_getInt64ValueDef(econf_file *kf, const char *group, const char *key, int64_t *result, const int64_t def);
 
 /** @brief Evaluating uint32 value for given group/key.
  *         If key is not found, the default value is returned and error is ECONF_NOKEY.
@@ -903,7 +903,7 @@ extern econf_err econf_getInt64ValueDef(econf_file *kf, const char *group, const
  * @return econf_err ECONF_SUCCESS or error code
  *
  */
-extern econf_err econf_getUIntValueDef(econf_file *kf, const char *group, const char *key, uint32_t *result, uint32_t def);
+extern econf_err econf_getUIntValueDef(econf_file *kf, const char *group, const char *key, uint32_t *result, const uint32_t def);
 
 /** @brief Evaluating uint64 value for given group/key.
  *         If key is not found, the default value is returned and error is ECONF_NOKEY.
@@ -916,7 +916,7 @@ extern econf_err econf_getUIntValueDef(econf_file *kf, const char *group, const 
  * @return econf_err ECONF_SUCCESS or error code
  *
  */
-extern econf_err econf_getUInt64ValueDef(econf_file *kf, const char *group, const char *key, uint64_t *result, uint64_t def);
+extern econf_err econf_getUInt64ValueDef(econf_file *kf, const char *group, const char *key, uint64_t *result, const uint64_t def);
 
 /** @brief Evaluating float value for given group/key.
  *         If key is not found, the default value is returned and error is ECONF_NOKEY.
@@ -929,7 +929,7 @@ extern econf_err econf_getUInt64ValueDef(econf_file *kf, const char *group, cons
  * @return econf_err ECONF_SUCCESS or error code
  *
  */
-extern econf_err econf_getFloatValueDef(econf_file *kf, const char *group, const char *key, float *result, float def);
+extern econf_err econf_getFloatValueDef(econf_file *kf, const char *group, const char *key, float *result, const float def);
 
 /** @brief Evaluating double value for given group/key.
  *         If key is not found, the default value is returned and error is ECONF_NOKEY.
@@ -942,7 +942,7 @@ extern econf_err econf_getFloatValueDef(econf_file *kf, const char *group, const
  * @return econf_err ECONF_SUCCESS or error code
  *
  */
-extern econf_err econf_getDoubleValueDef(econf_file *kf, const char *group, const char *key, double *result, double def);
+extern econf_err econf_getDoubleValueDef(econf_file *kf, const char *group, const char *key, double *result, const double def);
 
 /** @brief Evaluating string value for given group/key.
  *         If key is not found, the default value is returned and error is ECONF_NOKEY.
@@ -955,7 +955,7 @@ extern econf_err econf_getDoubleValueDef(econf_file *kf, const char *group, cons
  * @return econf_err ECONF_SUCCESS or error code
  *
  */
-extern econf_err econf_getStringValueDef(econf_file *kf, const char *group, const char *key, char **result, char *def);
+extern econf_err econf_getStringValueDef(econf_file *kf, const char *group, const char *key, char **result, const char *def);
 
 /** @brief Evaluating bool value for given group/key.
  *         If key is not found, the default value is returned and error is ECONF_NOKEY.
@@ -968,7 +968,7 @@ extern econf_err econf_getStringValueDef(econf_file *kf, const char *group, cons
  * @return econf_err ECONF_SUCCESS or error code
  *
  */
-extern econf_err econf_getBoolValueDef(econf_file *kf, const char *group, const char *key, bool *result, bool def);
+extern econf_err econf_getBoolValueDef(econf_file *kf, const char *group, const char *key, bool *result, const bool def);
 
 /* --------------- */
 /* --- SETTERS --- */
