@@ -52,7 +52,7 @@ econf_readConfig \- evaluate configuration files for a specific project
    /etc/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR does exist:
 
      -- /etc/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR
-     -- \fIusr_subdir\fR/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR     
+     -- \fIusr_subdir\fR/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
      -- /run/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
      -- /etc/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
 
@@ -158,40 +158,42 @@ Reading content in different cases in following order:\&
      - /usr/lib/foo/example.conf.d/ *.conf
      - /run/foo/example.conf.d/ *.conf
      - /etc/foo/example.conf.d/ *.conf
-
+.br
+.br
 .sp
 .if n \{\
-.RS 4
+.RS 1
 .\}
 .nf
-      #include <libeconf\&.h>
-      #include <stdio\&.h>
 
-      int main(void) {
-          econf_file *conf = NULL;
-          econf_err err;
+#include <libeconf\&.h>
+#include <stdio\&.h>
 
-          /*
-           * Reading
-           */
-          err = econf_readConfig(&conf,
-                                 "foo",                 /* project name */
-                                 "/usr/lib",            /* vendor directory */
-                                 "example",             /* config name */
-                                 "conf",                /* suffix */
-                                 "=",                   /* delimiter */
-                                 "#");                  /* comment */
+int main(void) {
+    econf_file *conf = NULL;
+    econf_err err;
 
-          if (err != ECONF_SUCCESS) {
-              fprintf(stderr, "Failed to read config: %d\en", err);
-              return 1;
-          }
+    /*
+     * Reading
+     */
+    err = econf_readConfig(&conf,
+                           "foo",                 /* project name */
+                           "/usr/lib",            /* vendor directory */
+                           "example",             /* config name */
+                           "conf",                /* suffix */
+                           "=",                   /* delimiter */
+                           "#");                  /* comment */
 
-          /* Use econf_get\&.\&.\&. functions here to access values */
+    if (err != ECONF_SUCCESS) {
+        fprintf(stderr, "Failed to read config: %d\en", err);
+        return 1;
+    }
 
-          econf_free(conf);
-          return 0;
-      }
+    /* Use econf_get\&.\&.\&. functions here to access values */
+
+    econf_free(conf);
+    return 0;
+}
 
 .fi
 .if n \{\
@@ -202,6 +204,7 @@ Reading content in different cases in following order:\&
 .SH "SEE ALSO"
 .PP
 \fBlibeconf\fR(3),
+\fBeconf_readConfigWitchCallback\fR(3),
 \fBeconf_free\fR(3),
 \fBeconf_errString\fR(3)\&.
 
