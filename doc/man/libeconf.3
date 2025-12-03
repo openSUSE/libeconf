@@ -444,66 +444,6 @@ User defined parsing callback has failed\&.
 .SH "Function Documentation"
 .PP 
  
-
-
-.SS "\fBeconf_err\fP econf_mergeFiles (\fBeconf_file\fP ** merged_file, \fBeconf_file\fP * usr_file, \fBeconf_file\fP * etc_file)"
-
-.PP
-Merge the contents of two key_files objects\&. Entries in etc_file will be preferred\&. Comment and delimiter tag will be taken from usr_file\&. This can be changed by calling the functions econf_set_comment_tag and econf_set_delimiter_tag\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fImerged_file\fP merged data 
-.br
-\fIusr_file\fP First data block which has to be merged\&. 
-.br
-\fIetc_file\fP Second data block which has to be merged\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code
-.RE
-.PP
-Usage: 
-.PP
-.nf
-#include "libeconf\&.h"
-
-econf_file *key_file_1 = NULL, *key_file_2 = NULL, *key_file_ret = NULL
-econf_err error;
-
-error = econf_readFile (&key_file1, "/usr/etc/test\&.conf", "=", "#");
-error = econf_readFile (&key_file2, /etc/test\&.conf", "=", "#");
-error = econf_mergeFiles (&key_file_ret, key_file_1, key_file_2);
-
-econf_free (key_file_ret);
-econf_free (key_file_1);
-econf_free (key_file_2);
-
-.fi
-.PP
- 
-.SS "\fBeconf_err\fP econf_newKeyFile (\fBeconf_file\fP ** result, char delimiter, char comment)"
-
-.PP
-Create a new econf_file object\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIresult\fP Pointer to the allocated econf_file object\&. 
-.br
-\fIdelimiter\fP delimiter of key/value e\&.g\&. '=' 
-.br
-\fIcomment\fP Character which defines the start of a comment\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code
-.RE
-.PP
-
 .SS "\fBeconf_err\fP econf_newIniFile (\fBeconf_file\fP ** result)"
 
 .PP
