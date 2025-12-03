@@ -41,7 +41,6 @@ econf_readFile \- parse a configuration file
 .ft
 .sp
 
-.HP \w'econf_err\ econf_readFile('u
 .BI "econf_err econf_readFile(econf_file\ **" "result" ", const\ char\ *" "file_name" ", const\ char\ *" "delim" ", const\ char\ *" "comment" ");"
 
 .SH "DESCRIPTION"
@@ -144,11 +143,16 @@ The following example demonstrates how to read a simple configuration file:
 .\}
 .sp
 
+.SH APPLICATION USAGE
+
+Default behaviour if entries have the same name in one file: The first hit will be returned\&. Further entries will be ignored\&. This can be changed by setting the environment variable JOIN_SAME_ENTRIES (see econf_set_opt)\&. In that case entries with the same name will be joined to one single entry\&.
+
 .SH "SEE ALSO"
 .PP
 \fBlibeconf\fR(3),
 \fBeconf_free\fR(3),
 \fBeconf_writeFile\fR(3),
-\fBeconf_errString\fR(3)\&.
+\fBeconf_errString\fR(3)\&
+\fBeconf_set_opt\fR(3)\&.
 
 .RE
