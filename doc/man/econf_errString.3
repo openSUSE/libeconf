@@ -1,1 +1,61 @@
-.so man3/libeconf.3
+'\" t
+.\"     Title: ECONF_ERRSTRING
+.\"    Author: libeconf developers
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 2025-12-04
+.\"    Manual: libeconf Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_ERRSTRING" "3" "2025\-12\-04" "libeconf" "libeconf Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf_errString \- convert an econf_err type to a string
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+#include <libeconf\&.h>
+.fi
+.ft
+.sp
+
+.BI "const char *econf_errString(const\ econf_err\ " "error" ");"
+
+.SH "DESCRIPTION"
+
+.PP
+The \fBeconf_errString\fR() function converts an \fBeconf_err\fR error code (returned by other libeconf functions) into a human\-readable string description\&.
+
+.SH "RETURN VALUE"
+
+.PP
+The \fBeconf_errString\fR() function returns a pointer to a string describing the error\&. The returned string is statically allocated and must not be freed by the application\&.
+
+.SH "SEE ALSO"
+
+.PP
+\fBlibeconf\fR(3),
+\fBeconf_errLocation\fR(3)
+.RE
