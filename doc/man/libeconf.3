@@ -444,27 +444,6 @@ User defined parsing callback has failed\&.
 .SH "Function Documentation"
 .PP 
  
-.SS "\fBeconf_err\fP econf_getKeys (\fBeconf_file\fP * kf, const char * group, size_t * length, char *** keys)"
-
-.PP
-Evaluating all keys\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Group name for which the keys have to be evaluated or NULL for keys, which do not belong to a group\&.
-.br
-\fIlength\fP Length of the returned key array\&. 
-.br
-\fIkeys\fP String array of evaluated keys\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
 
 .SS "\fBeconf_err\fP econf_getIntValue (\fBeconf_file\fP * kf, const char * group, const char * key, int32_t * result)"
 
