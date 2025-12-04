@@ -444,44 +444,6 @@ User defined parsing callback has failed\&.
 .SH "Function Documentation"
 .PP 
 
-.SS "\fBeconf_err\fP econf_getExtValue (\fBeconf_file\fP * kf, const char * group, const char * key, \fBeconf_ext_value\fP ** result)"
-
-.PP
-Evaluating more information for given group/key\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&.
-.br
-\fIkey\fP Key for which the value is requested\&. 
-.br
-\fIresult\fP A newly allocated struct or NULL in error case\&.
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code
-.RE
-.PP
-
-.SS "void econf_freeExtValue (\fBeconf_ext_value\fP * to_free)"
-
-.PP
-Free an complete \fBeconf_ext_value\fP struct\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIto_free\fP struct which has to be freed
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-void
-.RE
-.PP
-
 .SS "econf_err econf_set_conf_dirs (const char **dir_postfix_list)"
 
 .PP

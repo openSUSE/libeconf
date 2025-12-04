@@ -1,1 +1,69 @@
-.so man3/libeconf.3
+'\" t
+.\"     Title: ECONF_FREEEXTVALUE
+.\"    Author: libeconf Developers
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 2025-01-16
+.\"    Manual: libeconf  Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_FREEEXTVALUE" "3" "2025\-01\-16" "libeconf" "libeconf Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf_freeExtValue \- free an econf_ext_value structure
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+#include <libeconf_ext\&.h>
+.fi
+.ft
+.sp
+
+.BI "void econf_freeExtValue(econf_ext_value\ *" "val" ");"
+
+.SH "DESCRIPTION"
+
+.PP
+The \fBeconf_freeExtValue\fR() function is used to free the memory that was dynamically allocated for the \fBeconf_ext_value\fR structure pointed to by \fIval\fR, typically obtained from a previous call to \fBeconf_getExtValue\fR(3)\&.
+
+.PP
+All internal members of the structure, including the value string and any associated extended data, are also freed\&.
+
+.PP
+If \fIval\fR is \fBNULL\fR, the function does nothing\&.
+
+.SH "RETURN VALUE"
+
+.PP
+The \fBeconf_freeExtValue\fR() function returns no value\&.
+
+.SH "SEE ALSO"
+
+.PP
+\fBeconf_getExtValue\fR(3),
+\fBeconf_freeFile\fR(3),
+\fBlibeconf\fR(7)
+
+.RE
