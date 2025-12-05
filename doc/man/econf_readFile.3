@@ -46,26 +46,15 @@ econf_readFile \- parse a configuration file
 .SH "DESCRIPTION"
     
 .PP
-\fBeconf_readFile\fR
-reads and parses the configuration file specified by
-\fIfile_name\fR\&. The function allocates a new
-\fBeconf_file\fR
-object, populates it with the parsed data, and stores a pointer to it in
-\fIresult\fR\&.
+\fBeconf_readFile\fR reads and parses the configuration file specified by \fIfile_name\fR\&. The function allocates a new
+\fBeconf_file\fR object, populates it with the parsed data, and stores a pointer to it in \fIresult\fR\&.
 
 .PP
-The
-\fIdelim\fR
-argument specifies the character (or characters) used to separate keys from values (e\&.g\&., "=" or ":")\&. The
-\fIcomment\fR
-argument specifies the character that introduces a comment (e\&.g\&., "#" or ";")\&. Lines starting with this character are ignored during parsing\&.
+The \fIdelim\fR argument specifies the character (or characters) used to separate keys from values (e\&.g\&., "=" or ":")\&. The
+\fIcomment\fR argument specifies the character that introduces a comment (e\&.g\&., "#" or ";")\&. Lines starting with this character are ignored during parsing\&.
 
 .PP
-The caller is responsible for freeing the allocated memory by calling
-\fBeconf_free\fR
-on
-\fIresult\fR
-when it is no longer needed\&.
+The caller is responsible for freeing the allocated memory by calling \fBeconf_free\fR on \fIresult\fR when it is no longer needed\&.
 
 .SH "RETURN VALUE"
 
@@ -80,30 +69,31 @@ On failure, a non\-zero error code of type \fBeconf_err\fR is returned\&.
 .PP
 \fBECONF_NOFILE\fR
 .RS 4
-          The file specified by \fIfile_name\fR does not exist or could not be opened\&.
-        
+          The specified \fIfile_name\fR does not exist\&.
 .RE
+
 .PP
 \fBECONF_NOMEM\fR
 .RS 4
-          Insufficient memory to allocate the \fBeconf_file\fR structure or internal buffers\&.
+          Insufficient memory to allocate the \fIresult\fR structure\&.
 .RE
+
 .PP
-\fBECONF_PARSE_ERROR\fR
-.RS 4
-          The file contained syntax errors and could not be parsed successfully\&.
-.RE
-.PP
+\fBECONF_MISSING_BRACKET\fR
+.br
+\fBECONF_TEXT_AFTER_SECTION\fR
+.br
+\fBECONF_EMPTY_SECTION_NAME\fR
+.br
 \fBECONF_MISSING_DELIMITER\fR
 .RS 4
-          A line in the configuration file is missing the expected delimiter specified by
-\fIdelim\fR\&.
+          The file contains syntax errors and could not be parsed successfully\&.
 .RE
-.PP
-\fBECONF_ERROR\fR
-.RS 4
-          A generic error occurred\&.
 
+.PP
+\fBECONF_ARGUMENT_IS_NULL_VALUE\fR
+.RS 4
+          One of the required arguments (such as \fIresult\fR or \fIfile_name\fR) is NULL\&.
 .RE
 
 .SH "EXAMPLE"

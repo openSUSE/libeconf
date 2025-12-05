@@ -79,15 +79,23 @@ On failure, a non\-zero error code of type \fBeconf_err\fR is returned\&.
           Insufficient memory to allocate the \fIresult\fR structure\&.
 .RE
 .PP
-\fBECONF_PARSE_ERROR\fR
+\fBECONF_MISSING_BRACKET\fR
+.br
+\fBECONF_TEXT_AFTER_SECTION\fR
+.br
+\fBECONF_EMPTY_SECTION_NAME\fR
+.br
+\fBECONF_MISSING_DELIMITER\fR
 .RS 4
           The file contains syntax errors and could not be parsed successfully\&.
 .RE
+
 .PP
 \fBECONF_PARSING_CALLBACK_FAILED\fR
 .RS 4
           The user\-provided \fIcallback\fR returned false, aborting the operation\&.
 .RE
+
 .PP
 \fBECONF_ARGUMENT_IS_NULL_VALUE\fR
 .RS 4

@@ -95,41 +95,33 @@ structure, which is returned via the \fIkey_file\fR pointer\&.
 .SH "RETURN VALUE"
 
 .PP
-On success, \fBeconf_readConfig\fR returns \fBECONF_SUCCESS\fR\&.
+\fBECONF_NOFILE\fR
+.RS 4
+          The specified \fIfile_name\fR does not exist\&.
+.RE
 
-.PP
-On failure, a specific error code is returned as defined in \fBeconf_err\fR\&.
-
-.SH "ERRORS"
 .PP
 \fBECONF_NOMEM\fR
 .RS 4
-          Insufficient memory to allocate the \fBeconf_file\fR structure or internal buffers\&.
-
+          Insufficient memory to allocate the \fIresult\fR structure\&.
 .RE
-.PP
-\fBECONF_NOFILE\fR
-.RS 4
-          No configuration file was found.
 
+.PP
+\fBECONF_MISSING_BRACKET\fR
+.br
+\fBECONF_TEXT_AFTER_SECTION\fR
+.br
+\fBECONF_EMPTY_SECTION_NAME\fR
+.br
+\fBECONF_MISSING_DELIMITER\fR
+.RS 4
+          The file contains syntax errors and could not be parsed successfully\&.
 .RE
-.PP
-\fBECONF_READ_ERROR\fR
-.RS 4
-          An error occurred while trying to read a file (e\&.g\&., permission denied)\&.
 
-.RE
 .PP
-\fBECONF_PARSE_ERROR\fR
+\fBECONF_ARGUMENT_IS_NULL_VALUE\fR
 .RS 4
-          A configuration file contains syntax errors and could not be parsed successfully\&.
-
-.RE
-.PP
-\fBECONF_ERROR\fR
-.RS 4
-          General error, or invalid arguments provided (e\&.g\&.,\fIkey_file\fR is NULL)\&.
-
+          One of the required arguments (such as \fIresult\fR or \fIfile_name\fR) is NULL\&.
 .RE
 
 .SH "EXAMPLE"

@@ -41,7 +41,7 @@ econf_set_delimiter_tag \- set the key\-value delimiter character used during fi
 .ft
 .sp
 
-.BI "econf_err econf_set_delimiter_tag(const\ char\ " "delimiter" ");"
+.BI "void econf_set_delimiter_tag(const\ char\ " "delimiter" ");"
 
 .SH "DESCRIPTION"
 
@@ -55,26 +55,13 @@ The \fIdelimiter\fR argument specifies the new delimiter tag\&. I
 .SH "RETURN VALUE"
 
 .PP
-On success,
-\fBeconf_set_delimiter_tag\fR() returns \fBECONF_SUCCESS\fR\&.
-
-.PP
-On failure, a non\-zero \fBeconf_err\fR error number is returned\&.
-
-.SH "ERRORS"
-
-.PP
-ECONF_ERROR
-.RS 4
-          An internal error occurred\&.
-
-.RE
+none
 
 .SH "SEE ALSO"
 
 .PP
+\fBlibeconf\fR(3),
 \fBeconf_get_delimiter_tag\fR(3),
-\fBeconf_set_comment_tag\fR(3),
-\fBlibeconf\fR(3)
+\fBeconf_set_comment_tag\fR(3).
 
 .RE

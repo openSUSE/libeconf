@@ -88,15 +88,21 @@ On failure, a non\-zero error code of type \fBeconf_err\fR is returned\&.
 .SH "ERRORS"
 
 .PP
-\fBECONF_NOFILE\fR
+\fBECONF_KEY_HAS_NULL_VALUE\fR
 .RS 4
-          The \fIkf\fR parameter is \fBNULL\fR\&.
+          Given key has NULL value\&.
 
 .RE
 .PP
-\fBECONF_NOGROUP\fR
+\fBECONF_NOMEM\fR
 .RS 4
-          The specified \fIgroup\fR could not be found in the configuration structure\&.
+          Memory allocation failed (specifically applicable to \fBeconf_getStringValue\fR)\&.
+
+.RE
+.PP
+\fBECONF_VALUE_CONVERSION_ERROR\fR
+.RS 4
+          Value cannot be converted\&.
 
 .RE
 .PP
@@ -106,23 +112,29 @@ On failure, a non\-zero error code of type \fBeconf_err\fR is returned\&.
 
 .RE
 .PP
-\fBECONF_VALUE_INVALID\fR
+\fBECONF_ARGUMENT_IS_NULL_VALUE\fR
 .RS 4
-          The value found could not be converted to the requested type (e\&.g\&., attempting to read a non\-numeric string as an integer)\&.
+          Given argument is NULL\&.
 
 .RE
 .PP
-\fBECONF_NOMEM\fR
+\fBECONF_PARSE_ERROR\fR
 .RS 4
-          Memory allocation failed (specifically applicable to \fBeconf_getStringValue\fR)\&.
+          Parse error. (specifically applicable to \fBeconf_getBooleanValue\fR)\&.
+
+.RE
+.PP
+\fBECONF_ERROR\fR
+.RS 4
+          General error\&.
 
 .RE
 
 .SH "SEE ALSO"
 
 .PP
-\fBeconf_setValue\fR(3),
+\fBlibeconf\fR(3),
 \fBeconf_free\fR(3),
-\fBlibeconf\fR(3)
+\fBeconf_errString\fR(3)\&.
 
   

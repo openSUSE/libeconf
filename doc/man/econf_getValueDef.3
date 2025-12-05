@@ -92,28 +92,53 @@ If an error occurs (e\&.g\&., the value cannot be parsed, or invalid arguments),
 .SH "ERRORS"
 
 .PP
-\fBECONF_NOKEY\fR
+\fBECONF_KEY_HAS_NULL_VALUE\fR
 .RS 4
-          The key (or group) was not found\&. The \fIresult\fR has been set to the default value \fIdef\fR\&.
+          Given key has NULL value\&.
 
 .RE
 .PP
-\fBECONF_PARSE_ERROR\fR
+\fBECONF_NOMEM\fR
 .RS 4
-          The value in the file could not be parsed into the requested type (e\&.g\&., invalid integer format)\&.
+          Memory allocation failed (specifically applicable to \fBeconf_getStringValueDef\fR)\&.
+
+.RE
+.PP
+\fBECONF_VALUE_CONVERSION_ERROR\fR
+.RS 4
+          Value cannot be converted\&.
+
+.RE
+.PP
+\fBECONF_NOKEY\fR
+.RS 4
+          The specified \fIkey\fR could not be found within the group\&.
 
 .RE
 .PP
 \fBECONF_ARGUMENT_IS_NULL_VALUE\fR
 .RS 4
-          The \fIkf\fR or \fIresult\fR parameter is NULL\&.
+          Given argument is NULL\&.
+
+.RE
+.PP
+\fBECONF_PARSE_ERROR\fR
+.RS 4
+          Parse error. (specifically applicable to \fBeconf_getBooleanValueDef\fR)\&.
+
+.RE
+.PP
+\fBECONF_ERROR\fR
+.RS 4
+          General error\&.
 
 .RE
 
 .SH "SEE ALSO"
 
 .PP
+\fBlibeconf\fR(3),
 \fBeconf_getValue\fR(3),
 \fBeconf_setValue\fR(3),
-\fBeconf_errString\fR(3),
-\fBlibeconf\fR(3)
+\fBeconf_errString\fR(3)\&.
+

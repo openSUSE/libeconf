@@ -79,21 +79,37 @@ On error, a non\-zero error code is returned (see the section called \(lqERRORS\
 .SH "ERRORS"
 
 .PP
-ECONF_ARGUMENT_IS_NULL_VALUE
-.RS 4
-          The \fIkf\fR or \fIkey\fR argument is \fBNULL\fR\&.
-
-.RE
-.PP
 ECONF_NOMEM
 .RS 4
           Insufficient memory to allocate the new entry or group\&.
 
 .RE
+
 .PP
-ECONF_ERROR
+ECONF_FILE_LIST_IS_NULL
 .RS 4
-          A generic internal error occurred\&.
+          Conf file list is NULL\&.
+
+.RE
+
+.PP
+ECONF_EMPTYKEY
+.RS 4
+          Key is NULL or has empty value\&.
+
+.RE
+
+.PP
+ECONF_NOKEY
+.RS 4
+          Key not found\&.
+
+.RE
+
+.PP
+ECONF_WRONG_BOOLEAN_VALUE
+.RS 4
+          Wrong boolean value (1/0 true/false yes/no)\&.
 
 .RE
 
@@ -101,5 +117,4 @@ ECONF_ERROR
 
 .PP
 \fBlibeconf\fR(3),
-\fBeconf_errString\fR(3),
-\fBeconf_getValue\fR(3)
+\fBeconf_errString\fR(3).

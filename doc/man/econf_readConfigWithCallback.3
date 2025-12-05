@@ -107,41 +107,39 @@ On success, \fBeconf_readConfigWithCallback\fR returns \fBECONF_SUCCESS\fR\&.
 On failure, a specific error code is returned as defined in \fBeconf_err\fR\&.
 
 .SH "ERRORS"
-.PP
-\fBECONF_NOMEM\fR
-.RS 4
-          Insufficient memory to allocate the \fBeconf_file\fR structure or internal buffers\&.
 
-.RE
 .PP
 \fBECONF_NOFILE\fR
 .RS 4
-          No configuration file was found.
-
+          The specified \fIfile_name\fR does not exist\&.
 .RE
 .PP
-\fBECONF_READ_ERROR\fR
+\fBECONF_NOMEM\fR
 .RS 4
-          An error occurred while trying to read a file (e\&.g\&., permission denied)\&.
-
+          Insufficient memory to allocate the \fIresult\fR structure\&.
 .RE
 .PP
-\fBECONF_PARSE_ERROR\fR
+\fBECONF_MISSING_BRACKET\fR
+.br
+\fBECONF_TEXT_AFTER_SECTION\fR
+.br
+\fBECONF_EMPTY_SECTION_NAME\fR
+.br
+\fBECONF_MISSING_DELIMITER\fR
 .RS 4
-          A configuration file contains syntax errors and could not be parsed successfully\&.
-
+          The file contains syntax errors and could not be parsed successfully\&.
 .RE
-.PP
-\fBECONF_ERROR\fR
-.RS 4
-          General error, or invalid arguments provided (e\&.g\&.,\fIkey_file\fR is NULL)\&.
 
-.RE
 .PP
 \fBECONF_PARSING_CALLBACK_FAILED\fR
 .RS 4
-          Parsing of all files has been aborted due the callback.
+          The user\-provided \fIcallback\fR returned false, aborting the operation\&.
+.RE
 
+.PP
+\fBECONF_ARGUMENT_IS_NULL_VALUE\fR
+.RS 4
+          One of the required arguments (such as \fIresult\fR or \fIfile_name\fR) is NULL\&.
 .RE
 
 .SH "EXAMPLE"

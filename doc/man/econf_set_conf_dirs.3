@@ -70,15 +70,9 @@ On failure, an error code of type \fBeconf_err\fR is returned\&.
 .SH "ERRORS"
 
 .PP
-\fBECONF_ERROR\fR
+\fBECONF_NOMEM\fR
 .RS 4
-          A generic error occurred, typically indicating an invalid state or system issue\&.
-
-.RE
-.PP
-\fBECONF_PARSE_ERROR\fR
-.RS 4
-          An internal configuration or parsing error was detected\&.
+          Out of memory\&.
 
 .RE
 
@@ -87,6 +81,6 @@ On failure, an error code of type \fBeconf_err\fR is returned\&.
 .PP
 \fBlibeconf\fR(3),
 \fBeconf_readConfig\fR(3),
-\fBeconf_errString\fR(3)
+\fBeconf_errString\fR(3).
 
 .RE

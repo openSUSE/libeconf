@@ -72,13 +72,13 @@ Otherwise, an error value is returned to indicate the error condition\&.
 .PP
 \fBECONF_ARGUMENT_IS_NULL_VALUE\fR
 .RS 4
-          The value specified by \fIkf\fR,\fIlength\fR, or \fIkeys\fR is \fBNULL\fR\&.
+          The value specified by \fIkf\fR or \fIkeys\fR is \fBNULL\fR\&.
 
 .RE
 .PP
-\fBECONF_NOGROUP\fR
+\fBECONF_NOKEY\fR
 .RS 4
-          The group specified by \fIgroup\fR could not be found in the configuration object\&.
+          Keys not found\&.
 
 .RE
 .PP
@@ -91,7 +91,8 @@ Otherwise, an error value is returned to indicate the error condition\&.
 .SH "SEE ALSO"
 
 .PP
+\fBlibeconf\fR(3),
 \fBeconf_getGroups\fR(3),
 \fBeconf_freeArray\fR(3),
 \fBeconf_readFile\fR(3),
-\fBlibeconf\fR(3)
+\fBeconf_errString\fR(3)\&.

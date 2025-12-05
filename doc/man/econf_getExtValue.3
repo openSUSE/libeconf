@@ -74,12 +74,6 @@ On error, a non\-zero \fBeconf_err\fR error code is returned\&.
 
 .RE
 .PP
-\fBECONF_NOGROUP\fR
-.RS 4
-          The specified group was not found in the configuration structure\&.
-
-.RE
-.PP
 \fBECONF_NOMEM\fR
 .RS 4
           Memory allocation failed\&.
@@ -88,14 +82,15 @@ On error, a non\-zero \fBeconf_err\fR error code is returned\&.
 .PP
 \fBECONF_ARGUMENT_IS_NULL_VALUE\fR
 .RS 4
-          One of the required arguments (\fIkey_file\fR or \fIkey\fR) was \fBNULL\fR\&.
+          Given argument is NULL
 
 .RE
 .SH "SEE ALSO"
 
 .PP
+\fBlibeconf\fR(3),
 \fBeconf_readConfig\fR(3),
 \fBeconf_freeExtValue\fR(3),
-\fBlibeconf\fR(3)
+\fBeconf_errString\fR(3)\&
 
 .RE

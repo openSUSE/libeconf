@@ -66,6 +66,12 @@ is returned\&. Otherwise, an error code is returned to indicate the error\&.
 
 .RE
 .PP
+\fBECONF_NOGROUP\fR
+.RS 4
+          Group not found\&.
+
+.RE
+.PP
 \fBECONF_NOMEM\fR
 .RS 4
           Insufficient memory was available to allocate the groups array\&.
@@ -75,6 +81,7 @@ is returned\&. Otherwise, an error code is returned to indicate the error\&.
 .SH "SEE ALSO"
 
 .PP
+\fBlibeconf\fR(3),
 \fBeconf_getKeys\fR(3),
 \fBeconf_freeArray\fR(3),
-\fBlibeconf\fR(3)
+\fBeconf_errString\fR(3)\&

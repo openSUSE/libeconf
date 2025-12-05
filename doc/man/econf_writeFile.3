@@ -64,25 +64,25 @@ Otherwise, an error number of type \fBeconf_err\fR shall be returned to indicate
 .PP
 \fBECONF_ARGUMENT_IS_NULL_VALUE\fR
 .RS 4
-          The value specified by \fIkey_file\fR, \fIsave_dir\fR, or \fIfile_name\fR is NULL\&.
+          The value specified by \fIkey_file\fR is NULL\&.
 
 .RE
 .PP
-\fBECONF_WRONG_FILE_PERMISSION\fR
+\fBECONF_NOFILE\fR
 .RS 4
-          The user does not have permission to write to the specified file\&.
+          Configuration file not found\&.
 
 .RE
 .PP
-\fBECONF_WRONG_DIR_PERMISSION\fR
+\fBECONF_NOMEM\fR
 .RS 4
-          The user does not have permission to write to the specified directory\&.
+          Out of memory\&.
 
 .RE
 .PP
-\fBECONF_ERROR\fR
+\fBECONF_WRITEERROR\fR
 .RS 4
-          A general internal error occurred (e\&.g\&., memory allocation failure)\&.
+          Error creating or writing to a file\&.
 
 .RE
 
@@ -92,4 +92,5 @@ Otherwise, an error number of type \fBeconf_err\fR shall be returned to indicate
 \fBlibeconf\fR(3),
 \fBeconf_readFile\fR(3),
 \fBeconf_newIniFile\fR(3),
-\fBeconf_free\fR(3)
+\fBeconf_free\fR(3),
+\fBeconf_errString\fR(3).

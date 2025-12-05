@@ -41,7 +41,7 @@ econf_set_comment_tag \- set the comment tag character for a configuration file 
 .ft
 .sp
 
-.BI "econf_err econf_set_comment_tag(econf_file\ *" "key_file" ", const\ char\ " "comment_tag" ");"
+.BI "void econf_set_comment_tag(econf_file\ *" "key_file" ", const\ char\ " "comment_tag" ");"
 
 .SH "DESCRIPTION"
 
@@ -57,22 +57,7 @@ The \fIcomment_tag\fR will be taken while writing comments to file\&.
 .SH "RETURN VALUE"
 
 .PP
-On success, \fBeconf_set_comment_tag\fR() returns \fBECONF_SUCCESS\fR\&.
-
-.PP On failure, an error code of type \fBeconf_err\fR is returned\&.
-
-.SH "ERRORS"
-
-.PP
-\fBECONF_ERROR\fR
-.RS 4
-          A generic error occurred\&.
-
-.RE
-.PP
-\fBECONF_ARGUMENT_IS_NULL_VALUE\fR
-.RS 4
-          The \fIkey_file\fR argument was \fBNULL\fR\&.
+none
 
 .SH "SEE ALSO"
 
@@ -80,6 +65,6 @@ On success, \fBeconf_set_comment_tag\fR() returns \fBECONF_SUCCESS\fR\&.
 \fBlibeconf\fR(3),
 \fBeconf_newKeyFile\fR(3),
 \fBeconf_comment_tag\fR(3),
-\fBeconf_set_delimiter_tag\fR(3)
+\fBeconf_set_delimiter_tag\fR(3).
 
 .RE
