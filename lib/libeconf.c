@@ -611,7 +611,7 @@ econf_err econf_readDirs(econf_file **result,
 econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
 			       const char *file_name) {
   if (!key_file)
-    return CONF_ARGUMENT_IS_NULL_VALUE;
+    return ECONF_ARGUMENT_IS_NULL_VALUE;
 
   /* Checking if the directory exists*/
   struct stat stats;
