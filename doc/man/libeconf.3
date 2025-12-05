@@ -1,4 +1,4 @@
-.TH "libeconf" 3 "Thu Apr 8 2021" "Version 0.4.7" "libeconf" \" -*- nroff -*-
+.TH "libeconf" 3 "Thu Apr 8 2021" "Version 0.8.1" "libeconf" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -315,6 +315,10 @@ Documentation: \fI\%https://github.com/openSUSE/libeconf/blob/master/bindings/cs
 .in +1c
 .RI "Evaluating more information for given group/key\&. "
 .ti -1c
+.RI "\fBeconf_err\fP \fBeconf_setExtValue\fP (\fBeconf_file\fP *kf, const char *group, const char *key, \fBeconf_ext_value\fP *value)"
+.in +1c
+.RI "Setting more information (e.g. comments) for given group/key\&. "
+.ti -1c
 .RI "void \fBeconf_freeExtValue\fP (\fBeconf_ext_value\fP *to_free)"
 .br
 .RI "Free an complete \fBeconf_ext_value\fP struct\&. "
@@ -442,5 +446,79 @@ User defined parsing callback has failed\&.
 .PP
 
 .SH "SEE ALSO"
-.PP 
-econftool\&
+.PP
+\fBRead/Write configuration files:\fR
+.PP
+econf_readConfig(3),
+econf_readConfigWithCallback(3),
+econf_readFile(3),
+econf_readFileWithCallback(3),
+econf_mergeFiles(3),
+econf_writeFile(3)
+
+.PP
+\fBget/set key/value:\fR
+.PP
+econf_getKeys(3),
+econf_getGroups(3)
+.PP
+econf_getBoolValue(3),
+econf_getBoolValueDef(3),
+econf_getDoubleValue(3),
+econf_getDoubleValueDef(3),
+econf_getExtValue(3),
+econf_getFloatValue(3),
+econf_getFloatValueDef(3),
+econf_getInt64Value(3),
+econf_getInt64ValueDef(3),
+econf_getIntValue(3),
+econf_getIntValueDef(3),
+econf_getPath(3),
+econf_getStringValue(3),
+econf_getStringValueDef(3),
+econf_getUInt64Value(3),
+econf_getUInt64ValueDef(3),
+econf_getUIntValue(3),
+econf_getUIntValueDef(3)
+.PP
+econf_setBoolValue(3)
+econf_setDoubleValue(3),
+econf_setExtValue(3),
+econf_setFloatValue(3),
+econf_setInt64Value(3),
+econf_setIntValue(3),
+econf_setStringValue(3),
+econf_setUInt64Value(3)
+
+.PP
+\fBInitialization:\fR
+.PP
+econf_newIniFile(3),
+econf_newKeyFile(3)
+
+.PP
+\fBFreeing:\fR
+.PP
+econf_freeArray(3),
+econf_freeExtValue(3),
+econf_freeFile(3)
+
+.PP
+\fBGeneral setup:\fR
+.PP
+econf_comment_tag(3),
+econf_set_comment_tag(3),
+econf_delimiter_tag(3),
+econf_set_delimiter_tag(3),
+econf_set_conf_dirs(3)
+
+.PP
+\fBError handling:\fR
+.PP
+econf_errLocation(3),
+econf_errString(3)
+
+.PP
+\fBTools\fR:
+.PP
+econftool(3)\&
