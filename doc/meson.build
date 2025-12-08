@@ -46,7 +46,7 @@ install_man('man/econftool.8',
 	'man/econf_getPath.3',
 	'man/econf_getStringValue.3',
 	'man/econf_getStringValueDef.3',
-	'man/econf_getUInt64Value.3'
+	'man/econf_getUInt64Value.3',
 	'man/econf_getUInt64ValueDef.3',
 	'man/econf_getUIntValue.3',
 	'man/econf_getUIntValueDef.3',
