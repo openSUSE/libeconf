@@ -1,0 +1,140 @@
+'\" t
+.\"     Title: ECONF_GETVALUE
+.\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 2023-12-01
+.\"    Manual: libeconf Programmer\*(Aqs Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_GETVALUE" "3" "2023\-12\-01" "libeconf" "libeconf Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf_get<type>Value \- retrieve a value from an econf configuration file
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+#include <libeconf\&.h>
+.fi
+.ft
+.sp
+
+.BI "econf_err econf_getIntValue(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", int\ *" "result" ");"
+
+.BI "econf_err econf_getInt64Value(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", int64_t\ *" "result" ");"
+
+.BI "econf_err econf_getUIntValue(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", unsigned\ int\ *" "result" ");"
+
+.BI "econf_err econf_getUInt64Value(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", uint64_t\ *" "result" ");"
+
+.BI "econf_err econf_getFloatValue(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", float\ *" "result" ");"
+
+.BI "econf_err econf_getDoubleValue(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", double\ *" "result" ");"
+
+.BI "econf_err econf_getStringValue(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", char\ **" "result" ");"
+
+.BI "econf_err econf_getBoolValue(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", bool\ *" "result" ");"
+
+.SH "DESCRIPTION"
+
+.PP
+These functions retrieve a value associated with a specific \fIgroup\fR and \fIkey\fR from the parsed configuration file object pointed to by
+\fIkf\fR\&.
+
+.PP
+The \fIgroup\fR parameter specifies the section name in the configuration file\&. If \fIgroup\fR is \fBNULL\fR, the key is looked up in the upper part of the file without any group declaration\&. The \fIkey\fR parameter specifies the name of the entry to retrieve\&.
+
+.PP
+Upon success, the retrieved value is converted to the appropriate data type and stored in the memory location pointed to by
+\fIresult\fR\&.
+
+.PP
+For \fBeconf_getStringValue\fR(), memory is dynamically allocated for the stored string\&. It is the responsibility of the caller to free this memory using
+\fBfree\fR(3) when it is no longer needed\&.
+
+.PP
+For \fBeconf_getBoolValue\fR(), the function parses common boolean strings (such as "true", "yes", "1", "false", "no", "0") irrespective of case\&.
+
+.SH "RETURN VALUE"
+
+.PP
+If the function succeeds, it returns \fBECONF_SUCCESS\fR\&.
+
+.PP
+On failure, a non\-zero error code of type \fBeconf_err\fR is returned\&.
+
+.SH "ERRORS"
+
+.PP
+\fBECONF_KEY_HAS_NULL_VALUE\fR
+.RS 4
+          Given key has NULL value\&.
+
+.RE
+.PP
+\fBECONF_NOMEM\fR
+.RS 4
+          Memory allocation failed (specifically applicable to \fBeconf_getStringValue\fR)\&.
+
+.RE
+.PP
+\fBECONF_VALUE_CONVERSION_ERROR\fR
+.RS 4
+          Value cannot be converted\&.
+
+.RE
+.PP
+\fBECONF_NOKEY\fR
+.RS 4
+          The specified \fIkey\fR could not be found within the group\&.
+
+.RE
+.PP
+\fBECONF_ARGUMENT_IS_NULL_VALUE\fR
+.RS 4
+          Given argument is NULL\&.
+
+.RE
+.PP
+\fBECONF_PARSE_ERROR\fR
+.RS 4
+          Parse error. (specifically applicable to \fBeconf_getBooleanValue\fR)\&.
+
+.RE
+.PP
+\fBECONF_ERROR\fR
+.RS 4
+          General error\&.
+
+.RE
+
+.SH "SEE ALSO"
+
+.PP
+\fBlibeconf\fR(3),
+\fBeconf_free\fR(3),
+\fBeconf_errString\fR(3)\&.
+
+  

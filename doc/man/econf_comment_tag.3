@@ -1,1 +1,80 @@
-.so man3/libeconf.3
+'\" t
+.\"     Title: ECONF_COMMENT_TAG
+.\"    Author: libeconf developers
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 2025-12-04
+.\"    Manual: libeconf Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_COMMENT_TAG" "3" "2025\-12\-04" "libeconf" "libeconf Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf_comment_tag \- retrieve the comment tag character of a configuration file
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+#include <libeconf\&.h>
+.fi
+.ft
+.sp
+
+.BI "char econf_comment_tag(const\ econf_file\ *" "key_file" ");"
+
+.SH "DESCRIPTION"
+
+.PP
+The \fBeconf_comment_tag\fR() function retrieves the comment character currently defined for the configuration file object pointed to by \fIkey_file\fR\&.
+
+.PP
+In a typical INI\-like configuration file, the comment character (e\&.g\&.,
+\(lq#\(rq or \(lq;\(rq) denotes the start of a comment, where the rest of the line should be ignored during parsing\&.
+
+.PP
+The
+\fIkey_file\fR parameter must be a pointer to a valid \fBeconf_file\fR
+structure, usually obtained from functions like \fBeconf_readConfig\fR(3) or
+\fBeconf_newKeyFile\fR(3)\&.
+
+.SH "RETURN VALUE"
+
+.PP
+On success, \fBeconf_comment_tag\fR() returns the comment character used for the configuration file object\&.
+
+.SH "ERRORS"
+
+.PP
+This function does not return an explicit error code\&. Callers must ensure that
+\fIkey_file\fR is valid before calling this function\&.
+
+.SH "SEE ALSO"
+
+.PP
+\fBeconf_set_comment_tag\fR(3),
+\fBeconf_delimiter_tag\fR(3),
+\fBeconf_readConfig\fR(3),
+\fBlibeconf\fR(3)
+
+.RE

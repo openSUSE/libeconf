@@ -1,1 +1,84 @@
-.so man3/libeconf.3
+'\" t
+.\"     Title: ECONF_NEWINIFILE
+.\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 2024-12-13
+.\"    Manual: libeconf Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_NEWINIFILE" "3" "2024\-12\-13" "libeconf" "libeconf Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf_newIniFile \- create a new econf_file object in IniFile format
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+#include <libeconf\&.h>
+.fi
+.ft
+.sp
+
+.BI "econf_err econf_newIniFile(econf_file\ **" "result" ");"
+
+.SH "DESCRIPTION"
+
+.PP
+The \fBeconf_newIniFile\fR() function initializes a new \fBeconf_file\fR object with default settings suitable for INI\-style configuration files\&. It allocates the necessary memory and stores the pointer to the newly created object in the location pointed to by \fIresult\fR\&.
+
+.PP
+This function is a wrapper around the generic \fBeconf_newKeyFile\fR() function\&. It configures the new file object to use the standard INI delimiter
+= and supports standard comment characters (typically #)\&.
+
+.PP
+The caller is responsible for freeing the allocated memory using \fBeconf_freeFile\fR() when the object is no longer needed\&.
+
+.SH "RETURN VALUE"
+
+.PP
+Upon successful completion, \fBeconf_newIniFile\fR() returns \fBECONF_SUCCESS\fR\&.
+
+.PP
+On failure, a non\-zero error code of type \fBeconf_err\fR is returned\&.
+
+.SH "ERRORS"
+
+.PP
+The function may fail with the following error(s):
+
+.PP
+\fBECONF_NOMEM\fR
+.RS 4
+          Insufficient memory was available to allocate the new \fBeconf_file\fR object\&.
+
+.RE
+
+.SH "SEE ALSO"
+
+.PP
+\fBlibeconf\fR(3),
+\fBeconf_newKeyFile\fR(3),
+\fBeconf_freeFile\fR(3),
+\fBeconf_errString\fR(3)\&.

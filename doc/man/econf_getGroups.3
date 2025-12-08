@@ -1,1 +1,87 @@
-.so man3/libeconf.3
+'\" t
+.\"     Title: ECONF_GETGROUPS
+.\"    Author: libeconf developers
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 2023-12-15
+.\"    Manual: libeconf Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_GETGROUPS" "3" "2023\-12\-15" "libeconf" "libeconf Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf_getGroups \- retrieve all groups from a configuration file
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+#include <libeconf\&.h>
+.fi
+.ft
+.sp
+
+.BI "econf_err econf_getGroups(econf_file\ *" "kf" ", size_t\ *" "length" ", char\ ***" "groups" ");"
+
+.SH "DESCRIPTION"
+
+.PP
+The \fBeconf_getGroups\fR() function retrieves a list of all groups (sections) defined in the configuration file object specified by \fIkf\fR\&.
+
+.PP
+Upon successful return, \fIlength\fR will contain the number of groups found, and \fIgroups\fR will point to a newly allocated array of strings (group names)\&. The memory for this array and the strings within it is allocated by the function and must be freed by the caller using \fBeconf_freeArray\fR()\&.
+
+.SH "RETURN VALUE"
+
+.PP
+If successful, \fBECONF_SUCCESS\fR
+is returned\&. Otherwise, an error code is returned to indicate the error\&.
+
+.SH "ERRORS"
+
+.PP
+\fBECONF_ARGUMENT_IS_NULL_VALUE\fR
+.RS 4
+          The value specified by \fIkf\fR, \fIlength\fR, or \fIgroups\fR is NULL\&.
+
+.RE
+.PP
+\fBECONF_NOGROUP\fR
+.RS 4
+          Group not found\&.
+
+.RE
+.PP
+\fBECONF_NOMEM\fR
+.RS 4
+          Insufficient memory was available to allocate the groups array\&.
+
+.RE
+
+.SH "SEE ALSO"
+
+.PP
+\fBlibeconf\fR(3),
+\fBeconf_getKeys\fR(3),
+\fBeconf_freeArray\fR(3),
+\fBeconf_errString\fR(3)\&

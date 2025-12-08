@@ -283,7 +283,7 @@ econf_err econf_mergeFiles(econf_file **merged_file, econf_file *usr_file, econf
 {
   if (merged_file == NULL || usr_file == NULL || etc_file == NULL) {
     *merged_file = NULL;
-    return ECONF_ERROR;
+    return ECONF_ARGUMENT_IS_NULL_VALUE;
   }
 
   *merged_file = calloc(1, sizeof(econf_file));
@@ -611,7 +611,7 @@ econf_err econf_readDirs(econf_file **result,
 econf_err econf_writeFile(econf_file *key_file, const char *save_to_dir,
 			       const char *file_name) {
   if (!key_file)
-    return ECONF_ERROR;
+    return ECONF_ARGUMENT_IS_NULL_VALUE;
 
   /* Checking if the directory exists*/
   struct stat stats;
@@ -710,8 +710,8 @@ extern char *econf_getPath(econf_file *kf)
 econf_err
 econf_getGroups(econf_file *kf, size_t *length, char ***groups)
 {
-  if (!kf || groups == NULL)
-    return ECONF_ERROR;
+  if (!kf || groups == NULL || length == NULL)
+    return  ECONF_ARGUMENT_IS_NULL_VALUE;
 
   if (kf->group_count <= 0)
     return ECONF_NOGROUP;
@@ -738,8 +738,8 @@ econf_getKeys(econf_file *kf, const char *grp, size_t *length, char ***keys)
 {
   if (length != NULL)
     *length = 0; /* initialize */
-  if (!kf)
-    return ECONF_ERROR;
+  if (!kf || keys == NULL)
+    return ECONF_ARGUMENT_IS_NULL_VALUE;
 
   size_t tmp = 0;
   char *group = (!grp || !*grp) ? strdup(KEY_FILE_NULL_VALUE) : strdup(grp);

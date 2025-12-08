@@ -1,1 +1,203 @@
-.so man3/libeconf.3
+'\" t
+.\"     Title: ECONF_READCONFIG
+.\"    Author: libeconf Developers
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 2023-10-25
+.\"    Manual: libeconf Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_READCONFIG" "3" "2023\-10\-25" "libeconf" "libeconf Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf_readConfig \- evaluate configuration files for a specific project
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+#include <libeconf\&.h>
+.fi
+.ft
+.sp
+
+.HP \w'econf_err\ econf_readConfig('u
+.BI "econf_err econf_readConfig(econf_file\ **" "key_file" ", const\ char\ *" "project" ", const\ char\ *" "usr_subdir" ", const\ char\ *" "config_name" ", const\ char\ *" "config_suffix" ", const\ char\ *" "delim" ", const\ char\ *" "comment" ");"
+
+.SH "DESCRIPTION"
+
+.PP
+ \fBeconf_readConfig\fR evaluats key/values of a given configuration by reading and merging all needed/available files from different directories. Order is:\&
+
+   /etc/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR does exist:
+
+     -- /etc/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR
+     -- \fIusr_subdir\fR/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
+     -- /run/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
+     -- /etc/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
+
+   /etc/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR does NOT exist:
+
+     - /run/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR does exist:
+
+      -- /run/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR
+      -- \fIusr_subdir\fR/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
+      -- /run/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
+      -- /etc/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
+
+     - /run/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR does NOT exist:
+
+      -- \fIusr_subdir\fR/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR
+      -- \fIusr_subdir\fR/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
+      -- /run/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
+      -- /etc/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
+
+   No main \fIconfig_name\fR.\fIconfig_suffix\fR file is defined or must not be parsed:
+
+      -- \fIusr_subdir\fR/\fIproject\fR.d/*.\fIconfig_suffix \fR
+      -- /run/\fIproject\fR.d/*.\fIconfig_suffix\fR
+      -- /etc/\fIproject\fR.d/*.\fIconfig_suffix\fR
+
+\fIproject\fR name of the project used as subdirectory, can be NULL\&.
+
+If \fIconfig_name\fR is NULL, drop-ins without a main configuration file will be parsed only\&.
+
+\fIconfig_suffix\fP can also be NULL\&.
+
+The \fIdelim\fR parameter specifies the character used to separate keys from values (e\&.g\&.,
+"=")\&. If \fIdelim\fR contains space characters AND none space characters, multiline values are not parseable\&.
+The \fIcomment\fR parameter specifies an array of characters which define the start of a comment  (e\&.g\&.,
+"#")\&.
+.PP
+The parsed and merged configuration is stored in a newly allocated \fBeconf_file\fR
+structure, which is returned via the \fIkey_file\fR pointer\&.
+
+.SH "RETURN VALUE"
+
+.PP
+\fBECONF_NOFILE\fR
+.RS 4
+          The specified \fIfile_name\fR does not exist\&.
+.RE
+
+.PP
+\fBECONF_NOMEM\fR
+.RS 4
+          Insufficient memory to allocate the \fIresult\fR structure\&.
+.RE
+
+.PP
+\fBECONF_MISSING_BRACKET\fR
+.br
+\fBECONF_TEXT_AFTER_SECTION\fR
+.br
+\fBECONF_EMPTY_SECTION_NAME\fR
+.br
+\fBECONF_MISSING_DELIMITER\fR
+.RS 4
+          The file contains syntax errors and could not be parsed successfully\&.
+.RE
+
+.PP
+\fBECONF_ARGUMENT_IS_NULL_VALUE\fR
+.RS 4
+          One of the required arguments (such as \fIresult\fR or \fIfile_name\fR) is NULL\&.
+.RE
+
+.SH "EXAMPLE"
+
+Reading content in different cases in following order:\&
+
+   /etc/foo/example.conf does exist:
+
+   - /etc/foo/example.conf
+   - /usr/lib/foo/example.conf.d/ *.conf
+   - /run/foo/example.conf.d/ *.conf
+   - /etc/foo/example.conf.d/ *.conf
+
+   /etc/foo/example.conf does NOT exist:
+
+     /run/foo/example.conf does exist:
+
+     - /run/foo/example.conf
+     - /usr/lib/foo/example.conf.d/ *.conf
+     - /run/foo/example.conf.d/ *.conf
+     - /etc/foo/example.conf.d/ *.conf
+
+     /run/foo/example.conf does NOT exist:
+
+     - /usr/lib/foo/example.conf
+     - /usr/lib/foo/example.conf.d/ *.conf
+     - /run/foo/example.conf.d/ *.conf
+     - /etc/foo/example.conf.d/ *.conf
+.br
+.br
+.sp
+.if n \{\
+.RS 1
+.\}
+.nf
+
+#include <libeconf\&.h>
+#include <stdio\&.h>
+
+int main(void) {
+    econf_file *conf = NULL;
+    econf_err err;
+
+    /*
+     * Reading
+     */
+    err = econf_readConfig(&conf,
+                           "foo",                 /* project name */
+                           "/usr/lib",            /* vendor directory */
+                           "example",             /* config name */
+                           "conf",                /* suffix */
+                           "=",                   /* delimiter */
+                           "#");                  /* comment */
+
+    if (err != ECONF_SUCCESS) {
+        fprintf(stderr, "Failed to read config: %d\en", err);
+        return 1;
+    }
+
+    /* Use econf_get\&.\&.\&. functions here to access values */
+
+    econf_free(conf);
+    return 0;
+}
+
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+
+.SH "SEE ALSO"
+.PP
+\fBlibeconf\fR(3),
+\fBeconf_readConfigWitchCallback\fR(3),
+\fBeconf_free\fR(3),
+\fBeconf_errString\fR(3)\&.
+
+.RE

@@ -1,1 +1,70 @@
-.so man3/libeconf.3
+'\" t
+.\"     Title: ECONF_FREEFILE
+.\"    Author: libeconf developers
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 2023-11-01
+.\"    Manual: Linux Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_FREEFILE" "3" "2023\-11\-01" "libeconf" "libeconf Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf_freeFile \- free memory allocated for a configuration file object
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+#include <libeconf\&.h>
+.fi
+.ft
+.sp
+
+.BI "void econf_freeFile(econf_file\ *" "key_file" ");"
+
+.SH "DESCRIPTION"
+
+.PP
+The \fBeconf_freeFile\fR() function releases the memory allocated for the configuration file object specified by \fIkey_file\fR\&.
+
+.PP
+The \fIkey_file\fR parameter is a pointer to the \fBeconf_file\fR structure that was previously allocated by functions such as \fBeconf_readFile\fR(3), \fBeconf_readConfig\fR(3), or \fBeconf_newIniFile\fR(3)\&.
+
+.PP
+After this function is called, the pointer \fIkey_file\fR is invalid and should not be accessed\&.
+
+.SH "RETURN VALUE"
+
+.PP
+The \fBeconf_freeFile\fR() function returns no value\&.
+
+.SH "SEE ALSO"
+
+.PP
+\fBeconf_readFile\fR(3),
+\fBeconf_readConfig\fR(3),
+\fBeconf_newIniFile\fR(3),
+\fBlibeconf\fR(3)
+
+.RE

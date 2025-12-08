@@ -54,7 +54,7 @@ econf_getExtValue(econf_file *kf, const char *group,
 		  const char *key, econf_ext_value **result)
 {
   if (!kf)
-    return ECONF_ERROR;
+    return ECONF_ARGUMENT_IS_NULL_VALUE;
 
   size_t num;
   econf_err error = find_key(*kf, group, key, &num);

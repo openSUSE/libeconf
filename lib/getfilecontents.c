@@ -268,7 +268,7 @@ read_file_with_callback(econf_file **key_file, const char *file_name,
   struct stat sb;
 
   if (key_file == NULL || file_name == NULL || delim == NULL || comment == NULL)
-    return ECONF_ERROR;
+    return ECONF_ARGUMENT_IS_NULL_VALUE;
 
   // Checking file permissions, uid, group,...
   if (lstat(file_name, &sb) == -1)

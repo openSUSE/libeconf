@@ -1,1 +1,129 @@
-.so man3/libeconf.3
+'\" t
+.\"     Title: ECONF_MERGEFILES
+.\"    Author: libeconf Developers
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 2024-12-14
+.\"    Manual: libeconf Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_MERGEFILES" "3" "2024\-12\-14" "libeconf" "libeconf Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf_mergeFiles \- Merge two libeconf file objects
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+#include <libeconf\&.h>
+.fi
+.ft
+.sp
+
+.HP \w'econf_err\ econf_mergeFiles('u
+.BI "econf_err econf_mergeFiles(econf_file\ **\ " "result_file" ", econf_file\ *\ " "usr_file" ", econf_file\ *\ " "etc_file" ");"
+
+.SH "DESCRIPTION"
+
+.PP
+The \fBeconf_mergeFiles\fR function merges the content of two \fBeconf_file\fR objects, \fIusr_file\fR and
+\fIetc_file\fR, into a new \fBeconf_file\fR object pointed to by \fIresult_file\fR\&.
+
+.PP
+The merge process typically treats \fIusr_file\fR as the base configuration (e\&.g\&., vendor defaults found in
+/usr) and \fIetc_file\fR as the overlay configuration (e\&.g\&., administrator changes found in
+/etc)\&. Entries in \fIetc_file\fR with the same group and key as in \fIusr_file\fR will override the values from
+\fIusr_file\fR in the resulting object\&.
+
+.PP
+Comment and delimiter tag will be taken from \fIusr_file\fR\&. This can be changed by calling the functions \fBeconf_set_comment_tag\fR and \fBeconf_set_delimiter_tag\fR\&.
+
+.PP
+The newly created object in \fIresult_file\fR must be freed by the user using \fBeconf_free\fR\&. The original
+\fIusr_file\fR and \fIetc_file\fR objects remain unchanged and must be freed separately\&.
+
+.SH "RETURN VALUE"
+
+.PP On success, \fBeconf_mergeFiles\fR returns \fBECONF_SUCCESS\fR\&.
+
+.PP
+On failure, an error code (of type \fBeconf_err\fR) is returned\&.
+
+.SH "ERRORS"
+
+.PP
+\fBECONF_NOMEM\fR
+.RS 4
+          Insufficient memory to allocate the new \fBeconf_file\fR object\&.
+
+.RE
+.PP
+\fBECONF_ARGUMENT_IS_NULL_VALUE\fR
+.RS 4
+          One of the input parameters \fIusr_file\fR or \fIetc_file\fR is NULL, or \fIresult_file\fR is NULL\&.
+
+.RE
+.PP
+\fBECONF_ERROR\fR
+.RS 4
+          General internal error during the merge process\&.
+
+.RE
+.SH "EXAMPLE"
+
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+      econf_file *key_file_1 = NULL, *key_file_2 = NULL, *merged_file = NULL;
+      econf_err error;
+
+      /* Load two configuration files */
+      econf_readFile(&key_file_1, "/usr/etc/test\&.conf", "=", "#");
+      econf_readFile(&key_file_2, "/etc/test\&.conf", "=", "#");
+
+      /* Merge them, with key_file_2 overriding key_file_1 */
+      error = econf_mergeFiles(&merged_file, key_file_1, key_file_2);
+      if (error != ECONF_SUCCESS) {
+          fprintf(stderr, "Merge failed: %s\en", econf_errString(error));
+      }
+
+      /* Clean up */
+      econf_free(key_file_1);
+      econf_free(key_file_2);
+      econf_free(merged_file);
+
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.SH "SEE ALSO"
+
+.PP
+\fBlibeconf\fR(3),
+\fBeconf_readFile\fR(3),
+\fBeconf_free\fR(3),
+\fBeconf_errString\fR(3)\&.

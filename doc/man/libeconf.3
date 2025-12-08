@@ -1,4 +1,4 @@
-.TH "libeconf" 3 "Thu Apr 8 2021" "Version 0.4.7" "libeconf" \" -*- nroff -*-
+.TH "libeconf" 3 "Thu Apr 8 2021" "Version 0.8.1" "libeconf" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -131,7 +131,7 @@ Documentation: \fI\%https://github.com/openSUSE/libeconf/blob/master/bindings/cs
 
 .in +1c
 .ti -1c
-.RI "enum \fBeconf_err\fP { \fBECONF_SUCCESS\fP = 0, \fBECONF_ERROR\fP = 1, \fBECONF_NOMEM\fP = 2, \fBECONF_NOFILE\fP = 3, \fBECONF_NOGROUP\fP = 4, \fBECONF_NOKEY\fP = 5, \fBECONF_EMPTYKEY\fP = 6, \fBECONF_WRITEERROR\fP = 7, \fBECONF_PARSE_ERROR\fP = 8, \fBECONF_MISSING_BRACKET\fP = 9, \fBECONF_MISSING_DELIMITER\fP = 10, \fBECONF_EMPTY_SECTION_NAME\fP = 11, \fBECONF_TEXT_AFTER_SECTION\fP = 12, \fBECONF_FILE_LIST_IS_NULL\fP = 13, \fBECONF_WRONG_BOOLEAN_VALUE\fP = 14, \fBECONF_KEY_HAS_NULL_VALUE\fP = 15, \fBECONF_WRONG_OWNER\fP = 16, \fBECONF_WRONG_GROUP\fP = 17, \fBECONF_WRONG_FILE_PERMISSION\fP = 18, \fBECONF_WRONG_DIR_PERMISSION\fP = 19, \fBECONF_ERROR_FILE_IS_SYM_LINK\fP = 20, \fBECONF_PARSING_CALLBACK_FAILED\fP = 21 }"
+.RI "enum \fBeconf_err\fP { \fBECONF_SUCCESS\fP = 0, \fBECONF_ERROR\fP = 1, \fBECONF_NOMEM\fP = 2, \fBECONF_NOFILE\fP = 3, \fBECONF_NOGROUP\fP = 4, \fBECONF_NOKEY\fP = 5, \fBECONF_EMPTYKEY\fP = 6, \fBECONF_WRITEERROR\fP = 7, \fBECONF_PARSE_ERROR\fP = 8, \fBECONF_MISSING_BRACKET\fP = 9, \fBECONF_MISSING_DELIMITER\fP = 10, \fBECONF_EMPTY_SECTION_NAME\fP = 11, \fBECONF_TEXT_AFTER_SECTION\fP = 12, \fBECONF_FILE_LIST_IS_NULL\fP = 13, \fBECONF_WRONG_BOOLEAN_VALUE\fP = 14, \fBECONF_KEY_HAS_NULL_VALUE\fP = 15, \fBECONF_WRONG_OWNER\fP = 16, \fBECONF_WRONG_GROUP\fP = 17, \fBECONF_WRONG_FILE_PERMISSION\fP = 18, \fBECONF_WRONG_DIR_PERMISSION\fP = 19, \fBECONF_ERROR_FILE_IS_SYM_LINK\fP = 20, \fBECONF_PARSING_CALLBACK_FAILED\fP = 21, \fBECONF_ARGUMENT_IS_NULL_VALUE\fP = 22, \fBECONF_OPTION_NOT_FOUND\fP = 23, \fBECONF_VALUE_CONVERSION_ERROR\fP = 24 }"
 .br
 .RI "libeconf error codes "
 .in -1c
@@ -141,7 +141,7 @@ Documentation: \fI\%https://github.com/openSUSE/libeconf/blob/master/bindings/cs
 .ti -1c
 .RI "\fBeconf_err\fP \fBeconf_readConfig\fP (\fBeconf_file\fP **key_file, const char *project, const char *usr_subdir, const char *config_name, const char *config_suffix, const char *delim, const char *comment)"
 .br
-.RI "Evaluating key/values of a given configuration by reading and merging all needed/available files in three different directories (normally in /usr/etc, /run and /etc)\&. "
+.RI "Evaluating key/values of a given configuration by reading and merging all needed/available files in three different directories (normally in /usr/share, /run and /etc)\&. "
 .ti -1c
 .RI "\fBeconf_err\fP \fBeconf_readConfigWithCallback\fP (\fBeconf_file\fP **key_file, const char *project, const char *usr_subdir, const char *config_name, const char *config_suffix, const char *delim, const char *comment, bool (*callback)(const char *filename, const void *data), const void *callback_data)"
 .br
@@ -315,6 +315,10 @@ Documentation: \fI\%https://github.com/openSUSE/libeconf/blob/master/bindings/cs
 .in +1c
 .RI "Evaluating more information for given group/key\&. "
 .ti -1c
+.RI "\fBeconf_err\fP \fBeconf_setExtValue\fP (\fBeconf_file\fP *kf, const char *group, const char *key, \fBeconf_ext_value\fP *value)"
+.br
+.RI "Setting more information (e.g. comments) for given group/key\&. "
+.ti -1c
 .RI "void \fBeconf_freeExtValue\fP (\fBeconf_ext_value\fP *to_free)"
 .br
 .RI "Free an complete \fBeconf_ext_value\fP struct\&. "
@@ -323,6 +327,7 @@ Documentation: \fI\%https://github.com/openSUSE/libeconf/blob/master/bindings/cs
 .br
 .RI "Set a list of directory structures (with order) which describes the directories in which the files have to be parsed\&. "
 .in -1c
+.br
 .SH "Detailed Description"
 .PP 
 Public API for the econf library\&. 
@@ -439,1189 +444,91 @@ File is a sym link which is not permitted\&.
 .TP
 \fB\fIECONF_PARSING_CALLBACK_FAILED \fP\fP
 User defined parsing callback has failed\&.
-.PP
-
-.SH "Function Documentation"
-.PP 
- 
-.SS "\fBeconf_err\fP econf_readConfig (\fBeconf_file\fP ** key_file, const char *project, const char *usr_subdir, const char *config_name, const char *config_suffix, const char *delim, const char *comment)"
-
-.PP
- Evaluating key/values of a given configuration by reading and merging all needed/available files from different directories. Order is:\&
- 
-   /etc/$project/$config_name.$config_suffix does exist:
-   
-     -- /etc/$project/$config_name.$config_suffix
-     -- $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix     
-     -- /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
-     -- /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
-  
-   /etc/$project/$config_name.$config_suffix does NOT exist:
-  
-     - /run/$project/$config_name.$config_suffix does exist:
-  
-      -- /run/$project/$config_name.$config_suffix
-      -- $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix      
-      -- /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
-      -- /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
-  
-     - /run/$project/$config_name.$config_suffix does NOT exist:
-  
-      -- $usr_subdir/$project/$config_name.$config_suffix
-      -- $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix      
-      -- /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
-      -- /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
-
-   No main $config_name.$config_suffix file is defined or must not be parsed:
-
-      -- $usr_subdir/$project.d/*.$config_suffix      
-      -- /run/$project.d/*.$config_suffix
-      -- /etc/$project.d/*.$config_suffix
-   
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkey_file\fP content of parsed file(s) 
-.br
-\fIproject\fP name of the project used as subdirectory, can be NULL
-.br
-\fIusr_subdir\fP absolute path of the first directory (often "/usr/lib")
-.br
-\fIconfig_name\fP basename of the configuration file. If it is NULL, drop-ins without
-a main configuration file will be parsed only.
-.br
-\fIconfig_suffix\fP suffix of the configuration file\&. Can also be NULL\&. 
-.br
-\fIdelim\fP delimiters of key/value e\&.g\&. '\\t ='. If delim contains space characters
-AND none space characters, multiline values are not parseable.
-.br
-\fIcomment\fP array of characters which define the start of a comment 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code
-.RE
-.PP
-Example: Reading content in different cases in following order:\&
-
-   /etc/foo/example.conf does exist:
- 
-   - /etc/foo/example.conf
-   - /usr/lib/foo/example.conf.d/ *.conf   
-   - /run/foo/example.conf.d/ *.conf
-   - /etc/foo/example.conf.d/ *.conf
- 
-   /etc/foo/example.conf does NOT exist:
- 
-     /run/foo/example.conf does exist:
- 
-     - /run/foo/example.conf
-     - /usr/lib/foo/example.conf.d/ *.conf     
-     - /run/foo/example.conf.d/ *.conf
-     - /etc/foo/example.conf.d/ *.conf
- 
-     /run/foo/example.conf does NOT exist:
- 
-     - /usr/lib/foo/example.conf
-     - /usr/lib/foo/example.conf.d/ *.conf     
-     - /run/foo/example.conf.d/ *.conf
-     - /etc/foo/example.conf.d/ *.conf
-
-.PP
-.nf
-#include "libeconf\&.h"
-
-econf_file *key_file = NULL;
-econf_err error;
-
-error = econf_readConfig (&key_file,
-                          "foo",
-                          "/usr/lib",
-                          "example",
-                          "conf",
-                          "=", "#");
-
-econf_free (key_file);
-
-.SS "\fBeconf_err\fP econf_readConfigWithCallback (\fBeconf_file\fP ** key_file, const char *project, const char *usr_subdir, const char *config_name, const char *config_suffix, const char *delim, const char *comment, bool (*callback)(const char *filename, const void *data), const void *callback_data)"
-
-.PP
- Evaluating key/values of a given configuration by reading and merging all needed/available files from different directories. Order is:\&
- 
-   /etc/$project/$config_name.$config_suffix does exist:
-   
-     -- /etc/$project/$config_name.$config_suffix
-     -- $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix     
-     -- /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
-     -- /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
-  
-   /etc/$project/$config_name.$config_suffix does NOT exist:
-  
-     - /run/$project/$config_name.$config_suffix does exist:
-  
-      -- /run/$project/$config_name.$config_suffix
-      -- $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix      
-      -- /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
-      -- /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
-  
-     - /run/$project/$config_name.$config_suffix does NOT exist:
-  
-      -- $usr_subdir/$project/$config_name.$config_suffix
-      -- $usr_subdir/$project/$config_name.$config_suffix.d/ *.$config_suffix      
-      -- /run/$project/$config_name.$config_suffix.d/ *.$config_suffix
-      -- /etc/$project/$config_name.$config_suffix.d/ *.$config_suffix
-
-   No main $config_name.$config_suffix file is defined or must not be parsed:
-
-      -- $usr_subdir/$project.d/*.$config_suffix      
-      -- /run/$project.d/*.$config_suffix
-      -- /etc/$project.d/*.$config_suffix
-.br
-
-For each parsed file the user defined function will be called in order e.g.
-to check the correct file permissions.
-   
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkey_file\fP content of parsed file(s)
-.br
-\fIproject\fP name of the project used as subdirectory, can be NULL
-.br
-\fIusr_subdir\fP absolute path of the first directory (often "/usr/lib")
-.br
-\fIconfig_name\fP basename of the configuration file. If it is NULL, drop-ins without
-a main configuration file will be parsed only.
-.br
-\fIconfig_suffix\fP suffix of the configuration file\&. Can also be NULL\&.
-.br
-\fIdelim\fP delimiters of key/value e\&.g\&. '\\t ='. If delim contains space characters
-AND none space characters, multiline values are not parseable.
-.br
-\fIcomment\fP array of characters which define the start of a comment
-.br
-\fIcallback\fP function which will be called for each file. This user defined function has the
-pathname as parameter and returns true if this file can be parsed. If not, the parsing of
-all files will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned.
-.br
-\fIcallback_data\fP pointer which will be given to the callback function.
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code
-.RE
-.PP
-Example: Reading content in different cases in following order:\&
-
-   /etc/foo/example.conf does exist:
- 
-   - /etc/foo/example.conf
-   - /usr/lib/foo/example.conf.d/ *.conf   
-   - /run/foo/example.conf.d/ *.conf
-   - /etc/foo/example.conf.d/ *.conf
- 
-   /etc/foo/example.conf does NOT exist:
- 
-     /run/foo/example.conf does exist:
- 
-     - /run/foo/example.conf
-     - /usr/lib/foo/example.conf.d/ *.conf     
-     - /run/foo/example.conf.d/ *.conf
-     - /etc/foo/example.conf.d/ *.conf
- 
-     /run/foo/example.conf does NOT exist:
- 
-     - /usr/lib/foo/example.conf
-     - /usr/lib/foo/example.conf.d/ *.conf     
-     - /run/foo/example.conf.d/ *.conf
-     - /etc/foo/example.conf.d/ *.conf
-
-.PP
-.nf
-#include "libeconf\&.h"
-
-bool checkFile(const char *filename, const void *data) {
-  /* checking code which returns true or false */
-  return true;
-}
-
-econf_file *key_file = NULL;
-econf_err error;
-
-error = econf_readConfigWithCallback (&key_file,
-                                      "foo",
-                                      "/usr/lib",
-                                      "example",
-                                      "conf",
-                                      "=", "#",
-                                      checkFile,
-                                      NULL);
-
-econf_free (key_file);
-
-.fi
-.PP
-
-.SS "\fBeconf_err\fP econf_readFile (\fBeconf_file\fP ** result, const char * file_name, const char * delim, const char * comment)"
-
-.PP
-Process the file of the given file_name and save its contents into key_file object\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIresult\fP content of parsed file 
-.br
-\fIfile_name\fP absolute path of parsed file 
-.br
-\fIdelim\fP delimiters of key/value e\&.g\&. '\\t =' 
-.br
-\fIcomment\fP array of characters which define the start of a comment 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code
-.RE
-.PP
-Usage: 
-.PP
-.nf
-#include "libeconf\&.h"
-
-econf_file *key_file = NULL;
-econf_err error;
-
-error = econf_readFile (&key_file, "/etc/test\&.conf", "=", "#");
-
-econf_free (key_file);
-
-.fi
-.PP
-.PP
-Default behaviour if entries have the same name in one file: The first hit will be returned\&. Further entries will be ignored\&. This can be changed by setting the environment variable JOIN_SAME_ENTRIES (see econf_set_opt)\&. In that case entries with the same name will be joined to one single entry\&.
-
-.SS "\fBeconf_err\fP econf_readFileWithCallback (\fBeconf_file\fP ** result, const char * file_name, const char * delim, const char * comment, bool (*callback)(const char *filename, const void *data), const void *callback_data)"
-
-.PP
-Process the file of the given file_name and save its contents into key_file object\&. The user defined function will be called in order e.g. to check the correct file permissions\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIresult\fP content of parsed file
-.br
-\fIfile_name\fP absolute path of parsed file
-.br
-\fIdelim\fP delimiters of key/value e\&.g\&. '\\t ='
-.br
-\fIcomment\fP array of characters which define the start of a comment
-.br
-\fIcallback\fP function which will be called for the given filename\&. This user defined function has the pathname as parameter and returns true if this file can be parsed\&. If not, the parsing will be aborted and ECONF_PARSING_CALLBACK_FAILED will be returned\&.
-.br
-\fIcallback_data\fP pointer which will be given to the callback function.
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code
-.RE
-.PP
-Usage:
-.PP
-.nf
-#include "libeconf.h"
-bool checkFile(const char *filename, const void *data) {
-  /* checking code which returns true or false */
-  return true;
-}
-
-econf_file *key_file = NULL;
-econf_err error;
-
-error = econf_readFileWithCallback (&key_file, "/etc/test.conf", "=", "#", checkFile, NULL);
-econf_free (key_file);
-.fi
-.PP
-.PP
-Default behaviour if entries have the same name in one file: The first hit will be returned\&. Further entries will be ignored\&. This can be changed by setting the environment variable JOIN_SAME_ENTRIES (see econf_set_opt)\&. In that case entries with the same name will be joined to one single entry\&.
-
-.SS "\fBeconf_err\fP econf_mergeFiles (\fBeconf_file\fP ** merged_file, \fBeconf_file\fP * usr_file, \fBeconf_file\fP * etc_file)"
-
-.PP
-Merge the contents of two key_files objects\&. Entries in etc_file will be preferred\&. Comment and delimiter tag will be taken from usr_file\&. This can be changed by calling the functions econf_set_comment_tag and econf_set_delimiter_tag\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fImerged_file\fP merged data 
-.br
-\fIusr_file\fP First data block which has to be merged\&. 
-.br
-\fIetc_file\fP Second data block which has to be merged\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code
-.RE
-.PP
-Usage: 
-.PP
-.nf
-#include "libeconf\&.h"
-
-econf_file *key_file_1 = NULL, *key_file_2 = NULL, *key_file_ret = NULL
-econf_err error;
-
-error = econf_readFile (&key_file1, "/usr/etc/test\&.conf", "=", "#");
-error = econf_readFile (&key_file2, /etc/test\&.conf", "=", "#");
-error = econf_mergeFiles (&key_file_ret, key_file_1, key_file_2);
-
-econf_free (key_file_ret);
-econf_free (key_file_1);
-econf_free (key_file_2);
-
-.fi
-.PP
- 
-.SS "\fBeconf_err\fP econf_newKeyFile (\fBeconf_file\fP ** result, char delimiter, char comment)"
-
-.PP
-Create a new econf_file object\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIresult\fP Pointer to the allocated econf_file object\&. 
-.br
-\fIdelimiter\fP delimiter of key/value e\&.g\&. '=' 
-.br
-\fIcomment\fP Character which defines the start of a comment\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_newIniFile (\fBeconf_file\fP ** result)"
-
-.PP
-Create a new econf_file object in IniFile format\&. So the delimiter will be '=' and comments are beginning with '#'\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIresult\fP Pointer to the allocated econf_file object\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_writeFile (\fBeconf_file\fP * key_file, const char * save_to_dir, const char * file_name)"
-
-.PP
-Write content of an econf_file struct to specified location\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkey_file\fP Data which has to be written\&. 
-.br
-\fIsave_to_dir\fP Directory into which the file has to be written\&. 
-.br
-\fIfile_name\fP filename (with suffix) 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "char* econf_getPath (\fBeconf_file\fP * kf)"
-
-.PP
-Evaluating path name\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-Absolute path name or an empty string if kf is a result of already merged data (e\&.G\&. returned by econf_readDirs)\&. 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_getGroups (\fBeconf_file\fP * kf, size_t * length, char *** groups)"
-
-.PP
-Evaluating all group entries\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIlength\fP Length of the returned group array\&. 
-.br
-\fIgroups\fP String array of evaluated groups\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_getKeys (\fBeconf_file\fP * kf, const char * group, size_t * length, char *** keys)"
-
-.PP
-Evaluating all keys\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Group name for which the keys have to be evaluated or NULL for keys, which do not belong to a group\&.
-.br
-\fIlength\fP Length of the returned key array\&. 
-.br
-\fIkeys\fP String array of evaluated keys\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_getIntValue (\fBeconf_file\fP * kf, const char * group, const char * key, int32_t * result)"
-
-.PP
-Evaluating int32 value for given group/key\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value is requested\&. 
-.br
-\fIresult\fP determined value 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_getInt64Value (\fBeconf_file\fP * kf, const char * group, const char * key, int64_t * result)"
-
-.PP
-Evaluating int64 value for given group/key\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value is requested\&. 
-.br
-\fIresult\fP determined value 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_getUIntValue (\fBeconf_file\fP * kf, const char * group, const char * key, uint32_t * result)"
-
-.PP
-Evaluating uint32 value for given group/key\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value is requested\&. 
-.br
-\fIresult\fP determined value 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_getUInt64Value (\fBeconf_file\fP * kf, const char * group, const char * key, uint64_t * result)"
-
-.PP
-Evaluating uint64 value for given group/key\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value is requested\&. 
-.br
-\fIresult\fP determined value 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_getFloatValue (\fBeconf_file\fP * kf, const char * group, const char * key, float * result)"
-
-.PP
-Evaluating float value for given group/key\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value is requested\&. 
-.br
-\fIresult\fP determined value 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_getDoubleValue (\fBeconf_file\fP * kf, const char * group, const char * key, double * result)"
-
-.PP
-Evaluating double value for given group/key\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value is requested\&. 
-.br
-\fIresult\fP determined value 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_getStringValue (\fBeconf_file\fP * kf, const char * group, const char * key, char ** result)"
-
-.PP
-Evaluating string value for given group/key\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value is requested\&. 
-.br
-\fIresult\fP A newly allocated string or NULL in error case\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_getBoolValue (\fBeconf_file\fP * kf, const char * group, const char * key, bool * result)"
-
-.PP
-Evaluating bool value for given group/key\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value is requested\&. 
-.br
-\fIresult\fP determined value 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_getIntValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, int32_t * result, const int32_t def)"
-
-.PP
-Evaluating int32 value for given group/key\&. If key is not found, the default value is returned and error is ECONF_NOKEY\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value is requested\&. 
-.br
-\fIresult\fP determined value 
-.br
-\fIdef\fP Default value if the value has not been found\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_getInt64ValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, int64_t * result, const int64_t def)"
-
-.PP
-Evaluating int64 value for given group/key\&. If key is not found, the default value is returned and error is ECONF_NOKEY\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value is requested\&. 
-.br
-\fIresult\fP determined value 
-.br
-\fIdef\fP Default value if the value has not been found\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_getUIntValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, uint32_t * result, const uint32_t def)"
-
-.PP
-Evaluating uint32 value for given group/key\&. If key is not found, the default value is returned and error is ECONF_NOKEY\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value is requested\&. 
-.br
-\fIresult\fP determined value 
-.br
-\fIdef\fP Default value if the value has not been found\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_getUInt64ValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, uint64_t * result, const uint64_t def)"
-
-.PP
-Evaluating uint64 value for given group/key\&. If key is not found, the default value is returned and error is ECONF_NOKEY\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value is requested\&. 
-.br
-\fIresult\fP determined value 
-.br
-\fIdef\fP Default value if the value has not been found\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_getFloatValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, float * result, const float def)"
-
-.PP
-Evaluating float value for given group/key\&. If key is not found, the default value is returned and error is ECONF_NOKEY\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value is requested\&. 
-.br
-\fIresult\fP determined value 
-.br
-\fIdef\fP Default value if the value has not been found\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_getDoubleValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, double * result, const double def)"
-
-.PP
-Evaluating double value for given group/key\&. If key is not found, the default value is returned and error is ECONF_NOKEY\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value is requested\&. 
-.br
-\fIresult\fP determined value 
-.br
-\fIdef\fP Default value if the value has not been found\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_getStringValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, char ** result, const char * def)"
-
-.PP
-Evaluating string value for given group/key\&. If key is not found, the default value is returned and error is ECONF_NOKEY\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value is requested\&. 
-.br
-\fIresult\fP Returns a newly allocated string, even if 'default' is returned\&. 
-.br
-\fIdef\fP Default value if the value has not been found\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_getBoolValueDef (\fBeconf_file\fP * kf, const char * group, const char * key, bool * result, const bool def)"
-
-.PP
-Evaluating bool value for given group/key\&. If key is not found, the default value is returned and error is ECONF_NOKEY\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value is requested\&. 
-.br
-\fIresult\fP determined value 
-.br
-\fIdef\fP Default value if the value has not been found\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_setIntValue (\fBeconf_file\fP * kf, const char * group, const char * key, int32_t value)"
-
-.PP
-Set int32 value for given group/key\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value has to be set\&. 
-.br
-\fIvalue\fP Value which has to be set\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_setInt64Value (\fBeconf_file\fP * kf, const char * group, const char * key, int64_t value)"
-
-.PP
-Set int64 value for given group/key\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value has to be set\&. 
-.br
-\fIvalue\fP Value which has to be set\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_setUIntValue (\fBeconf_file\fP * kf, const char * group, const char * key, uint32_t value)"
-
-.PP
-Set uint32 value for given group/key\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value has to be set\&. 
-.br
-\fIvalue\fP Value which has to be set\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_setUInt64Value (\fBeconf_file\fP * kf, const char * group, const char * key, uint64_t value)"
-
-.PP
-Set uint64 value for given group/key\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value has to be set\&. 
-.br
-\fIvalue\fP Value which has to be set\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_setFloatValue (\fBeconf_file\fP * kf, const char * group, const char * key, float value)"
-
-.PP
-Set float value for given group/key\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value has to be set\&. 
-.br
-\fIvalue\fP Value which has to be set\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_setDoubleValue (\fBeconf_file\fP * kf, const char * group, const char * key, double value)"
-
-.PP
-Set double value for given group/key\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value has to be set\&. 
-.br
-\fIvalue\fP Value which has to be set\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_setStringValue (\fBeconf_file\fP * kf, const char * group, const char * key, const char * value)"
-
-.PP
-Set string value for given group/key\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value has to be set\&. 
-.br
-\fIvalue\fP Value which has to be set\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "\fBeconf_err\fP econf_setBoolValue (\fBeconf_file\fP * kf, const char * group, const char * key, const char * value)"
-
-.PP
-Set bool value for given group/key\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data 
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&. 
-.br
-\fIkey\fP Key for which the value has to be set\&. 
-.br
-\fIvalue\fP Value which has to be set\&. 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code 
-.RE
-.PP
-
-.SS "const char* econf_errString (const \fBeconf_err\fP error)"
-
-.PP
-Convert an econf_err type to a string\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIerror\fP error enum 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-human readable string 
-.RE
-.PP
-
-.SS "void econf_errLocation (char ** filename, uint64_t * line_nr)"
-
-.PP
-Info about where the error has happened\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIfilename\fP Path of the last scanned file\&. 
-.br
-\fIline_nr\fP Number of the last handled line\&. 
-.RE
-.PP
-
-.SS "void econf_freeArray (char ** array)"
-
-.PP
-Free an array of type char** created by \fBeconf_getGroups()\fP or \fBeconf_getKeys()\fP\&. 
-.PP
-\fBParameters:\fP
-.RS 4
-\fIarray\fP array of strings 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-void 
-.RE
-.PP
-
-.SS "void econf_freeFile (\fBeconf_file\fP * key_file)"
-
-.PP
-Free memory allocated by e\&.g\&. \fBeconf_readFile()\fP, \fBeconf_readDirs()\fP,\&.\&.\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkey_file\fP allocated data 
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-void 
-.RE
-.PP
-
-.SS "char econf_comment_tag (\fBeconf_file\fP * key_file)"
-
-.PP
-Returns the comment character tag of the given econf_file object\&. This tag will be taken while writing comments to file\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkey_file\fP econf_file object\&.
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-char comment character tag
-.RE
-.PP
-
-.SS "char econf_delimiter_tag (\fBeconf_file\fP * key_file)"
-
-.PP
-Returns the delimiter character of the given econf_file object\&. This delimiter will be taken while writing the data to file\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkey_file\fP econf_file object\&.
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-char delimiter of key/value
-.RE
-.PP
-
-.SS "void econf_set_comment_tag (\fBeconf_file\fP * key_file, const char comment)"
-
-.PP
-Set the comment character tag of the given econf_file object\&. This tag will be taken while writing comments to file\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkey_file\fP econf_file object\&.
-.br
-\fIcomment\fP comment tag
-.RE
-.PP
-
-.SS "void econf_set_delimiter_tag (\fBeconf_file\fP * key_file, const char delimiter)"
-
-.PP
-Set the delimiter character of the given econf_file object\&. This delimiter will be taken while writing the data to file\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkey_file\fP econf_file object\&.
-.br
-\fIdelimiter\fP delimiter of key/value
-.RE
-.PP
-
-
-.SS "\fBeconf_err\fP econf_getExtValue (\fBeconf_file\fP * kf, const char * group, const char * key, \fBeconf_ext_value\fP ** result)"
-
-.PP
-Evaluating more information for given group/key\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIkf\fP given/parsed data
-.br
-\fIgroup\fP Desired group or NULL if there is no group defined\&.
-.br
-\fIkey\fP Key for which the value is requested\&. 
-.br
-\fIresult\fP A newly allocated struct or NULL in error case\&.
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code
-.RE
-.PP
-
-.SS "void econf_freeExtValue (\fBeconf_ext_value\fP * to_free)"
-
-.PP
-Free an complete \fBeconf_ext_value\fP struct\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIto_free\fP struct which has to be freed
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-void
-.RE
-.PP
-
-.SS "econf_err econf_set_conf_dirs (const char **dir_postfix_list)"
-
-.PP
-Set a list of directory structures (with order) which describes the directories
-in which the files have to be parsed\&.
-.PP
-\fBParameters:\fP
-.RS 4
-\fIdir_postfix_list\fP list of directory structures.
-E.G. with the given list: {"/conf.d/", ".d/", "/", NULL} files in following
-directories will be parsed: <default_dirs>/<project_name>.<suffix>.d/
-<default_dirs>/<project_name>/conf.d/, <default_dirs>/<project_name>.d/,
-<default_dirs>/<project_name>/. The entry <default_dirs>/<project_name>.<suffix>.d/
-will be added automatically.
-.RE
-.PP
-\fBReturns:\fP
-.RS 4
-econf_err ECONF_SUCCESS or error code
-.RE
+.TP
+\fB\fIECONF_ARGUMENT_IS_NULL_VALUE \fP\fP
+Given argument is NULL\&.
+.TP
+\fB\fIECONF_OPTION_NOT_FOUND \fP\fP
+Given option not found\&.
+.TP
+\fB\fIECONF_VALUE_CONVERSION_ERROR \fP\fP
+Value cannot be converted\&.
 .PP
 
 .SH "SEE ALSO"
-.PP 
-econftool\&
+.PP
+\fBRead/Write configuration files:\fR
+.PP
+econf_readConfig(3),
+econf_readConfigWithCallback(3),
+econf_readFile(3),
+econf_readFileWithCallback(3),
+econf_mergeFiles(3),
+econf_writeFile(3)
+
+.PP
+\fBget/set key/value:\fR
+.PP
+econf_getKeys(3),
+econf_getGroups(3)
+.PP
+econf_getBoolValue(3),
+econf_getBoolValueDef(3),
+econf_getDoubleValue(3),
+econf_getDoubleValueDef(3),
+econf_getExtValue(3),
+econf_getFloatValue(3),
+econf_getFloatValueDef(3),
+econf_getInt64Value(3),
+econf_getInt64ValueDef(3),
+econf_getIntValue(3),
+econf_getIntValueDef(3),
+econf_getPath(3),
+econf_getStringValue(3),
+econf_getStringValueDef(3),
+econf_getUInt64Value(3),
+econf_getUInt64ValueDef(3),
+econf_getUIntValue(3),
+econf_getUIntValueDef(3)
+.PP
+econf_setBoolValue(3)
+econf_setDoubleValue(3),
+econf_setExtValue(3),
+econf_setFloatValue(3),
+econf_setInt64Value(3),
+econf_setIntValue(3),
+econf_setStringValue(3),
+econf_setUInt64Value(3)
+
+.PP
+\fBInitialization:\fR
+.PP
+econf_newIniFile(3),
+econf_newKeyFile(3)
+
+.PP
+\fBFreeing:\fR
+.PP
+econf_freeArray(3),
+econf_freeExtValue(3),
+econf_freeFile(3)
+
+.PP
+\fBGeneral setup:\fR
+.PP
+econf_comment_tag(3),
+econf_set_comment_tag(3),
+econf_delimiter_tag(3),
+econf_set_delimiter_tag(3),
+econf_set_conf_dirs(3)
+
+.PP
+\fBError handling:\fR
+.PP
+econf_errLocation(3),
+econf_errString(3)
+
+.PP
+\fBTools\fR:
+.PP
+econftool(3)\&

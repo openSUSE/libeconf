@@ -1,1 +1,98 @@
-.so man3/libeconf.3
+'\" t
+.\"     Title: ECONF_GETKEYS
+.\"    Author: libeconf developers
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 2023-12-15
+.\"    Manual: libeconf Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_GETKEYS" "3" "2023\-12\-15" "libeconf" "libeconf Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf_getKeys \- evaluate all keys of a specific group
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+#include <libeconf\&.h>
+.fi
+.ft
+.sp
+
+.BI "econf_err econf_getKeys(econf_file\ *" "kf" ", const\ char\ *" "group" ", size_t\ *" "length" ", char\ ***" "keys" ");"
+
+.SH "DESCRIPTION"
+
+.PP
+The \fBeconf_getKeys\fR() function retrieves all keys belonging to a specific
+\fIgroup\fR from the configuration file object pointed to by \fIkf\fR\&.
+
+.PP
+The \fIgroup\fR parameter specifies the name of the section (group) to be evaluated\&. If \fIgroup\fR is \fBNULL\fR, the function retrieves keys that do not belong to any specific group (entries defined at the beginning of the file)\&.
+
+.PP
+The total number of keys found is stored in the integer pointed to by
+\fIlength\fR\&.
+
+.PP
+The names of the keys are stored in a dynamically allocated array of strings, which is returned via the \fIkeys\fR pointer\&. The memory for this array is allocated by the library and should be freed by the caller using \fBeconf_freeArray\fR() or an equivalent method when it is no longer needed\&.
+
+.SH "RETURN VALUE"
+
+.PP
+Upon successful completion, the function returns \fBECONF_SUCCESS\fR\&.
+
+.PP
+Otherwise, an error value is returned to indicate the error condition\&.
+
+.SH "ERRORS"
+
+.PP
+\fBECONF_ARGUMENT_IS_NULL_VALUE\fR
+.RS 4
+          The value specified by \fIkf\fR or \fIkeys\fR is \fBNULL\fR\&.
+
+.RE
+.PP
+\fBECONF_NOKEY\fR
+.RS 4
+          Keys not found\&.
+
+.RE
+.PP
+\fBECONF_NOMEM\fR
+.RS 4
+          Insufficient memory could be allocated for the return array\&.
+
+.RE
+
+.SH "SEE ALSO"
+
+.PP
+\fBlibeconf\fR(3),
+\fBeconf_getGroups\fR(3),
+\fBeconf_freeArray\fR(3),
+\fBeconf_readFile\fR(3),
+\fBeconf_errString\fR(3)\&.

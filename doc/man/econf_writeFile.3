@@ -1,1 +1,96 @@
-.so man3/libeconf.3
+'\" t
+.\"     Title: ECONF_WRITEFILE
+.\"    Author: libeconf developers
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 2023-12-14
+.\"    Manual: libeconf Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_WRITEFILE" "3" "2023\-12\-14" "libeconf" "libeconf Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf_writeFile \- write configuration to file
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+#include <libeconf\&.h>
+.fi
+.ft
+.sp
+
+.BI "econf_err econf_writeFile(econf_file\ *" "key_file" ", const\ char\ *" "save_dir" ", const\ char\ *" "file_name" ");"
+
+.SH "DESCRIPTION"
+
+.PP
+The \fBeconf_writeFile\fR() function writes the configuration information stored in the \fIkey_file\fR object to the disk\&.
+
+.PP
+The file is saved in the directory specified by \fIsave_dir\fR with the name specified by \fIfile_name\fR\&. If the directory or file permissions do not allow writing, the function will fail\&.
+
+.SH "RETURN VALUE"
+
+.PP
+Upon successful completion, \fBECONF_SUCCESS\fR shall be returned\&.
+
+.PP
+Otherwise, an error number of type \fBeconf_err\fR shall be returned to indicate the error\&.
+
+.SH "ERRORS"
+
+.PP
+\fBECONF_ARGUMENT_IS_NULL_VALUE\fR
+.RS 4
+          The value specified by \fIkey_file\fR is NULL\&.
+
+.RE
+.PP
+\fBECONF_NOFILE\fR
+.RS 4
+          Configuration file not found\&.
+
+.RE
+.PP
+\fBECONF_NOMEM\fR
+.RS 4
+          Out of memory\&.
+
+.RE
+.PP
+\fBECONF_WRITEERROR\fR
+.RS 4
+          Error creating or writing to a file\&.
+
+.RE
+
+.SH "SEE ALSO"
+
+.PP
+\fBlibeconf\fR(3),
+\fBeconf_readFile\fR(3),
+\fBeconf_newIniFile\fR(3),
+\fBeconf_free\fR(3),
+\fBeconf_errString\fR(3).

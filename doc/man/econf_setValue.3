@@ -1,0 +1,120 @@
+'\" t
+.\"     Title: ECONF_SETVALUE
+.\"    Author: libeconf developers
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 2024-12-13
+.\"    Manual: libeconf Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_SETVALUE" "3" "2024\-12\-13" "libeconf" "libeconf Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf_set<type>Value \- set a value for a key in a configuration file object
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+#include <libeconf\&.h>
+.fi
+.ft
+.sp
+
+.BI "econf_err econf_setBoolValue(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", bool\ " "value" ");"
+
+.BI "econf_err econf_setDoubleValue(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", double\ " "value" ");"
+
+.BI "econf_err econf_setFloatValue(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", float\ " "value" ");"
+
+.BI "econf_err econf_setIntValue(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", int\ " "value" ");"
+
+.BI "econf_err econf_setInt64Value(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", int64_t\ " "value" ");"
+
+.BI "econf_err econf_setUInt64Value(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", uint64_t\ " "value" ");"
+
+.BI "econf_err econf_setStringValue(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", const\ char\ *" "value" ");"
+
+.BI "econf_err econf_setValue(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", const\ char\ *" "value" ");"
+
+.SH "DESCRIPTION"
+
+.PP
+These functions set the value of a key in the given configuration file object \fIkf\fR\&. The key is specified by \fIgroup\fR and \fIkey\fR\&. If \fIgroup\fR is \fBNULL\fR, the key is considered to belong to none group\&.
+
+.PP
+If the key already exists, its value is updated\&. If the key or the group does not exist, it is created\&.
+
+.PP
+The typed function \fBeconf_setBoolValue\fR converts the given \fIvalue\fR into a string representation before storing it\&.
+
+.SH "RETURN VALUE"
+
+.PP
+Upon successful completion, these functions return \fBECONF_SUCCESS\fR\&.
+
+.PP
+On error, a non\-zero error code is returned (see the section called \(lqERRORS\(rq)\&.
+
+.SH "ERRORS"
+
+.PP
+ECONF_NOMEM
+.RS 4
+          Insufficient memory to allocate the new entry or group\&.
+
+.RE
+
+.PP
+ECONF_FILE_LIST_IS_NULL
+.RS 4
+          Conf file list is NULL\&.
+
+.RE
+
+.PP
+ECONF_EMPTYKEY
+.RS 4
+          Key is NULL or has empty value\&.
+
+.RE
+
+.PP
+ECONF_NOKEY
+.RS 4
+          Key not found\&.
+
+.RE
+
+.PP
+ECONF_WRONG_BOOLEAN_VALUE
+.RS 4
+          Wrong boolean value (1/0 true/false yes/no)\&.
+
+.RE
+
+.SH "SEE ALSO"
+
+.PP
+\fBlibeconf\fR(3),
+\fBeconf_errString\fR(3).

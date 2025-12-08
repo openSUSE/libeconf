@@ -1,1 +1,90 @@
-.so man3/libeconf.3
+'\" t
+.\"     Title: ECONF_NEWKEYFILE
+.\"    Author: libeconf Contributors
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 2024-12-03
+.\"    Manual: libeconf Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_NEWKEYFILE" "3" "2024\-12\-03" "libeconf" "libeconf Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf_newKeyFile \- create a new econf_file object
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+#include <libeconf\&.h>
+.fi
+.ft
+.sp
+.HP \w'econf_err\ econf_newKeyFile('u
+.BI "econf_err econf_newKeyFile(econf_file\ **" "result" ", char\ " "delimiter" ", char\ " "comment" ");"
+
+.SH "DESCRIPTION"
+
+.PP
+The \fBeconf_newKeyFile\fR function creates a new, empty \fBeconf_file\fR
+object\&. It allocates the necessary memory and initializes the structure\&.
+
+.PP
+The \fIresult\fR parameter is a pointer to a pointer where the newly created
+\fBeconf_file\fR object will be stored upon success\&.
+
+.PP
+The \fIdelimiter\fR parameter specifies the character used to separate keys from values in the configuration file (e\&.g\&.,
+\*(Aq=\*(Aq or \*(Aq \*(Aq)\&.
+
+.PP
+The \fIcomment\fR parameter specifies the character used to mark the beginning of a comment line (e\&.g\&., \*(Aq#\*(Aq
+or \*(Aq;\*(Aq)\&.
+
+.SH "RETURN VALUE"
+
+.PP
+On success, \fBeconf_newKeyFile\fR returns \fBECONF_SUCCESS\fR\&.
+
+.PP
+On failure, a non\-zero error code of type \fBeconf_err\fR is returned,
+and \fI*result\fR may be set to NULL\&.
+
+.SH "ERRORS"
+
+.PP
+\fBECONF_NOMEM\fR
+.RS 4
+          Insufficient memory to allocate the new \fBeconf_file\fR object\&.
+
+.RE
+
+.SH "SEE ALSO"
+
+.PP
+\fBlibeconf\fR(3),
+\fBeconf_newIniFile\fR(3),
+\fBeconf_freeFile\fR(3),
+\fBeconf_errString\fR(3)\&.
+
+.RE

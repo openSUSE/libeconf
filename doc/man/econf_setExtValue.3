@@ -1,0 +1,112 @@
+'\" t
+.\"     Title: ECONF_SETEXTVALUE
+.\"    Author: libeconf developers
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 2025-01-01
+.\"    Manual: libeconf Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_SETEXTVALUE" "3" "2025\-01\-01" "libeconf" "libeconf Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf_setExtValue \- set extended value for a key in a configuration file structure
+
+.SH "SYNOPSIS"
+      
+.sp
+.ft B
+.nf
+#include <libeconf\&.h>
+#include <libeconf_ext\&.h>
+.fi
+.ft
+.sp
+
+.BI "int econf_setExtValue(econf_file\ *" "key_file" ", const\ char\ *" "group" ", const\ char\ *" "key" ", const\ econf_ext_value\ *" "value" ");"
+
+.SH "DESCRIPTION"
+
+.PP
+The \fBeconf_setExtValue\fR() function adds or modifies a key\*(Aqs value in the configuration file structure referenced by \fIkey_file\fR\&. This function allows setting the value using the full \fBeconf_ext_value\fR
+structure, which includes additional metadata such as the file source, comments and line number.
+
+.PP
+The function cannot be used for setting the value. Values have to be set via econf_set<Type>Value.
+
+.PP
+The key will be set within the specified \fIgroup\fR\&. If \fIgroup\fR is NULL or an empty string, the key is set in the global section\&.
+
+.PP
+The parameters are defined as:
+
+.PP
+\fIkey_file\fR
+.RS 4
+            A pointer to the \fBeconf_file\fR structure where the key/value pair should be modified\&.
+
+.RE
+.PP
+\fIgroup\fR
+.RS 4
+            The name of the configuration group (section) to which the key belongs\&.
+
+.RE
+.PP
+\fIkey\fR
+.RS 4
+            The name of the key to set\&.
+
+.RE
+.PP
+\fIvalue\fR
+.RS 4
+            A pointer to the \fBeconf_ext_value\fR structure containing additional information\&.
+
+.RE
+
+.SH "RETURN VALUE"
+
+.PP
+On success, \fBeconf_setExtValue\fR() returns \fBECONF_SUCCESS\fR\&.
+
+.PP
+On error, a non\-zero error number is returned\&. The function returns a value from the
+\fBeconf_err\fR enumeration\&.
+
+.SH "ERRORS"
+
+.PP
+\fBECONF_NOMEM\fR
+.RS 4
+          Memory allocation failed\&.
+
+.RE
+
+.SH "SEE ALSO"
+
+.PP
+\fBlibeconf\fR(3),
+\fBeconf_readConfig\fR(3),
+\fBeconf_errString\fR(3).
+
+.RE

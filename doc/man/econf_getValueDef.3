@@ -1,0 +1,144 @@
+'\" t
+.\"     Title: ECONF_GETVALUEDEF
+.\"    Author: libeconf developers
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 2024-12-14
+.\"    Manual: libeconf Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_GETVALUEDEF" "3" "2024\-12\-14" "libeconf" "libeconf Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf_get<type>ValueDef \- evaluate value for a given group and key, returning a default if not found
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+#include <libeconf\&.h>
+.fi
+.ft
+.sp
+
+.BI "econf_err econf_getBoolValueDef(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", bool\ *" "result" ", bool\ " "def" ");"
+
+.BI "econf_err econf_getDoubleValueDef(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", double\ *" "result" ", double\ " "def" ");"
+
+.BI "econf_err econf_getFloatValueDef(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", float\ *" "result" ", float\ " "def" ");"
+
+.BI "econf_err econf_getIntValueDef(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", int32_t\ *" "result" ", int32_t\ " "def" ");"
+
+.BI "econf_err econf_getInt64ValueDef(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", int64_t\ *" "result" ", int64_t\ " "def" ");"
+
+.BI "econf_err econf_getStringValueDef(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", char\ **" "result" ", const\ char\ *" "def" ");"
+
+.BI "econf_err econf_getUInt64ValueDef(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", uint64_t\ *" "result" ", uint64_t\ " "def" ");"
+
+.BI "econf_err econf_getUIntValueDef(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", uint32_t\ *" "result" ", uint32_t\ " "def" ");"
+
+.SH "DESCRIPTION"
+
+.PP
+These functions evaluate the value for a specific \fIgroup\fR and \fIkey\fR in the given econf_file structure \fIkf\fR\&. If the key exists, the value is parsed and stored in \fIresult\fR\&. If the key is not found, the default value specified by \fIdef\fR is stored in \fIresult\fR\&.
+
+.PP
+The \fIgroup\fR parameter specifies the section name in the configuration file\&. If \fIgroup\fR is \fBNULL\fR, the key is looked up in the upper part of the file without any group declaration\&. The \fIkey\fR parameter specifies the name of the entry to retrieve\&.
+
+.PP
+For \fBeconf_getStringValueDef\fR, memory is allocated for the result string (even if the default value is used)\&. This memory should be freed by the caller using \fBfree\fR(3)\&.
+
+.PP
+For \fBeconf_getBoolValue\fR(), the function parses common boolean strings (such as "true", "yes", "1", "false", "no", "0") irrespective of case\&.
+
+.PP
+These functions are essentially wrappers around the standard \fBeconf_get*Value\fR
+functions, providing a convenient way to handle missing keys without checking return codes manually for
+\fBECONF_NOKEY\fR\&.
+
+.SH "RETURN VALUE"
+
+.PP
+If the key is found and parsed successfully, the function returns
+\fBECONF_SUCCESS\fR\&.
+
+.PP
+If the key is not found, the function sets \fIresult\fR to \fIdef\fR and returns \fBECONF_NOKEY\fR\&.
+
+.PP
+If an error occurs (e\&.g\&., the value cannot be parsed, or invalid arguments), an error code is returned\&. See
+\fBeconf_errString\fR(3) for converting error codes to strings\&.
+
+.SH "ERRORS"
+
+.PP
+\fBECONF_KEY_HAS_NULL_VALUE\fR
+.RS 4
+          Given key has NULL value\&.
+
+.RE
+.PP
+\fBECONF_NOMEM\fR
+.RS 4
+          Memory allocation failed (specifically applicable to \fBeconf_getStringValueDef\fR)\&.
+
+.RE
+.PP
+\fBECONF_VALUE_CONVERSION_ERROR\fR
+.RS 4
+          Value cannot be converted\&.
+
+.RE
+.PP
+\fBECONF_NOKEY\fR
+.RS 4
+          The specified \fIkey\fR could not be found within the group\&.
+
+.RE
+.PP
+\fBECONF_ARGUMENT_IS_NULL_VALUE\fR
+.RS 4
+          Given argument is NULL\&.
+
+.RE
+.PP
+\fBECONF_PARSE_ERROR\fR
+.RS 4
+          Parse error. (specifically applicable to \fBeconf_getBooleanValueDef\fR)\&.
+
+.RE
+.PP
+\fBECONF_ERROR\fR
+.RS 4
+          General error\&.
+
+.RE
+
+.SH "SEE ALSO"
+
+.PP
+\fBlibeconf\fR(3),
+\fBeconf_getValue\fR(3),
+\fBeconf_setValue\fR(3),
+\fBeconf_errString\fR(3)\&.
+

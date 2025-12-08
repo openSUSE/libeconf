@@ -1,1 +1,96 @@
-.so man3/libeconf.3
+'\" t
+.\"     Title: ECONF_GETEXTVALUE
+.\"    Author: libeconf Developers
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 2023-11-01
+.\"    Manual: libeconf Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_GETEXTVALUE" "3" "2023\-11\-01" "libeconf" "libeconf Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf_getExtValue \- get a key\*(Aqs value and extended metadata from a configuration file
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+#include <libeconf\&.h>
+#include <libeconf_ext\&.h>
+.fi
+.ft
+.sp
+
+.BI "econf_err econf_getExtValue(econf_file\ *" "key_file" ", const\ char\ *" "group" ", const\ char\ *" "key" ", struct\ econf_ext_value\ **" "value" ");"
+
+.SH "DESCRIPTION"
+
+.PP
+The \fBeconf_getExtValue\fR() function searches for the specified \fIkey\fR within the given \fIgroup\fR in the parsed configuration file structure \fIkey_file\fR\&. If the key is found, the function returns a pointer to an econf_ext_value structure via the \fIvalue\fR
+argument\&.
+
+.PP
+The \fIgroup\fR parameter may be \fBNULL\fR or an empty string for keys in the global section\&.
+
+.PP
+The caller is responsible for freeing the returned structure using
+\fBeconf_freeExtValue\fR(3)\&.
+
+.SH "RETURN VALUE"
+
+.PP
+On success, \fBeconf_getExtValue\fR() returns \fBECONF_SUCCESS\fR\&.
+
+.PP
+On error, a non\-zero \fBeconf_err\fR error code is returned\&.
+
+.SH "ERRORS"
+
+.PP
+\fBECONF_NOKEY\fR
+.RS 4
+          The specified key was not found in the given group, or no key was found in the configuration structure at all\&.
+
+.RE
+.PP
+\fBECONF_NOMEM\fR
+.RS 4
+          Memory allocation failed\&.
+
+.RE
+.PP
+\fBECONF_ARGUMENT_IS_NULL_VALUE\fR
+.RS 4
+          Given argument is NULL
+
+.RE
+.SH "SEE ALSO"
+
+.PP
+\fBlibeconf\fR(3),
+\fBeconf_readConfig\fR(3),
+\fBeconf_freeExtValue\fR(3),
+\fBeconf_errString\fR(3)\&
+
+.RE

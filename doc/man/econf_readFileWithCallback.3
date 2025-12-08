@@ -1,1 +1,157 @@
-.so man3/libeconf.3
+'\" t
+.\"     Title: ECONF_READFILEWITHCALLBACK
+.\"    Author: libeconf developers
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 2024-12-13
+.\"    Manual: libeconf Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_READFILEWITHCALLBACK" "3" "2024\-12\-13" "libeconf" "libeconf Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf_readFileWithCallback \- parse a configuration file with a user\-defined callback
+
+.SH "SYNOPSIS"
+.sp
+.ft B
+.nf
+#include <libeconf\&.h>
+.fi
+.ft
+.sp
+
+.BI "econf_err econf_readFileWithCallback(econf_file\ **" "result" ", const\ char\ *" "file_name" ", const\ char\ *" "delim" ", const\ char\ *" "comment" ", bool\ (*" "callback" ")(const\ char\ *filename,\ const\ void\ *data), const\ void\ *" "callback_data" ");"
+
+.SH "DESCRIPTION"
+
+.PP
+\fBeconf_readFileWithCallback\fR reads and parses the configuration file specified by
+\fIfile_name\fR\&. It functions similarly to \fBeconf_readFile\fR, but allows the user to define a
+\fIcallback\fR function\&. This callback is executed before the file is parsed, allowing the application to
+perform checks on the file (e\&.g\&., verifying file permissions or ownership)\&.
+
+.PP
+The \fIresult\fR argument points to a pointer that will hold the parsed configuration data upon success\&. The
+\fIdelim\fR argument specifies the delimiter used for key/value pairs (typically "=")\&. The \fIcomment\fR
+argument specifies the string that marks the beginning of a comment (typically "#")\&.
+
+.PP
+The \fIcallback\fR function is called with the \fIfile_name\fR and the provided \fIcallback_data\fR\&. If the callback returns
+false, the parsing process is aborted, and the function returns \fBECONF_PARSING_CALLBACK_FAILED\fR\&.
+
+.SH "RETURN VALUE"
+.PP
+On success, \fBeconf_readFileWithCallback\fR returns \fBECONF_SUCCESS\fR\&.
+
+.PP
+On failure, a non\-zero error code of type \fBeconf_err\fR is returned\&.
+
+.SH "ERRORS"
+
+.PP
+\fBECONF_NOFILE\fR
+.RS 4
+          The specified \fIfile_name\fR does not exist\&.
+.RE
+.PP
+\fBECONF_NOMEM\fR
+.RS 4
+          Insufficient memory to allocate the \fIresult\fR structure\&.
+.RE
+.PP
+\fBECONF_MISSING_BRACKET\fR
+.br
+\fBECONF_TEXT_AFTER_SECTION\fR
+.br
+\fBECONF_EMPTY_SECTION_NAME\fR
+.br
+\fBECONF_MISSING_DELIMITER\fR
+.RS 4
+          The file contains syntax errors and could not be parsed successfully\&.
+.RE
+
+.PP
+\fBECONF_PARSING_CALLBACK_FAILED\fR
+.RS 4
+          The user\-provided \fIcallback\fR returned false, aborting the operation\&.
+.RE
+
+.PP
+\fBECONF_ARGUMENT_IS_NULL_VALUE\fR
+.RS 4
+          One of the required arguments (such as \fIresult\fR or \fIfile_name\fR) is NULL\&.
+.RE
+
+.SH "EXAMPLE"
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+#include <libeconf\&.h>
+#include <stdbool\&.h>
+#include <stdio\&.h>
+
+/* Callback to check if file is not empty or other checks */
+bool check_file(const char *filename, const void *data) {
+    if (filename == NULL) return false;
+    /* Perform custom checks here */
+    return true;
+}
+
+int main(void) {
+    econf_file *key_file = NULL;
+    econf_err err;
+
+    err = econf_readFileWithCallback(&key_file, "/etc/test\&.conf", "=", "#", check_file, NULL);
+
+    if (err == ECONF_SUCCESS) {
+        printf("File parsed successfully\&.\en");
+        econf_free(key_file);
+    } else {
+        printf("Error parsing file: %s\en", econf_errString(err));
+    }
+
+    return 0;
+}
+    
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+
+.SH APPLICATION USAGE
+
+Default behaviour if entries have the same name in one file: The first hit will be returned\&. Further entries will be ignored\&. This can be changed by setting the environment variable JOIN_SAME_ENTRIES (see econf_set_opt)\&. In that case entries with the same name will be joined to one single entry\&.
+
+.SH "SEE ALSO"
+
+.PP
+\fBlibeconf\fR(3),
+\fBeconf_readFile\fR(3),
+\fBeconf_free\fR(3),
+\fBeconf_errString\fR(3)
+\fBeconf_set_opt\fR(3)\&.
+
+.RE
