@@ -131,7 +131,7 @@ Documentation: \fI\%https://github.com/openSUSE/libeconf/blob/master/bindings/cs
 
 .in +1c
 .ti -1c
-.RI "enum \fBeconf_err\fP { \fBECONF_SUCCESS\fP = 0, \fBECONF_ERROR\fP = 1, \fBECONF_NOMEM\fP = 2, \fBECONF_NOFILE\fP = 3, \fBECONF_NOGROUP\fP = 4, \fBECONF_NOKEY\fP = 5, \fBECONF_EMPTYKEY\fP = 6, \fBECONF_WRITEERROR\fP = 7, \fBECONF_PARSE_ERROR\fP = 8, \fBECONF_MISSING_BRACKET\fP = 9, \fBECONF_MISSING_DELIMITER\fP = 10, \fBECONF_EMPTY_SECTION_NAME\fP = 11, \fBECONF_TEXT_AFTER_SECTION\fP = 12, \fBECONF_FILE_LIST_IS_NULL\fP = 13, \fBECONF_WRONG_BOOLEAN_VALUE\fP = 14, \fBECONF_KEY_HAS_NULL_VALUE\fP = 15, \fBECONF_WRONG_OWNER\fP = 16, \fBECONF_WRONG_GROUP\fP = 17, \fBECONF_WRONG_FILE_PERMISSION\fP = 18, \fBECONF_WRONG_DIR_PERMISSION\fP = 19, \fBECONF_ERROR_FILE_IS_SYM_LINK\fP = 20, \fBECONF_PARSING_CALLBACK_FAILED\fP = 21 }"
+.RI "enum \fBeconf_err\fP { \fBECONF_SUCCESS\fP = 0, \fBECONF_ERROR\fP = 1, \fBECONF_NOMEM\fP = 2, \fBECONF_NOFILE\fP = 3, \fBECONF_NOGROUP\fP = 4, \fBECONF_NOKEY\fP = 5, \fBECONF_EMPTYKEY\fP = 6, \fBECONF_WRITEERROR\fP = 7, \fBECONF_PARSE_ERROR\fP = 8, \fBECONF_MISSING_BRACKET\fP = 9, \fBECONF_MISSING_DELIMITER\fP = 10, \fBECONF_EMPTY_SECTION_NAME\fP = 11, \fBECONF_TEXT_AFTER_SECTION\fP = 12, \fBECONF_FILE_LIST_IS_NULL\fP = 13, \fBECONF_WRONG_BOOLEAN_VALUE\fP = 14, \fBECONF_KEY_HAS_NULL_VALUE\fP = 15, \fBECONF_WRONG_OWNER\fP = 16, \fBECONF_WRONG_GROUP\fP = 17, \fBECONF_WRONG_FILE_PERMISSION\fP = 18, \fBECONF_WRONG_DIR_PERMISSION\fP = 19, \fBECONF_ERROR_FILE_IS_SYM_LINK\fP = 20, \fBECONF_PARSING_CALLBACK_FAILED\fP = 21, \fBECONF_ARGUMENT_IS_NULL_VALUE\fP = 22, \fBECONF_OPTION_NOT_FOUND\fP = 23, \fBECONF_VALUE_CONVERSION_ERROR\fP = 24 }"
 .br
 .RI "libeconf error codes "
 .in -1c
@@ -316,7 +316,7 @@ Documentation: \fI\%https://github.com/openSUSE/libeconf/blob/master/bindings/cs
 .RI "Evaluating more information for given group/key\&. "
 .ti -1c
 .RI "\fBeconf_err\fP \fBeconf_setExtValue\fP (\fBeconf_file\fP *kf, const char *group, const char *key, \fBeconf_ext_value\fP *value)"
-.in +1c
+.br
 .RI "Setting more information (e.g. comments) for given group/key\&. "
 .ti -1c
 .RI "void \fBeconf_freeExtValue\fP (\fBeconf_ext_value\fP *to_free)"
@@ -327,6 +327,7 @@ Documentation: \fI\%https://github.com/openSUSE/libeconf/blob/master/bindings/cs
 .br
 .RI "Set a list of directory structures (with order) which describes the directories in which the files have to be parsed\&. "
 .in -1c
+.br
 .SH "Detailed Description"
 .PP 
 Public API for the econf library\&. 
