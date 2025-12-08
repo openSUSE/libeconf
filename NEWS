@@ -1,3 +1,8 @@
+Version 0.8.2
+* Cleanup man pages
+* Using ECONF_ARGUMENT_IS_NULL_VALUE instead of general error
+  ECONF_ERROR
+
 Version 0.8.1
 * Set default parameter in econf_get<type>ValueDef to "const"
 
