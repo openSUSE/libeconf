@@ -1,9 +1,9 @@
 '\" t
 .\"     Title: ECONF_GETVALUE
-.\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
+.\"    Author: libeconf developers
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
 .\"      Date: 2023-12-01
-.\"    Manual: libeconf Programmer\*(Aqs Manual
+.\"    Manual: libeconf Manual
 .\"    Source: libeconf
 .\"  Language: English
 .\"
@@ -69,10 +69,14 @@ The \fIgroup\fR parameter specifies the section name in the configuration file\&
 .PP
 Upon success, the retrieved value is converted to the appropriate data type and stored in the memory location pointed to by
 \fIresult\fR\&.
+.br
+\fIresult\fR is undefined if an error has occurred\&.
 
 .PP
 For \fBeconf_getStringValue\fR(), memory is dynamically allocated for the stored string\&. It is the responsibility of the caller to free this memory using
 \fBfree\fR(3) when it is no longer needed\&.
+.br
+\fIresult\fR is NULL if an error has occurred\&.
 
 .PP
 For \fBeconf_getBoolValue\fR(), the function parses common boolean strings (such as "true", "yes", "1", "false", "no", "0") irrespective of case\&.

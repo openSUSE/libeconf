@@ -289,11 +289,19 @@ Documentation: \fI\%https://github.com/openSUSE/libeconf/blob/master/bindings/cs
 .ti -1c
 .RI "void \fBeconf_freeArray\fP (char **array)"
 .br
-.RI "Free an array of type char** created by \fBeconf_getGroups()\fP or \fBeconf_getKeys()\fP\&. "
+.RI "Free an array of type char** created by \fBeconf_getGroups()\fP or \fBeconf_getKeys()\fP\&."
 .ti -1c
-.RI "void \fBeconf_freeFile\fP (\fBeconf_file\fP *key_file)"
+.RI "void \fBeconf_freeArrayp\fP (char ***array)"
 .br
-.RI "Free memory allocated by e\&.g\&. "
+.RI "Free an array of type char*** by using e.g. __attribute__ in the declaration\&."
+.ti -1c
+.RI "void \fBeconf_freeFile\fP (\fBeconf_file\fP **key_file)"
+.br
+.RI "Free memory allocated by e\&.g\&. \fBeconf_readConfig\fP\&."
+.ti -1c
+RI "void \fBeconf_freeFilep\fP (\fBeconf_file\fP *key_file)"
+.br
+.RI "Free memory allocated by e\&.g\&. \fBeconf_readConfig\fP by using __attribute__ in the declaration\&."
 .ti -1c
 .RI "char \fBeconf_comment_tag\fP (\fBeconf_file\fP *key_file)"
 .br
