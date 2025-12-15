@@ -135,7 +135,7 @@ The following example demonstrates how to read a simple configuration file:
 
 .SH APPLICATION USAGE
 
-Default behaviour if entries have the same name in one file: The first hit will be returned\&. Further entries will be ignored\&. This can be changed by setting the environment variable JOIN_SAME_ENTRIES (see econf_set_opt)\&. In that case entries with the same name will be joined to one single entry\&.
+Default behaviour if entries have the same name in one file: The first hit will be returned\&. Further entries will be ignored\&. This can be changed by setting the environment variable JOIN_SAME_ENTRIES (see econf_set_opt)\&. In that case entries with the same name will be joined to one single entry\&. Keys have to be unique per section\&. Otherwise the behaviour is undefined\&.
 
 .SH "SEE ALSO"
 .PP
