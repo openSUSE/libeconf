@@ -47,36 +47,36 @@ econf_readConfigWithCallback \- evaluate configuration files for a specific proj
 .SH "DESCRIPTION"
 
 .PP
- \fBeconf_readConfigWithCallback\fR evaluats key/values of a given configuration by reading and merging all needed/available files from different directories. Order is:\&
+\fBeconf_readConfigWithCallback\fR evaluats key/values of a given configuration by reading and merging all needed/available files from different directories. Order is:\&
 
    /etc/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR does exist:
 
-     -- /etc/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR
-     -- \fIusr_subdir\fR/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
-     -- /run/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
-     -- /etc/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
+     * /etc/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR
+     * \fIusr_subdir\fR/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
+     * /run/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
+     * /etc/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
 
    /etc/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR does NOT exist:
 
-     - /run/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR does exist:
+     /run/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR does exist:
 
-      -- /run/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR
-      -- \fIusr_subdir\fR/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
-      -- /run/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
-      -- /etc/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
+       * /run/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR
+       * \fIusr_subdir\fR/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
+       * /run/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
+       * /etc/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
 
-     - /run/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR does NOT exist:
+     /run/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR does NOT exist:
 
-      -- \fIusr_subdir\fR/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR
-      -- \fIusr_subdir\fR/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
-      -- /run/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
-      -- /etc/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
+       * \fIusr_subdir\fR/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR
+       * \fIusr_subdir\fR/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
+       * /run/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
+       * /etc/\fIproject\fR/\fIconfig_name\fR.\fIconfig_suffix\fR.d/*.\fIconfig_suffix\fR
 
    No main \fIconfig_name\fR.\fIconfig_suffix\fR file is defined or must not be parsed:
 
-      -- \fIusr_subdir\fR/\fIproject\fR.d/*.\fIconfig_suffix \fR
-      -- /run/\fIproject\fR.d/*.\fIconfig_suffix\fR
-      -- /etc/\fIproject\fR.d/*.\fIconfig_suffix\fR
+     * \fIusr_subdir\fR/\fIproject\fR.d/*.\fIconfig_suffix \fR
+     * /run/\fIproject\fR.d/*.\fIconfig_suffix\fR
+     * /etc/\fIproject\fR.d/*.\fIconfig_suffix\fR
 
 For each parsed file the user defined function \fIcallback\fR will be called in order e.g. to check the correct file permissions.
 This user defined function has the pathname as parameter and returns true if this file can be parsed. If not, the parsing of
@@ -148,26 +148,26 @@ Reading content in different cases in following order:\&
 
    /etc/foo/example.conf does exist:
 
-   - /etc/foo/example.conf
-   - /usr/lib/foo/example.conf.d/ *.conf
-   - /run/foo/example.conf.d/ *.conf
-   - /etc/foo/example.conf.d/ *.conf
+     * /etc/foo/example.conf
+     * /usr/lib/foo/example.conf.d/ *.conf
+     * /run/foo/example.conf.d/ *.conf
+     * /etc/foo/example.conf.d/ *.conf
 
    /etc/foo/example.conf does NOT exist:
 
      /run/foo/example.conf does exist:
 
-     - /run/foo/example.conf
-     - /usr/lib/foo/example.conf.d/ *.conf
-     - /run/foo/example.conf.d/ *.conf
-     - /etc/foo/example.conf.d/ *.conf
+       */run/foo/example.conf
+       * /usr/lib/foo/example.conf.d/ *.conf
+       * /run/foo/example.conf.d/ *.conf
+       * /etc/foo/example.conf.d/ *.conf
 
      /run/foo/example.conf does NOT exist:
 
-     - /usr/lib/foo/example.conf
-     - /usr/lib/foo/example.conf.d/ *.conf
-     - /run/foo/example.conf.d/ *.conf
-     - /etc/foo/example.conf.d/ *.conf
+       * /usr/lib/foo/example.conf
+       * /usr/lib/foo/example.conf.d/ *.conf
+       * /run/foo/example.conf.d/ *.conf
+       * /etc/foo/example.conf.d/ *.conf
 
 .sp
 .if n \{\
