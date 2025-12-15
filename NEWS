@@ -1,3 +1,6 @@
+Version 0.8.3
+* Cleanup man pages
+
 Version 0.8.2
 * Cleanup man pages
 * Using ECONF_ARGUMENT_IS_NULL_VALUE instead of general error
