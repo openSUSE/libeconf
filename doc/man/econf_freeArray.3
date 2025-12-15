@@ -29,7 +29,7 @@
 .\" -----------------------------------------------------------------
 
 .SH "NAME"
-econf_freeArray \- free an array of strings returned by econf_getArrayValue
+econf_freeArray \- Free an array of type char** created by \fBeconf_getGroups()\fP or \fBeconf_getKeys()\fP\&.
 
 .SH "SYNOPSIS"
 
@@ -64,7 +64,7 @@ This function does not return an error code\&.
 .PP
 \fBeconf_getGroups\fR(3),
 \fBeconf_getKeys\fR(3),
-\fBeconf_free\fR(3),
+\fBeconf_freeArrayP\fR(3),
 \fBlibeconf\fR(3)
 
 .RE
