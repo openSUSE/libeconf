@@ -36,7 +36,7 @@ that they could be incompatible with the user made changes.
 
 If there is a file with the same name in /usr/\<vendor\>/\<project\>/\<example\>.\<suffix\>.d/ and
 in /etc/\<project\>/\<example\>.\<suffix\>.d/*.\<suffix\>., the file in /usr/\<project\>/\<vendor\>/\<example\>.\<suffix\>.d/
-will completely ignored.
+will be completely ignored.
 
 To disable a configuration file supplied by the vendor, the recommended way is to place
 a symlink to /dev/null in the configuration directory in /etc/\<project\>/, with the same filename
