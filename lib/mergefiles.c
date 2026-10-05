@@ -57,8 +57,8 @@ size_t merge_existing_groups(econf_file *dest_kf, struct file_entry **fe, econf_
   if (uf && ef) {
     for (size_t i = 0; i <= uf->length; i++) {
       // Check if the group has changed in the last iteration
-      if (i == uf->length ||
-	  (i && strcmp(uf->file_entry[i].group, uf->file_entry[i - 1].group))) {
+      if ((i == uf->length && i > 0) ||
+	  (i && i < uf->length && strcmp(uf->file_entry[i].group, uf->file_entry[i - 1].group))) {
 	for (size_t j = etc_start; j < ef->length; j++) {
 	  // Check for matching groups
 	  if (!strcmp(uf->file_entry[i - 1].group, ef->file_entry[j].group)) {

@@ -28,6 +28,7 @@ set(TESTS tst-filedoesnotexit1
           tst-merge3
           tst-merge4
           tst-merge5
+          tst-merge6
           tst-logindefs1
           tst-logindefs2
           tst-arguments1
