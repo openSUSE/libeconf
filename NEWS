@@ -1,3 +1,6 @@
+Version 0.8.5
+* Fix a crash if sections are empty.
+
 Version 0.8.4
 * Cleanup man pages regarding memory allocation and README.md.
 
