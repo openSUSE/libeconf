@@ -22,6 +22,8 @@ tst_merge4_exe = executable('tst-merge4', 'tst-merge4.c', c_args: test_args, dep
 test('tst-merge4', tst_merge4_exe)
 tst_merge5_exe = executable('tst-merge5', 'tst-merge5.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-merge5', tst_merge5_exe)
+tst_merge6_exe = executable('tst-merge6', 'tst-merge6.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-merge6', tst_merge6_exe)
 
 tst_write_string_data_exe = executable('tst-write-string-data', 'tst-write-string-data.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-write-string-data', tst_write_string_data_exe)
