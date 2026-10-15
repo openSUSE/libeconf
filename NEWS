@@ -1,3 +1,7 @@
+Version 0.8.6
+* Add new option DEFAULT_QUOTES for econf_newKeyFile_with_options.
+* NEW API calls: econf_hasQuotes, econf_setQuotes
+
 Version 0.8.5
 * Fix a crash if sections are empty.
 
