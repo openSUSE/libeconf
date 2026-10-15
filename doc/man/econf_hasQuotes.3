@@ -1,0 +1,78 @@
+'\" t
+.\"     Title: ECONF_HASQUOTES
+.\"    Author: libeconf developers
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 2026-10-15
+.\"    Manual: libeconf Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_HASQUOTES" "3" "2026\-10\-15" "libeconf" "libeconf Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf_hasQuotes \- check whether the value of a key is enclosed by quotes
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+#include <libeconf\&.h>
+.fi
+.ft
+.sp
+
+.BI "bool econf_hasQuotes(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ");"
+
+.SH "DESCRIPTION"
+
+.PP
+The \fBeconf_hasQuotes\fR() function checks whether the value of the key specified by \fIgroup\fR and \fIkey\fR in the given configuration file object \fIkf\fR is enclosed by quotes\&. If \fIgroup\fR is \fBNULL\fR, the key is considered to belong to no group\&.
+
+.PP
+A value is enclosed by quotes either because it was parsed from a configuration file where it was written with a leading quote character, or because it was marked as such with \fBeconf_setQuotes\fR()\&. This flag only affects how the value will be enclosed by quotes when the configuration is written back with \fBeconf_writeFile\fR()\&.
+
+.SH "RETURN VALUE"
+
+.PP
+\fBeconf_hasQuotes\fR()
+returns
+\fBtrue\fR
+if the value of the given \fIgroup\fR/\fIkey\fR is enclosed by quotes, and
+\fBfalse\fR
+otherwise\&.
+
+.PP
+\fBfalse\fR
+is also returned if
+\fIkf\fR
+is
+\fBNULL\fR, or if the
+\fIgroup\fR/\fIkey\fR
+combination has not been found\&.
+
+.SH "SEE ALSO"
+
+.PP
+\fBlibeconf\fR(3),
+\fBeconf_setQuotes\fR(3),
+\fBeconf_writeFile\fR(3)\&

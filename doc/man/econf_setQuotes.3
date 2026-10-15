@@ -1,0 +1,98 @@
+'\" t
+.\"     Title: ECONF_SETQUOTES
+.\"    Author: libeconf developers
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 2026-10-15
+.\"    Manual: libeconf Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_SETQUOTES" "3" "2026\-10\-15" "libeconf" "libeconf Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf_setQuotes \- set whether the value of a key has to be enclosed by quotes
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+#include <libeconf\&.h>
+.fi
+.ft
+.sp
+
+.BI "econf_err econf_setQuotes(econf_file\ *" "kf" ", const\ char\ *" "group" ", const\ char\ *" "key" ", const\ bool\ " "quotes" ");"
+
+.SH "DESCRIPTION"
+
+.PP
+The \fBeconf_setQuotes\fR() function sets whether the value of the key specified by \fIgroup\fR and \fIkey\fR in the given configuration file object \fIkf\fR has to be enclosed by quotes when the configuration is written back with \fBeconf_writeFile\fR()\&. If \fIgroup\fR is \fBNULL\fR, the key is considered to belong to no group\&.
+
+.PP
+If \fIquotes\fR is \fBtrue\fR, the value will be written enclosed by double quotes\&. If \fIquotes\fR is \fBfalse\fR, the value will be written without quotes\&.
+
+.PP
+Unlike the \fBeconf_set*Value\fR() functions, \fBeconf_setQuotes\fR() does not create the key if the \fIgroup\fR/\fIkey\fR combination does not already exist\&.
+
+.PP
+The default value of the quotes flag for newly created entries (entries not read from a configuration file) can be changed from \fBfalse\fR to \fBtrue\fR with the \fBDEFAULT_QUOTES\fR option of \fBeconf_newKeyFile_with_options\fR()\&.
+
+.SH "RETURN VALUE"
+
+.PP
+Upon successful completion, this function returns \fBECONF_SUCCESS\fR\&.
+
+.PP
+On error, a non\-zero error code is returned (see the section called \(lqERRORS\(rq)\&.
+
+.SH "ERRORS"
+
+.PP
+\fBECONF_FILE_LIST_IS_NULL\fR
+.RS 4
+          Conf file list is NULL\&.
+
+.RE
+
+.PP
+\fBECONF_EMPTYKEY\fR
+.RS 4
+          Key is NULL or has empty value\&.
+
+.RE
+
+.PP
+\fBECONF_NOKEY\fR
+.RS 4
+          Key not found\&.
+
+.RE
+
+.SH "SEE ALSO"
+
+.PP
+\fBlibeconf\fR(3),
+\fBeconf_hasQuotes\fR(3),
+\fBeconf_setValue\fR(3),
+\fBeconf_writeFile\fR(3),
+\fBeconf_errString\fR(3)\&

@@ -69,6 +69,10 @@ typedef struct econf_file {
   /* e.b. Identations will be handled like multiline entries. */
   bool python_style;
 
+  /* Default value of the "quotes" flag for newly created entries */
+  /* (entries not read from a file but added via the set functions). */
+  bool default_quotes;
+
   /* List of directories from which the configuration files have to be parsed. */
   /* The last entry has the highest priority. */
   char **parse_dirs;

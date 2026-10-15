@@ -187,6 +187,9 @@ test('tst-parseconfig2', tst_parseconfig2_exe)
 tst_quote1_exe = executable('tst-quote1', 'tst-quote1.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-quote1', tst_quote1_exe)
 
+tst_quote2_exe = executable('tst-quote2', 'tst-quote2.c', c_args: test_args, dependencies : libeconf_dep)
+test('tst-quote2', tst_quote2_exe)
+
 tst_shells1_exe = executable('tst-shells1', 'tst-shells1.c', c_args: test_args, dependencies : libeconf_dep)
 test('tst-shells1', tst_shells1_exe)
 tst_shells2_exe = executable('tst-shells2', 'tst-shells2.c', c_args: test_args, dependencies : libeconf_dep)
