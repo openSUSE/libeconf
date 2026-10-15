@@ -81,3 +81,8 @@ LIBECONF_0.8 {
   global:
     econf_setExtValue;
 } LIBECONF_0.7;
+LIBECONF_0.9 {
+  global:
+    econf_hasQuotes;
+    econf_setQuotes;
+} LIBECONF_0.8;

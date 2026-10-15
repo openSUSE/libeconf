@@ -64,6 +64,7 @@ set(TESTS tst-filedoesnotexit1
           tst-groups4
           tst-parseconfig1
           tst-quote1
+          tst-quote2
 	  tst-parse-error
 	  tst-getpath
 	  tst-write-string-data

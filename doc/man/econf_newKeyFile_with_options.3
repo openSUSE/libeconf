@@ -1,0 +1,167 @@
+'\" t
+.\"     Title: ECONF_NEWKEYFILE_WITH_OPTIONS
+.\"    Author: libeconf developers
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 2026-10-15
+.\"    Manual: libeconf Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_NEWKEYFILE_WITH_OPTIONS" "3" "2026\-10\-15" "libeconf" "libeconf Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf_newKeyFile_with_options \- create a new econf_file object with special options
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+#include <libeconf\&.h>
+.fi
+.ft
+.sp
+
+.BI "econf_err econf_newKeyFile_with_options(econf_file\ **" "result" ", const\ char\ *" "options" ");"
+
+.SH "DESCRIPTION"
+
+.PP
+The \fBeconf_newKeyFile_with_options\fR() function creates a new, empty \fBeconf_file\fR object and stores it in \fI*result\fR\&.
+
+.PP
+\fIoptions\fR is a string of \fB<key>=<value>\fR pairs separated by \*(Aq;\*(Aq, e\&.g\&. \fB"JOIN_SAME_ENTRIES=1"\fR\&. If \fIoptions\fR is \fBNULL\fR or an empty string, the new \fBeconf_file\fR object is created with the default settings described below\&.
+
+.PP
+The following options are supported:
+
+.PP
+\fBJOIN_SAME_ENTRIES\fR (default 0)
+.RS 4
+          Parsed entries with the same name will not be replaced but will be joined to one entry\&.
+
+.RE
+
+.PP
+\fBPYTHON_STYLE\fR (default 0)
+.RS 4
+          Indentations will be handled like multiline entries\&.
+
+.RE
+
+.PP
+\fBDEFAULT_QUOTES\fR (default 0)
+.RS 4
+          Entries which are newly created (e\&.g\&. via \fBeconf_setStringValue\fR()) and not read from a file will have their value enclosed by quotes when the \fBeconf_file\fR is written to a file\&. This default can be overridden per entry with \fBeconf_setQuotes\fR()\&.
+
+.RE
+
+.PP
+\fBPARSING_DIRS\fR (default /usr/etc/:/run:/etc)
+.RS 4
+          List of directories from which the configuration files have to be parsed\&. The list is a string, divided by \*(Aq:\*(Aq\&. The last entry has the highest priority\&. E\&.g\&.: \fB"PARSING_DIRS=/usr/etc/:/run:/etc"\fR\&.
+
+.RE
+
+.PP
+\fBCONFIG_DIRS\fR (default empty)
+.RS 4
+          List of directory structures (with order) which describes the directories in which the files have to be parsed\&. The list is a string, divided by \*(Aq:\*(Aq\&. The last entry has the highest priority\&. E\&.g\&. with the given list \fB"CONFIG_DIRS=.conf.d:.d"\fR
+files in the following directories will be parsed:
+.sp
+.RS 4
+<default_dirs>/<config_name>\&.conf\&.d/
+.br
+<default_dirs>/<config_name>\&.d/
+.br
+<default_dirs>/<config_name>/
+.RE
+
+.RE
+
+.PP
+\fBROOT_PREFIX\fR (default empty)
+.RS 4
+          Directory prefix used for all search directories if specified\&.
+
+.RE
+
+.SH "RETURN VALUE"
+
+.PP
+Upon successful completion, this function returns \fBECONF_SUCCESS\fR and stores the newly created \fBeconf_file\fR object in \fI*result\fR\&.
+
+.PP
+On error, a non\-zero error code is returned (see the section called \(lqERRORS\(rq), and \fI*result\fR may be set to \fBNULL\fR\&.
+
+.SH "ERRORS"
+
+.PP
+\fBECONF_NOMEM\fR
+.RS 4
+          Insufficient memory to allocate the new \fBeconf_file\fR object or one of its internal lists\&.
+
+.RE
+
+.PP
+\fBECONF_OPTION_NOT_FOUND\fR
+.RS 4
+          \fIoptions\fR contains a key that is not a known option\&.
+
+.RE
+
+.SH "EXAMPLES"
+
+.PP
+.nf
+#include <libeconf\&.h>
+
+econf_file *key_file = NULL;
+econf_err error;
+
+if ((error = econf_newKeyFile_with_options(&key_file, "PYTHON_STYLE=1")))
+{
+  fprintf (stderr, "ERROR: couldn\*(Aqt create new key file: %s\en",
+           econf_errString(error));
+  return 1;
+}
+
+error = econf_readConfig (&key_file,
+                          "foo",
+                          "/usr/lib",
+                          "example",
+                          "conf",
+                          "=", "#");
+
+econf_free (key_file);
+key_file = NULL;
+.fi
+
+.SH "SEE ALSO"
+
+.PP
+\fBlibeconf\fR(3),
+\fBeconf_newKeyFile\fR(3),
+\fBeconf_newIniFile\fR(3),
+\fBeconf_setQuotes\fR(3),
+\fBeconf_freeFile\fR(3),
+\fBeconf_errString\fR(3)\&

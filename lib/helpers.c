@@ -47,7 +47,7 @@ void initialize(econf_file *key_file, size_t num) {
   key_file->file_entry[num].value = strdup(KEY_FILE_NULL_VALUE);
   key_file->file_entry[num].comment_before_key = NULL;
   key_file->file_entry[num].comment_after_value = NULL;
-  key_file->file_entry[num].quotes = false;
+  key_file->file_entry[num].quotes = key_file->default_quotes;
 }
 
 char *get_absolute_path(const char *path, econf_err *error) {
@@ -207,7 +207,7 @@ struct file_entry cpy_file_entry(econf_file *dest_kf, struct file_entry fe) {
   else
     copied_fe.comment_after_value = NULL;  
   copied_fe.line_number = fe.line_number;
-  copied_fe.quotes = false;
+  copied_fe.quotes = fe.quotes;
   return copied_fe;
 }
 

@@ -22,7 +22,8 @@ main(void)
   if ((error = econf_newKeyFile_with_options(&key_file,
 					     "PARSING_DIRS=/test/usr/etc/:" \
 					     "/test/run:test/etc" \
-					     ";JOIN_SAME_ENTRIES=1;PYTHON_STYLE=1")))
+					     ";JOIN_SAME_ENTRIES=1;PYTHON_STYLE=1" \
+					     ";DEFAULT_QUOTES=1")))
   {
     fprintf (stderr, "ERROR: couldn't create new econf_file: %s\n",
              econf_errString(error));
@@ -34,16 +35,36 @@ main(void)
     fprintf (stderr, "ERROR: join_same_entries is false");
     retval = 1;
   }
-  
+
   if (!key_file->python_style) {
     fprintf (stderr, "ERROR: python_style is false");
+    retval = 1;
+  }
+
+  if (!key_file->default_quotes) {
+    fprintf (stderr, "ERROR: default_quotes is false");
     retval = 1;
   }
 
   if (key_file->parse_dirs_count != 3) {
     fprintf (stderr, "ERROR: parse_dirs_count is not 3");
     retval = 1;
-  }  
+  }
+
+  econf_free (key_file);
+  key_file = NULL;
+
+  if ((error = econf_newKeyFile_with_options(&key_file, "")))
+  {
+    fprintf (stderr, "ERROR: couldn't create new econf_file: %s\n",
+             econf_errString(error));
+    return 1;
+  }
+
+  if (key_file->default_quotes) {
+    fprintf (stderr, "ERROR: default_quotes is true but should default to false");
+    retval = 1;
+  }
 
   econf_free (key_file);
   key_file = NULL;

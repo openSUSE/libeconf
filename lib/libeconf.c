@@ -112,6 +112,7 @@ econf_newKeyFile(econf_file **result, char delimiter, char comment)
   key_file->comment = comment;
   key_file->join_same_entries = false;
   key_file->python_style = false;
+  key_file->default_quotes = false;
 
   key_file->parse_dirs = NULL;
   key_file->parse_dirs_count = 0;
@@ -145,6 +146,7 @@ econf_newKeyFile_with_options(econf_file **result, const char *options) {
   (*result)->length = 0;
   (*result)->join_same_entries = false;
   (*result)->python_style = false;
+  (*result)->default_quotes = false;
   (*result)->parse_dirs = NULL;
   (*result)->parse_dirs_count = 0;
   (*result)->conf_dirs = NULL;
@@ -167,6 +169,11 @@ econf_newKeyFile_with_options(econf_file **result, const char *options) {
 
     if (strcmp(o_opt, "PYTHON_STYLE=1") == 0) {
       (*result)->python_style = true;
+      continue;
+    }
+
+    if (strcmp(o_opt, "DEFAULT_QUOTES=1") == 0) {
+      (*result)->default_quotes = true;
       continue;
     }
 
@@ -809,6 +816,21 @@ econf_getValue(Double, double)
 econf_getValue(String, char *)
 econf_getValue(Bool, bool)
 
+bool econf_hasQuotes(econf_file *kf, const char *group, const char *key)
+{
+  if (!kf)
+    return false;
+
+  size_t num;
+  char *grp = group ? strdup(group) : NULL;
+  econf_err error = find_key(*kf, stripbrackets(grp), key, &num);
+  free(grp);
+  if (error)
+    return false;
+
+  return kf->file_entry[num].quotes;
+}
+
 /* SETTER FUNCTIONS */
 /* The econf_set*Value functions are identical except for set
    value type, so let's create them via a macro. */
@@ -833,6 +855,24 @@ libeconf_setValue(Float, float, &value)
 libeconf_setValue(Double, double, &value)
 libeconf_setValue(String, const char *, value)
 libeconf_setValue(Bool, const char *, value)
+
+econf_err econf_setQuotes(econf_file *kf, const char *group, const char *key, const bool quotes)
+{
+  if (!kf)
+    return ECONF_FILE_LIST_IS_NULL;
+  if (!key || strlen(key) <= 0)
+    return ECONF_EMPTYKEY;
+
+  size_t num;
+  char *grp = group ? strdup(group) : NULL;
+  econf_err error = find_key(*kf, stripbrackets(grp), key, &num);
+  free(grp);
+  if (error)
+    return error;
+
+  kf->file_entry[num].quotes = quotes;
+  return ECONF_SUCCESS;
+}
 
 /* --- DESTROY FUNCTIONS --- */
 

@@ -643,6 +643,10 @@ extern econf_err econf_newKeyFile(econf_file **result, char delimiter, char comm
  *    will be joined to one entry.
  *  PYTHON_STYLE  (default 0)
  *    E.G. Identations will be handled like multiline entries.
+ *  DEFAULT_QUOTES  (default 0)
+ *    Entries which are newly created (e.g. via econf_setStringValue) and not
+ *    read from a file will have their value enclosed by quotes when the
+ *    econf_file is written to a file.
  *  PARSING_DIRS (default /usr/etc/:/run:/etc)
  *    List of directories from which the configuration files have to be parsed.
  *    The list is a string, divides by ":". The last entry has the highest
@@ -970,6 +974,17 @@ extern econf_err econf_getStringValueDef(econf_file *kf, const char *group, cons
  */
 extern econf_err econf_getBoolValueDef(econf_file *kf, const char *group, const char *key, bool *result, const bool def);
 
+/** @brief Check whether the value of the given group/key is enclosed by quotes.
+ *
+ * @param kf given/parsed data
+ * @param group Desired group or NULL if there is no group defined.
+ * @param key Key to check.
+ * @return bool true if the value is enclosed by quotes, false otherwise
+ *         (also if kf is NULL or group/key has not been found).
+ *
+ */
+extern bool econf_hasQuotes(econf_file *kf, const char *group, const char *key);
+
 /* --------------- */
 /* --- SETTERS --- */
 /* --------------- */
@@ -1061,6 +1076,19 @@ extern econf_err econf_setStringValue(econf_file *kf, const char *group, const c
  *
  */
 extern econf_err econf_setBoolValue(econf_file *kf, const char *group, const char *key, const char *value);
+
+/** @brief Set whether the value of the given group/key has to be enclosed by quotes
+ *         when the econf_file is written to a file.
+ *
+ * @param kf given/parsed data
+ * @param group Desired group or NULL if there is no group defined.
+ * @param key Key for which the quotes flag has to be set.
+ * @param quotes true if the value has to be enclosed by quotes, false otherwise.
+ * @return econf_err ECONF_SUCCESS or error code (e.g. ECONF_NOKEY if group/key
+ *         has not been found).
+ *
+ */
+extern econf_err econf_setQuotes(econf_file *kf, const char *group, const char *key, const bool quotes);
 
 /* --------------- */
 /* --- HELPERS --- */
