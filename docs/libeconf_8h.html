@@ -23,7 +23,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">libeconf<span id="projectnumber">&#160;0.8.3</span>
+   <div id="projectname">libeconf<span id="projectnumber">&#160;0.8.6</span>
    </div>
   </td>
  </tr>
@@ -197,6 +197,8 @@ Functions</h2></td></tr>
 <tr class="memdesc:aca086c8a60b7d14c2d3fdf06460aab1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluating string value for given group/key.  <br /></td></tr>
 <tr class="memitem:af6b9d3d3880b432f255ef35928938ef6" id="r_af6b9d3d3880b432f255ef35928938ef6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af6b9d3d3880b432f255ef35928938ef6">econf_getBoolValueDef</a> (<a class="el" href="#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *kf, const char *group, const char *key, bool *result, const bool def)</td></tr>
 <tr class="memdesc:af6b9d3d3880b432f255ef35928938ef6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluating bool value for given group/key.  <br /></td></tr>
+<tr class="memitem:acfe167f870c4605a85ec03b2b615efeb" id="r_acfe167f870c4605a85ec03b2b615efeb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acfe167f870c4605a85ec03b2b615efeb">econf_hasQuotes</a> (<a class="el" href="#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *kf, const char *group, const char *key)</td></tr>
+<tr class="memdesc:acfe167f870c4605a85ec03b2b615efeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether the value of the given group/key is enclosed by quotes.  <br /></td></tr>
 <tr class="memitem:a9eba99cc942620012cd76d7fd487c599" id="r_a9eba99cc942620012cd76d7fd487c599"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9eba99cc942620012cd76d7fd487c599">econf_setIntValue</a> (<a class="el" href="#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *kf, const char *group, const char *key, int32_t value)</td></tr>
 <tr class="memdesc:a9eba99cc942620012cd76d7fd487c599"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set int32 value for given group/key.  <br /></td></tr>
 <tr class="memitem:a2fe1e47b604fa259e1fd879bbdc0a347" id="r_a2fe1e47b604fa259e1fd879bbdc0a347"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2fe1e47b604fa259e1fd879bbdc0a347">econf_setInt64Value</a> (<a class="el" href="#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *kf, const char *group, const char *key, int64_t value)</td></tr>
@@ -213,6 +215,8 @@ Functions</h2></td></tr>
 <tr class="memdesc:a808d966041916c3de263a79a6b4983c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set string value for given group/key.  <br /></td></tr>
 <tr class="memitem:a3f873713848631a5ded240479af96de4" id="r_a3f873713848631a5ded240479af96de4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3f873713848631a5ded240479af96de4">econf_setBoolValue</a> (<a class="el" href="#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *kf, const char *group, const char *key, const char *value)</td></tr>
 <tr class="memdesc:a3f873713848631a5ded240479af96de4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set bool value for given group/key.  <br /></td></tr>
+<tr class="memitem:a5606882366ec75403574351edb49b6c7" id="r_a5606882366ec75403574351edb49b6c7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5606882366ec75403574351edb49b6c7">econf_setQuotes</a> (<a class="el" href="#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *kf, const char *group, const char *key, const bool quotes)</td></tr>
+<tr class="memdesc:a5606882366ec75403574351edb49b6c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set whether the value of the given group/key has to be enclosed by quotes when the <a class="el" href="#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> is written to a file.  <br /></td></tr>
 <tr class="memitem:a1a78a570d9d947cebf347bf9e41a6637" id="r_a1a78a570d9d947cebf347bf9e41a6637"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1a78a570d9d947cebf347bf9e41a6637">econf_errString</a> (const <a class="el" href="#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a> error)</td></tr>
 <tr class="memdesc:a1a78a570d9d947cebf347bf9e41a6637"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert an <a class="el" href="#a30cb4e6c5ce4daa333646b23b20caa0a" title="libeconf error codes">econf_err</a> type to a string.  <br /></td></tr>
 <tr class="memitem:adc459d1dfa9096425d4f248b04669761" id="r_adc459d1dfa9096425d4f248b04669761"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc459d1dfa9096425d4f248b04669761">econf_errLocation</a> (char **filename, uint64_t *line_nr)</td></tr>
@@ -1363,7 +1367,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="#a30cb4e6c5ce4daa333646b23b20caa0a" title="libeconf error codes">econf_err</a> ECONF_SUCCESS or error code</dd></dl>
-<p>Following options are supported: JOIN_SAME_ENTRIES (default 0) Parsed entries with the same name will not be replaces but will be joined to one entry. PYTHON_STYLE (default 0) E.G. Identations will be handled like multiline entries. PARSING_DIRS (default /usr/etc/:/run:/etc) List of directories from which the configuration files have to be parsed. The list is a string, divides by ":". The last entry has the highest priority. E.g.: "PARSING_DIRS=/usr/etc/:/run:/etc" CONFIG_DIRS (default &lt;empty&gt;) List of directory structures (with order) which describes the directories in which the files have to be parsed. The list is a string, divides by ":". The last entry has the highest priority. E.g. with the given list: "CONFIG_DIRS=.conf.d:.d" files in following directories will be parsed: "&lt;default_dirs&gt;/&lt;config_name&gt;.conf.d/" "&lt;default_dirs&gt;/&lt;config_name&gt;.d/" "&lt;default_dirs&gt;/&lt;config_name&gt;/" ROOT_PREFIX (default &lt;empty&gt;) Directory prefix used for all search directories if specified.</p>
+<p>Following options are supported: JOIN_SAME_ENTRIES (default 0) Parsed entries with the same name will not be replaces but will be joined to one entry. PYTHON_STYLE (default 0) E.G. Identations will be handled like multiline entries. DEFAULT_QUOTES (default 0) Entries which are newly created (e.g. via econf_setStringValue) and not read from a file will have their value enclosed by quotes when the <a class="el" href="#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> is written to a file. PARSING_DIRS (default /usr/etc/:/run:/etc) List of directories from which the configuration files have to be parsed. The list is a string, divides by ":". The last entry has the highest priority. E.g.: "PARSING_DIRS=/usr/etc/:/run:/etc" CONFIG_DIRS (default &lt;empty&gt;) List of directory structures (with order) which describes the directories in which the files have to be parsed. The list is a string, divides by ":". The last entry has the highest priority. E.g. with the given list: "CONFIG_DIRS=.conf.d:.d" files in following directories will be parsed: "&lt;default_dirs&gt;/&lt;config_name&gt;.conf.d/" "&lt;default_dirs&gt;/&lt;config_name&gt;.d/" "&lt;default_dirs&gt;/&lt;config_name&gt;/" ROOT_PREFIX (default &lt;empty&gt;) Directory prefix used for all search directories if specified.</p>
 <p>e.g. Parsing configuration files written in python style:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="libeconf_8h.html">libeconf.h</a>&quot;</span></div>
 <div class="line"> </div>
@@ -2621,6 +2625,51 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="acfe167f870c4605a85ec03b2b615efeb" name="acfe167f870c4605a85ec03b2b615efeb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfe167f870c4605a85ec03b2b615efeb">&#9670;&#160;</a></span>econf_hasQuotes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool econf_hasQuotes </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *</td>          <td class="paramname"><span class="paramname"><em>kf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>group</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>key</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Check whether the value of the given group/key is enclosed by quotes. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">kf</td><td>given/parsed data </td></tr>
+    <tr><td class="paramname">group</td><td>Desired group or NULL if there is no group defined. </td></tr>
+    <tr><td class="paramname">key</td><td>Key to check. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>bool true if the value is enclosed by quotes, false otherwise (also if kf is NULL or group/key has not been found). </dd></dl>
+
+</div>
+</div>
 <a id="a9eba99cc942620012cd76d7fd487c599" name="a9eba99cc942620012cd76d7fd487c599"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9eba99cc942620012cd76d7fd487c599">&#9670;&#160;</a></span>econf_setIntValue()</h2>
 
@@ -3029,6 +3078,57 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a5606882366ec75403574351edb49b6c7" name="a5606882366ec75403574351edb49b6c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5606882366ec75403574351edb49b6c7">&#9670;&#160;</a></span>econf_setQuotes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a30cb4e6c5ce4daa333646b23b20caa0a">econf_err</a> econf_setQuotes </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> *</td>          <td class="paramname"><span class="paramname"><em>kf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>group</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>key</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool</td>          <td class="paramname"><span class="paramname"><em>quotes</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set whether the value of the given group/key has to be enclosed by quotes when the <a class="el" href="#a0d29e6d5c6c6d151bb3edc54019c8735">econf_file</a> is written to a file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">kf</td><td>given/parsed data </td></tr>
+    <tr><td class="paramname">group</td><td>Desired group or NULL if there is no group defined. </td></tr>
+    <tr><td class="paramname">key</td><td>Key for which the quotes flag has to be set. </td></tr>
+    <tr><td class="paramname">quotes</td><td>true if the value has to be enclosed by quotes, false otherwise. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="#a30cb4e6c5ce4daa333646b23b20caa0a" title="libeconf error codes">econf_err</a> ECONF_SUCCESS or error code (e.g. ECONF_NOKEY if group/key has not been found). </dd></dl>
+
+</div>
+</div>
 <a id="a1a78a570d9d947cebf347bf9e41a6637" name="a1a78a570d9d947cebf347bf9e41a6637"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1a78a570d9d947cebf347bf9e41a6637">&#9670;&#160;</a></span>econf_errString()</h2>
 
@@ -3158,7 +3258,7 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l01093">1093</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l01121">1121</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
 
 </div>
 </div>
@@ -3219,7 +3319,7 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l01111">1111</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="libeconf_8h_source.html#l01139">1139</a> of file <a class="el" href="libeconf_8h_source.html">libeconf.h</a>.</p>
 
 </div>
 </div>

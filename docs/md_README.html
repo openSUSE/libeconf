@@ -23,7 +23,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">libeconf<span id="projectnumber">&#160;0.8.3</span>
+   <div id="projectname">libeconf<span id="projectnumber">&#160;0.8.6</span>
    </div>
   </td>
  </tr>
@@ -73,7 +73,7 @@ $(function(){initNavTree('md_README.html','',''); });
 <p>The first method is useful to override the complete configuration file with an own one, the vendor supplied configuration is ignored.</p>
 <p>So, if /etc/&lt;project&gt;/&lt;example&gt;.&lt;suffix&gt; exists, /usr/&lt;vendor&gt;/&lt;project&gt;/&lt;example&gt;.&lt;suffix&gt; and /run/&lt;project&gt;/&lt;example&gt;.&lt;suffix&gt; will not be read. The disadvantage is, that changes of the vendor configuration file, due e.g. an package update, are ignored and the user has to manually merge them.</p>
 <p>The other method will continue to use /usr/&lt;vendor&gt;/&lt;project&gt;/&lt;example&gt;.&lt;suffix&gt; as base configuration file and merge all changes from /etc/&lt;project&gt;/&lt;example&gt;.&lt;suffix&gt;.d/*.&lt;suffix&gt;. So the user will automatically get improvements of the vendor, with the drawback, that they could be incompatible with the user made changes.</p>
-<p>If there is a file with the same name in /usr/&lt;vendor&gt;/&lt;project&gt;/&lt;example&gt;.&lt;suffix&gt;.d/ and in /etc/&lt;project&gt;/&lt;example&gt;.&lt;suffix&gt;.d/*.&lt;suffix&gt;., the file in /usr/&lt;project&gt;/&lt;vendor&gt;/&lt;example&gt;.&lt;suffix&gt;.d/ will completely ignored.</p>
+<p>If there is a file with the same name in /usr/&lt;vendor&gt;/&lt;project&gt;/&lt;example&gt;.&lt;suffix&gt;.d/ and in /etc/&lt;project&gt;/&lt;example&gt;.&lt;suffix&gt;.d/*.&lt;suffix&gt;., the file in /usr/&lt;project&gt;/&lt;vendor&gt;/&lt;example&gt;.&lt;suffix&gt;.d/ will be completely ignored.</p>
 <p>To disable a configuration file supplied by the vendor, the recommended way is to place a symlink to /dev/null in the configuration directory in /etc/&lt;project&gt;/, with the same filename as the vendor configuration file.</p>
 <p>Optionally, schemes with only drop-ins and without a ‘main’ configuration file will be supported too. In such schemes many drop-ins are loaded from a common directory in each hierarchy. For example, /usr/lib/&lt;project&gt;.d/*, /run/&lt;project&gt;.d/* and /etc/&lt;project&gt;.d/c.conf are all loaded and parsed in this scheme.</p>
 <p><b>Example 1</b></p>
