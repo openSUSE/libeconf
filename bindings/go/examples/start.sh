@@ -9,9 +9,6 @@ repo_root=$(CDPATH= cd -- "$script_dir/../../.." && pwd)
 
 export CGO_CFLAGS="-I$repo_root/include"
 export CGO_LDFLAGS="-L$repo_root/build/lib -Wl,-rpath,$repo_root/build/lib"
-# -rpath alone is not enough: /usr/local/lib64 is in the ldconfig cache and
-# wins over RUNPATH for some glibc versions. LD_LIBRARY_PATH always takes
-# precedence, so it reliably forces the locally built library at runtime too.
 export LD_LIBRARY_PATH="$repo_root/build/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 
 cd "$script_dir"

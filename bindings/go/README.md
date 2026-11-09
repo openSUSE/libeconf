@@ -51,6 +51,16 @@ func main() {
 }
 ```
 
+## Documentation
+
+Man pages for the package, modeled after the C API documentation in
+`doc/man/`, are available in `bindings/go/doc/man/`. Start at `econf_go(3)`
+(`bindings/go/doc/man/econf_go.3`) for an overview, e.g.:
+
+```sh
+man doc/man/econf_go.3
+```
+
 ## API surface
 
 The package mirrors the current (non-deprecated) public API from
@@ -80,8 +90,8 @@ setters (`econf_requireOwner`, `econf_requireGroup`, `econf_requirePermissions`,
 ## Testing
 
 ```sh
-cd econf
-go test ./...
+cd bindings/go
+start_tests.sh
 ```
 
 Tests are self-contained: they write small `.conf` fixtures into a temp
