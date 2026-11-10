@@ -1,0 +1,262 @@
+'\" t
+.\"     Title: ECONF_GO
+.\"    Author: libeconf Contributors
+.\"      Date: 2026-11-09
+.\"    Manual: libeconf Go Bindings Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_GO" "3" "2026\-11\-09" "libeconf" "libeconf Go Bindings Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf (Go) \- Go bindings for the libeconf configuration library
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+import "github\&.com/openSUSE/libeconf/go/econf"
+.fi
+.ft
+.sp
+
+.SH "DESCRIPTION"
+
+.PP
+The
+\fBeconf\fR
+Go package provides idiomatic Go bindings for
+\fBlibeconf\fR(3)\&. It wraps the existing C library via cgo; it does not
+reimplement libeconf's parsing/merging logic in Go\&.
+
+.PP
+Building this package requires the libeconf shared library and development
+headers to be installed and discoverable via
+\fBpkg-config\fR(1)
+(\fCpkg\-config \-\-libs libeconf\fR), for example by installing the
+\fIlibeconf\fR
+and
+\fIlibeconf\-devel\fR
+packages, or by pointing
+\fIPKG_CONFIG_PATH\fR
+at a local build\&.
+
+.PP
+The central type is
+\fBeconf\&.File\fR, which wraps an
+\fCeconf_file\fR
+object: the in\-memory representation of a parsed and/or merged
+configuration\&. Values are read from and written to a
+\fI*File\fR
+using typed getter/setter methods, mirroring the
+\fCeconf_get*Value\fR/\fCeconf_set*Value\fR
+family of C functions\&.
+
+.PP
+Errors are returned as
+\fI*econf\&.Error\fR; callers compare against the sentinel values
+(\fCeconf\&.ErrNoKey\fR,
+\fCeconf\&.ErrNoGroup\fR, \&.\&.\&.) with
+\fBerrors\&.Is\fR(3)\&. See
+\fBeconf_go_Error\fR(3)\&.
+
+.SS "Constructors"
+
+.PP
+\fBNewKeyFile\fR,
+\fBNewKeyFileWithOptions\fR,
+\fBNewIniFile\fR
+create a new, empty
+\fI*File\fR\&. See
+\fBeconf_go_NewKeyFile\fR(3)\&.
+
+.SS "Reading"
+
+.PP
+\fBReadFile\fR,
+\fBReadFileWithCallback\fR
+parse a single configuration file\&. See
+\fBeconf_go_ReadFile\fR(3)\&.
+
+.PP
+\fBReadConfig\fR,
+\fBReadConfigWithCallback\fR
+evaluate and merge configuration files for a project from the vendor,
+runtime and admin directories\&. See
+\fBeconf_go_ReadConfig\fR(3)\&.
+
+.PP
+\fBReadDirsHistory\fR,
+\fBReadDirsHistoryWithCallback\fR
+return one
+\fI*File\fR
+per configuration file found, instead of a single merged result\&. See
+\fBeconf_go_ReadDirsHistory\fR(3)\&.
+
+.PP
+\fBMergeFiles\fR
+merges two already\-parsed
+\fI*File\fR
+values\&. See
+\fBeconf_go_MergeFiles\fR(3)\&.
+
+.SS "Writing"
+
+.PP
+\fB(*File)\&.WriteFile\fR
+writes a
+\fI*File\fR's contents to disk\&. See
+\fBeconf_go_File_WriteFile\fR(3)\&.
+
+.SS "Introspection"
+
+.PP
+\fB(*File)\&.Path\fR
+returns the path a file was parsed from\&. See
+\fBeconf_go_File_Path\fR(3)\&.
+
+.PP
+\fB(*File)\&.Groups\fR
+and
+\fB(*File)\&.Keys\fR
+list the groups and keys of a file\&. See
+\fBeconf_go_File_Groups\fR(3)\&.
+
+.PP
+\fB(*File)\&.CommentTag\fR,
+\fB(*File)\&.SetCommentTag\fR,
+\fB(*File)\&.DelimiterTag\fR
+and
+\fB(*File)\&.SetDelimiterTag\fR
+get/set the comment and delimiter characters of a file\&. See
+\fBeconf_go_File_Tags\fR(3)\&.
+
+.PP
+\fB(*File)\&.HasQuotes\fR
+reports whether a value is enclosed by quotes\&. See
+\fBeconf_go_File_HasQuotes\fR(3)\&.
+
+.SS "Getters and setters"
+
+.PP
+Typed getters
+(\fBInt\fR,
+\fBInt64\fR,
+\fBUInt\fR,
+\fBUInt64\fR,
+\fBFloat\fR,
+\fBDouble\fR,
+\fBString\fR,
+\fBBool\fR), each with a
+\fB\&.\&.\&.Def\fR
+variant taking a default value\&. See
+\fBeconf_go_File_Get\fR(3)\&.
+
+.PP
+Typed setters
+(\fBSetInt\fR,
+\fBSetInt64\fR,
+\fBSetUInt\fR,
+\fBSetUInt64\fR,
+\fBSetFloat\fR,
+\fBSetDouble\fR,
+\fBSetString\fR,
+\fBSetBool\fR), plus
+\fBSetQuotes\fR\&. See
+\fBeconf_go_File_Set\fR(3)\&.
+
+.SS "Cleanup"
+
+.PP
+\fB(*File)\&.Close\fR
+releases the C memory backing a
+\fI*File\fR\&. See
+\fBeconf_go_File_Close\fR(3)\&.
+
+.SS "Callbacks"
+
+.PP
+\fBFileCallback\fR
+is the function type accepted by the
+\fB\&.\&.\&.WithCallback\fR
+read functions\&. See
+\fBeconf_go_FileCallback\fR(3)\&.
+
+.SS "Deliberately not wrapped"
+
+.PP
+The deprecated
+\fCeconf_readDirs\fR/\fCeconf_readDirsWithCallback\fR
+functions, and the non\-thread\-safe global setters
+(\fCeconf_requireOwner\fR,
+\fCeconf_requireGroup\fR,
+\fCeconf_requirePermissions\fR,
+\fCeconf_followSymlinks\fR,
+\fCeconf_reset_security_settings\fR,
+\fCeconf_set_conf_dirs\fR) \(em use the callback\-based read functions instead\&.
+
+.SH "SEE ALSO"
+
+.PP
+\fBRead/Write configuration files:\fR
+.PP
+\fBeconf_go_NewKeyFile\fR(3),
+\fBeconf_go_ReadFile\fR(3),
+\fBeconf_go_ReadConfig\fR(3),
+\fBeconf_go_ReadDirsHistory\fR(3),
+\fBeconf_go_MergeFiles\fR(3),
+\fBeconf_go_File_WriteFile\fR(3)
+
+.PP
+\fBget/set key/value:\fR
+.PP
+\fBeconf_go_File_Groups\fR(3),
+\fBeconf_go_File_Get\fR(3),
+\fBeconf_go_File_Set\fR(3),
+\fBeconf_go_File_HasQuotes\fR(3)
+
+.PP
+\fBGeneral setup:\fR
+.PP
+\fBeconf_go_File_Tags\fR(3),
+\fBeconf_go_File_Path\fR(3)
+
+.PP
+\fBCleanup:\fR
+.PP
+\fBeconf_go_File_Close\fR(3)
+
+.PP
+\fBCallbacks:\fR
+.PP
+\fBeconf_go_FileCallback\fR(3)
+
+.PP
+\fBError handling:\fR
+.PP
+\fBeconf_go_Error\fR(3)
+
+.PP
+\fBUnderlying C library:\fR
+.PP
+\fBlibeconf\fR(3)
