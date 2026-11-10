@@ -1,0 +1,267 @@
+'\" t
+.\"     Title: ECONF_GO_READCONFIG
+.\"    Author: libeconf Contributors
+.\"      Date: 2026-11-09
+.\"    Manual: libeconf Go Bindings Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_GO_READCONFIG" "3" "2026\-11\-09" "libeconf" "libeconf Go Bindings Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf\&.ReadConfig, econf\&.ReadConfigWithCallback \- evaluate configuration files for a specific project
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+import "github\&.com/openSUSE/libeconf/bindings/go/econf"
+.fi
+.ft
+.sp
+.nf
+\fBfunc ReadConfig(project, usrSubdir, configName, configSuffix, delim, comment string) (*econf\&.File, error)\fR
+
+\fBfunc ReadConfigWithCallback(project, usrSubdir, configName, configSuffix, delim, comment string, callback econf\&.FileCallback) (*econf\&.File, error)\fR
+.fi
+
+.SH "DESCRIPTION"
+
+.PP
+\fBReadConfig\fR
+evaluates key/values of a given configuration by reading and merging all
+needed/available files from different directories\&. Order is:\&
+
+   /etc/\fIproject\fR/\fIconfigName\fR\&.\fIconfigSuffix\fR does exist:
+
+     * /etc/\fIproject\fR/\fIconfigName\fR\&.\fIconfigSuffix\fR
+     * \fIusrSubdir\fR/\fIproject\fR/\fIconfigName\fR\&.\fIconfigSuffix\fR\&.d/*\&.\fIconfigSuffix\fR
+     * /run/\fIproject\fR/\fIconfigName\fR\&.\fIconfigSuffix\fR\&.d/*\&.\fIconfigSuffix\fR
+     * /etc/\fIproject\fR/\fIconfigName\fR\&.\fIconfigSuffix\fR\&.d/*\&.\fIconfigSuffix\fR
+
+   /etc/\fIproject\fR/\fIconfigName\fR\&.\fIconfigSuffix\fR does NOT exist:
+
+     /run/\fIproject\fR/\fIconfigName\fR\&.\fIconfigSuffix\fR does exist:
+
+       * /run/\fIproject\fR/\fIconfigName\fR\&.\fIconfigSuffix\fR
+       * \fIusrSubdir\fR/\fIproject\fR/\fIconfigName\fR\&.\fIconfigSuffix\fR\&.d/*\&.\fIconfigSuffix\fR
+       * /run/\fIproject\fR/\fIconfigName\fR\&.\fIconfigSuffix\fR\&.d/*\&.\fIconfigSuffix\fR
+       * /etc/\fIproject\fR/\fIconfigName\fR\&.\fIconfigSuffix\fR\&.d/*\&.\fIconfigSuffix\fR
+
+     /run/\fIproject\fR/\fIconfigName\fR\&.\fIconfigSuffix\fR does NOT exist:
+
+       * \fIusrSubdir\fR/\fIproject\fR/\fIconfigName\fR\&.\fIconfigSuffix\fR
+       * \fIusrSubdir\fR/\fIproject\fR/\fIconfigName\fR\&.\fIconfigSuffix\fR\&.d/*\&.\fIconfigSuffix\fR
+       * /run/\fIproject\fR/\fIconfigName\fR\&.\fIconfigSuffix\fR\&.d/*\&.\fIconfigSuffix\fR
+       * /etc/\fIproject\fR/\fIconfigName\fR\&.\fIconfigSuffix\fR\&.d/*\&.\fIconfigSuffix\fR
+
+   No main \fIconfigName\fR\&.\fIconfigSuffix\fR file is defined or must not be parsed:
+
+     * \fIusrSubdir\fR/\fIproject\fR\&.d/*\&.\fIconfigSuffix\fR
+     * /run/\fIproject\fR\&.d/*\&.\fIconfigSuffix\fR
+     * /etc/\fIproject\fR\&.d/*\&.\fIconfigSuffix\fR
+
+.PP
+\fIproject\fR
+is the name of the project used as subdirectory, and may be
+""
+(treated as
+NULL
+by the underlying C call)\&.
+
+.PP
+If
+\fIconfigName\fR
+is
+""\&, drop\-ins without a main configuration file will be parsed only\&.
+\fIconfigSuffix\fR
+may also be
+""\&.
+
+.PP
+The
+\fIdelim\fR
+parameter specifies the character used to separate keys from values (e\&.g\&.,
+"="
+)\&. If
+\fIdelim\fR
+contains space characters AND non\-space characters, multiline values are
+not parseable\&. The
+\fIcomment\fR
+parameter specifies an array of characters which define the start of a
+comment (e\&.g\&.,
+"#"
+)\&.
+
+.PP
+\fBReadConfigWithCallback\fR
+behaves like
+\fBReadConfig\fR, additionally invoking
+\fIcallback\fR
+(see
+\fBeconf_go_FileCallback\fR(3)) for every candidate file before it is
+parsed\&. Returning
+\fIfalse\fR
+from
+\fIcallback\fR
+aborts the read, and the call fails with
+\fBeconf\&.ErrParsingCallbackFailed\fR\&.
+
+.PP
+The returned
+\fI*File\fR
+should be released with
+\fB(*File)\&.Close\fR
+(see
+\fBeconf_go_File_Close\fR(3)) once it is no longer needed\&.
+
+.SH "RETURN VALUE"
+
+.PP
+On success, these functions return a non\-nil
+\fI*econf\&.File\fR
+holding the merged configuration, and a
+\fInil\fR
+error\&.
+
+.PP
+On failure, they return
+\fInil\fR
+and a non\-nil
+\fI*econf\&.Error\fR
+(see
+\fBeconf_go_Error\fR(3))\&.
+
+.SH "ERRORS"
+
+.PP
+\fBeconf\&.ErrNoFile\fR
+.RS 4
+          No matching configuration file could be found\&.
+.RE
+
+.PP
+\fBeconf\&.ErrNoMem\fR
+.RS 4
+          Insufficient memory to allocate the resulting
+\fBeconf\&.File\fR\&.
+.RE
+
+.PP
+\fBeconf\&.ErrMissingBracket\fR, \fBeconf\&.ErrTextAfterSection\fR, \fBeconf\&.ErrEmptySectionName\fR, \fBeconf\&.ErrMissingDelimiter\fR
+.RS 4
+          A file contains syntax errors and could not be parsed successfully\&.
+.RE
+
+.PP
+\fBeconf\&.ErrArgumentIsNullValue\fR
+.RS 4
+          One of the required arguments is empty when it must not be\&.
+.RE
+
+.PP
+\fBeconf\&.ErrParsingCallbackFailed\fR
+.RS 4
+          \fBReadConfigWithCallback\fR
+only: the callback returned
+\fIfalse\fR
+for one of the candidate files\&.
+.RE
+
+.SH "EXAMPLE"
+
+Reading content in different cases in following order:\&
+
+   /etc/foo/example\&.conf does exist:
+
+     * /etc/foo/example\&.conf
+     * /usr/lib/foo/example\&.conf\&.d/*\&.conf
+     * /run/foo/example\&.conf\&.d/*\&.conf
+     * /etc/foo/example\&.conf\&.d/*\&.conf
+
+   /etc/foo/example\&.conf does NOT exist:
+
+     /run/foo/example\&.conf does exist:
+
+       * /run/foo/example\&.conf
+       * /usr/lib/foo/example\&.conf\&.d/*\&.conf
+       * /run/foo/example\&.conf\&.d/*\&.conf
+       * /etc/foo/example\&.conf\&.d/*\&.conf
+
+     /run/foo/example\&.conf does NOT exist:
+
+       * /usr/lib/foo/example\&.conf
+       * /usr/lib/foo/example\&.conf\&.d/*\&.conf
+       * /run/foo/example\&.conf\&.d/*\&.conf
+       * /etc/foo/example\&.conf\&.d/*\&.conf
+.sp
+.if n \{\
+.RS 1
+.\}
+.nf
+
+package main
+
+import (
+    "fmt"
+    "log"
+
+    "github\&.com/openSUSE/libeconf/bindings/go/econf"
+)
+
+func main() {
+    conf, err := econf\&.ReadConfig(
+        "foo",        // project name
+        "/usr/lib",   // vendor directory
+        "example",    // config name
+        "conf",       // suffix
+        "=",          // delimiter
+        "#")          // comment
+    if err != nil {
+        log\&.Fatal(err)
+    }
+    defer conf\&.Close()
+
+    value, err := conf\&.String("main", "greeting")
+    if err != nil {
+        log\&.Fatal(err)
+    }
+    fmt\&.Println(value)
+}
+
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+
+.SH "SEE ALSO"
+
+.PP
+\fBeconf_go\fR(3),
+\fBeconf_go_FileCallback\fR(3),
+\fBeconf_go_File_Close\fR(3),
+\fBeconf_go_MergeFiles\fR(3),
+\fBeconf_go_Error\fR(3),
+\fBeconf_readConfig\fR(3),
+\fBeconf_readConfigWithCallback\fR(3)\&.

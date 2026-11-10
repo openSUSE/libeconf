@@ -1,0 +1,142 @@
+'\" t
+.\"     Title: ECONF_GO_FILECALLBACK
+.\"    Author: libeconf Contributors
+.\"      Date: 2026-11-09
+.\"    Manual: libeconf Go Bindings Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_GO_FILECALLBACK" "3" "2026\-11\-09" "libeconf" "libeconf Go Bindings Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf\&.FileCallback \- function type invoked for each candidate configuration file
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+import "github\&.com/openSUSE/libeconf/bindings/go/econf"
+.fi
+.ft
+.sp
+.nf
+\fBtype FileCallback func(filename string) bool\fR
+.fi
+
+.SH "DESCRIPTION"
+
+.PP
+\fBeconf\&.FileCallback\fR
+is the function type accepted by the
+\fB\&.\&.\&.WithCallback\fR
+read functions
+(\fBReadFileWithCallback\fR,
+\fBReadConfigWithCallback\fR,
+\fBReadDirsHistoryWithCallback\fR; see
+\fBeconf_go_ReadFile\fR(3),
+\fBeconf_go_ReadConfig\fR(3)
+and
+\fBeconf_go_ReadDirsHistory\fR(3))\&.
+
+.PP
+A value of this type is invoked once per candidate configuration file
+while reading, with the absolute path of that file as
+\fIfilename\fR\&. Returning
+\fItrue\fR
+allows parsing of that file to proceed; returning
+\fIfalse\fR
+aborts the whole read call, which then fails with
+\fBeconf\&.ErrParsingCallbackFailed\fR
+(see
+\fBeconf_go_Error\fR(3))\&.
+
+.PP
+This mirrors the
+\fIcallback\fR/\fIcallback_data\fR
+parameters of the underlying C functions (see
+\fBeconf_readFileWithCallback\fR(3)
+and
+\fBeconf_readConfigWithCallback\fR(3)); the Go binding uses a plain closure
+instead of a C function pointer plus opaque
+\fIvoid *\fR
+data, so arbitrary Go state can be captured directly by the closure\&.
+
+.SH "RETURN VALUE"
+
+.PP
+Not applicable; this page documents a function type\&.
+
+.SH "ERRORS"
+
+.PP
+Not applicable; this page documents a function type\&.
+
+.SH "EXAMPLE"
+.sp
+.if n \{\
+.RS 1
+.\}
+.nf
+
+package main
+
+import (
+    "log"
+    "strings"
+
+    "github\&.com/openSUSE/libeconf/bindings/go/econf"
+)
+
+func main() {
+    var seen []string
+    checkFile := econf\&.FileCallback(func(filename string) bool {
+        seen = append(seen, filename)
+        return !strings\&.Contains(filename, "\&.disabled\&.")
+    })
+
+    f, err := econf\&.ReadConfigWithCallback(
+        "foo", "/usr/lib", "example", "conf", "=", "#", checkFile)
+    if err != nil {
+        log\&.Fatal(err)
+    }
+    defer f\&.Close()
+
+    log\&.Println("inspected files:", seen)
+}
+
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+
+.SH "SEE ALSO"
+
+.PP
+\fBeconf_go\fR(3),
+\fBeconf_go_ReadFile\fR(3),
+\fBeconf_go_ReadConfig\fR(3),
+\fBeconf_go_ReadDirsHistory\fR(3),
+\fBeconf_go_Error\fR(3),
+\fBeconf_readFileWithCallback\fR(3),
+\fBeconf_readConfigWithCallback\fR(3)\&.

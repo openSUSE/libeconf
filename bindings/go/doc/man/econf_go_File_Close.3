@@ -1,0 +1,127 @@
+'\" t
+.\"     Title: ECONF_GO_FILE_CLOSE
+.\"    Author: libeconf Contributors
+.\"      Date: 2026-11-09
+.\"    Manual: libeconf Go Bindings Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_GO_FILE_CLOSE" "3" "2026\-11\-09" "libeconf" "libeconf Go Bindings Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+(*econf\&.File)\&.Close \- release the memory backing an econf\&.File object
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+import "github\&.com/openSUSE/libeconf/bindings/go/econf"
+.fi
+.ft
+.sp
+.nf
+\fBfunc (f *econf\&.File) Close() error\fR
+.fi
+
+.SH "DESCRIPTION"
+
+.PP
+\fB(*File)\&.Close\fR
+releases the C memory backing
+\fIf\fR, which was allocated by one of the constructor or read functions
+(see
+\fBeconf_go_NewKeyFile\fR(3),
+\fBeconf_go_ReadFile\fR(3),
+\fBeconf_go_ReadConfig\fR(3),
+\fBeconf_go_ReadDirsHistory\fR(3)
+and
+\fBeconf_go_MergeFiles\fR(3))\&.
+
+.PP
+It is safe to call
+\fBClose\fR
+multiple times, and on a
+\fInil\fR
+\fI*File\fR\&.
+\fIf\fR
+must not be used again after
+\fBClose\fR
+has been called\&.
+
+.PP
+A finalizer is registered on every
+\fI*File\fR
+returned by this package, so the underlying memory is eventually released
+even if
+\fBClose\fR
+is never called explicitly\&. Callers should nonetheless call
+\fBClose\fR
+deterministically (typically via
+\fCdefer f\&.Close()\fR) rather than relying on the garbage collector\&.
+
+.SH "RETURN VALUE"
+
+.PP
+\fBClose\fR
+always returns
+\fInil\fR\&. The
+\fIerror\fR
+return value exists so that
+\fI*File\fR
+satisfies
+\fBio\&.Closer\fR\&.
+
+.SH "ERRORS"
+
+.PP
+This function does not return an error\&.
+
+.SH "EXAMPLE"
+.sp
+.if n \{\
+.RS 1
+.\}
+.nf
+
+f, err := econf\&.ReadFile("/etc/example\&.conf", "=", "#")
+if err != nil {
+    log\&.Fatal(err)
+}
+defer f\&.Close()
+
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+
+.SH "SEE ALSO"
+
+.PP
+\fBeconf_go\fR(3),
+\fBeconf_go_NewKeyFile\fR(3),
+\fBeconf_go_ReadFile\fR(3),
+\fBeconf_go_ReadConfig\fR(3),
+\fBeconf_go_ReadDirsHistory\fR(3),
+\fBeconf_go_MergeFiles\fR(3),
+\fBeconf_freeFile\fR(3)\&.
