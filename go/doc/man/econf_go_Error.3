@@ -1,0 +1,195 @@
+'\" t
+.\"     Title: ECONF_GO_ERROR
+.\"    Author: libeconf Contributors
+.\"      Date: 2026-11-09
+.\"    Manual: libeconf Go Bindings Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_GO_ERROR" "3" "2026\-11\-09" "libeconf" "libeconf Go Bindings Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+econf\&.Error \- error type wrapping a non\-success econf_err return code
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+import "github\&.com/openSUSE/libeconf/go/econf"
+.fi
+.ft
+.sp
+.nf
+\fBtype Error struct { \&.\&.\&. }\fR
+
+\fBfunc (e *econf\&.Error) Error() string\fR
+
+\fBfunc (e *econf\&.Error) Is(target error) bool\fR
+.fi
+
+.sp
+.nf
+var (
+    \fBErrError\fR                 = &econf\&.Error{\&.\&.\&.}
+    \fBErrNoMem\fR                 = &econf\&.Error{\&.\&.\&.}
+    \fBErrNoFile\fR                = &econf\&.Error{\&.\&.\&.}
+    \fBErrNoGroup\fR               = &econf\&.Error{\&.\&.\&.}
+    \fBErrNoKey\fR                 = &econf\&.Error{\&.\&.\&.}
+    \fBErrEmptyKey\fR              = &econf\&.Error{\&.\&.\&.}
+    \fBErrWriteError\fR            = &econf\&.Error{\&.\&.\&.}
+    \fBErrParseError\fR            = &econf\&.Error{\&.\&.\&.}
+    \fBErrMissingBracket\fR        = &econf\&.Error{\&.\&.\&.}
+    \fBErrMissingDelimiter\fR      = &econf\&.Error{\&.\&.\&.}
+    \fBErrEmptySectionName\fR      = &econf\&.Error{\&.\&.\&.}
+    \fBErrTextAfterSection\fR      = &econf\&.Error{\&.\&.\&.}
+    \fBErrFileListIsNull\fR        = &econf\&.Error{\&.\&.\&.}
+    \fBErrWrongBooleanValue\fR     = &econf\&.Error{\&.\&.\&.}
+    \fBErrKeyHasNullValue\fR       = &econf\&.Error{\&.\&.\&.}
+    \fBErrWrongOwner\fR            = &econf\&.Error{\&.\&.\&.}
+    \fBErrWrongGroup\fR            = &econf\&.Error{\&.\&.\&.}
+    \fBErrWrongFilePermission\fR   = &econf\&.Error{\&.\&.\&.}
+    \fBErrWrongDirPermission\fR    = &econf\&.Error{\&.\&.\&.}
+    \fBErrFileIsSymLink\fR         = &econf\&.Error{\&.\&.\&.}
+    \fBErrParsingCallbackFailed\fR = &econf\&.Error{\&.\&.\&.}
+    \fBErrArgumentIsNullValue\fR   = &econf\&.Error{\&.\&.\&.}
+    \fBErrOptionNotFound\fR        = &econf\&.Error{\&.\&.\&.}
+    \fBErrValueConversionError\fR  = &econf\&.Error{\&.\&.\&.}
+)
+.fi
+
+.SH "DESCRIPTION"
+
+.PP
+\fBeconf\&.Error\fR
+wraps a non\-success
+\fCeconf_err\fR
+return code, mirroring the C library's error codes (see
+\fBlibeconf\fR(3))\&. Every function and method in this package that can fail
+returns an
+\fIerror\fR
+which, on failure, is a non\-nil
+\fI*econf\&.Error\fR\&.
+
+.PP
+\fB(*Error)\&.Error\fR
+implements the standard
+\fIerror\fR
+interface, returning the same human\-readable string as the C
+\fBeconf_errString\fR(3)
+function\&.
+
+.PP
+\fB(*Error)\&.Is\fR
+reports whether
+\fItarget\fR
+is an
+\fI*econf\&.Error\fR
+wrapping the same underlying
+\fCeconf_err\fR
+code, so callers can use
+\fBerrors\&.Is\fR(3)
+with the package's sentinel values\&.
+
+.PP
+One sentinel
+\fI*econf\&.Error\fR
+value is exported per non\-success
+\fCeconf_err\fR
+code\&. Each sentinel's name mirrors the corresponding
+\fCECONF_*\fR
+constant from
+\fIinclude/libeconf\&.h\fR, with the
+\fCECONF_\fR
+prefix replaced by
+\fCErr\fR
+and the remainder converted to
+Go
+\fICamelCase\fR
+(e\&.g\&.,
+\fCECONF_NOKEY\fR
+becomes
+\fCeconf\&.ErrNoKey\fR)\&. See
+\fIinclude/libeconf\&.h\fR
+for the authoritative description of each code\&.
+
+.SH "RETURN VALUE"
+
+.PP
+\fBError\fR
+returns the error message string\&.
+\fBIs\fR
+returns
+\fItrue\fR
+or
+\fIfalse\fR\&.
+
+.SH "ERRORS"
+
+.PP
+Not applicable; this page documents the error type itself\&.
+
+.SH "EXAMPLE"
+.sp
+.if n \{\
+.RS 1
+.\}
+.nf
+
+package main
+
+import (
+    "errors"
+    "log"
+
+    "github\&.com/openSUSE/libeconf/go/econf"
+)
+
+func main() {
+    f, err := econf\&.ReadFile("/etc/example\&.conf", "=", "#")
+    if err != nil {
+        log\&.Fatal(err)
+    }
+    defer f\&.Close()
+
+    _, err = f\&.String("main", "missing_key")
+    if errors\&.Is(err, econf\&.ErrNoKey) {
+        log\&.Println("key not set, using built\-in default")
+    } else if err != nil {
+        log\&.Fatal(err)
+    }
+}
+
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+
+.SH "SEE ALSO"
+
+.PP
+\fBeconf_go\fR(3),
+\fBeconf_go_File_Get\fR(3),
+\fBeconf_go_File_Set\fR(3),
+\fBeconf_errString\fR(3),
+\fBlibeconf\fR(3)\&.

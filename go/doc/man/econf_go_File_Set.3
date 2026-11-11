@@ -1,0 +1,171 @@
+'\" t
+.\"     Title: ECONF_GO_FILE_SET
+.\"    Author: libeconf Contributors
+.\"      Date: 2026-11-09
+.\"    Manual: libeconf Go Bindings Manual
+.\"    Source: libeconf
+.\"  Language: English
+.\"
+.TH "ECONF_GO_FILE_SET" "3" "2026\-11\-09" "libeconf" "libeconf Go Bindings Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+
+.SH "NAME"
+(*econf\&.File)\&.Set<Type>, (*econf\&.File)\&.SetQuotes \- set a value for a key in an econf\&.File
+
+.SH "SYNOPSIS"
+
+.sp
+.ft B
+.nf
+import "github\&.com/openSUSE/libeconf/go/econf"
+.fi
+.ft
+.sp
+.nf
+\fBfunc (f *econf\&.File) SetInt(group, key string, value int32) error\fR
+
+\fBfunc (f *econf\&.File) SetInt64(group, key string, value int64) error\fR
+
+\fBfunc (f *econf\&.File) SetUInt(group, key string, value uint32) error\fR
+
+\fBfunc (f *econf\&.File) SetUInt64(group, key string, value uint64) error\fR
+
+\fBfunc (f *econf\&.File) SetFloat(group, key string, value float32) error\fR
+
+\fBfunc (f *econf\&.File) SetDouble(group, key string, value float64) error\fR
+
+\fBfunc (f *econf\&.File) SetString(group, key, value string) error\fR
+
+\fBfunc (f *econf\&.File) SetBool(group, key string, value bool) error\fR
+
+\fBfunc (f *econf\&.File) SetQuotes(group, key string, quotes bool) error\fR
+.fi
+
+.SH "DESCRIPTION"
+
+.PP
+These methods set the value of a key in the configuration file object
+\fIf\fR\&. The key is specified by
+\fIgroup\fR
+and
+\fIkey\fR\&. If
+\fIgroup\fR
+is
+""\&, the key is considered to belong to no group\&.
+
+.PP
+If the key already exists, its value is updated\&. If the key or the group
+does not exist, it is created\&.
+
+.PP
+\fBSetQuotes\fR
+sets whether the value of
+\fIgroup\fR/\fIkey\fR
+is enclosed by quotes when
+\fIf\fR
+is written to a file with
+\fB(*File)\&.WriteFile\fR
+(see
+\fBeconf_go_File_WriteFile\fR(3) and
+\fBeconf_go_File_HasQuotes\fR(3))\&.
+
+.SH "RETURN VALUE"
+
+.PP
+On success, these methods return
+\fInil\fR\&.
+
+.PP
+On failure, they return a non\-nil
+\fI*econf\&.Error\fR
+(see
+\fBeconf_go_Error\fR(3))\&.
+
+.SH "ERRORS"
+
+.PP
+\fBeconf\&.ErrNoMem\fR
+.RS 4
+          Insufficient memory to allocate the new entry or group\&.
+.RE
+
+.PP
+\fBeconf\&.ErrFileListIsNull\fR
+.RS 4
+          \fIf\fR's internal file list is
+\fInil\fR\&.
+.RE
+
+.PP
+\fBeconf\&.ErrEmptyKey\fR
+.RS 4
+          \fIkey\fR
+is empty\&.
+.RE
+
+.PP
+\fBeconf\&.ErrNoKey\fR
+.RS 4
+          \fBSetQuotes\fR
+only: the specified
+\fIgroup\fR/\fIkey\fR
+combination was not found\&.
+.RE
+
+.SH "EXAMPLE"
+.sp
+.if n \{\
+.RS 1
+.\}
+.nf
+
+f, err := econf\&.NewIniFile()
+if err != nil {
+    log\&.Fatal(err)
+}
+defer f\&.Close()
+
+if err := f\&.SetString("main", "greeting", "hello"); err != nil {
+    log\&.Fatal(err)
+}
+if err := f\&.SetInt("main", "answer", 42); err != nil {
+    log\&.Fatal(err)
+}
+if err := f\&.SetQuotes("main", "greeting", true); err != nil {
+    log\&.Fatal(err)
+}
+
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+
+.SH "SEE ALSO"
+
+.PP
+\fBeconf_go\fR(3),
+\fBeconf_go_File_Get\fR(3),
+\fBeconf_go_File_HasQuotes\fR(3),
+\fBeconf_go_File_WriteFile\fR(3),
+\fBeconf_go_Error\fR(3),
+\fBeconf_setValue\fR(3),
+\fBeconf_setQuotes\fR(3)\&.
