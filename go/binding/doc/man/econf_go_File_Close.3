@@ -46,19 +46,7 @@ import "github\&.com/openSUSE/libeconf/go/econf"
 .SH "DESCRIPTION"
 
 .PP
-\fB(*File)\&.Close\fR
-<<<<<<< Updated upstream:bindings/go/doc/man/econf_go_File_Close.3
-releases the C memory backing
-\fIf\fR, which was allocated by one of the constructor or read functions
-(see
-\fBeconf_go_NewKeyFile\fR(3),
-\fBeconf_go_ReadFile\fR(3),
-\fBeconf_go_ReadConfig\fR(3),
-\fBeconf_go_ReadDirsHistory\fR(3)
-and
-\fBeconf_go_MergeFiles\fR(3))\&.
-=======
-is a dummy method with no effect\&. It exists solely so that code written
+\fB(*File)\&.Close\fR is a dummy method with no effect\&. It exists solely so that code written
 against
 \fI*File\fR
 compiles and behaves correctly without any changes, regardless of whether
@@ -71,7 +59,6 @@ releases C memory; see
 in that package's own manual) or
 \fIlibeconf native Go\fR
 (this package, which holds no C memory to release)\&.
->>>>>>> Stashed changes:go/native/doc/man/econf_go_File_Close.3
 
 .PP
 It is safe to call
