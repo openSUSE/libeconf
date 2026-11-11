@@ -28,7 +28,7 @@
 .\" -----------------------------------------------------------------
 
 .SH "NAME"
-econf (Go) \- Go bindings for the libeconf configuration library
+econf (Go, bindings) \- Go bindings for the libeconf configuration library
 
 .SH "SYNOPSIS"
 
@@ -50,16 +50,12 @@ Go package provides idiomatic Go bindings for
 reimplement libeconf's parsing/merging logic in Go\&.
 
 .PP
-Building this package requires the libeconf shared library and development
-headers to be installed and discoverable via
-\fBpkg-config\fR(1)
-(\fCpkg\-config \-\-libs libeconf\fR), for example by installing the
-\fIlibeconf\fR
-and
-\fIlibeconf\-devel\fR
-packages, or by pointing
-\fIPKG_CONFIG_PATH\fR
-at a local build\&.
+This interface requires the libeconf shared library by installing the
+package libeconf. This has the benefit of ensuring the same behavior as
+other programs that use the libeconf shared library\&.
+An alternative would be the native Go implementation of libeconf
+which is also available in the project : https://github.com/openSUSE/libeconf/tree/master/go/native\&.
+The interface of both ways are the same\&. So you can switch between it without any code change\&.
 
 .PP
 The central type is
@@ -207,7 +203,9 @@ read functions\&. See
 .PP
 The deprecated
 \fCeconf_readDirs\fR/\fCeconf_readDirsWithCallback\fR
-functions, and the non\-thread\-safe global setters
+functions, the extended
+\fCeconf_getExtValue\fR/\fCeconf_setExtValue\fR
+API, and the non\-thread\-safe global setters
 (\fCeconf_requireOwner\fR,
 \fCeconf_requireGroup\fR,
 \fCeconf_requirePermissions\fR,

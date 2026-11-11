@@ -1,12 +1,12 @@
 '\" t
 .\"     Title: ECONF_GO_FILE_CLOSE
 .\"    Author: libeconf Contributors
-.\"      Date: 2026-11-09
-.\"    Manual: libeconf Go Bindings Manual
+.\"      Date: 2026-11-10
+.\"    Manual: libeconf Go Manual
 .\"    Source: libeconf
 .\"  Language: English
 .\"
-.TH "ECONF_GO_FILE_CLOSE" "3" "2026\-11\-09" "libeconf" "libeconf Go Bindings Manual"
+.TH "ECONF_GO_FILE_CLOSE" "3" "2026\-11\-10" "libeconf" "libeconf native Go Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -47,6 +47,7 @@ import "github\&.com/openSUSE/libeconf/go/econf"
 
 .PP
 \fB(*File)\&.Close\fR
+<<<<<<< Updated upstream:bindings/go/doc/man/econf_go_File_Close.3
 releases the C memory backing
 \fIf\fR, which was allocated by one of the constructor or read functions
 (see
@@ -56,6 +57,21 @@ releases the C memory backing
 \fBeconf_go_ReadDirsHistory\fR(3)
 and
 \fBeconf_go_MergeFiles\fR(3))\&.
+=======
+is a dummy method with no effect\&. It exists solely so that code written
+against
+\fI*File\fR
+compiles and behaves correctly without any changes, regardless of whether
+it is linked against
+\fIlibeconf Go Bindings\fR
+(the cgo\-based package, where
+\fBClose\fR
+releases C memory; see
+\fBeconf_go_File_Close\fR(3)
+in that package's own manual) or
+\fIlibeconf native Go\fR
+(this package, which holds no C memory to release)\&.
+>>>>>>> Stashed changes:go/native/doc/man/econf_go_File_Close.3
 
 .PP
 It is safe to call
