@@ -28,7 +28,7 @@
 .\" -----------------------------------------------------------------
 
 .SH "NAME"
-econf\&.ReadConfig, econf\&.ReadConfigWithCallback \- evaluate configuration files for a specific project
+econf\&.ReadConfig, econf\&.ReadConfigWithCallback, (*econf\&.File)\&.ReadConfig, (*econf\&.File)\&.ReadConfigWithCallback \- evaluate configuration files for a specific project
 
 .SH "SYNOPSIS"
 
@@ -43,6 +43,10 @@ import "github\&.com/openSUSE/libeconf/go/econf"
 \fBfunc ReadConfig(project, usrSubdir, configName, configSuffix, delim, comment string) (*econf\&.File, error)\fR
 
 \fBfunc ReadConfigWithCallback(project, usrSubdir, configName, configSuffix, delim, comment string, callback econf\&.FileCallback) (*econf\&.File, error)\fR
+
+\fBfunc (f *econf\&.File) ReadConfig(project, usrSubdir, configName, configSuffix, delim, comment string) error\fR
+
+\fBfunc (f *econf\&.File) ReadConfigWithCallback(project, usrSubdir, configName, configSuffix, delim, comment string, callback econf\&.FileCallback) error\fR
 .fi
 
 .SH "DESCRIPTION"
@@ -135,22 +139,62 @@ should be released with
 (see
 \fBeconf_go_File_Close\fR(3)) once it is no longer needed\&.
 
+.PP
+\fB(*File)\&.ReadConfig\fR
+and
+\fB(*File)\&.ReadConfigWithCallback\fR
+behave like their package\-level counterparts, except they run against the
+receiver
+\fIf\fR
+itself instead of a fresh, unconfigured
+\fI*File\fR\&. This matters if
+\fIf\fR
+was created with
+\fBNewKeyFileWithOptions\fR
+(see
+\fBeconf_go_NewKeyFile\fR(3)): its
+\fIJOIN_SAME_ENTRIES\fR,
+\fIPYTHON_STYLE\fR,
+\fIPARSING_DIRS\fR
+and
+\fICONFIG_DIRS\fR
+settings are honored, in place of the directories and parsing behavior the
+package\-level functions always compute from scratch\&. When
+\fIPARSING_DIRS\fR
+was set,
+\fIproject\fR
+and
+\fIusrSubdir\fR
+are ignored in favor of it\&. f\(cqs prior contents, including those same
+options, are discarded and replaced by the result\&.
+
 .SH "RETURN VALUE"
 
 .PP
-On success, these functions return a non\-nil
+On success, the package\-level functions return a non\-nil
 \fI*econf\&.File\fR
 holding the merged configuration, and a
 \fInil\fR
-error\&.
+error; the
+\fI(*File)\fR
+methods return a
+\fInil\fR
+error and leave the merged configuration in
+\fIf\fR\&.
 
 .PP
-On failure, they return
+On failure, the package\-level functions return
 \fInil\fR
 and a non\-nil
 \fI*econf\&.Error\fR
 (see
-\fBeconf_go_Error\fR(3))\&.
+\fBeconf_go_Error\fR(3)); the
+\fI(*File)\fR
+methods return that same
+\fI*econf\&.Error\fR
+and leave
+\fIf\fR
+unchanged\&.
 
 .SH "ERRORS"
 
@@ -259,6 +303,7 @@ func main() {
 
 .PP
 \fBeconf_go\fR(3),
+\fBeconf_go_NewKeyFile\fR(3),
 \fBeconf_go_FileCallback\fR(3),
 \fBeconf_go_File_Close\fR(3),
 \fBeconf_go_MergeFiles\fR(3),

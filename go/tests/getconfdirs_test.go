@@ -152,3 +152,40 @@ func TestGetConfDirsOneDirMissing(t *testing.T) {
 		checkConfDirKey(t, merged, "OVERRIDE", nil)
 	})
 }
+
+// TestGetConfDirsCustomConfigAndParsingDirs replicates the first half of
+// tst-getconfdirs8.c: CONFIG_DIRS=.conf.d:.d and PARSING_DIRS=<usr>:<etc>,
+// set via NewKeyFileWithOptions, make (*File).ReadConfig search both the
+// usr and etc directories given in PARSING_DIRS (ignoring project/
+// usrSubdir) and scan both of CONFIG_DIRS's drop-in suffixes
+// (".conf.d" and ".d") - so both /etc/getconfdir.d (the plain ".d"
+// drop-in) and the ".conf.d" drop-ins under both directories are found.
+//
+// Not ported: the second half of tst-getconfdirs8.c, which repeats the
+// same scenario via the global econf_set_conf_dirs setter. That function
+// is deliberately not implemented in either Go package (see
+// go/native/README.md).
+func TestGetConfDirsCustomConfigAndParsingDirs(t *testing.T) {
+	base, err := filepath.Abs(filepath.Join("..", "..", "..", "tests", "tst-getconfdirs8-data"))
+	if err != nil {
+		t.Fatalf("filepath.Abs: %v", err)
+	}
+
+	f, err := econf.NewKeyFileWithOptions(
+		"CONFIG_DIRS=.conf.d:.d;PARSING_DIRS=" + filepath.Join(base, "usr", "etc") + ":" + filepath.Join(base, "etc"))
+	if err != nil {
+		t.Fatalf("NewKeyFileWithOptions: %v", err)
+	}
+	defer f.Close()
+
+	if err := f.ReadConfig("", "", "getconfdir", "conf", "=", "#"); err != nil {
+		t.Fatalf("ReadConfig: %v", err)
+	}
+
+	checkConfDirKey(t, f, "KEY1", ptr("etcconfd"))
+	checkConfDirKey(t, f, "KEY2", ptr("usrconfd"))
+	checkConfDirKey(t, f, "KEY3", ptr("etcconfd3"))
+	checkConfDirKey(t, f, "USRETC", nil)
+	checkConfDirKey(t, f, "ETC", ptr("true"))
+	checkConfDirKey(t, f, "KEY4", ptr("etcd4"))
+}

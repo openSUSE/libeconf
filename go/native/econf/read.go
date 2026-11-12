@@ -163,28 +163,58 @@ func ReadConfig(project, usrSubdir, configName, configSuffix, delim, comment str
 // ReadConfigWithCallback behaves like ReadConfig, additionally invoking
 // callback for every candidate file before it is parsed.
 func ReadConfigWithCallback(project, usrSubdir, configName, configSuffix, delim, comment string, callback FileCallback) (*File, error) {
-	var confDirs []string
+	f := &File{}
+	if err := f.ReadConfigWithCallback(project, usrSubdir, configName, configSuffix, delim, comment, callback); err != nil {
+		return nil, err
+	}
+	return f, nil
+}
+
+// ReadConfig behaves like the package-level ReadConfig, except it runs
+// against f itself, mirroring econf_readConfig's reuse of an
+// already-configured econf_file: f's JoinSameEntries, PythonStyle,
+// PARSING_DIRS and CONFIG_DIRS settings (set via NewKeyFileWithOptions)
+// are honored instead of the package-level defaults. f's prior contents,
+// including those same options, are discarded and replaced by the result.
+func (f *File) ReadConfig(project, usrSubdir, configName, configSuffix, delim, comment string) error {
+	return f.ReadConfigWithCallback(project, usrSubdir, configName, configSuffix, delim, comment, nil)
+}
+
+// ReadConfigWithCallback behaves like (*File).ReadConfig, additionally
+// invoking callback for every candidate file before it is parsed.
+func (f *File) ReadConfigWithCallback(project, usrSubdir, configName, configSuffix, delim, comment string, callback FileCallback) error {
+	confDirs := f.confDirs
 	if configName == "" {
 		configName = project
 		project = ""
-		confDirs = []string{".d"}
+		if len(confDirs) == 0 {
+			confDirs = []string{".d"}
+		}
 	}
 
-	usrDir := usrSubdir
-	runDir := defaultRunSubdir
-	etcDir := defaultEtcSubdir
-	if project != "" {
-		usrDir = usrSubdir + "/" + project
-		runDir = defaultRunSubdir + "/" + project
-		etcDir = defaultEtcSubdir + "/" + project
+	parseDirs := f.parseDirs
+	if len(parseDirs) == 0 {
+		usrDir := usrSubdir
+		runDir := defaultRunSubdir
+		etcDir := defaultEtcSubdir
+		if project != "" {
+			usrDir = usrSubdir + "/" + project
+			runDir = defaultRunSubdir + "/" + project
+			etcDir = defaultEtcSubdir + "/" + project
+		}
+		parseDirs = []string{usrDir, runDir, etcDir}
 	}
-	parseDirs := []string{usrDir, runDir, etcDir}
 
-	files, err := readConfigHistory(parseDirs, configName, configSuffix, delim, comment, false, false, confDirs, callback)
+	files, err := readConfigHistory(parseDirs, configName, configSuffix, delim, comment, f.joinSameEntries, f.pythonStyle, confDirs, callback)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return mergeFileList(files)
+	merged, err := mergeFileList(files)
+	if err != nil {
+		return err
+	}
+	*f = *merged
+	return nil
 }
 
 // ReadDirsHistory evaluates key/values for every configuration file found in

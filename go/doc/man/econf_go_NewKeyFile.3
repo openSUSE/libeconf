@@ -87,6 +87,36 @@ string (e\&.g\&.,
 "DEFAULT_DELIMITER==;DEFAULT_COMMENT=#")\&. See
 \fBeconf_newKeyFile_with_options\fR(3)
 for the full list of supported options\&.
+\fIDEFAULT_QUOTES\fR
+takes effect on the returned
+\fI*File\fR
+immediately, since it only affects later
+\fBSetString\fR/\fB\&.\&.\&.\fR
+calls on that same
+\fI*File\fR
+(see
+\fBeconf_go_File_Set\fR(3))\&.
+\fIJOIN_SAME_ENTRIES\fR,
+\fIPYTHON_STYLE\fR,
+\fIPARSING_DIRS\fR
+and
+\fICONFIG_DIRS\fR
+instead only take effect once the returned
+\fI*File\fR
+is passed to
+\fB(*File)\&.ReadConfig\fR
+or
+\fB(*File)\&.ReadConfigWithCallback\fR
+(see
+\fBeconf_go_ReadConfig\fR(3)); they have no effect on
+\fBReadFile\fR,
+\fBReadFileWithCallback\fR, the package\-level
+\fBReadConfig\fR/\fBReadConfigWithCallback\fR, or
+\fBReadDirsHistory\fR/\fBReadDirsHistoryWithCallback\fR, none of which consume
+an existing
+\fI*File\fR\*(Aqs options\&.
+\fIROOT_PREFIX\fR
+currently has no effect anywhere in this package\&.
 
 .PP
 \fBNewIniFile\fR
@@ -172,6 +202,7 @@ func main() {
 \fBeconf_go\fR(3),
 \fBeconf_go_File_Close\fR(3),
 \fBeconf_go_File_Set\fR(3),
+\fBeconf_go_ReadConfig\fR(3),
 \fBeconf_go_Error\fR(3),
 \fBeconf_newKeyFile\fR(3),
 \fBeconf_newKeyFile_with_options\fR(3),

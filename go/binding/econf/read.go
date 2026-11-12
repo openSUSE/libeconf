@@ -68,30 +68,32 @@ func MergeFiles(usrFile, etcFile *File) (*File, error) {
 // econf_readConfig in include/libeconf.h for the exact directory/precedence
 // rules).
 func ReadConfig(project, usrSubdir, configName, configSuffix, delim, comment string) (*File, error) {
-	cProject, freeProject := optionalCString(project)
-	defer freeProject()
-	cUsrSubdir := C.CString(usrSubdir)
-	defer C.free(unsafe.Pointer(cUsrSubdir))
-	cConfigName, freeConfigName := optionalCString(configName)
-	defer freeConfigName()
-	cConfigSuffix, freeConfigSuffix := optionalCString(configSuffix)
-	defer freeConfigSuffix()
-	cDelim := C.CString(delim)
-	defer C.free(unsafe.Pointer(cDelim))
-	cComment := C.CString(comment)
-	defer C.free(unsafe.Pointer(cComment))
-
-	var ptr *C.econf_file
-	err := newError(C.econf_readConfig(&ptr, cProject, cUsrSubdir, cConfigName, cConfigSuffix, cDelim, cComment))
-	if err != nil {
-		return nil, err
-	}
-	return newFile(ptr), nil
+	return ReadConfigWithCallback(project, usrSubdir, configName, configSuffix, delim, comment, nil)
 }
 
 // ReadConfigWithCallback behaves like ReadConfig, additionally invoking
 // callback for every candidate file before it is parsed.
 func ReadConfigWithCallback(project, usrSubdir, configName, configSuffix, delim, comment string, callback FileCallback) (*File, error) {
+	f := newFile(nil)
+	if err := f.ReadConfigWithCallback(project, usrSubdir, configName, configSuffix, delim, comment, callback); err != nil {
+		return nil, err
+	}
+	return f, nil
+}
+
+// ReadConfig behaves like the package-level ReadConfig, except it runs
+// against f itself, mirroring econf_readConfig's reuse of an
+// already-configured econf_file: options f was created with via
+// NewKeyFileWithOptions (JOIN_SAME_ENTRIES, PYTHON_STYLE, PARSING_DIRS,
+// CONFIG_DIRS) are honored instead of the package-level defaults. f's
+// prior contents are replaced by the result.
+func (f *File) ReadConfig(project, usrSubdir, configName, configSuffix, delim, comment string) error {
+	return f.ReadConfigWithCallback(project, usrSubdir, configName, configSuffix, delim, comment, nil)
+}
+
+// ReadConfigWithCallback behaves like (*File).ReadConfig, additionally
+// invoking callback for every candidate file before it is parsed.
+func (f *File) ReadConfigWithCallback(project, usrSubdir, configName, configSuffix, delim, comment string, callback FileCallback) error {
 	cProject, freeProject := optionalCString(project)
 	defer freeProject()
 	cUsrSubdir := C.CString(usrSubdir)
@@ -108,13 +110,8 @@ func ReadConfigWithCallback(project, usrSubdir, configName, configSuffix, delim,
 	token, cleanup := registerCallback(callback)
 	defer cleanup()
 
-	var ptr *C.econf_file
-	err := newError(C.econf_readConfigWithCallback(&ptr, cProject, cUsrSubdir, cConfigName, cConfigSuffix,
+	return newError(C.econf_readConfigWithCallback(&f.ptr, cProject, cUsrSubdir, cConfigName, cConfigSuffix,
 		cDelim, cComment, (*[0]byte)(C.econf_callback_trampoline), token))
-	if err != nil {
-		return nil, err
-	}
-	return newFile(ptr), nil
 }
 
 // ReadDirsHistory evaluates key/values for every configuration file found in
