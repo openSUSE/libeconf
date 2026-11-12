@@ -52,6 +52,9 @@ func ReadFileWithCallback(fileName, delim, comment string, callback FileCallback
 
 // MergeFiles merges etcFile on top of usrFile; entries in etcFile win.
 func MergeFiles(usrFile, etcFile *File) (*File, error) {
+	if usrFile == nil || etcFile == nil {
+		return nil, ErrArgumentIsNullValue
+	}
 	var ptr *C.econf_file
 	if err := newError(C.econf_mergeFiles(&ptr, usrFile.ptr, etcFile.ptr)); err != nil {
 		return nil, err
