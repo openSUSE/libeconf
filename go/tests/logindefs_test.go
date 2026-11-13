@@ -12,7 +12,7 @@ import (
 // login.defs, with its "= \t" multi-character delimiter, parses and every
 // key is readable.
 func TestLoginDefsRealWorldFile(t *testing.T) {
-	path := filepath.Join("..", "..", "..", "tests", "tst-logindefs1-data", "etc", "login.defs")
+	path := filepath.Join("..", "..", "tests", "tst-logindefs1-data", "etc", "login.defs")
 	f, err := econf.ReadFile(path, "= \t", "#")
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)
@@ -55,7 +55,7 @@ func TestLoginDefsRealWorldFile(t *testing.T) {
 // the same note for LINE4 in getconfdirs_test.go), so here it is asserted
 // to be an empty string with no error instead.
 func TestLoginDefsValueParsing(t *testing.T) {
-	path := filepath.Join("..", "..", "..", "tests", "tst-logindefs2-data", "logindefs.data")
+	path := filepath.Join("..", "..", "tests", "tst-logindefs2-data", "logindefs.data")
 	f, err := econf.ReadFile(path, "= \t", "#")
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)

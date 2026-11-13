@@ -1,1 +1,0 @@
-../getconfdirs_test.go

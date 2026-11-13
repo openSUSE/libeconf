@@ -13,7 +13,7 @@ import (
 // of the directories it would otherwise derive from usrSubdir/project, so
 // /run and /usr/etc are both present in the search but /etc's value wins.
 func TestManualParsingDirs(t *testing.T) {
-	base, err := filepath.Abs(filepath.Join("..", "..", "..", "tests", "tst-man-dir-data"))
+	base, err := filepath.Abs(filepath.Join("..", "..", "tests", "tst-man-dir-data"))
 	if err != nil {
 		t.Fatalf("filepath.Abs: %v", err)
 	}

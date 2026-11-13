@@ -10,8 +10,8 @@ import (
 // readDirsMerged replicates the deprecated econf_readDirs: it evaluates the
 // "main" config file plus every *.d drop-in across usrConfDir and
 // etcConfDir (via ReadDirsHistory) and merges them into a single result,
-// highest-priority (etc) last. Neither Go package exposes econf_readDirs
-// itself (see go/native/README.md: "deprecated ... functions" are
+// highest-priority (etc) last. This package does not expose econf_readDirs
+// itself (see go/README.md: "deprecated ... functions" are
 // deliberately not implemented), so tests that used it are ported against
 // the public ReadDirsHistory + MergeFiles combination instead, using the
 // same merge order (mergeHistory in uapi_test.go) that
@@ -44,7 +44,7 @@ func checkConfDirKey(t *testing.T, f *econf.File, key string, want *string) {
 // file wins outright (the /usr/etc one is ignored), and /etc's *.conf.d
 // drop-ins (but not the suffix-less "9-broken" file) are layered on top.
 func TestGetConfDirsEtcOverridesUsr(t *testing.T) {
-	base := filepath.Join("..", "..", "..", "tests", "tst-getconfdirs1-data")
+	base := filepath.Join("..", "..", "tests", "tst-getconfdirs1-data")
 	merged := readDirsMerged(t, filepath.Join(base, "usr", "etc"), filepath.Join(base, "etc"), "getconfdir", ".conf")
 
 	checkConfDirKey(t, merged, "KEY1", ptr("etcconfd"))
@@ -56,7 +56,7 @@ func TestGetConfDirsEtcOverridesUsr(t *testing.T) {
 // TestGetConfDirsUsrOnly replicates tst-getconfdirs3.c: only
 // /usr/etc/getconfdir.conf exists, so only its values are present.
 func TestGetConfDirsUsrOnly(t *testing.T) {
-	base := filepath.Join("..", "..", "..", "tests", "tst-getconfdirs3-data")
+	base := filepath.Join("..", "..", "tests", "tst-getconfdirs3-data")
 	merged := readDirsMerged(t, filepath.Join(base, "usr", "etc"), filepath.Join(base, "etc"), "getconfdir", ".conf")
 
 	checkConfDirKey(t, merged, "KEY1", ptr("usretc"))
@@ -69,7 +69,7 @@ func TestGetConfDirsUsrOnly(t *testing.T) {
 // /etc/getconfdir.conf exists, so only its values are present. This eases
 // migration when the same config file is read by different projects.
 func TestGetConfDirsEtcOnly(t *testing.T) {
-	base := filepath.Join("..", "..", "..", "tests", "tst-getconfdirs4-data")
+	base := filepath.Join("..", "..", "tests", "tst-getconfdirs4-data")
 	merged := readDirsMerged(t, filepath.Join(base, "usr", "etc"), filepath.Join(base, "etc"), "getconfdir", ".conf")
 
 	checkConfDirKey(t, merged, "KEY1", ptr("etc"))
@@ -83,7 +83,7 @@ func TestGetConfDirsEtcOnly(t *testing.T) {
 // *.d drop-ins under both sysctl.conf.d directories, with /etc winning on
 // conflicts.
 func TestGetConfDirsDropInOnly(t *testing.T) {
-	base := filepath.Join("..", "..", "..", "tests", "tst-getconfdirs5-data")
+	base := filepath.Join("..", "..", "tests", "tst-getconfdirs5-data")
 	merged := readDirsMerged(t, filepath.Join(base, "usr", "etc"), filepath.Join(base, "etc"), "sysctl", "conf")
 
 	checkConfDirKey(t, merged, "KEY1", ptr("etc"))
@@ -97,7 +97,7 @@ func TestGetConfDirsDropInOnly(t *testing.T) {
 // file) does not exist, the /usr/etc drop-in must still be read, not
 // ignored, and /etc's own *.ini.d drop-ins still layer on top of it.
 func TestGetConfDirsUsrDropInNotIgnored(t *testing.T) {
-	base := filepath.Join("..", "..", "..", "tests", "tst-getconfdirs6-data")
+	base := filepath.Join("..", "..", "tests", "tst-getconfdirs6-data")
 	merged := readDirsMerged(t, filepath.Join(base, "usr", "etc"), filepath.Join(base, "etc"), "getconfdir", "ini")
 
 	checkConfDirKey(t, merged, "KEY1", ptr("etcinid"))
@@ -116,7 +116,7 @@ func TestGetConfDirsUsrDropInNotIgnored(t *testing.T) {
 // (see also the "NULL means empty string" handling in TestGroupsSetAndGetRoundTrip),
 // so here it is asserted to be an empty string with no error instead.
 func TestGetConfDirsOverrideReplacesEmptyValue(t *testing.T) {
-	base := filepath.Join("..", "..", "..", "tests", "tst-getconfdirs7-data")
+	base := filepath.Join("..", "..", "tests", "tst-getconfdirs7-data")
 	merged := readDirsMerged(t, filepath.Join(base, "usr", "etc"), filepath.Join(base, "etc"), "lcdnetmon", "conf")
 
 	checkConfDirKey(t, merged, "BUSID", ptr("1"))
@@ -133,8 +133,8 @@ func TestGetConfDirsOverrideReplacesEmptyValue(t *testing.T) {
 // must behave exactly like that directory not existing, in both
 // directions.
 func TestGetConfDirsOneDirMissing(t *testing.T) {
-	etcDir := filepath.Join("..", "..", "..", "tests", "tst-getconfdirs1-data", "etc")
-	usrDir := filepath.Join("..", "..", "..", "tests", "tst-getconfdirs1-data", "usr", "etc")
+	etcDir := filepath.Join("..", "..", "tests", "tst-getconfdirs1-data", "etc")
+	usrDir := filepath.Join("..", "..", "tests", "tst-getconfdirs1-data", "usr", "etc")
 
 	t.Run("usr-unset", func(t *testing.T) {
 		merged := readDirsMerged(t, "", etcDir, "getconfdir", ".conf")
@@ -163,10 +163,10 @@ func TestGetConfDirsOneDirMissing(t *testing.T) {
 //
 // Not ported: the second half of tst-getconfdirs8.c, which repeats the
 // same scenario via the global econf_set_conf_dirs setter. That function
-// is deliberately not implemented in either Go package (see
-// go/native/README.md).
+// is deliberately not implemented in this package (see
+// go/README.md).
 func TestGetConfDirsCustomConfigAndParsingDirs(t *testing.T) {
-	base, err := filepath.Abs(filepath.Join("..", "..", "..", "tests", "tst-getconfdirs8-data"))
+	base, err := filepath.Abs(filepath.Join("..", "..", "tests", "tst-getconfdirs8-data"))
 	if err != nil {
 		t.Fatalf("filepath.Abs: %v", err)
 	}

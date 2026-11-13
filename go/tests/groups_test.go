@@ -82,7 +82,7 @@ func TestGroupsSingleGroup(t *testing.T) {
 // must not be mistaken for a group of its own) lists exactly the bracketed
 // groups, each with a readable "key" value.
 func TestGroupsListFromFile(t *testing.T) {
-	path := filepath.Join("..", "..", "..", "tests", "tst-groups3-data", "groups.conf")
+	path := filepath.Join("..", "..", "tests", "tst-groups3-data", "groups.conf")
 	f, err := econf.ReadFile(path, "=", "#")
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)
@@ -129,7 +129,7 @@ func TestGroupsListFromFile(t *testing.T) {
 // only an empty "[global]" group header (no keys) still reports that one
 // group.
 func TestGroupsSingleEmptyGroup(t *testing.T) {
-	path := filepath.Join("..", "..", "..", "tests", "tst-groups5-data", "groups.conf")
+	path := filepath.Join("..", "..", "tests", "tst-groups5-data", "groups.conf")
 	f, err := econf.ReadFile(path, "=", "#")
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)
@@ -148,7 +148,7 @@ func TestGroupsSingleEmptyGroup(t *testing.T) {
 // TestGroupsListKeysPerGroup replicates tst-groups6.c: listing groups and,
 // for each, its keys and their values.
 func TestGroupsListKeysPerGroup(t *testing.T) {
-	path := filepath.Join("..", "..", "..", "tests", "tst-groups6-data", "groups.conf")
+	path := filepath.Join("..", "..", "tests", "tst-groups6-data", "groups.conf")
 	f, err := econf.ReadFile(path, "=", "#")
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)

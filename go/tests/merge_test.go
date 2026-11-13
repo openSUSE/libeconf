@@ -28,8 +28,8 @@ func checkMergedString(t *testing.T, f *econf.File, group, key, want string) {
 func TestMergeFilesWithOneMissingFile(t *testing.T) {
 	t.Run("usr-missing", func(t *testing.T) {
 		// tst-merge1.c: /etc has no config file, /usr/etc does.
-		etcPath := filepath.Join("..", "..", "..", "tests", "tst-merge1-data", "etc", "tst-merge1.conf")
-		usrPath := filepath.Join("..", "..", "..", "tests", "tst-merge1-data", "usr", "etc", "tst-merge1.conf")
+		etcPath := filepath.Join("..", "..", "tests", "tst-merge1-data", "etc", "tst-merge1.conf")
+		usrPath := filepath.Join("..", "..", "tests", "tst-merge1-data", "usr", "etc", "tst-merge1.conf")
 
 		etcFile, err := econf.ReadFile(etcPath, "=", "#")
 		if !errors.Is(err, econf.ErrNoFile) || etcFile != nil {
@@ -49,8 +49,8 @@ func TestMergeFilesWithOneMissingFile(t *testing.T) {
 
 	t.Run("etc-missing", func(t *testing.T) {
 		// tst-merge2.c: /etc has a config file, /usr/etc does not.
-		etcPath := filepath.Join("..", "..", "..", "tests", "tst-merge2-data", "etc", "tst-merge2.conf")
-		usrPath := filepath.Join("..", "..", "..", "tests", "tst-merge2-data", "usr", "etc", "tst-merge2.conf")
+		etcPath := filepath.Join("..", "..", "tests", "tst-merge2-data", "etc", "tst-merge2.conf")
+		usrPath := filepath.Join("..", "..", "tests", "tst-merge2-data", "usr", "etc", "tst-merge2.conf")
 
 		etcFile, err := econf.ReadFile(etcPath, "=", "#")
 		if err != nil || etcFile == nil {
@@ -74,8 +74,8 @@ func TestMergeFilesWithOneMissingFile(t *testing.T) {
 // (/etc/default/su contains only comments) must not crash and must produce
 // a usable merged result.
 func TestMergeFilesCommentOnlyFile(t *testing.T) {
-	loginDefsPath := filepath.Join("..", "..", "..", "tests", "tst-merge3-data", "etc", "login.defs")
-	suPath := filepath.Join("..", "..", "..", "tests", "tst-merge3-data", "etc", "default", "su")
+	loginDefsPath := filepath.Join("..", "..", "tests", "tst-merge3-data", "etc", "login.defs")
+	suPath := filepath.Join("..", "..", "tests", "tst-merge3-data", "etc", "default", "su")
 
 	etcFile, err := econf.ReadFile(loginDefsPath, " \t=", "#")
 	if err != nil || etcFile == nil {
@@ -105,12 +105,12 @@ func TestMergeFilesGroupedWithUngrouped(t *testing.T) {
 	t.Run("ungrouped-is-usr", func(t *testing.T) {
 		// tst-merge4.c: data1.conf (etc) has [global]/[default] groups;
 		// data2.conf (usr) has a single ungrouped KEY1.
-		grouped, err := econf.ReadFile(filepath.Join("..", "..", "..", "tests", "tst-merge4-data", "data1.conf"), "=", "#")
+		grouped, err := econf.ReadFile(filepath.Join("..", "..", "tests", "tst-merge4-data", "data1.conf"), "=", "#")
 		if err != nil || grouped == nil {
 			t.Fatalf("ReadFile(data1.conf) = %v, %v; want a file, no error", grouped, err)
 		}
 		defer grouped.Close()
-		ungrouped, err := econf.ReadFile(filepath.Join("..", "..", "..", "tests", "tst-merge4-data", "data2.conf"), " \t=", "#")
+		ungrouped, err := econf.ReadFile(filepath.Join("..", "..", "tests", "tst-merge4-data", "data2.conf"), " \t=", "#")
 		if err != nil || ungrouped == nil {
 			t.Fatalf("ReadFile(data2.conf) = %v, %v; want a file, no error", ungrouped, err)
 		}
@@ -130,12 +130,12 @@ func TestMergeFilesGroupedWithUngrouped(t *testing.T) {
 	t.Run("ungrouped-is-etc", func(t *testing.T) {
 		// tst-merge5.c: data1.conf (etc) has a single ungrouped KEY1;
 		// data2.conf (usr) has [global]/[default] groups.
-		ungrouped, err := econf.ReadFile(filepath.Join("..", "..", "..", "tests", "tst-merge5-data", "data1.conf"), "=", "#")
+		ungrouped, err := econf.ReadFile(filepath.Join("..", "..", "tests", "tst-merge5-data", "data1.conf"), "=", "#")
 		if err != nil || ungrouped == nil {
 			t.Fatalf("ReadFile(data1.conf) = %v, %v; want a file, no error", ungrouped, err)
 		}
 		defer ungrouped.Close()
-		grouped, err := econf.ReadFile(filepath.Join("..", "..", "..", "tests", "tst-merge5-data", "data2.conf"), " \t=", "#")
+		grouped, err := econf.ReadFile(filepath.Join("..", "..", "tests", "tst-merge5-data", "data2.conf"), " \t=", "#")
 		if err != nil || grouped == nil {
 			t.Fatalf("ReadFile(data2.conf) = %v, %v; want a file, no error", grouped, err)
 		}
@@ -160,12 +160,12 @@ func TestMergeFilesGroupedWithUngrouped(t *testing.T) {
 // key to that same group segfaulted in merge_existing_groups() due to a
 // size_t underflow when indexing into the usr file's empty entries.
 func TestMergeFilesAllKeysCommentedInGroup(t *testing.T) {
-	usrFile, err := econf.ReadFile(filepath.Join("..", "..", "..", "tests", "tst-merge6-data", "data1.conf"), "=", "#")
+	usrFile, err := econf.ReadFile(filepath.Join("..", "..", "tests", "tst-merge6-data", "data1.conf"), "=", "#")
 	if err != nil || usrFile == nil {
 		t.Fatalf("ReadFile(data1.conf) = %v, %v; want a file, no error", usrFile, err)
 	}
 	defer usrFile.Close()
-	etcFile, err := econf.ReadFile(filepath.Join("..", "..", "..", "tests", "tst-merge6-data", "data2.conf"), "=", "#")
+	etcFile, err := econf.ReadFile(filepath.Join("..", "..", "tests", "tst-merge6-data", "data2.conf"), "=", "#")
 	if err != nil || etcFile == nil {
 		t.Fatalf("ReadFile(data2.conf) = %v, %v; want a file, no error", etcFile, err)
 	}

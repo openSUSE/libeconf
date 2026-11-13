@@ -1,1 +1,0 @@
-../withoutsuffix_test.go

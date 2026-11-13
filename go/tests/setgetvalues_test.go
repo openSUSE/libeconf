@@ -76,9 +76,8 @@ func TestSetGetAllValueTypes(t *testing.T) {
 
 	// The smallest positive *normalized* values (C's FLT_MIN/DBL_MIN), not
 	// Go's math.SmallestNonzeroFloat32/64 (the smallest *denormalized*
-	// values): the cgo binding's underlying C library fails to round-trip
-	// a denormalized double, so this sticks to the C test's original
-	// FLT_MIN/DBL_MIN to stay within what both implementations support.
+	// values), to stay within what the upstream C test's original
+	// FLT_MIN/DBL_MIN values cover.
 	const fltMin = 1.17549435e-38
 	const dblMin = 2.2250738585072014e-308
 

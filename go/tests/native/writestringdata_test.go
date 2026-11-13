@@ -1,1 +1,0 @@
-../writestringdata_test.go

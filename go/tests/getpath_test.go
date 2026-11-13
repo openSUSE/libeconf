@@ -11,12 +11,12 @@ import (
 // files together has no path of its own (Path() returns ""), while a file
 // read directly from disk reports its absolute path.
 //
-// econf_readDirs itself isn't exposed by either Go package (see the same
+// econf_readDirs itself isn't exposed by this package (see the same
 // note in getconfdirs_test.go), so the merged-file half uses
 // ReadDirsHistory + the mergeHistory helper from uapi_test.go instead.
 func TestPath(t *testing.T) {
 	t.Run("merged file has no path", func(t *testing.T) {
-		base := filepath.Join("..", "..", "..", "tests", "tst-getconfdirs1-data")
+		base := filepath.Join("..", "..", "tests", "tst-getconfdirs1-data")
 		files, err := econf.ReadDirsHistory(filepath.Join(base, "usr", "etc"), filepath.Join(base, "etc"), "getconfdir", "conf", "=", "#")
 		if err != nil {
 			t.Fatalf("ReadDirsHistory: %v", err)
@@ -29,7 +29,7 @@ func TestPath(t *testing.T) {
 	})
 
 	t.Run("directly read file has its absolute path", func(t *testing.T) {
-		relPath := filepath.Join("..", "..", "..", "tests", "tst-merge1-data", "usr", "etc", "tst-merge1.conf")
+		relPath := filepath.Join("..", "..", "tests", "tst-merge1-data", "usr", "etc", "tst-merge1.conf")
 		wantPath, err := filepath.Abs(relPath)
 		if err != nil {
 			t.Fatalf("filepath.Abs: %v", err)

@@ -21,7 +21,7 @@ import (
 // behavior to assert here.
 func TestQuotes(t *testing.T) {
 	const group = "quote"
-	path := filepath.Join("..", "..", "..", "tests", "tst-quote1-data", "quote.conf")
+	path := filepath.Join("..", "..", "tests", "tst-quote1-data", "quote.conf")
 
 	f, err := econf.ReadFile(path, "=", "#")
 	if err != nil {
