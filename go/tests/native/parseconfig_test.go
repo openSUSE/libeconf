@@ -1,1 +1,0 @@
-../parseconfig_test.go

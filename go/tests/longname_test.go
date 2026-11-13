@@ -11,7 +11,7 @@ import (
 // typical I/O buffer size (8200 bytes here) is read correctly, not
 // truncated.
 func TestLongKeyName(t *testing.T) {
-	path := filepath.Join("..", "..", "..", "tests", "tst-long-name", "test.conf")
+	path := filepath.Join("..", "..", "tests", "tst-long-name", "test.conf")
 	f, err := econf.ReadFile(path, "=", "#")
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)

@@ -12,7 +12,7 @@ import (
 // quoted multi-line continuations, and escaped/quoted quote characters)
 // all read back exactly as written.
 func TestStringFormats(t *testing.T) {
-	path := filepath.Join("..", "..", "..", "tests", "tst-arguments-string", "etc", "arguments.conf")
+	path := filepath.Join("..", "..", "tests", "tst-arguments-string", "etc", "arguments.conf")
 	f, err := econf.ReadFile(path, "=", "#")
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)

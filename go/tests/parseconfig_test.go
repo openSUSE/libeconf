@@ -10,7 +10,7 @@ import (
 // TestParseConfigEmptyGroup replicates tst-parseconfig1.c: a file
 // containing only an empty group header parses without error.
 func TestParseConfigEmptyGroup(t *testing.T) {
-	path := filepath.Join("..", "..", "..", "tests", "tst-parseconfig-data", "empty-group.conf")
+	path := filepath.Join("..", "..", "tests", "tst-parseconfig-data", "empty-group.conf")
 	f, err := econf.ReadFile(path, "=", "#")
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)
@@ -22,7 +22,7 @@ func TestParseConfigEmptyGroup(t *testing.T) {
 // /etc/os-release-style file with full-line comments parses, and a value
 // is read back without a trailing newline leaking in.
 func TestParseConfigCommentCharInCommentLine(t *testing.T) {
-	path := filepath.Join("..", "..", "..", "tests", "tst-parseconfig-data", "osrelease.conf")
+	path := filepath.Join("..", "..", "tests", "tst-parseconfig-data", "osrelease.conf")
 	f, err := econf.ReadFile(path, "=", "#")
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)

@@ -69,7 +69,7 @@ func TestOptions(t *testing.T) {
 // JOIN_SAME_ENTRIES=1, the second occurrence's value is appended (newline
 // separated) to the first instead.
 func TestJoinSameEntriesViaReadConfig(t *testing.T) {
-	base := filepath.Join("..", "..", "..", "tests", "tst-append-string")
+	base := filepath.Join("..", "..", "tests", "tst-append-string")
 
 	withoutJoin, err := econf.NewKeyFileWithOptions("")
 	if err != nil {

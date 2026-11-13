@@ -15,7 +15,7 @@ import (
 // strings); and merging a freshly created file that sets one key to an
 // empty string does not crash.
 func TestWriteStringDataRoundTrip(t *testing.T) {
-	path := filepath.Join("..", "..", "..", "tests", "tst-write-string-data", "usr", "etc", "tst-string-data.conf")
+	path := filepath.Join("..", "..", "tests", "tst-write-string-data", "usr", "etc", "tst-string-data.conf")
 	f, err := econf.ReadFile(path, "=", "#")
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)

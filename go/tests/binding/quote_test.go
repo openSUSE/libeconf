@@ -1,1 +1,0 @@
-../quote_test.go

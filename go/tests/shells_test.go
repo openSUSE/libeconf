@@ -15,10 +15,10 @@ import (
 //
 // Not ported: the econf_getExtValue checks for the comment attached to
 // "/bin/bash" and "/bin/csh". That extended API is deliberately not
-// exposed by either Go package (see go/native/README.md), matching the
+// exposed by this package (see go/README.md), matching the
 // skip of tst-comments.c in comments_test.go.
 func TestShellsNoDelimiterFile(t *testing.T) {
-	path := filepath.Join("..", "..", "..", "tests", "tst-shells1-data", "etc", "shells")
+	path := filepath.Join("..", "..", "tests", "tst-shells1-data", "etc", "shells")
 	f, err := econf.ReadFile(path, "", "#")
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)
@@ -61,7 +61,7 @@ func TestShellsNoDelimiterFile(t *testing.T) {
 // "mask this vendor drop-in" trick, which likewise entirely supersedes
 // (and empties out) /usr/etc/shells.d/foo's "/bin/foo" entry.
 //
-// econf_readDirs itself isn't exposed by either Go package (see the same
+// econf_readDirs itself isn't exposed by this package (see the same
 // note in getconfdirs_test.go), so this uses ReadDirsHistory + the
 // mergeHistory helper from uapi_test.go instead.
 //
@@ -71,7 +71,7 @@ func TestShellsNoDelimiterFile(t *testing.T) {
 // would resolve the /dev/null symlink away, changing its basename from
 // "foo" to "null" and silently breaking the masking behavior under test.
 func TestShellsDropInMaskedByDevNull(t *testing.T) {
-	base, err := filepath.Abs(filepath.Join("..", "..", "..", "tests", "tst-shells2-data"))
+	base, err := filepath.Abs(filepath.Join("..", "..", "tests", "tst-shells2-data"))
 	if err != nil {
 		t.Fatalf("filepath.Abs: %v", err)
 	}

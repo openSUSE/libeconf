@@ -48,9 +48,9 @@ func mergeHistory(t *testing.T, files []*econf.File) *econf.File {
 // uapi-1/uapi-2 scenarios (which need a third, /run, search directory) are
 // not covered here since ReadDirsHistory only supports two; the C tests
 // also only reach those fixture directories via the ROOT_PREFIX option,
-// which isn't part of either Go binding's public surface.
+// which isn't part of this package's public surface.
 func TestUAPIFixtures(t *testing.T) {
-	const base = "../../../tests"
+	const base = "../../tests"
 
 	tests := []struct {
 		name         string

@@ -18,7 +18,7 @@ import (
 // econf_go_FileCallback(3)), so that string is simply captured directly
 // instead of threaded through callback_data.
 func TestReadFileWithCallbackRejectsSymlink(t *testing.T) {
-	target, err := filepath.Abs(filepath.Join("..", "..", "..", "tests", "tst-arguments-string", "etc", "arguments.conf"))
+	target, err := filepath.Abs(filepath.Join("..", "..", "tests", "tst-arguments-string", "etc", "arguments.conf"))
 	if err != nil {
 		t.Fatalf("filepath.Abs: %v", err)
 	}
