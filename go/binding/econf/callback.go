@@ -50,7 +50,10 @@ func goEconfCallback(filename *C.char, data unsafe.Pointer) C.bool {
 	fn := callbackTable[data]
 	callbackMu.Unlock()
 	if fn == nil {
-		return C.bool(false)
+		// A nil FileCallback means "no filtering", matching the
+		// native package's "if callback != nil && !callback(...)" check:
+		// every candidate file is accepted.
+		return C.bool(true)
 	}
 	return C.bool(fn(C.GoString(filename)))
 }

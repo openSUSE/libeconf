@@ -1,0 +1,1 @@
+../mandir_test.go

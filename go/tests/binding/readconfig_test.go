@@ -1,0 +1,1 @@
+../readconfig_test.go

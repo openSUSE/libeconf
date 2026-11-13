@@ -2,11 +2,11 @@
 .\"     Title: ECONF_GO_FILECALLBACK
 .\"    Author: libeconf Contributors
 .\"      Date: 2026-11-09
-.\"    Manual: libeconf Go Bindings Manual
+.\"    Manual: libeconf Go Manual
 .\"    Source: libeconf
 .\"  Language: English
 .\"
-.TH "ECONF_GO_FILECALLBACK" "3" "2026\-11\-09" "libeconf" "libeconf Go Bindings Manual"
+.TH "ECONF_GO_FILECALLBACK" "3" "2026\-11\-09" "libeconf" "libeconf Go Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -69,17 +69,6 @@ aborts the whole read call, which then fails with
 \fBeconf\&.ErrParsingCallbackFailed\fR
 (see
 \fBeconf_go_Error\fR(3))\&.
-
-.PP
-This mirrors the
-\fIcallback\fR/\fIcallback_data\fR
-parameters of the underlying C functions (see
-\fBeconf_readFileWithCallback\fR(3)
-and
-\fBeconf_readConfigWithCallback\fR(3)); the Go binding uses a plain closure
-instead of a C function pointer plus opaque
-\fIvoid *\fR
-data, so arbitrary Go state can be captured directly by the closure\&.
 
 .SH "RETURN VALUE"
 

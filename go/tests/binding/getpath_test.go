@@ -1,0 +1,1 @@
+../getpath_test.go

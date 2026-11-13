@@ -2,11 +2,11 @@
 .\"     Title: ECONF_GO
 .\"    Author: libeconf Contributors
 .\"      Date: 2026-11-10
-.\"    Manual: libeconf Go Bindings Manual
+.\"    Manual: Go libeconf
 .\"    Source: libeconf
 .\"  Language: English
 .\"
-.TH "ECONF_GO" "3" "2026\-11\-10" "libeconf" "libeconf Go Bindings Manual"
+.TH "ECONF_GO" "3" "2026\-11\-10" "libeconf" "libeconf Native Go Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -43,12 +43,11 @@ import "github\&.com/openSUSE/libeconf/go/econf"
 .SH "DESCRIPTION"
 
 .PP
-The
-\fBeconf\fR
-Go package provides a native, pure\-Go reimplementation of
-\fBlibeconf\fR(3)'s parsing and merging logic\&. Unlike the cgo\-based
-binding (\fIgo/binding\fR), it does not use cgo and does not link against
-the C library at all\&.
+\fBeconf Go\fR
+provides a native, pure\-Go reimplementation of
+\fBlibeconf\fR(3)'s parsing and merging logic\&. Unlike the also available
+econf (Go, bindings) lokated in  https://github.com/openSUSE/libeconf/tree/master/go/binding,
+it does not use cgo and does not link against the C library at all\&.
 
 .PP
 Building this package requires only a Go toolchain; no C library, headers
@@ -57,13 +56,7 @@ or
 lookup are required\&.
 
 .PP
-It intentionally shares its package name, import path and exported API
-with the cgo\-based binding, so the two are drop\-in alternatives of each
-other: a consuming project can depend on
-\fIgithub\&.com/openSUSE/libeconf/go/econf\fR
-without caring which implementation is actually installed\&.
 
-.PP
 The central type is
 \fBeconf\&.File\fR, the in\-memory representation of a parsed and/or merged
 configuration\&. Values are read from and written to a
