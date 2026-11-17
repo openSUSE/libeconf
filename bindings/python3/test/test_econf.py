@@ -294,7 +294,8 @@ def test_write_file(tmp_path):
     [
         (does_not_raise(), 0, "Success"),
         (does_not_raise(), 5, "Key not found"),
-        (does_not_raise(), 23, "Unknown libeconf error 23"),
+        (does_not_raise(), 23, "Given option not found"),
+        (does_not_raise(), 24, "Value cannot be converted"),
         (pytest.raises(TypeError), "", "")
     ]
 )
