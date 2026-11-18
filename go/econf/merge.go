@@ -49,6 +49,11 @@ func mergeExistingGroups(dest *File, fe *[]entry, uf, ef *File, etcStart int) in
 					if (*fe)[k].key == ef.entries[j].key {
 						v := valueOf(ef.entries[j].value)
 						(*fe)[k].value = &v
+						(*fe)[k].commentBeforeKey = ef.entries[j].commentBeforeKey
+						(*fe)[k].commentAfterValue = ef.entries[j].commentAfterValue
+						(*fe)[k].lineNumber = ef.entries[j].lineNumber
+						(*fe)[k].quotes = ef.entries[j].quotes
+
 						newKey = false
 						break
 					}
