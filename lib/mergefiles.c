@@ -68,6 +68,15 @@ size_t merge_existing_groups(econf_file *dest_kf, struct file_entry **fe, econf_
 	      if (!strcmp((*fe)[k].key, ef->file_entry[j].key)) {
 		free((*fe)[k].value);
 		(*fe)[k].value = ef->file_entry[j].value ? strdup(ef->file_entry[j].value) : strdup("");
+		free((*fe)[k].comment_before_key);
+		(*fe)[k].comment_before_key = ef->file_entry[j].comment_before_key ?
+		  strdup(ef->file_entry[j].comment_before_key) : NULL;
+		free((*fe)[k].comment_after_value);
+		(*fe)[k].comment_after_value = ef->file_entry[j].comment_after_value ?
+		  strdup(ef->file_entry[j].comment_after_value) : NULL;
+		(*fe)[k].line_number = ef->file_entry[j].line_number;
+		(*fe)[k].quotes = ef->file_entry[j].quotes;
+
 		new_key = false;
 		break;
 	      }

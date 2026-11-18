@@ -2,7 +2,9 @@ package econf_test
 
 import (
 	"errors"
+	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/openSUSE/libeconf/go/econf"
@@ -178,4 +180,47 @@ func TestMergeFilesAllKeysCommentedInGroup(t *testing.T) {
 	defer merged.Close()
 
 	checkMergedString(t, merged, "Server", "ListenAddress", "127.0.0.1:9443")
+}
+
+// TestMergeFilesOverrideUsesOverridingMetadata replicates tst-merge7.c
+// When an etc snippet overrides a key already present in usr, the merged entry's comment must
+// come from the overriding (etc) entry, not stay attached to the
+// overridden (usr) entry while only the value changes. line_number isn't
+// observable through the public API, so this only checks what WriteFile
+// makes visible: the comment attached to the key.
+func TestMergeFilesOverrideUsesOverridingMetadata(t *testing.T) {
+	usrFile, err := econf.ReadFile(filepath.Join("..", "..", "tests", "tst-merge7-data", "data1.conf"), "=", "#")
+	if err != nil || usrFile == nil {
+		t.Fatalf("ReadFile(data1.conf) = %v, %v; want a file, no error", usrFile, err)
+	}
+	defer usrFile.Close()
+	etcFile, err := econf.ReadFile(filepath.Join("..", "..", "tests", "tst-merge7-data", "data2.conf"), "=", "#")
+	if err != nil || etcFile == nil {
+		t.Fatalf("ReadFile(data2.conf) = %v, %v; want a file, no error", etcFile, err)
+	}
+	defer etcFile.Close()
+
+	merged, err := econf.MergeFiles(usrFile, etcFile)
+	if err != nil || merged == nil {
+		t.Fatalf("MergeFiles = %v, %v; want a file, no error", merged, err)
+	}
+	defer merged.Close()
+
+	checkMergedString(t, merged, "Server", "ListenAddress", "etc_value")
+
+	dir := t.TempDir()
+	if err := merged.WriteFile(dir, "out.conf"); err != nil {
+		t.Fatalf("WriteFile: %v", err)
+	}
+	data, err := os.ReadFile(filepath.Join(dir, "out.conf"))
+	if err != nil {
+		t.Fatalf("ReadFile(out.conf): %v", err)
+	}
+	got := string(data)
+	if !strings.Contains(got, "etc override comment") {
+		t.Fatalf("written file missing overriding (etc) comment, got:\n%s", got)
+	}
+	if strings.Contains(got, "base comment") {
+		t.Fatalf("written file still has the overridden (usr) comment, got:\n%s", got)
+	}
 }
