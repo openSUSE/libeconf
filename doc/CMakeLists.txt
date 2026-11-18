@@ -18,6 +18,12 @@ if(BUILD_DOCUMENTATION)
         COMMENT "Generating API documentation with Doxygen"
         VERBATIM)
 
+    # "doc" is not part of the default build, and "make install" does not
+    # pull in other targets on its own, so installing html/ below would
+    # fail unless "doc" happened to be built already. Build it here,
+    # at install time, instead of forcing every normal build to run
+    # Doxygen via ALL.
+    install(CODE "execute_process(COMMAND \"${CMAKE_COMMAND}\" --build \"${CMAKE_BINARY_DIR}\" --target doc)")
     install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../html DESTINATION share/doc)
 endif()
 
