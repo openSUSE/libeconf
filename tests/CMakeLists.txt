@@ -80,5 +80,7 @@ if (BASH_PROGRAM)
     add_test (econftool1 ${BASH_PROGRAM} ${CMAKE_CURRENT_SOURCE_DIR}/tst-econftool1.sh)
     add_test (econftool_show1 ${BASH_PROGRAM} ${CMAKE_CURRENT_SOURCE_DIR}/tst-econftool_show1.sh)
     add_test (econftool_cat ${BASH_PROGRAM} ${CMAKE_CURRENT_SOURCE_DIR}/tst-econftool_cat.sh)
+    set_tests_properties(econftool1 econftool_show1 econftool_cat PROPERTIES
+        ENVIRONMENT "ECONFTOOL_EXE_PATH=$<TARGET_FILE:econftool>;ECONFTOOL_TEST_DATA_DIR=${CMAKE_CURRENT_SOURCE_DIR}/tst-econftool-data")
     add_dependencies(check econftool)
 endif (BASH_PROGRAM)
