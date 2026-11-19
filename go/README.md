@@ -30,7 +30,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer kf.Close()
 
 	value, err := kf.StringDef("main", "some_key", "default_value")
 	if err != nil {
@@ -74,9 +73,7 @@ Deliberately not implemented: the deprecated
 `econf_getExtValue`/`econf_setExtValue` API, and the non-thread-safe global
 setters (`econf_requireOwner`, `econf_requireGroup`, `econf_requirePermissions`,
 `econf_followSymlinks`, `econf_reset_security_settings`,
-`econf_set_conf_dirs`). `(*File).Close` exists only for API compatibility
-with Go's usual `io.Closer` convention; it is a no-op since there is no C
-memory to release.
+`econf_set_conf_dirs`).
 
 ## Examples
 

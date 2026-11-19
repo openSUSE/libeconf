@@ -205,7 +205,6 @@ f, err := econf\&.ReadFile("/etc/example\&.conf", "=", "#")
 if err != nil {
     log\&.Fatal(err)
 }
-defer f\&.Close()
 
 count, err := f\&.Int("main", "count")
 if err != nil {

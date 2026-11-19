@@ -33,7 +33,6 @@ quoted = "hello world"
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)
 	}
-	defer f.Close()
 
 	if got, err := f.String("main", "name"); err != nil || got != "libeconf" {
 		t.Fatalf("String(name) = %q, %v", got, err)
@@ -90,7 +89,6 @@ func TestSettersAndWriteRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewIniFile: %v", err)
 	}
-	defer kf.Close()
 
 	if err := kf.SetString("main", "name", "libeconf"); err != nil {
 		t.Fatalf("SetString: %v", err)
@@ -114,7 +112,6 @@ func TestSettersAndWriteRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ReadFile(roundtrip): %v", err)
 	}
-	defer roundTripped.Close()
 
 	if got, err := roundTripped.String("main", "name"); err != nil || got != "libeconf" {
 		t.Fatalf("roundtrip String(name) = %q, %v", got, err)
@@ -136,18 +133,15 @@ func TestMergeFiles(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ReadFile(usr): %v", err)
 	}
-	defer usr.Close()
 	etc, err := econf.ReadFile(etcPath, "=", "#")
 	if err != nil {
 		t.Fatalf("ReadFile(etc): %v", err)
 	}
-	defer etc.Close()
 
 	merged, err := econf.MergeFiles(usr, etc)
 	if err != nil {
 		t.Fatalf("MergeFiles: %v", err)
 	}
-	defer merged.Close()
 
 	if got, err := merged.String("main", "name"); err != nil || got != "admin" {
 		t.Fatalf("merged String(name) = %q, %v, want admin (etc wins)", got, err)
@@ -175,25 +169,11 @@ func TestReadFileWithCallback(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ReadFileWithCallback(accept): %v", err)
 	}
-	defer f.Close()
 
 	if seen != path {
 		t.Fatalf("callback saw filename %q, want %q", seen, path)
 	}
 	if got, err := f.String("main", "name"); err != nil || got != "libeconf" {
 		t.Fatalf("String(name) = %q, %v", got, err)
-	}
-}
-
-func TestCloseIsIdempotent(t *testing.T) {
-	f, err := econf.NewIniFile()
-	if err != nil {
-		t.Fatalf("NewIniFile: %v", err)
-	}
-	if err := f.Close(); err != nil {
-		t.Fatalf("Close: %v", err)
-	}
-	if err := f.Close(); err != nil {
-		t.Fatalf("second Close: %v", err)
 	}
 }

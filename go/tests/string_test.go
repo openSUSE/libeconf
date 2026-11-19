@@ -17,7 +17,6 @@ func TestStringFormats(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)
 	}
-	defer f.Close()
 
 	tests := []struct{ key, want string }{
 		{"string_empty", ""},

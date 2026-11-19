@@ -141,7 +141,6 @@ f, err := econf\&.NewIniFile()
 if err != nil {
     log\&.Fatal(err)
 }
-defer f\&.Close()
 
 if err := f\&.SetString("main", "greeting", "hello"); err != nil {
     log\&.Fatal(err)

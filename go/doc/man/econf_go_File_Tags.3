@@ -104,7 +104,6 @@ f, err := econf\&.NewIniFile()
 if err != nil {
     log\&.Fatal(err)
 }
-defer f\&.Close()
 
 fmt\&.Printf("delimiter: %c, comment: %c\en", f\&.DelimiterTag(), f\&.CommentTag())
 

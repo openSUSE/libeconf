@@ -11,11 +11,10 @@ import (
 // containing only an empty group header parses without error.
 func TestParseConfigEmptyGroup(t *testing.T) {
 	path := filepath.Join("..", "..", "tests", "tst-parseconfig-data", "empty-group.conf")
-	f, err := econf.ReadFile(path, "=", "#")
+	_, err := econf.ReadFile(path, "=", "#")
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)
 	}
-	defer f.Close()
 }
 
 // TestParseConfigCommentCharInCommentLine replicates tst-parseconfig2.c: an
@@ -27,7 +26,6 @@ func TestParseConfigCommentCharInCommentLine(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)
 	}
-	defer f.Close()
 
 	got, err := f.String("", "ANSI_COLOR")
 	if err != nil {

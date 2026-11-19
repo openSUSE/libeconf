@@ -52,14 +52,7 @@ import "github\&.com/openSUSE/libeconf/go/econf"
 .PP
 These functions create a new, empty
 \fBeconf\&.File\fR
-object\&. The returned
-\fI*File\fR
-should be released with
-\fB(*File)\&.Close\fR
-(see
-\fBeconf_go_File_Close\fR(3)) once it is no longer needed; typically with
-\fCdefer f\&.Close()\fR
-right after a successful call\&.
+object\&.
 
 .PP
 \fBNewKeyFile\fR
@@ -183,7 +176,6 @@ func main() {
     if err != nil {
         log\&.Fatal(err)
     }
-    defer f\&.Close()
 
     if err := f\&.SetString("main", "greeting", "hello"); err != nil {
         log\&.Fatal(err)
@@ -200,7 +192,6 @@ func main() {
 
 .PP
 \fBeconf_go\fR(3),
-\fBeconf_go_File_Close\fR(3),
 \fBeconf_go_File_Set\fR(3),
 \fBeconf_go_ReadConfig\fR(3),
 \fBeconf_go_Error\fR(3),

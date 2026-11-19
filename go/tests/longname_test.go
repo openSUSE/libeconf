@@ -16,7 +16,6 @@ func TestLongKeyName(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)
 	}
-	defer f.Close()
 
 	keys, err := f.Keys("")
 	if err != nil {

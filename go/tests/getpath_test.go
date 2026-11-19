@@ -39,7 +39,6 @@ func TestPath(t *testing.T) {
 		if err != nil {
 			t.Fatalf("ReadFile: %v", err)
 		}
-		defer f.Close()
 
 		if got := f.Path(); got != wantPath {
 			t.Errorf("Path() = %q, want %q", got, wantPath)

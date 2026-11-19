@@ -16,7 +16,6 @@ func TestSetGetAllValueTypes(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewIniFile: %v", err)
 	}
-	defer f.Close()
 
 	if _, err := f.Int("", "KEY"); !errors.Is(err, econf.ErrNoKey) {
 		t.Fatalf("Int(KEY) on empty file = %v, want ErrNoKey", err)
@@ -144,7 +143,6 @@ func TestBoolStringParsing(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewIniFile: %v", err)
 	}
-	defer f.Close()
 
 	tests := []struct {
 		raw  string
@@ -186,7 +184,6 @@ func TestSetValueErrorHandling(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewIniFile: %v", err)
 	}
-	defer f.Close()
 
 	if err := f.SetInt("", "", 8); !errors.Is(err, econf.ErrEmptyKey) {
 		t.Errorf("SetInt(\"\", 8) error = %v, want ErrEmptyKey", err)

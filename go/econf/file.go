@@ -2,13 +2,6 @@ package econf
 
 import "strings"
 
-// Close is a no-op; there is no C memory to release in this pure-Go
-// implementation. It always returns nil and is safe to call multiple
-// times and on a nil *File.
-func (f *File) Close() error {
-	return nil
-}
-
 // NewKeyFile creates a new, empty econf_file with the given delimiter and
 // comment characters.
 //

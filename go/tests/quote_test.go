@@ -27,7 +27,6 @@ func TestQuotes(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)
 	}
-	defer f.Close()
 
 	tests := []struct {
 		key    string
@@ -102,7 +101,6 @@ func TestDefaultQuotesOption(t *testing.T) {
 		if err != nil {
 			t.Fatalf("NewKeyFileWithOptions(\"\"): %v", err)
 		}
-		defer kf.Close()
 		kf.SetDelimiterTag('=')
 		kf.SetCommentTag('#')
 
@@ -144,7 +142,6 @@ func TestDefaultQuotesOption(t *testing.T) {
 		if err != nil {
 			t.Fatalf("NewKeyFileWithOptions(DEFAULT_QUOTES=1): %v", err)
 		}
-		defer kf.Close()
 		kf.SetDelimiterTag('=')
 		kf.SetCommentTag('#')
 

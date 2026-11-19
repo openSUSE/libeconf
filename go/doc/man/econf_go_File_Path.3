@@ -78,7 +78,6 @@ f, err := econf\&.ReadFile("/etc/example\&.conf", "=", "#")
 if err != nil {
     log\&.Fatal(err)
 }
-defer f\&.Close()
 
 fmt\&.Println(f\&.Path())
 

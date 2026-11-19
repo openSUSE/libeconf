@@ -108,7 +108,6 @@ func main() {
     if err != nil {
         log\&.Fatal(err)
     }
-    defer f\&.Close()
 
     log\&.Println("inspected files:", seen)
 }
