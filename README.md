@@ -76,5 +76,9 @@ The API is written in plain C. The description can be found here: https://opensu
 
 ## Bindings for other languages
 
-- [Python](https://github.com/openSUSE/libeconf/blob/v0.7.0/bindings/python3/) ([Documentation](https://github.com/openSUSE/libeconf/blob/v0.6.0/bindings/python3/docs/python-libeconf.3))
-- [C#](https://github.com/openSUSE/libeconf/blob/v0.7.0/bindings/csharp/) ([Documentation](https://github.com/openSUSE/libeconf/blob/v0.6.0/bindings/csharp/docs/README.md))
+- [Python](https://github.com/openSUSE/libeconf/blob/master/bindings/python3/) ([Documentation](https://github.com/openSUSE/libeconf/blob/master/bindings/python3/docs/README.md))
+- [C#](https://github.com/openSUSE/libeconf/blob/master/bindings/csharp/) ([Documentation](https://github.com/openSUSE/libeconf/blob/master/bindings/csharp/docs/README.md))
+
+## Native Go implementation
+
+- [Go](https://github.com/openSUSE/libeconf/blob/master/go/) ([Documentation](https://github.com/openSUSE/libeconf/blob/master/go/README.md))
