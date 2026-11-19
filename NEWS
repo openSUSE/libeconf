@@ -1,3 +1,10 @@
+Version 0.8.8
+* Update bindings docu
+* GO: Removed unneeded "close" call.
+* Building doc while installation
+* Merging: Do also merge line number, comments,...
+* cmake: allow test builds outside of source tree
+
 Version 0.8.7
 * Added a Go libeconf version.
 
