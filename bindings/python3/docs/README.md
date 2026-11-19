@@ -23,19 +23,16 @@ import econf
 
 ## Example
 ```python
->>> import econf
->>> file = econf.read_file("examples/etc/example/example.conf", "=", "#")
->>> econf.get_groups(file)
-['Another Group', 'First Group', 'Group']
->>> econf.get_keys(file, "Group")
-['Bla', 'Welcome[la]', 'Welcome']
->>> econf.get_int_value(file, "Group", "Bla")
-12311
->>> econf.set_int_value(file, "Group", "Bla", 5)
->>> econf.get_int_value(file, "Group", "Bla")
-5
->>> econf.write_file(file, "examples/etc/example", "example_new.conf")
->>>
+import econf
+file = econf.read_file("examples/etc/example/example.conf", "=", "#")
+
+econf.get_groups(file)
+econf.get_keys(file, "Group")
+econf.get_int_value(file, "Group", "Bla")
+econf.set_int_value(file, "Group", "Bla", 5)
+econf.get_int_value(file, "Group", "Bla")
+
+econf.write_file(file, "examples/etc/example", "example_new.conf")
 ```
 
 # Building from Source
