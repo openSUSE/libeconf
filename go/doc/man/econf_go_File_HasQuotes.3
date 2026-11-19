@@ -106,7 +106,6 @@ f, err := econf\&.ReadFile("/etc/example\&.conf", "=", "#")
 if err != nil {
     log\&.Fatal(err)
 }
-defer f\&.Close()
 
 if f\&.HasQuotes("main", "greeting") {
     fmt\&.Println("greeting is quoted")

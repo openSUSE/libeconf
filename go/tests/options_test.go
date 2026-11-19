@@ -30,7 +30,6 @@ func TestOptions(t *testing.T) {
 		if err != nil {
 			t.Fatalf("NewKeyFileWithOptions(\"\"): %v", err)
 		}
-		defer f.Close()
 		if err := f.SetString("group", "key", "value"); err != nil {
 			t.Fatalf("SetString: %v", err)
 		}
@@ -44,7 +43,6 @@ func TestOptions(t *testing.T) {
 		if err != nil {
 			t.Fatalf("NewKeyFileWithOptions(DEFAULT_QUOTES=1): %v", err)
 		}
-		defer f.Close()
 		if err := f.SetString("group", "key", "value"); err != nil {
 			t.Fatalf("SetString: %v", err)
 		}
@@ -75,7 +73,6 @@ func TestJoinSameEntriesViaReadConfig(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewKeyFileWithOptions(\"\"): %v", err)
 	}
-	defer withoutJoin.Close()
 	if err := withoutJoin.ReadConfig("", base, "input", "conf", "=", "#"); err != nil {
 		t.Fatalf("ReadConfig (no JOIN_SAME_ENTRIES): %v", err)
 	}
@@ -88,7 +85,6 @@ func TestJoinSameEntriesViaReadConfig(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewKeyFileWithOptions(JOIN_SAME_ENTRIES=1): %v", err)
 	}
-	defer withJoin.Close()
 	if err := withJoin.ReadConfig("", base, "input", "conf", "=", "#"); err != nil {
 		t.Fatalf("ReadConfig (JOIN_SAME_ENTRIES=1): %v", err)
 	}

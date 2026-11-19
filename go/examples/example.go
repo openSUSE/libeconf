@@ -22,7 +22,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer f.Close()
 
 	if err := f.SetString("main", "greeting", "hello from libeconf"); err != nil {
 		log.Fatal(err)
@@ -40,7 +39,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer read.Close()
 
 	groups, err := read.Groups()
 	if err != nil {

@@ -41,7 +41,6 @@ func TestMergeFilesWithOneMissingFile(t *testing.T) {
 		if err != nil || usrFile == nil {
 			t.Fatalf("ReadFile(usr) = %v, %v; want a file, no error", usrFile, err)
 		}
-		defer usrFile.Close()
 
 		merged, err := econf.MergeFiles(usrFile, etcFile)
 		if !errors.Is(err, econf.ErrArgumentIsNullValue) || merged != nil {
@@ -58,7 +57,6 @@ func TestMergeFilesWithOneMissingFile(t *testing.T) {
 		if err != nil || etcFile == nil {
 			t.Fatalf("ReadFile(etc) = %v, %v; want a file, no error", etcFile, err)
 		}
-		defer etcFile.Close()
 		usrFile, err := econf.ReadFile(usrPath, "=", "#")
 		if !errors.Is(err, econf.ErrNoFile) || usrFile != nil {
 			t.Fatalf("ReadFile(usr) = %v, %v; want nil, ErrNoFile", usrFile, err)
@@ -83,18 +81,15 @@ func TestMergeFilesCommentOnlyFile(t *testing.T) {
 	if err != nil || etcFile == nil {
 		t.Fatalf("ReadFile(login.defs) = %v, %v; want a file, no error", etcFile, err)
 	}
-	defer etcFile.Close()
 	usrFile, err := econf.ReadFile(suPath, " \t=", "#")
 	if err != nil || usrFile == nil {
 		t.Fatalf("ReadFile(su) = %v, %v; want a file, no error", usrFile, err)
 	}
-	defer usrFile.Close()
 
 	merged, err := econf.MergeFiles(usrFile, etcFile)
 	if err != nil || merged == nil {
 		t.Fatalf("MergeFiles = %v, %v; want a file, no error", merged, err)
 	}
-	defer merged.Close()
 
 	checkMergedString(t, merged, "", "FAIL_DELAY", "3")
 }
@@ -111,18 +106,15 @@ func TestMergeFilesGroupedWithUngrouped(t *testing.T) {
 		if err != nil || grouped == nil {
 			t.Fatalf("ReadFile(data1.conf) = %v, %v; want a file, no error", grouped, err)
 		}
-		defer grouped.Close()
 		ungrouped, err := econf.ReadFile(filepath.Join("..", "..", "tests", "tst-merge4-data", "data2.conf"), " \t=", "#")
 		if err != nil || ungrouped == nil {
 			t.Fatalf("ReadFile(data2.conf) = %v, %v; want a file, no error", ungrouped, err)
 		}
-		defer ungrouped.Close()
 
 		merged, err := econf.MergeFiles(ungrouped, grouped)
 		if err != nil || merged == nil {
 			t.Fatalf("MergeFiles = %v, %v; want a file, no error", merged, err)
 		}
-		defer merged.Close()
 
 		checkMergedString(t, merged, "global", "KEY1", "global")
 		checkMergedString(t, merged, "default", "KEY1", "default")
@@ -136,18 +128,15 @@ func TestMergeFilesGroupedWithUngrouped(t *testing.T) {
 		if err != nil || ungrouped == nil {
 			t.Fatalf("ReadFile(data1.conf) = %v, %v; want a file, no error", ungrouped, err)
 		}
-		defer ungrouped.Close()
 		grouped, err := econf.ReadFile(filepath.Join("..", "..", "tests", "tst-merge5-data", "data2.conf"), " \t=", "#")
 		if err != nil || grouped == nil {
 			t.Fatalf("ReadFile(data2.conf) = %v, %v; want a file, no error", grouped, err)
 		}
-		defer grouped.Close()
 
 		merged, err := econf.MergeFiles(grouped, ungrouped)
 		if err != nil || merged == nil {
 			t.Fatalf("MergeFiles = %v, %v; want a file, no error", merged, err)
 		}
-		defer merged.Close()
 
 		checkMergedString(t, merged, "global", "KEY1", "global")
 		checkMergedString(t, merged, "default", "KEY1", "default")
@@ -166,18 +155,15 @@ func TestMergeFilesAllKeysCommentedInGroup(t *testing.T) {
 	if err != nil || usrFile == nil {
 		t.Fatalf("ReadFile(data1.conf) = %v, %v; want a file, no error", usrFile, err)
 	}
-	defer usrFile.Close()
 	etcFile, err := econf.ReadFile(filepath.Join("..", "..", "tests", "tst-merge6-data", "data2.conf"), "=", "#")
 	if err != nil || etcFile == nil {
 		t.Fatalf("ReadFile(data2.conf) = %v, %v; want a file, no error", etcFile, err)
 	}
-	defer etcFile.Close()
 
 	merged, err := econf.MergeFiles(usrFile, etcFile)
 	if err != nil || merged == nil {
 		t.Fatalf("MergeFiles = %v, %v; want a file, no error", merged, err)
 	}
-	defer merged.Close()
 
 	checkMergedString(t, merged, "Server", "ListenAddress", "127.0.0.1:9443")
 }
@@ -193,18 +179,15 @@ func TestMergeFilesOverrideUsesOverridingMetadata(t *testing.T) {
 	if err != nil || usrFile == nil {
 		t.Fatalf("ReadFile(data1.conf) = %v, %v; want a file, no error", usrFile, err)
 	}
-	defer usrFile.Close()
 	etcFile, err := econf.ReadFile(filepath.Join("..", "..", "tests", "tst-merge7-data", "data2.conf"), "=", "#")
 	if err != nil || etcFile == nil {
 		t.Fatalf("ReadFile(data2.conf) = %v, %v; want a file, no error", etcFile, err)
 	}
-	defer etcFile.Close()
 
 	merged, err := econf.MergeFiles(usrFile, etcFile)
 	if err != nil || merged == nil {
 		t.Fatalf("MergeFiles = %v, %v; want a file, no error", merged, err)
 	}
-	defer merged.Close()
 
 	checkMergedString(t, merged, "Server", "ListenAddress", "etc_value")
 

@@ -169,7 +169,6 @@ func main() {
     if err != nil {
         log\&.Fatal(err)
     }
-    defer f\&.Close()
 
     _, err = f\&.String("main", "missing_key")
     if errors\&.Is(err, econf\&.ErrNoKey) {

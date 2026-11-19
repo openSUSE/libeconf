@@ -23,7 +23,6 @@ func TestShellsNoDelimiterFile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)
 	}
-	defer f.Close()
 
 	keys, err := f.Keys("")
 	if err != nil {
@@ -45,11 +44,10 @@ func TestShellsNoDelimiterFile(t *testing.T) {
 	if err := f.WriteFile(dir, "out.ini"); err != nil {
 		t.Fatalf("WriteFile: %v", err)
 	}
-	roundTripped, err := econf.ReadFile(filepath.Join(dir, "out.ini"), "", "#")
+	_, err = econf.ReadFile(filepath.Join(dir, "out.ini"), "", "#")
 	if err != nil {
 		t.Fatalf("ReadFile(roundtrip): %v", err)
 	}
-	defer roundTripped.Close()
 }
 
 // TestShellsDropInMaskedByDevNull replicates tst-shells2.c: /usr/etc/shells

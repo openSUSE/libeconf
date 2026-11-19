@@ -23,7 +23,6 @@ func TestManualParsingDirs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewKeyFileWithOptions: %v", err)
 	}
-	defer f.Close()
 
 	if err := f.ReadConfig("", filepath.Join(base, "usr", "etc"), "getconfdir", "conf", "=", "#"); err != nil {
 		t.Fatalf("ReadConfig: %v", err)

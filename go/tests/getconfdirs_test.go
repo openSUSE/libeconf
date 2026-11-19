@@ -176,7 +176,6 @@ func TestGetConfDirsCustomConfigAndParsingDirs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewKeyFileWithOptions: %v", err)
 	}
-	defer f.Close()
 
 	if err := f.ReadConfig("", "", "getconfdir", "conf", "=", "#"); err != nil {
 		t.Fatalf("ReadConfig: %v", err)

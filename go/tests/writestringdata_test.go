@@ -20,7 +20,6 @@ func TestWriteStringDataRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)
 	}
-	defer f.Close()
 
 	if err := f.WriteFile("not_exists", "out.ini"); !errors.Is(err, econf.ErrNoFile) {
 		t.Errorf("WriteFile(nonexistent dir) error = %v, want ErrNoFile", err)
@@ -34,7 +33,6 @@ func TestWriteStringDataRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ReadFile(roundtrip): %v", err)
 	}
-	defer roundTripped.Close()
 
 	for _, key := range []string{"test", "test2", "test3", "test4", "test5", "test6"} {
 		orig, origErr := f.String("test", key)
@@ -52,14 +50,12 @@ func TestWriteStringDataRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewIniFile: %v", err)
 	}
-	defer fresh.Close()
 	if err := fresh.SetString("test", "test", ""); err != nil {
 		t.Fatalf("SetString: %v", err)
 	}
 
-	merged, err := econf.MergeFiles(fresh, f)
+	_, err = econf.MergeFiles(fresh, f)
 	if err != nil {
 		t.Fatalf("MergeFiles: %v", err)
 	}
-	defer merged.Close()
 }

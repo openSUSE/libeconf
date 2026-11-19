@@ -85,14 +85,6 @@ from
 aborts the read, and the call fails with
 \fBeconf\&.ErrParsingCallbackFailed\fR\&.
 
-.PP
-The returned
-\fI*File\fR
-should be released with
-\fB(*File)\&.Close\fR
-(see
-\fBeconf_go_File_Close\fR(3)) once it is no longer needed\&.
-
 .SH "RETURN VALUE"
 
 .PP
@@ -167,7 +159,6 @@ func main() {
     if err != nil {
         log\&.Fatal(err)
     }
-    defer f\&.Close()
 
     value, err := f\&.String("main", "greeting")
     if err != nil {
@@ -187,7 +178,6 @@ func main() {
 .PP
 \fBeconf_go\fR(3),
 \fBeconf_go_FileCallback\fR(3),
-\fBeconf_go_File_Close\fR(3),
 \fBeconf_go_File_Get\fR(3),
 \fBeconf_go_Error\fR(3),
 \fBeconf_readFile\fR(3),

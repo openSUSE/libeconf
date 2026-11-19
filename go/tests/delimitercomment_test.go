@@ -13,7 +13,6 @@ func TestDelimiterAndCommentTag(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewIniFile: %v", err)
 	}
-	defer f.Close()
 
 	if got := f.CommentTag(); got != '#' {
 		t.Errorf("CommentTag() = %q, want '#'", got)

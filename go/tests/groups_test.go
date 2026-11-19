@@ -34,7 +34,6 @@ func TestGroupsSetAndGetRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewIniFile: %v", err)
 	}
-	defer f.Close()
 
 	// Reading a key from a brand new, empty key file must fail with
 	// ErrNoKey, not panic or succeed.
@@ -57,7 +56,6 @@ func TestGroupsSingleGroup(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewIniFile: %v", err)
 	}
-	defer f.Close()
 
 	const group, key, val = "towel", "42", "The answer, not question"
 	if err := f.SetString(group, key, val); err != nil {
@@ -87,7 +85,6 @@ func TestGroupsListFromFile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)
 	}
-	defer f.Close()
 
 	groups, err := f.Groups()
 	if err != nil {
@@ -134,7 +131,6 @@ func TestGroupsSingleEmptyGroup(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)
 	}
-	defer f.Close()
 
 	groups, err := f.Groups()
 	if err != nil {
@@ -153,7 +149,6 @@ func TestGroupsListKeysPerGroup(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ReadFile: %v", err)
 	}
-	defer f.Close()
 
 	groups, err := f.Groups()
 	if err != nil {
