@@ -18,7 +18,7 @@ def does_not_raise():
     "file,context,example",
     [
         (FILE, does_not_raise(), ["Another Group", "First Group", "Group"]),
-        (FILE2, pytest.raises(KeyError), []),
+        (FILE2, does_not_raise(), []),
     ],
 )
 def test_get_groups(file, context, example):
@@ -51,7 +51,7 @@ def test_get_keys(file, context, group, expected):
         (FILE, pytest.raises(KeyError), "a", "Bla", 12311),
         (FILE, pytest.raises(TypeError), 7, 2, 12311),
         (FILE, does_not_raise(), None, "foo", 6),
-        (FILE, does_not_raise(), "Group", "Welcome", 0),
+        (FILE, pytest.raises(TypeError), "Group", "Welcome", 0),
     ],
 )
 def test_get_int_value(file, context, group, key, expected):
@@ -70,7 +70,7 @@ def test_get_int_value(file, context, group, key, expected):
         (FILE, pytest.raises(KeyError), "a", "Bla", 12311),
         (FILE, pytest.raises(TypeError), 7, 2, 12311),
         (FILE, does_not_raise(), None, "foo", 6),
-        (FILE, does_not_raise(), "Group", "Welcome", 0),
+        (FILE, pytest.raises(TypeError), "Group", "Welcome", 0),
     ],
 )
 def test_get_uint_value(file, context, group, key, expected):
@@ -90,7 +90,7 @@ def test_get_uint_value(file, context, group, key, expected):
         (FILE, pytest.raises(KeyError), "a", "Bla", 12311),
         (FILE, pytest.raises(TypeError), 7, 2, 12311),
         (FILE, does_not_raise(), None, "foo", 6.5),
-        (FILE, does_not_raise(), "Group", "Welcome", 0),
+        (FILE, pytest.raises(TypeError), "Group", "Welcome", 0),
     ],
 )
 def test_get_float_value(file, context, group, key, expected):
