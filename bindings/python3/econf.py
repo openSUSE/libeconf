@@ -50,7 +50,7 @@ class EconfError(Enum):
     PARSING_CALLBACK_FAILED = 21
     ARGUMENT_IS_NULL_VALUE = 22
     OPTION_NOT_FOUND = 23
-    ECONF_VALUE_CONVERSION_ERROR = 24
+    VALUE_CONVERSION_ERROR = 24
 
 ECONF_EXCEPTION = {
     EconfError.ERROR: Exception,
@@ -76,7 +76,7 @@ ECONF_EXCEPTION = {
     EconfError.PARSING_CALLBACK_FAILED: Exception,
     EconfError.ARGUMENT_IS_NULL_VALUE: ValueError,
     EconfError.OPTION_NOT_FOUND: SyntaxError,
-    EconfError.ECONF_VALUE_CONVERSION_ERROR: TypeError
+    EconfError.VALUE_CONVERSION_ERROR: TypeError
 }
 
 
