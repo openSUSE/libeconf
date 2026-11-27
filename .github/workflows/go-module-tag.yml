@@ -1,0 +1,30 @@
+name: Tag Go module
+
+# The Go module lives in the subdirectory go/econf. Go requires a tag prefixed
+# with that path (go/econf/vX.Y.Z) for the module to resolve to a real version.
+# See https://go.dev/ref/mod#vcs-version
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Create go/econf tag on the same commit
+      run: |
+        TAG="go/econf/${GITHUB_REF_NAME}"
+        if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
+          echo "Tag ${TAG} already exists, nothing to do"
+          exit 0
+        fi
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git tag "${TAG}" "${GITHUB_SHA}"
+        git push origin "${TAG}"
