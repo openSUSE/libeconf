@@ -221,6 +221,31 @@ def test_read_dirs_history_with_callback(context, data):
         assert len(econf.get_groups(result[1])) == 1
 
 
+def test_write_file(tmp_path):
+    d = str(tmp_path)
+    name = "example.conf"
+    file_out_path = tmp_path / "example.conf"
+    result = econf.write_file(FILE, d, name)
+    result = econf.read_file(str(file_out_path), "=", ";")
+    conf_in = {
+        group: {
+            key: econf.get_string_value(FILE, group, key)
+            for key in econf.get_keys(FILE, group)
+        }
+        for group in econf.get_groups(FILE)
+    }
+    conf_out = {
+        group: {
+            key: econf.get_string_value(result, group, key)
+            for key in econf.get_keys(result, group)
+        }
+        for group in econf.get_groups(result)
+    }
+
+    assert file_out_path.exists()
+    assert conf_in == conf_out
+
+
 @pytest.mark.parametrize(
     "ef,context,expected",
     [
@@ -279,14 +304,6 @@ def test_set_delimiter_tag(ef, context, expected):
         result = econf.delimiter_tag(ef)
 
         assert result == expected
-
-
-def test_write_file(tmp_path):
-    d = str(tmp_path)
-    name = "example.conf"
-    result = econf.write_file(FILE, d, name)
-
-    assert (tmp_path / "example.conf").exists()
 
 
 @pytest.mark.parametrize(

@@ -50,6 +50,7 @@ class EconfError(Enum):
     PARSING_CALLBACK_FAILED = 21
     ARGUMENT_IS_NULL_VALUE = 22
     OPTION_NOT_FOUND = 23
+    VALUE_CONVERSION_ERROR = 24
 
 ECONF_EXCEPTION = {
     EconfError.ERROR: Exception,
@@ -74,7 +75,8 @@ ECONF_EXCEPTION = {
     EconfError.ERROR_FILE_IS_SYM_LINK: PermissionError,
     EconfError.PARSING_CALLBACK_FAILED: Exception,
     EconfError.ARGUMENT_IS_NULL_VALUE: ValueError,
-    EconfError.OPTION_NOT_FOUND: SyntaxError
+    EconfError.OPTION_NOT_FOUND: SyntaxError,
+    EconfError.VALUE_CONVERSION_ERROR: TypeError
 }
 
 
@@ -469,10 +471,10 @@ def read_dirs_history(
     )
     if err:
         raise ECONF_EXCEPTION[EconfError(err)](f"read_dirs_history failed with error: {err_string(err)}")
-
-    arr = cast(key_files, POINTER(c_void_p * size.value))
-    result = [EconfFile(c_void_p(i)) for i in arr.contents]
-    return result
+    if key_files.value is not None and size.value > 0:
+        arr = cast(key_files, POINTER(c_void_p * size.value))
+        return [EconfFile(c_void_p(i)) for i in arr.contents]
+    return []
 
 
 def read_dirs_history_with_callback(
@@ -484,7 +486,7 @@ def read_dirs_history_with_callback(
     comment: str | bytes,
     callback: Callable[[any], bool],
     callback_data: any,
-) -> EconfFile:
+) -> list[EconfFile]:
     """
     Evaluating key/values of a given configuration by reading and merging all needed/available
     files from different directories.
@@ -533,10 +535,10 @@ def read_dirs_history_with_callback(
         raise ECONF_EXCEPTION[EconfError(err)](
             f"read_dirs_history_with_callback failed with error: {err_string(err)}"
         )
-
-    arr = cast(key_files, POINTER(c_void_p * size.value))
-    result = [EconfFile(c_void_p(i)) for i in arr.contents]
-    return result
+    if key_files.value is not None and size.value > 0:
+        arr = cast(key_files, POINTER(c_void_p * size.value))
+        return [EconfFile(c_void_p(i)) for i in arr.contents]
+    return []
 
 
 def new_key_file(delim: str | bytes, comment: str | bytes) -> EconfFile:
@@ -643,7 +645,7 @@ def write_file(ef: EconfFile, save_to_dir: str, file_name: str) -> None:
     """
     c_save_to_dir = _encode_str(save_to_dir)
     c_file_name = _encode_str(file_name)
-    err = LIBECONF.econf_writeFile(byref(ef._ptr), c_save_to_dir, c_file_name)
+    err = LIBECONF.econf_writeFile(ef._ptr, c_save_to_dir, c_file_name)
     if err:
         raise ECONF_EXCEPTION[EconfError(err)](f"write_file failed with error: {err_string(err)}")
 
@@ -671,12 +673,13 @@ def get_groups(ef: EconfFile) -> list[str]:
     err = LIBECONF.econf_getGroups(ef._ptr, byref(c_length), byref(c_groups))
     if err:
         raise ECONF_EXCEPTION[EconfError(err)](f"get_groups failed with error: {err_string(err)}")
-    arr = cast(c_groups, POINTER(c_char_p * c_length.value))
-    result = [i.decode("utf-8") for i in arr.contents]
-    return result
+    if c_groups.value is not None and c_length.value > 0:
+        arr = cast(c_groups, POINTER(c_char_p * c_length.value))
+        return [i.decode("utf-8") for i in arr.contents]
+    return []
 
 
-def get_keys(ef: EconfFile, group: str) -> list[str]:
+def get_keys(ef: EconfFile, group: str | None) -> list[str]:
     """
     List all the keys of a given group or all keys in a keyfile
 
@@ -691,9 +694,10 @@ def get_keys(ef: EconfFile, group: str) -> list[str]:
     err = LIBECONF.econf_getKeys(ef._ptr, group, byref(c_length), byref(c_keys))
     if err:
         raise ECONF_EXCEPTION[EconfError(err)](f"get_keys failed with error: {err_string(err)}")
-    arr = cast(c_keys, POINTER(c_char_p * c_length.value))
-    result = [i.decode("utf-8") for i in arr.contents]
-    return result
+    if c_keys.value is not None and c_length.value > 0:
+        arr = cast(c_keys, POINTER(c_char_p * c_length.value))
+        return [i.decode("utf-8") for i in arr.contents]
+    return []
 
 
 def get_int_value(ef: EconfFile, group: str, key: str) -> int:
